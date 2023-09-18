@@ -1,0 +1,384 @@
+''cannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuecannot access local variable 'data' where it is not associated with a valuename 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+name 'Date_dropp' is not defined
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+min() arg is an empty sequence
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable
+'int' object is not callable

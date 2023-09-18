@@ -1,0 +1,14 @@
+.col-md-12 {
+    -webkit-box-flex: 0;
+    margin: 20px;
+    -webkit-flex: 0 0 100%;
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+    
+}
+
+.table-responsive{
+    margin-left: 5px;
+    margin-right: 5px;
+}

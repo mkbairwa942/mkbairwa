@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>{% block title%}{% endblock title %} | Capital Cope</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="static/img/favicon.png" rel="icon">
+  <link href="static/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="static/vendor/aos/aos.css" rel="stylesheet">
+  <link href="static/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="static/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="static/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="static/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="static/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="static/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="static/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="static/css/main.css" rel="stylesheet">
+  <!-- <link href="static/css/style.css" rel="stylesheet"> -->
+  <link href="static/css/chart.css" rel="stylesheet">
+  <script src="static/js/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"
+    integrity="sha512-Tfw6etYMUhL4RTki37niav99C6OHwMDB2iBT5S5piyHO+ltK2YX8Hjy9TXxhE1Gm/TmAV0uaykSpnHKFIAif/A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+  <!-- =======================================================
+  * Template Name: Nova - v1.2.1
+  * Template URL: https://bootstrapmade.com/nova-bootstrap-business-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body class="page-about">
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+      <a href="/" class="logo d-flex align-items-center">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <img src="/static/img/logo/logo5.png" alt="">
+        <!-- <h1 class="d-flex align-items-center">CAPITAL COPE</h1> -->
+      </a>
+
+      <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
+      <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+      <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a href="/" >Home</a></li>
+          <li><a href="/About">About</a></li>
+          <li><a href="/Services">Services</a></li>
+          <li><a href="/Portfolio">Portfolio</a></li>
+          <li><a href="/Team">Team</a></li>
+          <li><a href="/Blog">Blog</a></li>
+          <li><a href="/Contactus">Contact</a></li>
+          <li><a href="/login_view"><button class="btn btn-light ms-3">Login</button></a></li>
+          <li><a href="/Register_new"><button class="btn btn-light ms-2">Register Now</button></a></li>
+          
+
+        </ul>
+      </nav><!-- .navbar -->
+
+    </div>
+  </header><!-- End Header -->
+
+  {% block body %}{% endblock body %}
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+
+    <div class="footer-content">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-5 col-md-12 footer-info">
+            <a href="views_reg/index.html" class="logo d-flex align-items-center">
+              <span>Capitals Scope</span>
+            </a>
+            <p>Empower your ideas with our market research and analysed data. Don't get off the way with the lack of data. 
+              Join us to get the latest information in a click.</p>
+            <div class="social-links d-flex  mt-3">
+              <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+              <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-6 footer-links">
+            <h4>Useful Links</h4>
+            <ul>
+              <li><i class="bi bi-dash"></i> <a href="#">Home</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">About us</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">Services</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">Contact</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">Terms of service</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">Privacy policy</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-2 col-6 footer-links">
+            <h4>Our Services</h4>
+            <ul>
+              <li><i class="bi bi-dash"></i> <a href="#">Get Loan</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">Financials</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">Accounting</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">5 paisa Sub Broker</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">Stock Market Analyzer</a></li>
+              <li><i class="bi bi-dash"></i> <a href="#">Backtesting</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+            <h4>Contact Us</h4>
+            <p>
+              New Naroda,<br>
+              Ahmedabad - 382330<br>
+              India <br><br>
+              <strong>Phone:</strong> +91 865 268 6190<br>
+              <strong>Phone:</strong> +91 902 353 4295<br>
+              <strong>Email:</strong> contact@capitalsscope.com<br>
+            </p>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-legal">
+      <div class="container">
+        <div class="copyright">
+          &copy; Copyright <strong><span>Capitals Scope</span></strong>. All Rights Reserved
+        </div>
+        <div class="credits">
+          <!-- All the links in the footer should remain intact. -->
+          <!-- You can delete the links only if you purchased the pro version. -->
+          <!-- Licensing information: https://bootstrapmade.com/license/ -->
+          <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nova-bootstrap-business-template/ -->
+          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+        </div>
+      </div>
+    </div>
+  </footer><!-- End Footer -->
+  <!-- End Footer -->
+  
+  <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="static/vendor/aos/aos.js"></script>
+  <script src="static/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="static/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="static/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="static/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="static/js/main.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/ajax.js"></script>
+
+    <title>Login Form</title>
+    <style>
+        .er{
+            color:red;
+        }
+    </style>
+</head>
+
+
+<body>
+    <!-- <div class="row">
+    {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+    <p class="er">{{error}}</p>
+    {% endfor %}
+    {% endif %}   
+    </div> -->
+    
+    <div class="container ">
+        <div class="forms2">
+            <div class="form login">
+                
+                <span class="title">Login Form</span>
+                {% if messages %}
+                {% for mess in messages %}
+                <div class="alert alert-{{mess.tags}}" role="alert">
+                {{mess}}
+                </div>
+                {% endfor %}  
+                {% endif %}
+
+
+                {% if otp %}
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+                        <h3 class="float-left">Verify Your Email</h3>
+                        <input type="hidden" name="usr" value="{{usr.username}}">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text" id="basic-addon1">OTP</span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Enter Your OTP" aria-label="OTP" 
+                            aria-describedby="basic-addon1" name="otp">
+                        </div>
+
+
+                        
+                        <div class="checkbox-text">
+
+                            <small class="float-right text-muted"><i><a href="#" class="text" 
+                                onclick="ReSendOTP('{{usr.username}}','resendOTPmess')"
+                                ><i id="resendOTPmess">Resend </i>OTP</a></small>
+                            
+                        </div>
+
+                        <div class="input-field button">
+                            <input type="Submit" value="Verify">   
+                                                    
+                        </div>
+                        <!-- <div class="input-field button1">                        
+                            <button class="btn btn-primary" type="Submit">Login Now1</button>                    
+                        </div> -->
+                    </form>
+                {% else %}
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="input-field">
+                  
+                        {{form.username}}                       
+                        <!-- <input type="text" name="username" placeholder="Enter your email" required autofocus> -->
+                        <i class="uil uil-envelope icon"></i>
+                    </div>
+                    <div class="input-field">
+                        {{form.password}}                        
+                        <!-- <input type="password" name="password" class="password" placeholder="Enter your password" required> -->
+                        <i class="uil uil-lock icon"></i>
+                        <i class="uil uil-eye-slash showHidePw"></i>
+                    </div>
+                    <div class="checkbox-text">
+                        <div class="checkbox-content">
+                            <input type="checkbox" id="logCheck">
+                            <label for="logCheck" class="text"> Remember me</label>
+                        </div>
+
+                        <a href="{% url 'password_reset' %}" class="text">Forgot Password?</a>
+                    </div>
+
+                    <div class="input-field button">
+                        <input class="btn login_btn" type="submit" value="Login Now">  
+                        <a href="/Register_new"></a>                      
+                    </div>
+                </form>
+                {% endif %}
+                <div class="login-signup">
+                    <span class="text">Not a member?
+                        <a href="/Register_new" class="text signup-link">Signup now</a>
+                    </span>
+                </div>
+            </div>
+
+           
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/static/js/script.js"></script>
+</body>
+
+
+</html>
+
+
+

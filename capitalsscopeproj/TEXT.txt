@@ -1,0 +1,53 @@
+ssh-keygen -t rsa -b 4096 -C "mukeshbairwa942@gmail.com" -f ~/.ssh/virtualmin/firstserver
+
+private key: ~/.ssh/virtualmin/firstserver
+public key : ~/.ssh/virtualmin/firstserver.pub
+
+ssh-copy-id -i ~/.ssh/virtualmin/firstserver.pub mkbairwa942@5.183.11.143
+
+ssh mkbairwa942@5.183.11.143 -i ~/.ssh/virtualmin/firstserver
+
+PermitRootLogin no
+
+PasswordAuthentication no
+
+sudo chmod 700 -R ~/.ssh && sudo chmod 600 ~/.ssh/authorized_keys
+
+sudo chown -R mkbairwa942:mkbairwa942 /home/mkbairwa942
+
+sudo swapon --show
+
+sudo fallocate -l 2G /myswapfile
+
+sudo chmod 600 /myswapfile
+
+sudo mkswap /myswapfile && sudo swapon /myswapfile
+
+sudo nano /etc/fstab
+
+/myswapfile swap swap defaults 0 0
+
+wget http://software.virtualmin.com/gpl/scripts/install.sh
+
+sudo sh ./install.sh --bundle LEMP
+
+celery -A capitalsscope worker -l info -P eventlet
+
+celery -A capitalsscope beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+sudo service redis-server start
+
+redis-cli
+
+
+cd stock\capital_vercel1
+
+myenv\Scripts\activate
+
+docker compose up --build -d --remove-orphans
+
+mysql -u root -p
+
+GRANT ALL ON capitalsscope.* to 'capi'@'223.236.113.202' IDENTIFIED BY 'Je';
+
+GRANT ALL ON capitalsscope.* to 'mk'@'223.236.113.202' IDENTIFIED BY 'va';

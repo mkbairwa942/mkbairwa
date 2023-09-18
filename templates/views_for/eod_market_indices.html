@@ -1,0 +1,149 @@
+{% extends 'views_reg/base_new2.html' %}
+
+{% block title%}Eod Indices Market{% endblock title %}
+
+{% block body %} </br> <strong> List of ALL Stocks{{colidx}}</strong></br></br>
+
+<main id="main">
+
+  <!-- ======= Breadcrumbs ======= -->
+  <div class="breadcrumbs d-flex align-items-center" style="background-image: url('static/img/contact-header.jpg');">
+    <div class="container position-relative d-flex flex-column align-items-center">
+
+      <h2>Eod Market Stock</h2>
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li>Eod Market Stock</li>
+      </ol>
+
+    </div>
+  </div><!-- End Breadcrumbs -->
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mt-3">
+        <h4>Eod Stock Data</h4>
+        <hr>
+        <div class="table-responsive">
+          <table id="example" class="table table-bordered table-striped" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Index</th>                  
+                <th>Date</th>                  
+                <th>Open</th>
+                <th>High</th>
+                <th>Low</th>
+                <th>Closing</th>
+                <th>PChange</th>
+                <th>Change_per</th>
+                <th>Volume</th>
+                <th>Turnover</th>
+                <th>P_E</th>
+                <th>P_B</th>
+                <th>Div_Yield</th>
+                <th>Vol_break</th>
+                <th>Close_break</th>
+                <th>Price_break</th>
+                <th>O_H_L</th>
+                <th>Pattern</th>
+                <th>R3</th>
+                <th>R2</th>
+                <th>R1</th>
+                <th>Pivot</th>
+                <th>S1</th>
+                <th>S2</th>
+                <th>S3</th>
+                <th>Mid_point</th>
+                <th>CPR</th>
+                <th>CPR_SCAN</th>
+                <th>Candle</th>
+
+              </tr>
+            </thead>
+            <tr>
+
+              {% for i in context1 %}
+              <td>{{ i.Index }}</td>
+              <td>{{ i.Date }}</td>
+              <td>{{ i.Open }}</td>
+              <td>{{ i.High }}</td>
+              <td>{{ i.Low }}</td>
+              <td>{{ i.Closing }}</td>
+              <td>{{ i.PChange }}</td>
+              <td>{{ i.Change_per }}</td>
+              <td>{{ i.Volume }}</td>
+              <td>{{ i.Turnover }}</td>
+              <td>{{ i.P_E }}</td>
+              <td>{{ i.P_B }}</td>
+              <td>{{ i.Div_Yield }}</td>
+              <td>{{ i.Vol_break }}</td>
+              <td>{{ i.Close_break }}</td>
+              <td>{{ i.Price_break }}</td>
+              <td>{{ i.O_H_L }}</td>
+              <td>{{ i.Pattern }}</td>
+              <td>{{ i.R3 }}</td>
+              <td>{{ i.R2 }}</td>
+              <td>{{ i.R1 }}</td>
+              <td>{{ i.Pivot }}</td>
+              <td>{{ i.S1 }}</td>
+              <td>{{ i.S2 }}</td>
+              <td>{{ i.S3 }}</td>
+              <td>{{ i.Mid_point }}</td>
+              <td>{{ i.CPR }}</td>
+              <td>{{ i.CPR_SCAN }}</td>
+              <td>{{ i.Candle }}</td>
+
+
+
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="/static/js/chart.js"></script>
+  <!-- <script type="text/javascript" src="/static/js/popper.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+  <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+  <!-- <script type="text/javascript" src="/static/js/bootstrap-table.min.js"></script> -->
+  <!-- <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script> -->
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      // Setup - add a text input to each footer cell
+      $('#example thead th').each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+      });
+
+      // DataTable
+      var table = $('#example').DataTable({
+        initComplete: function () {
+          // Apply the search
+          this.api()
+            .columns()
+            .every(function () {
+              var that = this;
+
+              $('input', this.header()).on('keyup change clear', function () {
+                if (that.search() !== this.value) {
+                  that.search(this.value).draw();
+                }
+              });
+            });
+        },
+      });
+    });
+  </script>
+</main><!-- End #main -->
+
+{% endblock body %}

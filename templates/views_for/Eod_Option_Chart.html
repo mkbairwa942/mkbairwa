@@ -1,0 +1,34 @@
+{% extends 'views_reg/base_new2.html' %}
+
+{% block title%}Eod_Option_Chart{% endblock title %}
+
+{% block body %}
+{% load plotly_dash %}
+<main id="main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <div class="breadcrumbs d-flex align-items-center" style="background-image: url('static/img/contact-header.jpg');">
+        <div class="container position-relative d-flex flex-column align-items-center">
+
+            <h2>Eod_Option_Chart</h2>
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li>Eod_Option_Chart</li>
+            </ol>
+
+        </div>
+    </div><!-- End Breadcrumbs -->
+
+
+<div class="{% plotly_class name='Eod_Option_Chart' %} card" style="height: 100%; width: 100%">
+    {% plotly_app name='Eod_Option_Chart' ratio=0.65 %}
+    </div>
+<br>
+    {{ plot1 | safe }}
+
+
+
+
+</main><!-- End #main -->
+
+{% endblock body %}

@@ -1,0 +1,500 @@
+{% extends 'views_reg/base_new2.html' %}
+
+{% block title%}Eod Stock Market{% endblock title %}
+
+{% block body %}
+
+<main id="main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <div class="breadcrumbs d-flex align-items-center" style="background-image: url('static/img/contact-header.jpg');">
+        <div class="container position-relative d-flex flex-column align-items-center">
+
+            <h2>Eod Market Stock</h2>
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li>Eod Market Stock</li>
+            </ol>
+
+        </div>
+    </div><!-- End Breadcrumbs -->
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mt-3">
+                <h4>Eod Stock Data</h4>
+                <hr>
+                <div class="table-responsive">
+                    <table id="example" class="table table-bordered table-striped" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Date</th>
+                                <th>Prev</th>
+                                <th>Open</th>
+                                <th>High</th>
+                                <th>Low</th>
+                                <th>Closing</th>
+                                <th>Volume</th>
+                                <th>Deliv_qty</th>
+                                <th>Open_int</th>
+                                <th>Deliv_per</th>
+                                <th>Price_Chg</th>
+                                <th>OI_Chg</th>
+                                <th>Vol_Chg</th>
+                                <th>Deliv_break</th>
+                                <th>Price_break</th>
+                                <th>Open_int_break</th>
+                                <th>Vol_break</th>
+                                <th>Deliv_Price_break</th>
+                                <th>Deliv_Open_int_break</th>
+                                <th>Deliv_Vol_break</th>
+                                <th>O_H_L</th>
+                                
+                                {% extends 'views_reg/base_new2.html' %}
+
+                                {% block title%}Eod Stock Market{% endblock title %}
+
+                                {% block body %}
+
+                                <main id="main">
+
+                                    <!-- ======= Breadcrumbs ======= -->
+                                    <div class="breadcrumbs d-flex align-items-center"
+                                        style="background-image: url('static/img/contact-header.jpg');">
+                                        <div class="container position-relative d-flex flex-column align-items-center">
+
+                                            <h2>Eod Market Stock</h2>
+                                            <ol>
+                                                <li><a href="/">Home</a></li>
+                                                <li>Eod Market Stock</li>
+                                            </ol>
+
+                                        </div>
+                                    </div><!-- End Breadcrumbs -->
+
+
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-12 mt-3">
+                                                <h4>Eod Stock Data</h4>
+
+                                                <div class="dropdown-columns">
+                                                    Select Columns to Hide:-
+                                                    <hr>
+                                                    <div class="column-data">
+                                                        Data Colums:-
+                                                        <a class="toggle-vis" data-column="7"><button>Prev</button></a>
+                                                        <a class="toggle-vis" data-column="8"><button>Open</button></a>
+                                                        <a class="toggle-vis" data-column="9"><button>High</button></a>
+                                                        <a class="toggle-vis" data-column="10"><button>Low</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="11"><button>Volume</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="12"><button>Deliv_qty</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="13"><button>Open_int</button></a>
+                                                    </div>
+                                                    <br>
+                                                    <div class="column-Breakout">
+                                                        Breakout Columns:-
+                                                        <a class="toggle-vis"
+                                                            data-column="14"><button>Deliv_break</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="15"><button>Price_break</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="16"><button>Open_int_break</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="17"><button>Vol_break</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="18"><button>Deliv_Price_break</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="19"><button>Deliv_Open_int_break</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="20"><button>Deliv_Vol_break</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="21"><button>O_H_L</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="22"><button>Pattern</button></a>
+                                                    </div>
+                                                    <br>
+                                                    <div class="column-Breakpoints">
+                                                        Break Points Columns:-
+                                                        <a class="toggle-vis" data-column="23"><button>R3</button></a>
+                                                        <a class="toggle-vis" data-column="24"><button>R2</button></a>
+                                                        <a class="toggle-vis" data-column="25"><button>R1</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="26"><button>Pivot</button></a>
+                                                        <a class="toggle-vis" data-column="27"><button>S1</button></a>
+                                                        <a class="toggle-vis" data-column="28"><button>S2</button></a>
+                                                        <a class="toggle-vis" data-column="29"><button>S3</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="30"><button>Mid_point</button></a>
+                                                        <a class="toggle-vis" data-column="31"><button>CPR</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="32"><button>CPR_SCAN</button></a>
+                                                        <a class="toggle-vis"
+                                                            data-column="33"><button>Candle</button></a>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <hr>
+
+                                                <div class="Analysis">
+                                                    Select Analysis Show:-
+                                                    <hr>
+                                                    <div class="analys-breakout">
+                                                        Breakouts:-
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Deliv_brk" />Deliv_brk
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Pri_Up_brk" />Pri_Up_brk
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Pri_Dwn_brk" />Pri_Dwn_brk
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Open_int_brk" />Open_int_brk
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Vol_brk" />Vol_brk
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Del_Pri_Brk" />Del_Pri_Brk
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Del_Op_Int_Brk" />Del_Op_Int_Brk
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Del_Vol_Brk" />Del_Vol_Brk
+                                                    </div>
+                                                    <br>
+                                                    <div class="analys-pattern">
+                                                        Patterns:-
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Open_High" />Open_High
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Open_Low" />Open_Low
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Inside_bar" />Inside_bar
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Bullish" />Bullish
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="Bearish" />Bearish
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="CPR_SCAN" />CPR_SCAN
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="DOZI" />DOZI
+                                                        <input type="checkbox" class="name" name="name"
+                                                            value="BIGBODY" />BIGBODY
+                                                        <hr>
+                                                    </div>
+                                                </div>
+
+                                                <div class="table-responsive">
+                                                    <table id="example" class="display " style="width: 100%;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Symbol</th>
+                                                                <th>Date</th>
+                                                                <th>Closing</th>
+                                                                <th>Price_Chg</th>
+                                                                <th>OI_Chg</th>
+                                                                <th>Deliv_per</th>
+                                                                <th>Vol_Chg</th>
+                                                                <th>Prev</th>
+                                                                <th>Open</th>
+                                                                <th>High</th>
+                                                                <th>Low</th>
+                                                                <th>Volume</th>
+                                                                <th>Deliv_qty</th>
+                                                                <th>Open_int</th>
+                                                                <th>Deliv_break</th>
+                                                                <th>Price_break</th>
+                                                                <th>Open_int_break</th>
+                                                                <th>Vol_break</th>
+                                                                <th>Deliv_Price_break</th>
+                                                                <th>Deliv_Open_int_break</th>
+                                                                <th>Deliv_Vol_break</th>
+                                                                <th>O_H_L</th>
+                                                                <th>Pattern</th>
+                                                                <th>R3</th>
+                                                                <th>R2</th>
+                                                                <th>R1</th>
+                                                                <th>Pivot</th>
+                                                                <th>S1</th>
+                                                                <th>S2</th>
+                                                                <th>S3</th>
+                                                                <th>Mid_point</th>
+                                                                <th>CPR</th>
+                                                                <th>CPR_SCAN</th>
+                                                                <th>Candle</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tr>
+
+                                                            {% for i in context1 %}
+                                                            <td><a href="/Chart">{{i.Symbol}}</a></td>
+                                                            <td>{{i.Date}}</td>
+                                                            <td>{{i.Closing}}</td>
+                                                            <td>{{i.Price_Chg}}</td>
+                                                            <td>{{i.OI_Chg}}</td>
+                                                            <td>{{i.Deliv_per}}</td>
+                                                            <td>{{i.Vol_Chg}}</td>
+                                                            <td>{{i.Prev}}</td>
+                                                            <td>{{i.Open}}</td>
+                                                            <td>{{i.High}}</td>
+                                                            <td>{{i.Low}}</td>
+                                                            <td>{{i.Volume}}</td>
+                                                            <td>{{i.Deliv_qty}}</td>
+                                                            <td>{{i.Open_int}}</td>
+                                                            <td>{{i.Deliv_break}}</td>
+                                                            <td>{{i.Price_break}}</td>
+                                                            <td>{{i.Open_int_break}}</td>
+                                                            <td>{{i.Vol_break}}</td>
+                                                            <td>{{i.Deliv_Price_break}}</td>
+                                                            <td>{{i.Deliv_Open_int_break}}</td>
+                                                            <td>{{i.Deliv_Vol_break}}</td>
+                                                            <td>{{i.O_H_L}}</td>
+                                                            <td>{{i.Pattern}}</td>
+                                                            <td>{{i.R3}}</td>
+                                                            <td>{{i.R2}}</td>
+                                                            <td>{{i.R1}}</td>
+                                                            <td>{{i.Pivot}}</td>
+                                                            <td>{{i.S1}}</td>
+                                                            <td>{{i.S2}}</td>
+                                                            <td>{{i.S3}}</td>
+                                                            <td>{{i.Mid_point}}</td>
+                                                            <td>{{i.CPR}}</td>
+                                                            <td>{{i.CPR_SCAN}}</td>
+                                                            <td>{{i.Candle}}</td>
+
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+                                    <script type="text/javascript" src="/static/js/jquery-3.5.1.js"></script>
+                                    <script type="text/javascript" src="/static/js/chart.js"></script>
+                                    <!-- <script type="text/javascript" src="/static/js/popper.min.js"></script>
+                                        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+                                    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+                                    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+                                    <!-- <script type="text/javascript" src="/static/js/bootstrap-table.min.js"></script> -->
+                                    <!-- <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script> -->
+
+                                    <script type="text/javascript">
+
+
+                                        $(document).ready(function () {
+
+                                            // Setup - add a text input to each footer cell
+                                            $('#example thead th').each(function () {
+                                                var title = $(this).text();
+                                                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+                                            });
+                                            $('#example tbody').on('click', 'tr', function () {
+                                                var data = table.row(this).data();
+                                                alert('You clicked on ' + data[0] + "'s row");
+                                            });
+                                            // DataTable
+                                            var table = $('#example').DataTable({
+                                                // responsive: true,
+                                                // stateSave: true,
+                                                initComplete: function () {
+                                                    // Apply the search
+                                                    this.api()
+                                                        .columns()
+                                                        .every(function () {
+                                                            var that = this;
+
+                                                            $('input', this.header()).on('keyup change clear', function () {
+                                                                if (that.search() !== this.value) {
+                                                                    that.search(this.value).draw();
+                                                                }
+                                                            });
+                                                        });
+                                                },
+
+                                                lengthMenu: [
+                                                    [10, 50, 100, -1],
+                                                    [10, 50, 100, 'All'],
+                                                ],
+
+                                                scrollY: '50vh',
+                                                scrollCollapse: true,
+                                                paging: true,
+
+                                                language: {
+                                                    decimal: ',',
+                                                    thousands: '.',
+                                                },
+
+                                                createdRow: function (row, data, index) {
+                                                    if (data[6] * 1 > 50) { $('td', row).eq(6).addClass('Vol_Chg'); }
+                                                    if (data[5] * 1 > 50) { $('td', row).eq(5).addClass('Deliv_per'); }
+                                                    if (data[3] * 1 < -2) { $('td', row).eq(3).addClass('Price_Chg_low'); }
+                                                    if (data[3] * 1 > 6) { $('td', row).eq(3).addClass('Price_Chg_high'); }
+                                                    if (data[4] * 1 < -2) { $('td', row).eq(4).addClass('OI_Chg_low'); }
+                                                    if (data[4] * 1 > 6) { $('td', row).eq(4).addClass('OI_Chg_high'); }
+                                                },
+                                                // columnDefs: [
+                                                //     {
+                                                //         target: ([7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]),
+                                                //         visible: false,
+                                                //     },
+                                                // ],
+                                                scrollY: 300,
+                                                scrollX: true,
+
+                                            });
+
+
+
+                                            $(".name").on("click", function () {
+                                                name_list = []
+                                                $("#example tr").hide()
+                                                var flag = 1
+                                                $("input:checkbox[name=name]:checked").each(function () {
+                                                    flag = 0;
+                                                    var value = $(this).val().toLowerCase();
+                                                    $("#example tr").filter(function () {
+                                                        if ($(this).text().toLowerCase().indexOf(value) > -1)
+                                                            $(this).show()
+                                                    });
+                                                });
+                                                if (flag == 1)
+                                                    $("#example tr").show()
+                                            });
+
+
+                                            $('a.toggle-vis').on('click', function (e) {
+                                                e.preventDefault();
+
+                                                // Get the column API object
+                                                var column = table.column($(this).attr('data-column'));
+
+                                                // Toggle the visibility
+                                                column.visible(!column.visible());
+                                            });
+
+
+
+
+
+
+
+
+                                        });
+
+                                    </script>
+                                </main><!-- End #main -->
+
+                                {% endblock body %}
+                                <th>Pattern</th>
+                                <th>R3</th>
+                                <th>R2</th>
+                                <th>R1</th>
+                                <th>Pivot</th>
+                                <th>S1</th>
+                                <th>S2</th>
+                                <th>S3</th>
+                                <th>Mid_point</th>
+                                <th>CPR</th>
+                                <th>CPR_SCAN</th>
+                                <th>Candle</th>
+                            </tr>
+                        </thead>
+                        <tr>
+
+                            {% for i in context1 %}
+                            <td><a href="/Chart">{{i.Symbol}}</a></td>
+                            <td>{{i.Date}}</td>
+                            <td>{{i.Prev}}</td>
+                            <td>{{i.Open}}</td>
+                            <td>{{i.High}}</td>
+                            <td>{{i.Low}}</td>
+                            <td>{{i.Closing}}</td>
+                            <td>{{i.Volume}}</td>
+                            <td>{{i.Deliv_qty}}</td>
+                            <td>{{i.Open_int}}</td>
+                            <td>{{i.Deliv_per}}</td>
+                            <td>{{i.Price_Chg}}</td>
+                            <td>{{i.OI_Chg}}</td>
+                            <td>{{i.Vol_Chg}}</td>
+                            <td>{{i.Deliv_break}}</td>
+                            <td>{{i.Price_break}}</td>
+                            <td>{{i.Open_int_break}}</td>
+                            <td>{{i.Vol_break}}</td>
+                            <td>{{i.Deliv_Price_break}}</td>
+                            <td>{{i.Deliv_Open_int_break}}</td>
+                            <td>{{i.Deliv_Vol_break}}</td>
+                            <td>{{i.O_H_L}}</td>
+                            <td>{{i.Pattern}}</td>
+                            <td>{{i.R3}}</td>
+                            <td>{{i.R2}}</td>
+                            <td>{{i.R1}}</td>
+                            <td>{{i.Pivot}}</td>
+                            <td>{{i.S1}}</td>
+                            <td>{{i.S2}}</td>
+                            <td>{{i.S3}}</td>
+                            <td>{{i.Mid_point}}</td>
+                            <td>{{i.CPR}}</td>
+                            <td>{{i.CPR_SCAN}}</td>
+                            <td>{{i.Candle}}</td>
+
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/chart.js"></script>
+    <!-- <script type="text/javascript" src="/static/js/popper.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+    <!-- <script type="text/javascript" src="/static/js/bootstrap-table.min.js"></script> -->
+    <!-- <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script> -->
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Setup - add a text input to each footer cell
+            $('#example thead th').each(function () {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            });
+
+            // DataTable
+            var table = $('#example').DataTable({
+                initComplete: function () {
+                    // Apply the search
+                    this.api()
+                        .columns()
+                        .every(function () {
+                            var that = this;
+
+                            $('input', this.header()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+                },
+            });
+        });
+    </script>
+</main><!-- End #main -->
+
+{% endblock body %}

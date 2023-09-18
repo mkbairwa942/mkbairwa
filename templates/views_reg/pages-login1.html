@@ -1,0 +1,158 @@
+{% extends 'views_reg/base_new.html' %}
+
+{% block title%}Login{% endblock title %}
+
+{% block body %}
+
+<main id="main">
+
+  <!-- ======= Breadcrumbs ======= -->
+  <div class="breadcrumbs d-flex align-items-center" style="background-image: url('static/img/contact-header.jpg');">
+    <div class="container position-relative d-flex flex-column align-items-center">
+
+      <h2>Login</h2>
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li>Login</li>
+      </ol>
+
+    </div>
+  </div><!-- End Breadcrumbs -->
+
+  <!-- ======= Contact Section ======= -->
+  <section id="contact" class="contact">
+    <div class="container position-relative" data-aos="fade-up">
+      
+      <div class="row gy-4 d-flex justify-content-center">
+
+
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+
+          <div class="info-item d-flex">
+            <i class="bi bi-geo-alt flex-shrink-0"></i>
+            <div>
+              <h4>Location:</h4>
+              <p>New Naroda, Ahmedabad - 382330, India</p>
+            </div>
+          </div><!-- End Info Item -->
+
+          <div class="info-item d-flex">
+            <i class="bi bi-envelope flex-shrink-0"></i>
+            <div>
+              <h4>Email:</h4>
+              <p>contact@capitalsscope.com</p>
+            </div>
+          </div><!-- End Info Item -->
+
+          <div class="info-item d-flex">
+            <i class="bi bi-phone flex-shrink-0"></i>
+            <div>
+              <h4>Call:</h4>
+              <p>+91 865 268 6190</p>
+              <p>+91 902 353 4295</p>
+            </div>
+          </div><!-- End Info Item -->
+
+        </div>
+
+        <div class="col-lg-4 col-md-5 d-flex flex-column align-items-center justify-content-center">
+
+          <div class="card mb-3">
+
+            <div class="card-body">
+
+              <div class="pt-4 pb-2">
+                <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                <p class="text-center small">Enter your username & password to login</p>
+              </div>
+              {% if messages %}
+              {% for mess in messages %}
+              <div class="alert alert-{{mess.tags}}" role="alert">
+                {{mess}}
+              </div>
+              {% endfor %}
+              {% endif %}
+              {{form.errors}}
+              <h3 class="title">Login Form</h3>
+
+              <!-- <form action="#"> -->
+              {% if otp %}
+              <form method="POST" action="#">
+                {% csrf_token %}
+                <h3 class="float-left">Verify Your Email</h3>
+                <input type="hidden" name="usr" value="{{usr.username}}">
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">OTP</span>
+                  </div>
+                  <input type="text" class="form-control" placeholder="Enter Your OTP" aria-label="OTP"
+                    aria-describedby="basic-addon1" name="otp">
+                </div>
+
+
+
+                <div class="checkbox-text">
+
+                  <small class="float-right text-muted"><i><a href="#" class="text"
+                        onclick="ReSendOTP('{{usr.username}}','resendOTPmess')"><i id="resendOTPmess">Resend
+                        </i>OTP</a></small>
+
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary w-100" type="submit">Verify</button>
+                </div>
+                <!-- <div class="input-field button1">                        
+                        <button class="btn btn-primary" type="Submit">Login Now1</button>                    
+                    </div> -->
+              </form>
+              {% else %}
+              <form method="POST" action="#" class="row g-3 ">
+                {% csrf_token %}
+                <div class="col-12">
+                  <label for="yourUsername" class="form-label">Your Email</label>
+                  <div class="input-group has-validation">
+                    <span class="input-group-text" id="inputGroupPrepend">@</span>
+                    <input type="text" name="username" class="form-control" id="yourUsername" required>
+                    <!-- {{form.username}} -->
+                    <div class="invalid-feedback">Please enter your username.</div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="yourPassword" class="form-label">Password</label>
+                  <input type="password" name="password" class="form-control" id="yourPassword" required>
+                  <!-- {{form.password}} -->
+                  <div class="invalid-feedback">Please enter your password!</div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                  </div>
+                  <a href="{% url 'password_reset' %}" class="text">Forgot Password?</a>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary w-100" type="submit">Login</button>
+                </div>
+                <div class="col-12">
+                  <p class="small mb-0">Don't have account? <a href="/Register_new">Create an account</a></p>
+                </div>
+              </form>
+              {% endif %}
+
+            </div>
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+  </section><!-- End Contact Section -->
+
+</main><!-- End #main -->
+
+{% endblock body %}

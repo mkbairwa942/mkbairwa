@@ -1,0 +1,18 @@
+pip install eventlet
+
+
+# to run celey server
+celery -A capitalsscope worker -l info -P eventlet
+
+
+# to run celery beat 
+celery -A capitalsscope beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+
+
+sudo service redis-server start
+
+
+redis-cli 
+
+ping

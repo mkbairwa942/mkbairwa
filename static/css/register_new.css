@@ -1,0 +1,258 @@
+/*  Google Fonts  */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    margin-right: 100px;
+    justify-content:right;
+    background: -webkit-linear-gradient(rgb(227, 25, 200), rgb(128, 27, 223));
+    
+}
+
+.container{
+    position: relative;
+    max-width: 430px;
+    width: 100%;
+    /* background: rgb(250, 250, 250); */
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+/* .container .forms1{
+    display: flex;
+    align-items: center;
+    height: 650px;
+    width: 200%;
+    transition: height 0.2s ease;
+} */
+
+/* .container .forms2{
+    display: flex;
+    align-items: center;
+    height: 440px;
+    width: 200%;
+    transition: height 0.2s ease;
+} */
+
+.form{
+    width: 50%;
+    padding: 30px;
+    height: 650px;
+    width: 100%;
+    align-items: center;
+    background: transparent;
+    transition: height 0.2s ease;
+    transition: margin-left 0.18s ease;
+}
+
+
+/* .container.active .login{
+    margin-left: -50px;
+    opacity: 0;
+    transition: margin-left 0.18s ease, opacity 0.15s ease;
+}
+
+.container .sighup{
+    opacity: 0;
+    transition: opacity 0.09s ease; 
+}
+
+.container.active .sighup{
+    opacity: 1;
+    transition: opacity 0.2s ease; 
+}
+
+.container.active .forms{
+    height: 600px;
+} */
+
+.title{
+    position: relative;
+    font-size: 27px;
+    font-weight: 600;
+}
+
+.title::before{
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 30px;
+    background: rgb(128, 27, 223);
+    border-radius: 25px;
+}
+
+
+
+.input-field{
+    position: relative;
+    height: 50px;
+    width: 100%;
+    margin-top: 30px;
+    background: rgb(192, 150, 204);
+    border-radius: 12px;
+
+}
+
+.input-field input{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    padding: 0 35px;
+    border: none;
+    outline: none;
+    color: #000;
+    font-size: 16 px;
+    background: transparent;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom: 5px solid transparent;
+    border-top: 2px solid transparent;
+    transition: all 0.5s ease;
+}
+
+.input-field input:is(:focus, :valid){
+    border-bottom-color: rgb(96, 4, 182);
+}
+
+.input-field i{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(147, 81, 209);
+    font-size: 23px;
+    transition: all 0.2s ease;
+}
+
+.input-field input:is(:focus, :valid) ~ i{
+    color: rgb(111, 15, 201);
+}
+
+.input-field i.icon{
+    left: 0;    
+}
+
+.input-field i.showHidePw{
+    right: 0;
+    cursor: pointer;
+    padding: 10px;    
+}
+
+.form .checkbox-text{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.checkbox-text .checkbox-content{
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-content .ck:is(:focus, :valid){
+    background-color: rgb(96, 4, 182);
+}
+
+.checkbox-content .input{
+    margin: 0px 8px 0 4px;
+    color: #f440e2;
+}
+
+.form .text{
+    color: rgb(9, 8, 8);
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+.form a.text{
+    color: #000103;
+    text-decoration: none;
+}
+
+.form a:hover{
+    text-decoration: underline;
+}
+
+.form .button{
+    margin-top: 35px;
+}
+
+/* .form .button1{
+    margin-top: 35px;
+} */
+
+.form .button input{
+    border: none;
+    color: rgb(255, 255, 255);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 12px;
+    background: -webkit-linear-gradient(rgb(227, 25, 200), rgb(91, 25, 153));
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* .form .button1 button{
+    border: none;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    background-color: #4070f4;
+    cursor: pointer;
+    transition: all 0.3s ease;
+} */
+
+.button input:hover{
+    background-color: #265df2;
+
+}
+
+/* .button1 button:hover{
+    background-color: #265df2;
+
+} */
+
+.form .login-signup{
+    margin-top: 30px;
+    
+}
+
+.msg{
+    position: relative;
+    max-width: 430px;
+    width: 100%;
+    /* background: rgb(250, 250, 250); */
+    border-radius: 10px;
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    height: 100px;
+    margin-top: -550px;
+    margin-right: 50px;
+    text-align: center;
+}
+
+.float{
+    margin-top: 15px;
+}
+
+.form-control{
+    margin-top: 15px;
+    background: rgb(219, 165, 212);
+    border-radius: 8px;
+}

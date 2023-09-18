@@ -1,0 +1,93 @@
+.sidebar{
+    width: 325px;
+    height: 1310px;
+}
+
+
+.chart_heading{
+    background: rgb(86 184 230 / 80%);
+    height: 25px;
+    width: 500px;
+    border-radius: 12px;
+    margin-top: 30px;
+    margin-left: 420px;
+    text-align: center;
+}
+
+
+.sidebar-toggle-btn{
+    /* position: absolute; */
+    width: 40px;
+    height: 40px;
+    background: red;
+    top: 0px;
+    margin-left: 50px;
+    border-radius: 5px;
+
+}
+
+.sidebar-toggle-btn .menu_logo{
+    width: 40px;
+    height: 40px;
+    margin-left: 50px;
+        
+}
+
+
+.sidebar .selectbox{
+    top: 0px;
+    margin-top: 25px;
+    /* margin-left: 50px; */
+    height: 1310px;
+    display: block;
+    padding-top: 10px;
+    /* color: #eee; */
+    text-decoration: none;
+    font-family: "Raleway",sans-serif;    
+    background: rgba(202, 220, 240 );
+    border-radius: 8px;
+    
+}
+
+.sidebar .selectbox .text{
+    padding-top: 5px;
+    margin-top: 5px;
+    margin-left: 15px;
+    color: #fff;
+    /* border-bottom: 2px solid #555; */
+}
+
+.sidebar .selectbox .field{
+    color: rgb(0, 0, 0);
+    width: 140px;
+    margin-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 15px;
+    border-radius: 5px;
+    height: 35px;
+    /* border-bottom: 2px solid #555; */
+}
+
+.sidebar .selectbox .btn{
+    margin-left: 20px;
+    height: 35px;
+}
+
+.chartbox{
+    background: rgba(202, 220, 240);
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 25px;
+    height: 300px;
+    border-radius: 8px;
+    width: 950px;
+    padding: 20px;
+}
+
+.chartbox .canvas{
+
+    width:910px !important;
+    height:260px !important;
+  
+  }

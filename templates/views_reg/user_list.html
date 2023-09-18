@@ -1,0 +1,101 @@
+{% extends 'views_reg/base.html' %}
+
+{% load widget_tweaks %}
+
+{% block title%}News{% endblock title %}
+
+{% block body %}This is News latest Body Block
+
+<form method="get">
+    <div class="well">
+        <h4 style="margin-top: 0">Filter</h4>
+        <div class="row">
+            <div class="form-group col-sm-4 col-md-3">
+                {{ filter.form.username.label_tag }}
+                {% render_field filter.form.username class="form-control" %}
+            </div>
+            <div class="form-group col-sm-4 col-md-3">
+                {{ filter.form.email.label_tag }}
+                {% render_field filter.form.email class="form-control" %}
+            </div>
+        </div>
+    </br>
+
+        <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-search"></span> Search
+        </button>
+    </div>
+</form>
+</br>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email address</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in filter.qs %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email}}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No Data</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<head>
+    <tittle>Multiple Serach</tittle>
+</head>
+<body>
+    <center>
+        <h1>How To Search</h1>
+        <h3>Django Wed Tutorials</h3>
+        <hr/>
+        <form method="POST">
+            {% csrf_token %}
+            <!-- <input type="radio" value="M" name="gender"> Male | <input type="radio" value="F" name="gender"> Female -->
+            <select name="fname">
+                
+                <option selected disabled=true>--Select First Name --</option> 
+                
+                <option>mahesh</option>
+                <option>naresh</option>
+                <option>Dev</option>
+                <option>mukesh</option>
+            </select>
+            <input type="submit" value="Search"/>
+            <hr/>
+            <table border="1">
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Phone No.</th>
+                    <th>Email</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                </tr>
+                {% for result in Contact %}
+                <tr>
+                    <td>{{result.fname}}</td>
+                    <td>{{result.lname}}</td>
+                    <td>{{result.phone}}</td>
+                    <td>{{result.email}}</td>
+                    <td>{{result.desc}}</td>
+                    <td>{{result.date}}</td>
+                </tr>
+
+                {% endfor %}
+            </table>
+
+        </form>
+
+    </center>
+</body>
+
+
+{% endblock body %}
