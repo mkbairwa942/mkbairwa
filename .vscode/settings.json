@@ -1,7 +1,10 @@
 {
     "python.analysis.extraPaths": [
-        "./capitalsscope"
+        "./myenv"
     ],
     "python.formatting.provider": "autopep8",
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "off",
+    "terminal.integrated.env.windows": {
+
+    }
 }
