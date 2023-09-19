@@ -95,17 +95,17 @@ dob = '19850602'
 # dob = '19860518'
 
 # cred = {
-#     "APP_NAME": "5P50645842",
-#     "APP_SOURCE": "16771",
-#     "USER_ID": "mjrgk6c5MTu",
-#     "PASSWORD": "OJN4tsf3NUo",
-#     "USER_KEY": "5azZqigyoIRgTAnfoIbHVrvGpbnetUmu",
-#     "ENCRYPTION_KEY": "3jGC61GsOjZkTzfJQwkoTHT0aUbTBzjB",
+#     "APP_NAME": "5P50840495",
+#     "APP_SOURCE": "19325",
+#     "USER_ID": "oVWgywCbqp4",
+#     "PASSWORD": "4hJ57QMiKEM",
+#     "USER_KEY": "DkfWFA1nRKhkJL4oLfynnl3aNtw1Ag5f",
+#     "ENCRYPTION_KEY": "GhyxDWjtOfOxjXjJnONTogFSYenULVVu",
 # }
 
-# user = 'hareshgnagar84@gmail.com'
-# pwd = '1H825JV6'
-# dob = '19920702'
+# user = 'agnagar300678@gmail.com'
+# pwd = '200200'
+# dob = '19780630'
 
 
 

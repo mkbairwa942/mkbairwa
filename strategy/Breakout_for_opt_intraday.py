@@ -552,9 +552,11 @@ while True:
     end3 = time.time() - start_time3
 
     eq_data_pd = final_data_func()
-    eq_data_pd["Concatee"] = eq_data_pd["Name"] + ":" + str(eq_data_pd["Datetime"])
+    print(eq_data_pd.tail(1))
+    # eq_data_pd["Concatee"] = eq_data_pd["Name"] + ":" + str(eq_data_pd["Datetime"])
     eq_data_pd.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
-    eq_data_pd = eq_data_pd[['Scripcode','Name','Datetime','Concatee','Open','High','Low','Close','Volume','Price_Chg','Vol_Chg','Ema_break','Price_break','Vol_break','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+    #eq_data_pd = eq_data_pd[['Scripcode','Name','Datetime','Concatee','Open','High','Low','Close','Volume','Price_Chg','Vol_Chg','Ema_break','Price_break','Vol_break','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+    eq_data_pd = eq_data_pd[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume','Price_Chg','Vol_Chg','Ema_break','Price_break','Vol_break','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
     fl_data.range("a:aj").value = None
     fl_data.range("a1").options(index=False).value = eq_data_pd
     # eq_data_pd = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout.xlsx', sheet_name='Final_Data')
