@@ -78,6 +78,35 @@ dob = '19850602'
 # pwd = '1H825JV6'
 # dob = '19920702'
 
+# client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
+# client.login()
+
+# cred = {
+#     "APP_NAME": "5P57141743",
+#     "APP_SOURCE": "9997",
+#     "USER_ID": "5SP0ws0uCmc",
+#     "PASSWORD": "C0VIQHnMEpI",
+#     "USER_KEY": "BT5DqKIGqnKmHiZnzGXKZ2aBql4oYBRp",
+#     "ENCRYPTION_KEY": "tTEQPwp3Gfh2l3LWqDb2UC1sD0IFvzV5",
+# }
+
+# user = 'mukeshbairwa942@gmail.com'
+# pwd = 'navya@1234'
+# dob = '19860518'
+
+# cred = {
+#     "APP_NAME": "5P50645842",
+#     "APP_SOURCE": "16771",
+#     "USER_ID": "mjrgk6c5MTu",
+#     "PASSWORD": "OJN4tsf3NUo",
+#     "USER_KEY": "5azZqigyoIRgTAnfoIbHVrvGpbnetUmu",
+#     "ENCRYPTION_KEY": "3jGC61GsOjZkTzfJQwkoTHT0aUbTBzjB",
+# }
+
+# user = 'hareshgnagar84@gmail.com'
+# pwd = '1H825JV6'
+# dob = '19920702'
+
 
 
 client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
