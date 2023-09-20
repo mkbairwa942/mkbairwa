@@ -104,7 +104,7 @@ dob = '19850602'
 # }
 
 # user = 'agnagar300678@gmail.com'
-# pwd = '200200'
+# pwd = 'agnagar@123'
 # dob = '19780630'
 
 
@@ -113,6 +113,7 @@ client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
 client.login()
 
 index = 'SBIN'
+# print(index)
 # ltp = (client.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"C","Symbol":index}])['Data'][0]['LastTradedPrice'])
 # print(ltp)
 # script_code_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
