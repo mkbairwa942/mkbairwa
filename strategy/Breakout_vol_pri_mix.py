@@ -18,6 +18,7 @@ from pandas_ta.overlap import ema, hl2
 from pandas_ta.utils import get_offset, high_low_range, verify_series, zero
 from io import BytesIO
 import os
+import sys
 from zipfile import ZipFile
 import requests
 import itertools
@@ -80,21 +81,21 @@ def bhavcopy(lastTradingDay):
 
 # print(bhavcopy(lastTradingDay))
 
-# def bhavcopy_fno(lastTradingDay):
-#     dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
-#     MMM = datetime.strftime(lastTradingDay, '%b').upper()
-#     yyyy = datetime.strftime(lastTradingDay, '%Y')
-#     url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
-#     content = requests.get(url1)
-#     zf = ZipFile(BytesIO(content.content))
-#     match = [s for s in zf.namelist() if ".csv" in s][0]
-#     bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
-#     bhav_fo.columns = bhav_fo.columns.str.strip()
-#     bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-#     bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
-#     bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
-#     bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
-#     return bhav_fo
+def bhavcopy_fno(lastTradingDay):
+    dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
+    MMM = datetime.strftime(lastTradingDay, '%b').upper()
+    yyyy = datetime.strftime(lastTradingDay, '%Y')
+    url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
+    content = requests.get(url1)
+    zf = ZipFile(BytesIO(content.content))
+    match = [s for s in zf.namelist() if ".csv" in s][0]
+    bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
+    bhav_fo.columns = bhav_fo.columns.str.strip()
+    bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+    bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
+    bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
+    bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
+    return bhav_fo
 
 live_market_keys = ['NIFTY 50','NIFTY BANK',]#,'Securities in F&O', ]
 
@@ -144,7 +145,7 @@ nse = NseIndia()
 
 stk_li = np.unique(bhavcopy(last_trading_day)['SYMBOL'])
 
-#opt_li = pd.unique(bhavcopy_fno(last_trading_day)['SYMBOL'])
+opt_li = pd.unique(bhavcopy_fno(last_trading_day)['SYMBOL'])
 
 stk_list = stk_li
 
@@ -319,6 +320,7 @@ print(str(days_count)+" Days STOCK Data Download")
 #          'Deliv_qty', 'Deliv_per', 'Value', 'OI', 'Chg_OI']]
 # delv_dt.range("a1").options(index=False).value = delv_data
 # print("EOD DATA &  F&O Data Merged")
+delv_data = eq_bhav
 
 stop_thread = False
 
