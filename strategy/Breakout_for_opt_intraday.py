@@ -438,17 +438,10 @@ while True:
                 five_df1 = pd.concat([dfg, five_df1])
             except Exception as e:
                 print(e)    
-        five_df = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')  
-
-        # five_df_new = five_df[five_df['Name'].isin(opt_li)]
-        # five_df_new['OPT'] = 'Y'
-        # five_df_new = five_df_new[['Name','OPT']]
-        # five_df_new1 = pd.merge(five_df, five_df_new, on=['Name'], how='outer')
-        # five_df_new1.sort_values(['Name'], ascending=[True], inplace=True)
-        # five_df_new1 = five_df_new1[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume','OPT','CO BO Allowed','Watchlist']]	
-        return five_df  
+        return five_df1  
     
-    five_df_new1 = five_df_new1_func()
+    five_df_new1 = five_df_new1_func()    
+    five_df = pd.merge(flt_exc_eq, five_df_new1, on=['Scripcode'], how='inner')    
     five_df_new1.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
     five_df_new1 = five_df_new1[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume','SMA_10','EMA_13','CO BO Allowed','Watchlist']]
     Fiv_dt.range("a:i").value = None

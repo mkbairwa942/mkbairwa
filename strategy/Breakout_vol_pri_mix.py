@@ -385,15 +385,15 @@ while True:
     st4.range("q2").options(index=False).value = "=INDIRECT(ADDRESS((ROW($B1)-1)*3+COLUMN(B2),7))"
 
 
-    def five_df_new1_func():  
+    def five_df_new1_func(period,scp_lst,from_d,to_d):  
         five_df1 = pd.DataFrame()
-        for a in script_list:
+        for a in scp_lst:
             try:
                 print(a)
-                dfg = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day)
+                dfg = client.historical_data('N', 'C', a, period, from_d, to_d)
                 dfg['Scripcode'] = a
                 dfg['Date'] = current_trading_day
-                dfg["EMA_200"] = np.round((pta.sma(dfg["Close"], length=200,offset=0)),2)
+                dfg["SMA_200"] = np.round((pta.sma(dfg["Close"], length=200,offset=0)),2)
                 dfg1 = dfg.iloc[::-1]
                 five_df1 = pd.concat([dfg1.iloc[:1], five_df1])
             except Exception as e:
@@ -404,17 +404,17 @@ while True:
         five_df_new['OPT'] = 'Y'
         five_df_new = five_df_new[['Name','OPT']]
         five_df_new1 = pd.merge(five_df, five_df_new, on=['Name'], how='outer')
-        five_df_new1 = five_df_new1[['Name','Date', 'Open', 'High', 'Low','Close','Volume','EMA_200','Scripcode','OPT']]
+        five_df_new1 = five_df_new1[['Name','Date', 'Open', 'High', 'Low','Close','Volume','SMA_200','Scripcode','OPT']]
         five_df_new1.sort_values(['Name'], ascending=[True], inplace=True)
         return five_df_new1  
     
-    five_df_new11 = five_df_new1_func()
+    five_df_new11 = five_df_new1_func('1d',script_list,days_365, current_trading_day)
     Fiv_dt.range("a:i").value = None
     Fiv_dt.range("a1").options(index=False).value = five_df_new11
     
     end = time.time() - start_time
     
-    # five_df_new1 = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout.xlsx', sheet_name='Five_data')
+    # five_df_new1 = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout_vol_pri_mix.xlsx', sheet_name='Five_data')
 
     print("Five Paisa Data Download")
 
@@ -426,17 +426,17 @@ while True:
     print("Data Analysis Started....")
 
     start_time3 = time.time()
-    def final_data_func():
+    def final_data_func(scp_lst,data_fram):
         eq_data_pd = pd.DataFrame()
-        for d in stk_list:
+        for d in scp_lst:
             print(d)
-            eq_data1 = data_eq1[data_eq1['Name'] == d]
+            eq_data1 = data_fram[data_fram['Name'] == d]
             eq_data1.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
 
             eq_data1['Time'] = datetime.now()
 
-            eq_data1['200+'] = ((eq_data1['EMA_200']*1)/100)+(eq_data1['EMA_200'])
-            eq_data1['200-'] = (eq_data1['EMA_200'])-((eq_data1['EMA_200']*1)/100)
+            eq_data1['200+'] = ((eq_data1['SMA_200']*1)/100)+(eq_data1['SMA_200'])
+            eq_data1['200-'] = (eq_data1['SMA_200'])-((eq_data1['SMA_200']*1)/100)
             
             eq_data1['Delv_Chg'] = round(((eq_data1['Deliv_qty'] * 100) / (eq_data1['Deliv_qty'].shift(-1)) - 100), 2).fillna(0)      
 
@@ -444,7 +444,7 @@ while True:
             
             eq_data1['Vol_Chg'] = round(((eq_data1['Volume'] * 100) / (eq_data1['Volume'].shift(-1)) - 100), 2).fillna(0)
 
-            eq_data1['OI_Chg'] = round(((eq_data1['OI']*100)/(eq_data1['OI'].shift(-1))-100),2)
+            #eq_data1['OI_Chg'] = round(((eq_data1['OI']*100)/(eq_data1['OI'].shift(-1))-100),2)
             
             eq_data1['Deliv_break'] = np.where(eq_data1['Deliv_qty'] > (eq_data1.Deliv_qty.rolling(5).mean() * 1.5).shift(-5),"Deliv_brk", "")
 
@@ -454,15 +454,16 @@ while True:
                                                             'Pri_Dwn_brk', "")))
             eq_data1['Vol_break'] = np.where(eq_data1['Volume'] > (eq_data1.Volume.rolling(5).mean() * 2).shift(-5),
                                                 "Vol_brk","")     
-            eq_data1['OI_break'] = np.where(eq_data1['OI'] > (eq_data1.OI.rolling(5).mean() * 1.5).shift(-5),
-                                                "OI_brk", "")                                                                       
+            #eq_data1['OI_break'] = np.where(eq_data1['OI'] > (eq_data1.OI.rolling(5).mean() * 1.5).shift(-5),"OI_brk", "")     
+                                                                                                                  
             eq_data1['Vol_Price_break'] = np.where((eq_data1['Vol_break'] == "Vol_brk") &
                                                         (eq_data1['Price_break'] != ""), "Vol_Pri_break", "")
             eq_data1['Del_Vol_Pri_break'] = np.where((eq_data1['Deliv_break'].shift(-1) == "Deliv_brk") &
                                                     (eq_data1['Vol_Price_break'] == "Vol_Pri_break"), "Del_Vol_Pri_break", "")
-            eq_data1['OI_Vol_Pri_break'] = np.where((eq_data1['OI_break'].shift(-1) == "OI_brk") &
-                                                    (eq_data1['Vol_Price_break'] == "Vol_Pri_break"), "OI_Vol_Pri_break", "")
+            #eq_data1['OI_Vol_Pri_break'] = np.where((eq_data1['OI_break'].shift(-1) == "OI_brk") & (eq_data1['Vol_Price_break'] == "Vol_Pri_break"), "OI_Vol_Pri_break", "")
+                                                    
             eq_data1['Sma_200_break'] = np.where((eq_data1['Close'] < eq_data1['200+']) & (eq_data1['Close'] > eq_data1['200-']),"Nr. 200_Sma Break","")
+            
             eq_data1['O=H=L'] = np.where((eq_data1['Open'] == eq_data1['High']), 'Open_High',
                                             (np.where((eq_data1['Open'] == eq_data1['Low']), 'Open_Low', "")))
             eq_data1['Pattern'] = np.where((eq_data1['High'] < eq_data1['High'].shift(-1)) &
@@ -486,8 +487,8 @@ while True:
             eq_data1['S1'] = round(
                 (2 * ((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3)) - eq_data1['High'], 2).fillna(0)
             eq_data1['S2'] = round(((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3) - (eq_data1['High'] -
-                                                                                                        eq_data1['Low']),
-                                    2).fillna(0)
+                                                                                                       eq_data1['Low']),2).fillna(0)
+                                   
             eq_data1['S3'] = round(eq_data1['Low'] - (
                     2 * (eq_data1['High'] - ((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3))), 2)
             eq_data1['Mid_point'] = round(((eq_data1['High'] + eq_data1['Low']) / 2), 2).fillna(0)
@@ -506,49 +507,85 @@ while True:
 
     end3 = time.time() - start_time3
 
-    eq_data_pd = final_data_func()
+    eq_data_pd = final_data_func(stk_list,data_eq1)
 
     fl_data.range("a:aj").value = None
     fl_data.range("a1").options(index=False).value = eq_data_pd
-    # eq_data_pd = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout.xlsx', sheet_name='Final_Data')
+    # eq_data_pd = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout_vol_pri_mix.xlsx', sheet_name='Final_Data')
 
     print("Data Analysis Completed")    
 
-    eq_data_pd = pd.merge(eq_data_pd, future_dataframe, on=['Name'], how='inner')
-    # print(eq_data_pd.tail(2))
-    eq_data_pd['concate'] = eq_data_pd['Deliv_break'] + eq_data_pd['Price_break'] + eq_data_pd['Vol_break'] + eq_data_pd['Del_Vol_Pri_break'] +eq_data_pd['OI_Vol_Pri_break']
-    # print(eq_data_pd.tail(2))
+    #eq_data_pd = pd.merge(eq_data_pd, future_dataframe, on=['Name'], how='outer')
+    #eq_data_pd['concate'] = eq_data_pd['Deliv_break'] + eq_data_pd['Price_break'] + eq_data_pd['Vol_break'] + eq_data_pd['Del_Vol_Pri_break']
 
-    # stat = eq_data_pd[(eq_data_pd["concate"] != "") & (eq_data_pd["Date"] == current_trading_day)] 
-    # stat["Watchlist"] = "N" + ":" + "C" + ":" + stat["Name"]                
-    # st.range("a1:ah2000").value = None
-    # st.range("a1").options(index=False).value = stat
-
-    stat1 = eq_data_pd[(eq_data_pd["Vol_break"] == "Vol_brk") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["Price_break"] != "") & (eq_data_pd["Buy/Sell"] != "")]                 
-    exp.range("a1:ah2000").value = None
-    exp.range("a1").options(index=False).value = stat1
+    # stat1 = eq_data_pd[(eq_data_pd["Vol_break"] == "Vol_brk") & (eq_data_pd["Price_break"] != "") & (eq_data_pd["Buy/Sell"] != "")]                 
+    # exp.range("a1:ah2000").value = None
+    # exp.range("a1").options(index=False).value = stat1
 
 
-    orders_select1 = eq_data_pd[(eq_data_pd["Vol_break"] == "Vol_brk") & (eq_data_pd["Price_break"] != "") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["OPT"] == "Y") ]
-    # orders_select1 = pd.merge(orders_select1, future_dataframe, on=['Name'], how='inner')
+    orders_select1 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == current_trading_day)]
     orders_select1["Watchlist"] = "N" + ":" + "C" + ":" + orders_select1["Name"]
     print(orders_select1.tail(1))
-    orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode_x','Date','Time','Open','High','Low','Close','OPT','LotSize','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Del_Vol_Pri_break','OI_Vol_Pri_break','O=H=L','Watchlist']]
+    orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy1.range("a:r").value = None
     strategy1.range("a1").options(index=False).value = orders_select1
 
-    orders_select2 = eq_data_pd[(eq_data_pd["Vol_break"] == "Vol_brk") & (eq_data_pd["Price_break"] != "") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["O=H=L"] != "") & (eq_data_pd["Close"] < 300)]
+    orders_select2 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break")  & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["O=H=L"] != "")]
     orders_select2["Watchlist"] = "N" + ":" + "C" + ":" + orders_select2["Name"]
-    orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode_x','Date','Time','Open','High','Low','Close','OPT','LotSize','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy2.range("a:r").value = None
     strategy2.range("a1").options(index=False).value = orders_select2
 
-    orders_select3 = eq_data_pd[(eq_data_pd["Vol_break"] == "Vol_brk") & (eq_data_pd["Price_break"] != "") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["Close"] < 300)]
+    orders_select3 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["Close"] < 300)]
     orders_select3["Watchlist"] = "N" + ":" + "C" + ":" + orders_select3["Name"]
-    orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode_x','Date','Time','Open','High','Low','Close','OPT','LotSize','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy3.range("a:r").value = None
     strategy3.range("a1").options(index=False).value = orders_select3
      
+    print("complete") 
+
+    intraday_list = np.unique(orders_select1['Scripcode'])
+
+    def five_df_intra(period,scp_lst,from_d,to_d):  
+        five_df1 = pd.DataFrame()
+        for a in scp_lst:
+            try:
+                print(a)
+                dfg = client.historical_data('N', 'C', a, period, from_d, to_d)
+                dfg['Scripcode'] = a
+                dfg['Date'] = current_trading_day              
+               
+                five_df1 = pd.concat([dfg, five_df1])
+            except Exception as e:
+                print(e)    
+        five_df = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')  
+
+        five_df_new = five_df[five_df['Name'].isin(opt_li)]
+        five_df_new['OPT'] = 'Y'
+        five_df_new = five_df_new[['Name','OPT']]
+        five_df_new1 = pd.merge(five_df, five_df_new, on=['Name'], how='outer')
+        five_df_new1 = five_df_new1[['Name','Date', 'Open', 'High', 'Low','Close','Volume','SMA_200','Scripcode','OPT']]
+        five_df_new1.sort_values(['Name'], ascending=[True], inplace=True)
+        return five_df_new1  
+    
+    five_df_intra_new = five_df_intra('5m',intraday_list,current_trading_day, current_trading_day)
+    five_delv.range("a:i").value = None
+    five_delv.range("a1").options(index=False).value = five_df_intra_new
+    
+    end = time.time() - start_time
+    
+    # five_df_new1 = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout_vol_pri_mix.xlsx', sheet_name='Five_data')
+
+    print("Five Paisa Data Download New")
+
+
+    # intraday_list = np.unique(orders_select1['Scripcode'])
+    # five_df_new_intra = five_df_new1_func('5m',intraday_list,current_trading_day,current_trading_day)
+    # five_delv.range("a1").options(index=False).value = five_df_new_intra
+
+    eq_data_pd_intra = final_data_func(intraday_list,five_df_new_intra)
+    by.range("a1").options(index=False).value = eq_data_pd_intra
+
     # posit = orders_select1
       
     # total_profit = Available_Cash/10
@@ -561,7 +598,7 @@ while True:
     # posit['StopLoss'] = np.where((posit['Buy/Sell'] == "Buy"), np.round((posit['Open'] - posit['Loss']),2), np.where((posit['Buy/Sell'] == "Sell"), np.round((posit['Open'] + posit['Loss']),2), 0))
     # posit['Buy_Status'] = np.where((posit['Buy/Sell'] == "Buy") & (posit['Close'] > posit['Target']), "TGT", np.where((posit['Buy/Sell'] == "Buy") & (posit['Close'] < posit['StopLoss']), "SL", np.where((posit['Buy/Sell'] == "Sell") & (posit['Close'] < posit['Target']), "TGT", np.where((posit['Buy/Sell'] == "Sell") & (posit['Close'] > posit['StopLoss']), "SL", "Pending"))))
     
-    # position_read = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout.xlsx', sheet_name='Position')
+    # position_read = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout_vol_pri_mix.xlsx', sheet_name='Position')
     # positt = pd.concat([posit, position_read])
     # positt.sort_values(['Name', 'Time'], ascending=[True, False], inplace=True)
     # pos.range("a:w").value = None
