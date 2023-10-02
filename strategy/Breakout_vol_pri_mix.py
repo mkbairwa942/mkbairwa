@@ -324,9 +324,9 @@ delv_data = eq_bhav
 
 stop_thread = False
 
-script_list = [7053,14745,8124,17307,3403,206,20182,6066,275,4037,1797,10285]
-stk_list = ['ACCELYA',	'ADVANIHOTR',	'AJANTPHARM',	'AJMERA',	'AJOONI',	'ASHIMASYN',	'ASHOKA',	'ATGL',	'AUROPHARMA',	'AUSOMENT',	'AWHCL',	'AYMSYNTEX',]
-# script_list = np.unique(flt_exc_eq['Scripcode'])
+# script_list = [7053,14745,8124,17307,3403,206,20182,6066,275,4037,1797,10285]
+# stk_list = ['ACCELYA',	'ADVANIHOTR',	'AJANTPHARM',	'AJMERA',	'AJOONI',	'ASHIMASYN',	'ASHOKA',	'ATGL',	'AUROPHARMA',	'AUSOMENT',	'AWHCL',	'AYMSYNTEX',]
+script_list = np.unique(flt_exc_eq['Scripcode'])
 print("Total Stock : "+str(len(script_list)))
 
 while True:
@@ -513,7 +513,7 @@ while True:
     end3 = time.time() - start_time3
 
     eq_data_pd = final_data_func(stk_list,data_eq1)
-    eq_data_pd.loc[:,['Scripcode']].fillna(method='ffill', inplace=True)
+    eq_data_pd.loc[:,['RSI_14','Scripcode']].fillna(method='ffill', inplace=True)
     #eq_data_pd['Scripcode'].fillna(method='ffill', inplace = True)
     fl_data.range("a:aj").value = None
     fl_data.range("a1").options(index=False).value = eq_data_pd
@@ -536,7 +536,7 @@ while True:
     strategy1.range("a:r").value = None
     strategy1.range("a1").options(index=False).value = orders_select1
 
-    orders_select2 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break")  & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["O=H=L"] != "")]
+    orders_select2 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break")  & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == last_trading_day) & (eq_data_pd["RSI_14"] > 70 )]
     orders_select2["Watchlist"] = "N" + ":" + "C" + ":" + orders_select2["Name"]
     orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy2.range("a:r").value = None
@@ -566,11 +566,16 @@ while True:
                 print(e) 
                   
         five_df = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')  
+        
+        #five_df_new = five_df[five_df['Name'].isin(opt_li)]
+        #five_df_new['OPT'] = 'Y'
+        #five_df_new = five_df_new[['Name','OPT']]
+        #five_df_new1 = pd.merge(five_df, five_df_new, on=['Name'], how='outer')
         five_df = five_df[['Name','Datetime', 'Open', 'High', 'Low','Close','Volume','RSI_14','Scripcode']]
         five_df.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
         return five_df  
     
-    five_df_intra_new = five_df_intra(intraday_list,'5m',last_trading_day, current_trading_day)
+    five_df_intra_new = five_df_intra(intraday_list,'5m',second_last_trading_day,last_trading_day)
     five_delv.range("a:i").value = None
     five_delv.range("a1").options(index=False).value = five_df_intra_new
     
