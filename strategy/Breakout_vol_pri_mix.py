@@ -324,10 +324,9 @@ delv_data = eq_bhav
 
 stop_thread = False
 
-
-# script_list = [7053,14745,8124,17307,3403,206,20182,6066,275,4037,1797,10285]
-# stk_list = ['ACCELYA',	'ADVANIHOTR',	'AJANTPHARM',	'AJMERA',	'AJOONI',	'ASHIMASYN',	'ASHOKA',	'ATGL',	'AUROPHARMA',	'AUSOMENT',	'AWHCL',	'AYMSYNTEX',]
-script_list = np.unique(flt_exc_eq['Scripcode'])
+script_list = [7053,14745,8124,17307,3403,206,20182,6066,275,4037,1797,10285]
+stk_list = ['ACCELYA',	'ADVANIHOTR',	'AJANTPHARM',	'AJMERA',	'AJOONI',	'ASHIMASYN',	'ASHOKA',	'ATGL',	'AUROPHARMA',	'AUSOMENT',	'AWHCL',	'AYMSYNTEX',]
+# script_list = np.unique(flt_exc_eq['Scripcode'])
 print("Total Stock : "+str(len(script_list)))
 
 while True:
@@ -397,6 +396,7 @@ while True:
                 dfg['Scripcode'] = a
                 dfg['Date'] = current_trading_day
                 dfg["SMA_200"] = np.round((pta.sma(dfg["Close"], length=200,offset=0)),2)
+                dfg["RSI_14"] = np.round((pta.rsi(dfg["Close"], length=14)),2)
                 dfg1 = dfg.iloc[::-1]
                 five_df1 = pd.concat([dfg1.iloc[:1], five_df1])
             except Exception as e:
@@ -404,14 +404,16 @@ while True:
         five_df = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')  
 
         five_df_new = five_df[five_df['Name'].isin(opt_li)]
+        
         five_df_new['OPT'] = 'Y'
         five_df_new = five_df_new[['Name','OPT']]
         five_df_new1 = pd.merge(five_df, five_df_new, on=['Name'], how='outer')
-        five_df_new1 = five_df_new1[['Name','Date', 'Open', 'High', 'Low','Close','Volume','SMA_200','Scripcode','OPT']]
+        five_df_new1 = five_df_new1[['Name','Date', 'Open', 'High', 'Low','Close','Volume','SMA_200','RSI_14','Scripcode','OPT']]
         five_df_new1.sort_values(['Name'], ascending=[True], inplace=True)
         return five_df_new1  
     
     five_df_new11 = five_df_new1_func('1d',script_list,days_365, current_trading_day)
+    
     Fiv_dt.range("a:i").value = None
     Fiv_dt.range("a1").options(index=False).value = five_df_new11
     
@@ -530,25 +532,25 @@ while True:
     orders_select1 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == last_trading_day)]
     orders_select1["Watchlist"] = "N" + ":" + "C" + ":" + orders_select1["Name"]
     print(orders_select1.tail(1))
-    orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy1.range("a:r").value = None
     strategy1.range("a1").options(index=False).value = orders_select1
 
     orders_select2 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break")  & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["O=H=L"] != "")]
     orders_select2["Watchlist"] = "N" + ":" + "C" + ":" + orders_select2["Name"]
-    orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy2.range("a:r").value = None
     strategy2.range("a1").options(index=False).value = orders_select2
 
     orders_select3 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["Close"] < 300)]
     orders_select3["Watchlist"] = "N" + ":" + "C" + ":" + orders_select3["Name"]
-    orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy3.range("a:r").value = None
     strategy3.range("a1").options(index=False).value = orders_select3
      
     print("complete") 
 
-    intraday_list = [int(i) for i in orders_select1['Scripcode']]
+    intraday_list = np.unique([int(i) for i in orders_select1['Scripcode']])
 
     def five_df_intra(scp_lst,period,from_d,to_d):  
         five_df1 = pd.DataFrame()
@@ -557,18 +559,16 @@ while True:
                 print(a)
                 dfg = client.historical_data('N', 'C', a, period, from_d, to_d)
                 dfg['Scripcode'] = a
-                dfg['Date'] = current_trading_day             
+                dfg['Date'] = current_trading_day 
+                dfg["RSI_14"] = np.round((pta.rsi(dfg["Close"], length=14)),2)            
                 five_df1 = pd.concat([dfg, five_df1])
             except Exception as e:
-                print(e)    
-        # five_df = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')  
-        # five_df_new = five_df[five_df['Name'].isin(opt_li)]
-        # five_df_new['OPT'] = 'Y'
-        # five_df_new = five_df_new[['Name','OPT']]
-        # five_df_new1 = pd.merge(five_df, five_df_new, on=['Name'], how='outer')
-        # five_df_new1 = five_df_new1[['Name','Date', 'Open', 'High', 'Low','Close','Volume','SMA_200','Scripcode','OPT']]
-        # five_df_new1.sort_values(['Name'], ascending=[True], inplace=True)
-        return five_df1  
+                print(e) 
+                  
+        five_df = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')  
+        five_df = five_df[['Name','Datetime', 'Open', 'High', 'Low','Close','Volume','RSI_14','Scripcode']]
+        five_df.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
+        return five_df  
     
     five_df_intra_new = five_df_intra(intraday_list,'5m',last_trading_day, current_trading_day)
     five_delv.range("a:i").value = None
@@ -585,14 +585,14 @@ while True:
     # five_df_new_intra = five_df_new1_func('5m',intraday_list,current_trading_day,current_trading_day)
     # five_delv.range("a1").options(index=False).value = five_df_new_intra
 
-    intraday_sym_list = [str(i) for i in orders_select1['Name']]
+    intraday_sym_list = np.unique([str(i) for i in orders_select1['Name']])
 
     def final_data_func_intra(scp_lst,data_fram):
         eq_data_pd = pd.DataFrame()
         for d in scp_lst:
             print(d)
             eq_data1 = data_fram[data_fram['Name'] == d]
-            eq_data1.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
+            eq_data1.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
 
             eq_data1['Time'] = datetime.now()
 
@@ -663,9 +663,9 @@ while True:
                                             np.where(abs(eq_data1['Open'] - eq_data1['Close']) >
                                                     abs(eq_data1['High'] - eq_data1['Low']) * 0.7, "s", ""))
             eq_data_pd = pd.concat([eq_data1, eq_data_pd])
-        eq_data_pd.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
+        eq_data_pd.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         return eq_data_pd
-    eq_data_pd_intra = final_data_func_intra(intraday_sym_list,orders_select1)
+    eq_data_pd_intra = final_data_func_intra(intraday_sym_list,five_df_intra_new)
     by.range("a1").options(index=False).value = eq_data_pd_intra
 
     # posit = orders_select1
