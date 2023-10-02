@@ -324,6 +324,9 @@ delv_data = eq_bhav
 
 stop_thread = False
 
+
+# script_list = [7053,14745,8124,17307,3403,206,20182,6066,275,4037,1797,10285]
+# stk_list = ['ACCELYA',	'ADVANIHOTR',	'AJANTPHARM',	'AJMERA',	'AJOONI',	'ASHIMASYN',	'ASHOKA',	'ATGL',	'AUROPHARMA',	'AUSOMENT',	'AWHCL',	'AYMSYNTEX',]
 script_list = np.unique(flt_exc_eq['Scripcode'])
 print("Total Stock : "+str(len(script_list)))
 
@@ -508,7 +511,8 @@ while True:
     end3 = time.time() - start_time3
 
     eq_data_pd = final_data_func(stk_list,data_eq1)
-
+    eq_data_pd.loc[:,['Scripcode']].fillna(method='ffill', inplace=True)
+    #eq_data_pd['Scripcode'].fillna(method='ffill', inplace = True)
     fl_data.range("a:aj").value = None
     fl_data.range("a1").options(index=False).value = eq_data_pd
     # eq_data_pd = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout_vol_pri_mix.xlsx', sheet_name='Final_Data')
@@ -523,52 +527,50 @@ while True:
     # exp.range("a1").options(index=False).value = stat1
 
 
-    orders_select1 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == current_trading_day)]
+    orders_select1 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == last_trading_day)]
     orders_select1["Watchlist"] = "N" + ":" + "C" + ":" + orders_select1["Name"]
     print(orders_select1.tail(1))
-    orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy1.range("a:r").value = None
     strategy1.range("a1").options(index=False).value = orders_select1
 
     orders_select2 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break")  & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["O=H=L"] != "")]
     orders_select2["Watchlist"] = "N" + ":" + "C" + ":" + orders_select2["Name"]
-    orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy2.range("a:r").value = None
     strategy2.range("a1").options(index=False).value = orders_select2
 
     orders_select3 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["Close"] < 300)]
     orders_select3["Watchlist"] = "N" + ":" + "C" + ":" + orders_select3["Name"]
-    orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy3.range("a:r").value = None
     strategy3.range("a1").options(index=False).value = orders_select3
      
     print("complete") 
 
-    intraday_list = np.unique(orders_select1['Scripcode'])
+    intraday_list = [int(i) for i in orders_select1['Scripcode']]
 
-    def five_df_intra(period,scp_lst,from_d,to_d):  
+    def five_df_intra(scp_lst,period,from_d,to_d):  
         five_df1 = pd.DataFrame()
         for a in scp_lst:
             try:
                 print(a)
                 dfg = client.historical_data('N', 'C', a, period, from_d, to_d)
                 dfg['Scripcode'] = a
-                dfg['Date'] = current_trading_day              
-               
+                dfg['Date'] = current_trading_day             
                 five_df1 = pd.concat([dfg, five_df1])
             except Exception as e:
                 print(e)    
-        five_df = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')  
-
-        five_df_new = five_df[five_df['Name'].isin(opt_li)]
-        five_df_new['OPT'] = 'Y'
-        five_df_new = five_df_new[['Name','OPT']]
-        five_df_new1 = pd.merge(five_df, five_df_new, on=['Name'], how='outer')
-        five_df_new1 = five_df_new1[['Name','Date', 'Open', 'High', 'Low','Close','Volume','SMA_200','Scripcode','OPT']]
-        five_df_new1.sort_values(['Name'], ascending=[True], inplace=True)
-        return five_df_new1  
+        # five_df = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')  
+        # five_df_new = five_df[five_df['Name'].isin(opt_li)]
+        # five_df_new['OPT'] = 'Y'
+        # five_df_new = five_df_new[['Name','OPT']]
+        # five_df_new1 = pd.merge(five_df, five_df_new, on=['Name'], how='outer')
+        # five_df_new1 = five_df_new1[['Name','Date', 'Open', 'High', 'Low','Close','Volume','SMA_200','Scripcode','OPT']]
+        # five_df_new1.sort_values(['Name'], ascending=[True], inplace=True)
+        return five_df1  
     
-    five_df_intra_new = five_df_intra('5m',intraday_list,current_trading_day, current_trading_day)
+    five_df_intra_new = five_df_intra(intraday_list,'5m',last_trading_day, current_trading_day)
     five_delv.range("a:i").value = None
     five_delv.range("a1").options(index=False).value = five_df_intra_new
     
@@ -583,7 +585,87 @@ while True:
     # five_df_new_intra = five_df_new1_func('5m',intraday_list,current_trading_day,current_trading_day)
     # five_delv.range("a1").options(index=False).value = five_df_new_intra
 
-    eq_data_pd_intra = final_data_func(intraday_list,five_df_new_intra)
+    intraday_sym_list = [str(i) for i in orders_select1['Name']]
+
+    def final_data_func_intra(scp_lst,data_fram):
+        eq_data_pd = pd.DataFrame()
+        for d in scp_lst:
+            print(d)
+            eq_data1 = data_fram[data_fram['Name'] == d]
+            eq_data1.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
+
+            eq_data1['Time'] = datetime.now()
+
+            # eq_data1['200+'] = ((eq_data1['SMA_200']*1)/100)+(eq_data1['SMA_200'])
+            # eq_data1['200-'] = (eq_data1['SMA_200'])-((eq_data1['SMA_200']*1)/100)
+            
+            #eq_data1['Delv_Chg'] = round(((eq_data1['Deliv_qty'] * 100) / (eq_data1['Deliv_qty'].shift(-1)) - 100), 2).fillna(0)      
+
+            eq_data1['Price_Chg'] = round(((eq_data1['Close'] * 100) / (eq_data1['Close'].shift(-1)) - 100), 2).fillna(0)      
+            
+            eq_data1['Vol_Chg'] = round(((eq_data1['Volume'] * 100) / (eq_data1['Volume'].shift(-1)) - 100), 2).fillna(0)
+
+            #eq_data1['OI_Chg'] = round(((eq_data1['OI']*100)/(eq_data1['OI'].shift(-1))-100),2)
+            
+            #eq_data1['Deliv_break'] = np.where(eq_data1['Deliv_qty'] > (eq_data1.Deliv_qty.rolling(5).mean() * 1.5).shift(-5),"Deliv_brk", "")
+
+            eq_data1['Price_break'] = np.where((eq_data1['Close'] > (eq_data1.High.rolling(5).max()).shift(-5)),
+                                                'Pri_Up_brk',
+                                                (np.where((eq_data1['Close'] < (eq_data1.Low.rolling(5).min()).shift(-5)),
+                                                            'Pri_Dwn_brk', "")))
+            eq_data1['Vol_break'] = np.where(eq_data1['Volume'] > (eq_data1.Volume.rolling(5).mean() * 2).shift(-5),
+                                                "Vol_brk","")     
+            #eq_data1['OI_break'] = np.where(eq_data1['OI'] > (eq_data1.OI.rolling(5).mean() * 1.5).shift(-5),"OI_brk", "")     
+                                                                                                                  
+            eq_data1['Vol_Price_break'] = np.where((eq_data1['Vol_break'] == "Vol_brk") &
+                                                        (eq_data1['Price_break'] != ""), "Vol_Pri_break", "")
+            #eq_data1['Del_Vol_Pri_break'] = np.where((eq_data1['Deliv_break'].shift(-1) == "Deliv_brk") &
+            #                                        (eq_data1['Vol_Price_break'] == "Vol_Pri_break"), "Del_Vol_Pri_break", "")
+            #eq_data1['OI_Vol_Pri_break'] = np.where((eq_data1['OI_break'].shift(-1) == "OI_brk") & (eq_data1['Vol_Price_break'] == "Vol_Pri_break"), "OI_Vol_Pri_break", "")
+                                                    
+            #eq_data1['Sma_200_break'] = np.where((eq_data1['Close'] < eq_data1['200+']) & (eq_data1['Close'] > eq_data1['200-']),"Nr. 200_Sma Break","")
+            
+            eq_data1['O=H=L'] = np.where((eq_data1['Open'] == eq_data1['High']), 'Open_High',
+                                            (np.where((eq_data1['Open'] == eq_data1['Low']), 'Open_Low', "")))
+            eq_data1['Pattern'] = np.where((eq_data1['High'] < eq_data1['High'].shift(-1)) &
+                                            (eq_data1['Low'] > eq_data1['Low'].shift(-1)), 'Inside_Bar',
+                                            (np.where((eq_data1['Low'] < eq_data1['Low'].shift(-1)) &
+                                                        (eq_data1['Close'] > eq_data1['High'].shift(-1)), 'Bullish',
+                                                        (np.where((eq_data1['High'] > eq_data1['High'].shift(-1)) &
+                                                                (eq_data1['Close'] < eq_data1['Low'].shift(-1)), 'Bearish',
+                                                                "")))))
+            eq_data1["Buy/Sell"] = np.where((eq_data1['Vol_break'] == "Vol_brk") & (eq_data1['Price_break'] == "Pri_Up_brk"),
+                                            "BUY", np.where((eq_data1['Vol_break'] == "Vol_brk")
+                                                & (eq_data1['Price_break'] == "Pri_Dwn_brk") , "SELL", ""))
+                                        
+            eq_data1['R3'] = round(eq_data1['High'] + (
+                    2 * (((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3) - eq_data1['Low'])), 2).fillna(0)
+            eq_data1['R2'] = round((((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3) + eq_data1['High']) - \
+                                    eq_data1['Low'], 2).fillna(0)
+            eq_data1['R1'] = round(
+                (2 * ((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3)) - eq_data1['Low'], 2).fillna(0)
+            eq_data1['Pivot'] = round(((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3), 2).fillna(0)
+            eq_data1['S1'] = round(
+                (2 * ((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3)) - eq_data1['High'], 2).fillna(0)
+            eq_data1['S2'] = round(((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3) - (eq_data1['High'] -
+                                                                                                       eq_data1['Low']),2).fillna(0)
+                                   
+            eq_data1['S3'] = round(eq_data1['Low'] - (
+                    2 * (eq_data1['High'] - ((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3))), 2)
+            eq_data1['Mid_point'] = round(((eq_data1['High'] + eq_data1['Low']) / 2), 2).fillna(0)
+            eq_data1['CPR'] = round(
+                abs((round(((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3), 2)) - eq_data1['Mid_point']),
+                2).fillna(0)
+            eq_data1['CPR_SCAN'] = np.where((eq_data1['CPR'] < ((eq_data1.CPR.rolling(10).min()).shift(-10))), "CPR_SCAN",
+                                            "")
+            eq_data1['Candle'] = np.where(abs(eq_data1['Open'] - eq_data1['Close']) <
+                                            abs(eq_data1['High'] - eq_data1['Low']) * 0.2, "DOZI",
+                                            np.where(abs(eq_data1['Open'] - eq_data1['Close']) >
+                                                    abs(eq_data1['High'] - eq_data1['Low']) * 0.7, "s", ""))
+            eq_data_pd = pd.concat([eq_data1, eq_data_pd])
+        eq_data_pd.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
+        return eq_data_pd
+    eq_data_pd_intra = final_data_func_intra(intraday_sym_list,orders_select1)
     by.range("a1").options(index=False).value = eq_data_pd_intra
 
     # posit = orders_select1

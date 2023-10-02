@@ -245,8 +245,7 @@ index = 'SBIN'
 # Historical Data
 
 # historical_data(<Exchange>,<Exchange Type>,<Scrip Code>,<Time Frame>,<From Data>,<To Date>)
-
-# df = client.historical_data('N', 'C', 3045, '1d', '2022-09-09','2023-09-08')
+# df = client.historical_data('N', 'C', 3045, '5m', '2023-09-29','2023-10-02')
 # print(df)
 
 # Note : TimeFrame Should be from this list ['1m','5m','10m','15m','30m','60m','1d']
