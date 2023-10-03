@@ -142,10 +142,10 @@ nse = NseIndia()
 
 # pdf = nse.get_stock_info("RELIANCE", trade_info=True)["securityWiseDP"]
 # print(pdf)
+print("hii")
+stk_li = np.unique(bhavcopy(second_last_trading_day)['SYMBOL'])
 
-stk_li = np.unique(bhavcopy(last_trading_day)['SYMBOL'])
-
-opt_li = pd.unique(bhavcopy_fno(last_trading_day)['SYMBOL'])
+opt_li = pd.unique(bhavcopy_fno(second_last_trading_day)['SYMBOL'])
 
 stk_list = stk_li
 
@@ -324,8 +324,8 @@ delv_data = eq_bhav
 
 stop_thread = False
 
-# script_list = [7053,14745,8124,17307,3403,206,20182,6066,275,4037,1797,10285]
-# stk_list = ['ACCELYA',	'ADVANIHOTR',	'AJANTPHARM',	'AJMERA',	'AJOONI',	'ASHIMASYN',	'ASHOKA',	'ATGL',	'AUROPHARMA',	'AUSOMENT',	'AWHCL',	'AYMSYNTEX',]
+# script_list = [685,	15271,	11359,	24532,	5204,	3963,	1448,	13693,	1994,	7242,	19931,	15032,	6913,	13035,	13332,	14771,	14485,	14245,	11773,	3821,]
+# stk_list = ['AAVAS',	'ARVIND',	'BAYERCROP',	'CHOLAFIN',	'CORDSCABLE',	'DHANBANK',	'FILATEX',	'GMDCLTD',	'GOCLCORP',	'HLVLTD',	'INFOMEDIA',	'LIBERTSHOE',	'METROBRAND',	'ORISSAMINE',	'PSUBNKBEES',	'RPPL',	'SAFARI',	'SOLARINDS',	'TARMAT',	'THEMISMED',	'TVSSRICHAK',	'VISHAL',	'ZODIACLOTH',]
 script_list = np.unique(flt_exc_eq['Scripcode'])
 print("Total Stock : "+str(len(script_list)))
 
@@ -529,24 +529,24 @@ while True:
     # exp.range("a1").options(index=False).value = stat1
 
 
-    orders_select1 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == last_trading_day)]
+    orders_select1 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == current_trading_day) & (eq_data_pd["RSI_14"] > 70 )]
     orders_select1["Watchlist"] = "N" + ":" + "C" + ":" + orders_select1["Name"]
     print(orders_select1.tail(1))
     orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy1.range("a:r").value = None
     strategy1.range("a1").options(index=False).value = orders_select1
 
-    orders_select2 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break")  & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == last_trading_day) & (eq_data_pd["RSI_14"] > 70 )]
-    orders_select2["Watchlist"] = "N" + ":" + "C" + ":" + orders_select2["Name"]
-    orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
-    strategy2.range("a:r").value = None
-    strategy2.range("a1").options(index=False).value = orders_select2
+    # orders_select2 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == current_trading_day) & (eq_data_pd["RSI_14"] > 70 )]
+    # orders_select2["Watchlist"] = "N" + ":" + "C" + ":" + orders_select2["Name"]
+    # orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    # strategy2.range("a:r").value = None
+    # strategy2.range("a1").options(index=False).value = orders_select2
 
-    orders_select3 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["Close"] < 300)]
-    orders_select3["Watchlist"] = "N" + ":" + "C" + ":" + orders_select3["Name"]
-    orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
-    strategy3.range("a:r").value = None
-    strategy3.range("a1").options(index=False).value = orders_select3
+    # orders_select3 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["Close"] < 300)]
+    # orders_select3["Watchlist"] = "N" + ":" + "C" + ":" + orders_select3["Name"]
+    # orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
+    # strategy3.range("a:r").value = None
+    # strategy3.range("a1").options(index=False).value = orders_select3
      
     print("complete") 
 
@@ -575,7 +575,7 @@ while True:
         five_df.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
         return five_df  
     
-    five_df_intra_new = five_df_intra(intraday_list,'5m',second_last_trading_day,last_trading_day)
+    five_df_intra_new = five_df_intra(intraday_list,'5m',second_last_trading_day,current_trading_day)
     five_delv.range("a:i").value = None
     five_delv.range("a1").options(index=False).value = five_df_intra_new
     
@@ -599,7 +599,7 @@ while True:
             eq_data1 = data_fram[data_fram['Name'] == d]
             eq_data1.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
 
-            eq_data1['Time'] = datetime.now()
+            eq_data1['TimeNow'] = datetime.now()
 
             # eq_data1['200+'] = ((eq_data1['SMA_200']*1)/100)+(eq_data1['SMA_200'])
             # eq_data1['200-'] = (eq_data1['SMA_200'])-((eq_data1['SMA_200']*1)/100)
@@ -672,6 +672,49 @@ while True:
         return eq_data_pd
     eq_data_pd_intra = final_data_func_intra(intraday_sym_list,five_df_intra_new)
     by.range("a1").options(index=False).value = eq_data_pd_intra
+    
+    
+    eq_data_pd_intra["Date"] = eq_data_pd_intra["Datetime"].str.split('T').str[0]
+    eq_data_pd_intra["Time"] = eq_data_pd_intra["Datetime"].str.split('T').str[-1]
+    
+    eq_data_pd_intra["Date"] = pd.to_datetime(eq_data_pd_intra["Date"])
+    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == current_trading_day) & (eq_data_pd_intra["RSI_14"] > 70 )]
+    orders_select4["Watchlist"] = "N" + ":" + "C" + ":" + orders_select4["Name"]
+    orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Date','Time','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
+    
+    intraday_sym_list_new = np.unique([str(i) for i in orders_select4['Name']])
+    eq_data_pd5 = pd.DataFrame()
+    for int_list in intraday_sym_list_new:
+        eq_data5 = orders_select4[orders_select4['Name'] == int_list]
+        eq_data5['Buy/Sell1'] = np.where(eq_data5['Close'] > (eq_data5['High']).shift(-1),"Buy_new","") 
+        eq_data_pd5 = pd.concat([eq_data5, eq_data_pd5])                                        
+        print(int_list)
+    eq_data_pd5.sort_values(['Name', 'Time'], ascending=[True, False], inplace=True)
+    strategy2.range("a:ae").value = None
+    strategy2.range("a1").options(index=False).value = eq_data_pd5
+
+
+    eq_data_pd5.sort_values(['Name', 'Time'], ascending=[True, True], inplace=True)
+    orders_select5 = eq_data_pd5[(eq_data_pd5["Buy/Sell1"] == "Buy_new") ]
+
+
+    intraday_sym_list_new1 = np.unique([str(i) for i in orders_select5['Name']])
+    five_df_new1 = pd.DataFrame()
+    for aa in intraday_sym_list_new1:
+        eq_data5 = orders_select5[orders_select5['Name'] == aa]
+        five_df_new1 = pd.concat([eq_data5.iloc[:1], five_df_new1])
+    five_df_new1.sort_values(['Name',], ascending=[True], inplace=True)
+    five_df_new1['Buy_At'] = round((five_df_new1['Close']),2)
+    five_df_new1['Stop_Loss'] = round((five_df_new1['Buy_At'] - (five_df_new1['Buy_At']*2)/100),2)
+    five_df_new1['Add_Till'] = ""
+    
+    five_df_new1['Target'] = round((((five_df_new1['Buy_At']*2)/100) + five_df_new1['Buy_At']),2)
+    five_df_new1['Term'] = "SFT"
+    
+    five_df_new1 = five_df_new1[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Time','TimeNow']]
+    strategy3.range("a:ae").value = None
+    strategy3.range("a1").options(index=False).value = five_df_new1
+    
 
     # posit = orders_select1
       
