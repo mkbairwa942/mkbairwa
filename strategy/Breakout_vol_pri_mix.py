@@ -143,9 +143,9 @@ nse = NseIndia()
 # pdf = nse.get_stock_info("RELIANCE", trade_info=True)["securityWiseDP"]
 # print(pdf)
 print("hii")
-stk_li = np.unique(bhavcopy(second_last_trading_day)['SYMBOL'])
+stk_li = np.unique(bhavcopy(last_trading_day)['SYMBOL'])
 
-opt_li = pd.unique(bhavcopy_fno(second_last_trading_day)['SYMBOL'])
+opt_li = pd.unique(bhavcopy_fno(last_trading_day)['SYMBOL'])
 
 stk_list = stk_li
 
@@ -575,7 +575,7 @@ while True:
         five_df.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
         return five_df  
     
-    five_df_intra_new = five_df_intra(intraday_list,'5m',second_last_trading_day,current_trading_day)
+    five_df_intra_new = five_df_intra(intraday_list,'5m',last_trading_day,current_trading_day)
     five_delv.range("a:i").value = None
     five_delv.range("a1").options(index=False).value = five_df_intra_new
     
