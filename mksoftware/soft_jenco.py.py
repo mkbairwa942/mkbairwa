@@ -12,12 +12,81 @@
 from tkinter import *
 from tkinter import ttk
 from PIL import Image,ImageTk
+import random 
 
 class Bill_App:
     def __init__(self,root):
         self.root=root
         self.root.geometry("1360x800+0+0")
         self.root.title("Billing Software")
+
+        #Variables
+        self.c_name=StringVar()
+        self.c_phone=StringVar()
+        self.bill_no=StringVar()
+        z=random.randint(1000,9999)
+        self.bill_no.set(z)
+        self.c_email=StringVar()
+        self.search_bill=StringVar()
+        self.product=StringVar()
+        self.prices=IntVar()
+        self.qty=StringVar()
+        self.sub_total=StringVar()
+        self.tax_input=StringVar()
+        self.total=StringVar()
+
+
+
+        #Product Categories
+        self.Category=["Select Option","Clothing","LifeStyle","Mobiles"]
+        self.SubCatClothing=["Pant","T-Shirt","Shirt"]
+        self.pant=["Levis","Mufti","Spykar"]
+        self.price_levis=5000
+        self.price_mufti=700
+        self.price_spykar=8000
+
+        self.t_shirt=["Polo","Roadstar","Jack&Jones"]
+        self.price_polo=1500
+        self.price_roadstar=1800
+        self.price_JackJones=1700
+
+        self.Shirt=["Peter England","Louis","Park Acenue"]
+        self.price_PeterEngland=2100
+        self.price_Louis=2700
+        self.price_Park=1740
+
+        self.SubCatLifeSyyle=["Bath Soap","Face Cream","Hair Oil"]
+        self.Bath_soap=["Life Boy","Lux","Santoor","Pearl"]
+        self.price_lifeboy=20
+        self.price_lux=25
+        self.price_santoor=30
+        self.price_pearl=50
+
+        self.Face_cream=["Ponds","Borolin","Herbel"]
+        self.price_pond=50
+        self.price_borolin=30
+        self.price_herbel=90     
+
+        self.hairoil=["Aavla","Coconut","Sikakai"]
+        self.price_avala=50
+        self.price_coconut=60
+        self.price_sikakai=70
+
+        self.SubCatMobile=["Iphone","Samsung","Xiome"]
+        self.Iphoe=["Iphone10","Iphone11","Iphone12"]
+        self.price_Iphone10=50000
+        self.price_Iphone11=60000
+        self.price_Iphone12=70000
+
+        self.samsung=["SamsungA1","SamsungB12","SamsungC3"]
+        self.price_samsungA1=40000
+        self.price_samsungB12=16000
+        self.price_samsungC3=26000
+
+        self.xiome=["Xiome45","Xiome90","XiomeNote"]
+        self.price_xiome45= 27000
+        self.price_xiome90=35000
+        self.price_xiomeNote=60000
 
         # Image1
         img1=Image.open("D:\STOCK\Capital_vercel1\mksoftware\image/image1.jpg")
@@ -51,19 +120,19 @@ class Bill_App:
         self.lbl_mob=Label(Cust_Frame,font=("arial",11,"bold"),bg="white",text="Mobile No",bd=4)
         self.lbl_mob.grid(row=0,column=0,sticky=W,padx=8,pady=5)
 
-        self.entry_mob=ttk.Entry(Cust_Frame,font=("arial",10,"bold"),width=18)
+        self.entry_mob=ttk.Entry(Cust_Frame,textvariable=self.c_phone,font=("arial",10,"bold"),width=18)
         self.entry_mob.grid(row=0,column=1,sticky=W,padx=8,pady=5)
 
         self.lbl_name=Label(Cust_Frame,font=("arial",11,"bold"),bg="white",text="Customer Name",bd=4)
         self.lbl_name.grid(row=1,column=0,sticky=W,padx=8,pady=5)
 
-        self.entry_name=ttk.Entry(Cust_Frame,font=("arial",10,"bold"),width=18)
+        self.entry_name=ttk.Entry(Cust_Frame,textvariable=self.c_name,font=("arial",10,"bold"),width=18)
         self.entry_name.grid(row=1,column=1,sticky=W,padx=8,pady=5)
 
         self.lbl_email=Label(Cust_Frame,font=("arial",11,"bold"),bg="white",text="Customer Email",bd=4)
         self.lbl_email.grid(row=2,column=0,sticky=W,padx=8,pady=5)
 
-        self.entry_email=ttk.Entry(Cust_Frame,font=("arial",10,"bold"),width=18)
+        self.entry_email=ttk.Entry(Cust_Frame,textvariable=self.c_email,font=("arial",10,"bold"),width=18)
         self.entry_email.grid(row=2,column=1,sticky=W,padx=8,pady=5)
 
         # Product Label_Frame
@@ -74,43 +143,70 @@ class Bill_App:
         self.lblCategory=Label(Prod_Frame,font=("arial",10,"bold"),bg="white",text="Select Categories",bd=4)
         self.lblCategory.grid(row=0,column=0,sticky=W,padx=8,pady=5)
 
-        self.Combo_Category=ttk.Combobox(Prod_Frame,font=("arial",10,"bold"),width=18,state="readonly")
-        self.Combo_Category.grid(row=0,column=1,sticky=W,padx=8,pady=5)
+        self.Combo_Category=ttk.Combobox(Prod_Frame,values=self.Category,font=("arial",10,"bold"),width=18,state="readonly")
+        self.Combo_Category.current(0)
+        self.Combo_Category.grid(row=0,column=1,sticky=W,padx=8,pady=5,)
+        self.Combo_Category.bind("<<ComboboxSelected>>",self.Categories)
 
         # SubCategory
         self.lblSubCategory=Label(Prod_Frame,font=("arial",10,"bold"),bg="white",text="Subcategory",bd=4)
         self.lblSubCategory.grid(row=1,column=0,sticky=W,padx=8,pady=5)
 
-        self.ComboSubCategory=ttk.Combobox(Prod_Frame,font=("arial",10,"bold"),width=18,state="readonly")
+        self.ComboSubCategory=ttk.Combobox(Prod_Frame,values=[""],font=("arial",10,"bold"),width=18,state="readonly")
         self.ComboSubCategory.grid(row=1,column=1,sticky=W,padx=8,pady=5)
+        self.ComboSubCategory.bind("<<ComboboxSelected>>",self.Product_add)
 
         # Product Name
         self.lblproduct=Label(Prod_Frame,font=("arial",10,"bold"),bg="white",text="Product Name",bd=4)
         self.lblproduct.grid(row=2,column=0,sticky=W,padx=8,pady=5)
 
-        self.ComboProduct=ttk.Combobox(Prod_Frame,font=("arial",10,"bold"),width=18,state="readonly")
+        self.ComboProduct=ttk.Combobox(Prod_Frame,textvariable=self.product,font=("arial",10,"bold"),width=18,state="readonly")
         self.ComboProduct.grid(row=2,column=1,sticky=W,padx=8,pady=5)
+        self.ComboProduct.bind("<<ComboboxSelected>>",self.pricess)
 
         # Price
         self.lblPrice=Label(Prod_Frame,font=("arial",10,"bold"),bg="white",text="Price",bd=4)
         self.lblPrice.grid(row=0,column=2,sticky=W,padx=8,pady=5)
 
-        self.ComboPrice=ttk.Combobox(Prod_Frame,font=("arial",10,"bold"),width=18,state="readonly")
+        self.ComboPrice=ttk.Combobox(Prod_Frame,textvariable=self.prices,font=("arial",10,"bold"),width=18,state="readonly")
         self.ComboPrice.grid(row=0,column=3,sticky=W,padx=8,pady=5)
 
         # Quantity
         self.lblQty=Label(Prod_Frame,font=("arial",10,"bold"),bg="white",text="Qty",bd=4)
         self.lblQty.grid(row=1,column=2,sticky=W,padx=8,pady=5)
 
-        self.ComboQty=ttk.Entry(Prod_Frame,font=("arial",10,"bold"),width=20)
+        self.ComboQty=ttk.Entry(Prod_Frame,textvariable=self.qty,font=("arial",10,"bold"),width=20)
         self.ComboQty.grid(row=1,column=3,sticky=W,padx=8,pady=5)
 
+        #Middle Frame
+        Middle_Frame=Frame(Main_Frame,bd=10,bg="white")
+        Middle_Frame.place(x=10,y=150,width=848,height=240)
+        imgMiddle1=Image.open("D:\STOCK\Capital_vercel1\mksoftware\image/image1.jpg")
+        imgMiddle1=imgMiddle1.resize((426,250),Image.Resampling.HAMMING)
+        self.photoimg3=ImageTk.PhotoImage(imgMiddle1)
+
+        lbl_img1=Label(Middle_Frame,image=self.photoimg3)
+        lbl_img1.place(x=0,y=0,width=426,height=250)
+
+        imgMiddle2=Image.open("D:\STOCK\Capital_vercel1\mksoftware\image/image5.jpg")
+        imgMiddle2=imgMiddle2.resize((426,250),Image.Resampling.HAMMING)
+        self.photoimg4=ImageTk.PhotoImage(imgMiddle2)
+
+        lbl_img1=Label(Middle_Frame,image=self.photoimg4)
+        lbl_img1.place(x=400,y=0,width=426,height=250)
+
         # Search Area
-        Search_Frame=Frame(Main_Frame,bd=2,bg="black")
-        Search_Frame.place(x=1020,y=10,width=500,height=40)
+        Search_Frame=Frame(Main_Frame,bd=2,bg="white")
+        Search_Frame.place(x=870,y=10,width=500,height=35)
 
         self.lblBill=Label(Search_Frame,font=("arial",10,"bold"),fg="white",bg="red",text="Bill Number")
-        self.lblBill.grid(row=0,column=0,sticky=W,padx=1)
+        self.lblBill.grid(row=0,column=0,sticky=W,padx=4,pady=4)
+        
+        self.entry_Search=ttk.Entry(Search_Frame,textvariable=self.search_bill,font=("arial",10,"bold"),width=24)
+        self.entry_Search.grid(row=0,column=1,sticky=W,padx=2)
+        
+        self.BtnSearch=Button(Search_Frame,width=15,text="Search",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnSearch.grid(row=0,column=2,sticky=W,padx=7)
 
         # Right frame Bill Area
         RightLabelFrame=LabelFrame(Main_Frame,text="Bill Area",font=("times new roman",12,"bold"),bg="white",fg="red")
@@ -131,21 +227,21 @@ class Bill_App:
         self.lblSubTotal=Label(Bottom_Frame,font=("arial",10,"bold"),bg="white",text="Sub Total",bd=4)
         self.lblSubTotal.grid(row=0,column=0,sticky=W,padx=5,pady=2)
 
-        self.EntrySubTotal=ttk.Entry(Bottom_Frame,font=("arial",10,"bold"),width=20)
+        self.EntrySubTotal=ttk.Entry(Bottom_Frame,textvariable=self.sub_total,font=("arial",10,"bold"),width=20)
         self.EntrySubTotal.grid(row=0,column=1,sticky=W,padx=5,pady=2)
 
         # Taxes
         self.lblTax=Label(Bottom_Frame,font=("arial",10,"bold"),bg="white",text="GST",bd=4)
         self.lblTax.grid(row=1,column=0,sticky=W,padx=5,pady=2)
 
-        self.EntryTax=ttk.Entry(Bottom_Frame,font=("arial",10,"bold"),width=20)
+        self.EntryTax=ttk.Entry(Bottom_Frame,textvariable=self.tax_input,font=("arial",10,"bold"),width=20)
         self.EntryTax.grid(row=1,column=1,sticky=W,padx=5,pady=2)
 
         # Amount
         self.lblAmount=Label(Bottom_Frame,font=("arial",10,"bold"),bg="white",text="Net Amount",bd=4)
         self.lblAmount.grid(row=2,column=0,sticky=W,padx=5,pady=2)
 
-        self.EntryAmount=ttk.Entry(Bottom_Frame,font=("arial",10,"bold"),width=20)
+        self.EntryAmount=ttk.Entry(Bottom_Frame,textvariable=self.total,font=("arial",10,"bold"),width=20)
         self.EntryAmount.grid(row=2,column=1,sticky=W,padx=5,pady=2)
 
         # Button Frame
@@ -169,6 +265,66 @@ class Bill_App:
 
         self.BtnExit=Button(Btn_Frame,height=2,width=14,text="Exit",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnExit.grid(row=0,column=5)
+
+    def Categories(self,event=""):        
+        if self.Combo_Category.get()=="Clothing":
+            self.ComboSubCategory.config(values=self.SubCatClothing)
+            self.ComboSubCategory.current(0)
+        if self.Combo_Category.get()=="LifeStyle":
+            self.ComboSubCategory.config(values=self.SubCatLifeSyyle)
+            self.ComboSubCategory.current(0)
+        if self.Combo_Category.get()=="Mobiles":
+            self.ComboSubCategory.config(values=self.SubCatMobile)
+            self.ComboSubCategory.current(0)
+
+    def Product_add(self,event=""):
+        #self.SubCatClothing=["Pant","T-Shirt","Shirt"]
+        #self.SubCatLifeSyyle=["Bath Soap","Face Cream","Hair Oil"]
+        #self.SubCatMobile=["Iphone","Samsung","Xiome"]
+        if self.ComboSubCategory.get()=="Pant":
+            self.ComboProduct.config(values=self.pant)
+            self.ComboProduct.current(0)   
+        if self.ComboSubCategory.get()=="T-Shirt":
+            self.ComboProduct.config(values=self.t_shirt)
+            self.ComboProduct.current(0) 
+        if self.ComboSubCategory.get()=="Shirt":
+            self.ComboProduct.config(values=self.Shirt)
+            self.ComboProduct.current(0)  
+
+        #LifeStyle     
+        if self.ComboSubCategory.get()=="Bath Soap":
+            self.ComboProduct.config(values=self.Bath_soap)
+            self.ComboProduct.current(0) 
+        if self.ComboSubCategory.get()=="Face Cream":
+            self.ComboProduct.config(values=self.Face_cream)
+            self.ComboProduct.current(0)   
+        if self.ComboSubCategory.get()=="Hair Oil":
+            self.ComboProduct.config(values=self.hairoil)
+            self.ComboProduct.current(0)  
+
+        #Mobile
+        if self.ComboSubCategory.get()=="Iphone":
+            self.ComboProduct.config(values=self.Iphoe)
+            self.ComboProduct.current(0) 
+        if self.ComboSubCategory.get()=="Samsung":
+            self.ComboProduct.config(values=self.samsung)
+            self.ComboProduct.current(0)   
+        if self.ComboSubCategory.get()=="Xiome":
+            self.ComboProduct.config(values=self.xiome)
+            self.ComboProduct.current(0)      
+
+    def pricess(self,event=""):
+        #Pant
+        if self.ComboProduct.get()=="Levis":
+            self.ComboPrice.config(values=self.price_levis)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+
+
+
+
+
+
 
 
 
