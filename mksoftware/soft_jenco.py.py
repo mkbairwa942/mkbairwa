@@ -105,6 +105,13 @@ class Bill_App:
         self.ComboQty=ttk.Entry(Prod_Frame,font=("arial",10,"bold"),width=20)
         self.ComboQty.grid(row=1,column=3,sticky=W,padx=8,pady=5)
 
+        # Search Area
+        Search_Frame=Frame(Main_Frame,bd=2,bg="black")
+        Search_Frame.place(x=1020,y=10,width=500,height=40)
+
+        self.lblBill=Label(Search_Frame,font=("arial",10,"bold"),fg="white",bg="red",text="Bill Number")
+        self.lblBill.grid(row=0,column=0,sticky=W,padx=1)
+
         # Right frame Bill Area
         RightLabelFrame=LabelFrame(Main_Frame,text="Bill Area",font=("times new roman",12,"bold"),bg="white",fg="red")
         RightLabelFrame.place(x=870,y=45,width=470,height=350)
