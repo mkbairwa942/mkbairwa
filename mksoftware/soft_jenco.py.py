@@ -12,7 +12,9 @@
 from tkinter import *
 from tkinter import ttk
 from PIL import Image,ImageTk
-import random 
+import random,os
+from tkinter import messagebox
+import tempfile
 
 class Bill_App:
     def __init__(self,root):
@@ -30,7 +32,7 @@ class Bill_App:
         self.search_bill=StringVar()
         self.product=StringVar()
         self.prices=IntVar()
-        self.qty=StringVar()
+        self.qty=IntVar()
         self.sub_total=StringVar()
         self.tax_input=StringVar()
         self.total=StringVar()
@@ -205,7 +207,7 @@ class Bill_App:
         self.entry_Search=ttk.Entry(Search_Frame,textvariable=self.search_bill,font=("arial",10,"bold"),width=24)
         self.entry_Search.grid(row=0,column=1,sticky=W,padx=2)
         
-        self.BtnSearch=Button(Search_Frame,width=15,text="Search",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnSearch=Button(Search_Frame,command=self.find_bill,width=15,text="Search",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnSearch.grid(row=0,column=2,sticky=W,padx=7)
 
         # Right frame Bill Area
@@ -248,16 +250,16 @@ class Bill_App:
         Btn_Frame=Frame(Bottom_Frame,bd=2,bg="white")
         Btn_Frame.place(x=260,y=0)
 
-        self.BtnAddToCart=Button(Btn_Frame,height=2,width=14,text="Add to Cart",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnAddToCart=Button(Btn_Frame,command=self.AddItem,height=2,width=14,text="Add to Cart",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnAddToCart.grid(row=0,column=0)
 
-        self.BtnGenBill=Button(Btn_Frame,height=2,width=14,text="Generate Bill",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnGenBill=Button(Btn_Frame,command=self.gen_bill,height=2,width=14,text="Generate Bill",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnGenBill.grid(row=0,column=1)
 
-        self.BtnSaveBill=Button(Btn_Frame,height=2,width=14,text="Save Bill",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnSaveBill=Button(Btn_Frame,command=self.save_bill,height=2,width=14,text="Save Bill",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnSaveBill.grid(row=0,column=2)
 
-        self.BtnPrint=Button(Btn_Frame,height=2,width=14,text="Print",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnPrint=Button(Btn_Frame,height=2,command=self.iprint,width=14,text="Print",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnPrint.grid(row=0,column=3)
 
         self.BtnClear=Button(Btn_Frame,height=2,width=14,text="Clear",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
@@ -265,6 +267,80 @@ class Bill_App:
 
         self.BtnExit=Button(Btn_Frame,height=2,width=14,text="Exit",font=('arial',15,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnExit.grid(row=0,column=5)
+        self.welcome()
+    # ===function Declaration====
+    
+    def welcome(self):
+        self.textarea.delete(1.0,END)
+        self.textarea.insert(END,"\t Welcome Codewith Mukesh Mini Mall")
+        self.textarea.insert(END,f"\n Bill Number : {self.bill_no.get()}")
+        self.textarea.insert(END,f"\n Customer Name : {self.c_name.get()}")
+        self.textarea.insert(END,f"\n Phone Number : {self.c_phone.get()}")
+        self.textarea.insert(END,f"\n Customer Email : {self.c_email.get()}")
+
+        self.textarea.insert(END,"\n ================================================" )
+        self.textarea.insert(END,f"\n Products\t\t\tQty\t\tPrice")
+        self.textarea.insert(END,"\n ================================================\n" )
+
+        self.l=[]
+    def AddItem(self):
+        Tax=5
+        self.n=self.prices.get()
+        self.m=self.qty.get()*self.n
+        self.l.append(self.m)
+        if self.product.get()=="":
+            messagebox.showerror("Error","Please Select the Product Name")
+        else:
+            self.subtot=sum(self.l)
+            self.taxx=(sum(self.l)*Tax)/100
+            self.totall=self.subtot+self.taxx
+            
+            self.textarea.insert(END,f"\n {self.product.get()}\t\t\t{self.qty.get()}\t\t{self.m}")
+            self.sub_total.set(str("Rs.%.2f "%(self.subtot)))
+            self.tax_input.set(str("Rs.%.2f "%(self.taxx)))
+            self.total.set(str("Rs.%.2f "%(self.totall)))
+    
+    def gen_bill(self):
+        if self.product.get()=="":
+            messagebox.showerror("Error","Please Add to Cart Product")
+        else:
+            text=self.textarea.get(10.0,(10.0+float(len(self.l))))
+            self.welcome()
+            self.textarea.insert(END,text)
+            self.textarea.insert(END,"\n ================================================" )
+            self.textarea.insert(END,f"\n Sub Amount:\t{self.sub_total.get()}")
+            self.textarea.insert(END,f"\n Tax Amount:\t{self.tax_input.get()}")
+            self.textarea.insert(END,f"\n Total Amount:\t{self.total.get()}")
+            self.textarea.insert(END,"\n ================================================" )
+
+    def save_bill(self):
+        op=messagebox.askyesno("Save Bill","Do You want Save this Bill")
+        if op>0:
+            self.bill_data=self.textarea.get(1.0,END)
+            f1=open('D:\\STOCK\\Capital_vercel1\\mksoftware\\bills/'+str(self.bill_no.get())+".txt",'w')
+            f1.write(self.bill_data)
+            op=messagebox.showinfo("Saved",f"Bill No : {self.bill_no.get()} saved successfully")
+            f1.close()
+
+    def iprint(self):
+        q=self.textarea.get(1.0,"end-1c")
+        filename=tempfile.mktemp('.txt')
+        open(filename,'w').write(q)
+        os.startfile(filename,"print")
+
+    def find_bill(self):
+        found="No"
+        for i in os.listdir("bills/"):
+            if i.split('.')[0]==self.search_bill.get():
+                f1=open(f"bills/{i}",'r')
+                self.textarea.delete(1.0,END)
+                for d in f1:
+                    self.textarea.insert(END,d)
+                    f1.close()
+                    found="Yes"
+            if found=="No":
+                messagebox.showerror("Error","Invalid Bill No")
+
 
     def Categories(self,event=""):        
         if self.Combo_Category.get()=="Clothing":
@@ -278,9 +354,6 @@ class Bill_App:
             self.ComboSubCategory.current(0)
 
     def Product_add(self,event=""):
-        #self.SubCatClothing=["Pant","T-Shirt","Shirt"]
-        #self.SubCatLifeSyyle=["Bath Soap","Face Cream","Hair Oil"]
-        #self.SubCatMobile=["Iphone","Samsung","Xiome"]
         if self.ComboSubCategory.get()=="Pant":
             self.ComboProduct.config(values=self.pant)
             self.ComboProduct.current(0)   
@@ -319,7 +392,129 @@ class Bill_App:
             self.ComboPrice.config(values=self.price_levis)
             self.ComboPrice.current(0)
             self.qty.set(1)
+        if self.ComboProduct.get()=="Mufti":
+            self.ComboPrice.config(values=self.price_mufti)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Spykar":
+            self.ComboPrice.config(values=self.price_spykar)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        #T-Shirt
+        if self.ComboProduct.get()=="Polo":
+            self.ComboPrice.config(values=self.price_polo)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Roadstar":
+            self.ComboPrice.config(values=self.price_roadstar)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Jack&Jones":
+            self.ComboPrice.config(values=self.price_JackJones)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        #Shirt
+        if self.ComboProduct.get()=="Peter England":
+            self.ComboPrice.config(values=self.price_PeterEngland)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Louis":
+            self.ComboPrice.config(values=self.price_Louis)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Park Acenue":
+            self.ComboPrice.config(values=self.price_Park)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
 
+        #Bath Soap
+        if self.ComboProduct.get()=="Life Boy":
+            self.ComboPrice.config(values=self.price_lifeboy)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Lux":
+            self.ComboPrice.config(values=self.price_lux)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Santoor":
+            self.ComboPrice.config(values=self.price_santoor)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Pearl":
+            self.ComboPrice.config(values=self.price_pearl)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+
+        #Face Cream
+        if self.ComboProduct.get()=="Ponds":
+            self.ComboPrice.config(values=self.price_pond)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Borolin":
+            self.ComboPrice.config(values=self.price_borolin)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Herbel":
+            self.ComboPrice.config(values=self.price_herbel)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+            
+        #Hair Oil
+        if self.ComboProduct.get()=="Aavla":
+            self.ComboPrice.config(values=self.price_avala)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Coconut":
+            self.ComboPrice.config(values=self.price_coconut)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Sikakai":
+            self.ComboPrice.config(values=self.price_sikakai)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+
+        #Iphone
+        if self.ComboProduct.get()=="Iphone10":
+            self.ComboPrice.config(values=self.price_Iphone10)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Iphone11":
+            self.ComboPrice.config(values=self.price_Iphone11)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Iphone12":
+            self.ComboPrice.config(values=self.price_Iphone12)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+
+        #Samsung
+        if self.ComboProduct.get()=="SamsungA1":
+            self.ComboPrice.config(values=self.price_samsungA1)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="SamsungB12":
+            self.ComboPrice.config(values=self.price_samsungB12)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="SamsungC3":
+            self.ComboPrice.config(values=self.price_samsungC3)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+            
+        #Xiome
+        if self.ComboProduct.get()=="Xiome45":
+            self.ComboPrice.config(values=self.price_xiome45)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="Xiome90":
+            self.ComboPrice.config(values=self.price_xiome90)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+        if self.ComboProduct.get()=="XiomeNote":
+            self.ComboPrice.config(values=self.price_xiomeNote)
+            self.ComboPrice.current(0)
+            self.qty.set(1)
+    
 
 
 
