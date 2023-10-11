@@ -1,0 +1,15 @@
+	 Welcome Codewith Mukesh Mini Mall
+ Bill Number : 1412
+ Customer Name : jain vikas
+ Phone Number : 9825011021
+ Customer Email : vikas@gmail.com
+ ================================================
+ Products			Qty		Price
+ ================================================
+ SamsungC3			5		130000
+
+ ================================================
+ Sub Amount:	Rs.130000.00 
+ Tax Amount:	Rs.6500.00 
+ Total Amount:	Rs.136500.00 
+ ================================================

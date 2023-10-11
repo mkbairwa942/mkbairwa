@@ -1,0 +1,9 @@
+	 Welcome Codewith Mukesh Mini Mall
+ Bill Number : 3202
+ Customer Name : 
+ Phone Number : 
+ Customer Email : 
+ ================================================
+ Products			Qty		Price
+ ================================================
+

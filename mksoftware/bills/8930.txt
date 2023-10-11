@@ -1,0 +1,17 @@
+	 Welcome Codewith Mukesh Mini Mall
+ Bill Number : 8930
+ Customer Name : Paresh Nagar
+ Phone Number : 9227561617
+ Customer Email : paresh@gmail.com
+ ================================================
+ Products			Qty		Price
+ ================================================
+ Iphone10			1		40000
+ SamsungA1			1		40000
+ Xiome45			1		27000
+
+ ================================================
+ Sub Amount:	Rs.107000.00 
+ Tax Amount:	Rs.5350.00 
+ Total Amount:	Rs.112350.00 
+ ================================================
