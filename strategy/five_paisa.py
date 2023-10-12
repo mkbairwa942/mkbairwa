@@ -49,8 +49,8 @@ user = 'bhavnabairwa942@gmail.com'
 pwd = 'vaa6762m'
 dob = '19850602'
 
-# client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
-# client.login()
+client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
+client.login()
 
 # cred = {
 #     "APP_NAME": "5P57141743",
@@ -108,9 +108,15 @@ dob = '19850602'
 # dob = '19780630'
 
 
+# client = FivePaisaClient(cred=cred)
+# client.get_totp_session('50840495','100389','200200')
 
-client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
-client.login()
+# client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
+# client.login()
+
+
+#Now Can directly call client.place_order()
+
 
 index = 'SBIN'
 # print(index)

@@ -27,6 +27,8 @@ from py_vollib.black_scholes.greeks.analytical import delta, gamma, rho, theta, 
 
 pd.options.mode.copy_on_write = True
 
+#client = credentials('alpesh','602422')
+
 from_d = (date.today() - timedelta(days=4))
 # from_d = date(2022, 12, 29)
 
@@ -275,7 +277,6 @@ dt.range("i:s").value = None
 by.range("a:z").value = None
 sl.range("a:ab").value = None
 fl.range("a:az").value = None
-st.range("a:z").value = None
 exc.range("a:z").value = None
 exp.range("a:z").value = None
 pos.range("a:z").value = None
@@ -543,7 +544,7 @@ while True:
             index1 = index1.tolist()
 
             time.sleep(0.5)            
-            scpt = dt.range(f"a{2}:c{500}").value            
+            scpt = dt.range(f"a{2}:g{50}").value            
             sym = dt.range(f"a{2}:a{500}").value
             symbols = list(filter(lambda item: item is not None, sym))
             symb_frame = exchange2[(exchange2['Root'].isin(symbols))]
@@ -558,8 +559,17 @@ while True:
             maxxx = max(list(max_min))
             minnn = min(list(max_min))
             print(maxxx,minnn)
-
-            scpts = pd.DataFrame(scpt, columns=['Symbol','Buy/Sell','ScriptCode'])
+            scpts = pd.DataFrame(scpt, columns=['Symbol','Stop_Loss','Add_Till','Buy_At','Target','Term','Time'])
+            scpts['Symbol'] = scpts['Symbol'].apply(lambda x : str(x))
+            #scpts['Time'] = scpts['Time'].apply(lambda x : pd.TimedeltaIndex(x))
+            scpts = scpts.replace(to_replace='None', value=np.nan).dropna()
+            # scpts['Time'] = scpts['Time'].astype(str)            
+            # scpts['Time'] = scpts['Time'].values.astype(str)
+            # scpts['Time'] = scpts['Time'].map(str)
+            # scpts['Time'] = scpts['Time'].apply(str)
+            print(scpts)
+            scpts['Time1'] = pd.to_timedelta(scpts['Time'])
+            print(scpts)
             index = ['N:C:NIFTY:999920000','N:C:BANKNIFTY:999920005','N:C:FINNIFTY:999920041'] #999920000 999920005 999920041
 
             for li in index:                 
@@ -785,6 +795,7 @@ while True:
             print("BankNifty Per is : "+str(niftt_bank))
             
             main_list = pd.merge(scpts, main_list, on=['Symbol'], how='inner')
+            st.range("a1").options(index=False).value = main_list
             main_list1 = main_list[main_list['Buy/Sell'] == "BUY"] 
             main_list2 = main_list[main_list['Buy/Sell'] == "SELL"] 
             
@@ -812,7 +823,7 @@ while True:
                 leght2 = fund2/(len(main_list2['LTP']))
                 main_list2['Exp_Qty'] = (round((float(leght2)/(main_list2['LTP'])),0))
 
-            st.range("a1").options(index=False).value = main_list   
+               
             
             st1.range("a1").options(index=False).value = main_list
             # sheet_length = len(main_list1['LTP'])

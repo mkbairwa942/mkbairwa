@@ -23,6 +23,8 @@ from zipfile import ZipFile
 import requests
 import itertools
 
+#client = credentials('alpesh','091254')
+
 from_d = (date.today() - timedelta(days=10))
 # from_d = date(2022, 12, 29)
 
@@ -324,9 +326,9 @@ delv_data = eq_bhav
 
 stop_thread = False
 
-# script_list = [685,	15271,	11359,	24532,	5204,	3963,	1448,	13693,	1994,	7242,	19931,	15032,	6913,	13035,	13332,	14771,	14485,	14245,	11773,	3821,]
-# stk_list = ['AAVAS',	'ARVIND',	'BAYERCROP',	'CHOLAFIN',	'CORDSCABLE',	'DHANBANK',	'FILATEX',	'GMDCLTD',	'GOCLCORP',	'HLVLTD',	'INFOMEDIA',	'LIBERTSHOE',	'METROBRAND',	'ORISSAMINE',	'PSUBNKBEES',	'RPPL',	'SAFARI',	'SOLARINDS',	'TARMAT',	'THEMISMED',	'TVSSRICHAK',	'VISHAL',	'ZODIACLOTH',]
-script_list = np.unique(flt_exc_eq['Scripcode'])
+script_list = [12533,	17598,	4037,	9158,	10181,	1628,	2181,	5142,	4064,	18520,	5204,	489,	14908,	1627,	18866,	17957,	8687,	357,	14111,	15332,	14853,	5264,	13598,	714,	15342,	17945,	9219,	18863,	5585,	14602]
+stk_list = ['AAATECH',	'ASALCBR',	'AUSOMENT',	'BALAJITELE',	'BALKRISHNA',	'BECTORFOOD',	'BOSCHLTD',	'CIGNITITEC',	'CUBEXTUB',	'CUPID',	'GMDCLTD',	'ICEMAKE',	'KDDL',	'LINDEINDIA',	'MAZDA',	'MMTC',	'MUKTAARTS',	'NAM-INDIA',	'NETWORK18',	'NMDC',	'OMAXE',	'PDSL',	'SELAN',	'SHALBY',	'SHALPAINTS',	'SUVENPHAR',	'TPLPLASTEH',	'VERTOZ',	'VIJAYA',	'WEBELSOLAR']
+#script_list = np.unique(flt_exc_eq['Scripcode'])
 print("Total Stock : "+str(len(script_list)))
 
 while True:
@@ -671,16 +673,23 @@ while True:
         eq_data_pd.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         return eq_data_pd
     eq_data_pd_intra = final_data_func_intra(intraday_sym_list,five_df_intra_new)
+    eq_data_pd_intra = eq_data_pd_intra.astype({"Datetime": "datetime64"})
+    # eq_data_pd_intra['Duration'] = eq_data_pd_intra['TimeNow'] - eq_data_pd_intra['Datetime']  
+    # eq_data_pd_intra['duration_in_s'] = eq_data_pd_intra['Duration'].total_seconds()
+    # eq_data_pd_intra['minutes'] = divmod(eq_data_pd_intra['duration_in_s'], 60)[0]
+    eq_data_pd_intra['minutes'] = pd.Timedelta(eq_data_pd_intra['TimeNow']-eq_data_pd_intra["Datetime"]).seconds / 3600.0
+    #eq_data_pd_intra['minutes'] = (eq_data_pd_intra['TimeNow']-eq_data_pd_intra["Datetime"]).astype('timedelta64[h]')
     by.range("a1").options(index=False).value = eq_data_pd_intra
     
     
-    eq_data_pd_intra["Date"] = eq_data_pd_intra["Datetime"].str.split('T').str[0]
-    eq_data_pd_intra["Time"] = eq_data_pd_intra["Datetime"].str.split('T').str[-1]
+    #eq_data_pd_intra["Date"] = eq_data_pd_intra["Datetime"].str.split(' ').str[0]
+    # eq_data_pd_intra["Time"] = pd.to_datetime(eq_data_pd_intra["Datetime"])
+    #eq_data_pd_intra["Time"] = eq_data_pd_intra["Datetime"].str.split('T').str[-1]
     
-    eq_data_pd_intra["Date"] = pd.to_datetime(eq_data_pd_intra["Date"])
-    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == current_trading_day) & (eq_data_pd_intra["RSI_14"] > 70 )]
+    eq_data_pd_intra["Date"] = pd.to_datetime(eq_data_pd_intra["Datetime"])
+    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Datetime"] == current_trading_day) & (eq_data_pd_intra["RSI_14"] > 70 )]
     orders_select4["Watchlist"] = "N" + ":" + "C" + ":" + orders_select4["Name"]
-    orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Date','Time','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
+    orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
     
     intraday_sym_list_new = np.unique([str(i) for i in orders_select4['Name']])
     eq_data_pd5 = pd.DataFrame()
@@ -689,12 +698,12 @@ while True:
         eq_data5['Buy/Sell1'] = np.where(eq_data5['Close'] > (eq_data5['High']).shift(-1),"Buy_new","") 
         eq_data_pd5 = pd.concat([eq_data5, eq_data_pd5])                                        
         print(int_list)
-    eq_data_pd5.sort_values(['Name', 'Time'], ascending=[True, False], inplace=True)
+    eq_data_pd5.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
     strategy2.range("a:ae").value = None
     strategy2.range("a1").options(index=False).value = eq_data_pd5
 
 
-    eq_data_pd5.sort_values(['Name', 'Time'], ascending=[True, True], inplace=True)
+    eq_data_pd5.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
     orders_select5 = eq_data_pd5[(eq_data_pd5["Buy/Sell1"] == "Buy_new") ]
 
 
@@ -711,7 +720,7 @@ while True:
     five_df_new1['Target'] = round((((five_df_new1['Buy_At']*2)/100) + five_df_new1['Buy_At']),2)
     five_df_new1['Term'] = "SFT"
     
-    five_df_new1 = five_df_new1[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Time','TimeNow']]
+    five_df_new1 = five_df_new1[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow']]
     strategy3.range("a:ae").value = None
     strategy3.range("a1").options(index=False).value = five_df_new1
     
