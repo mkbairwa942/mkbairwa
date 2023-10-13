@@ -369,6 +369,7 @@ class Bill_App:
         self.sub_total.set("")
         self.tax_input.set("")
         self.welcome()
+        print("welcome")
 
     def Categories(self,event=""):        
         if self.Combo_Category.get()=="Clothing":
