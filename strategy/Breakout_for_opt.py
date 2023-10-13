@@ -288,7 +288,7 @@ st2.range("a:u").value = None
 st3.range("a:u").value = None
 st4.range("a:i").value = None
 #oc.range("a:z").value = None
-dt.range(f"a1:d1").value = ["Namee","Stop Loss","Add Till","Buy At","Target" ,"Term","Time", "","","","","","","","","","","","","","Quantity","Entry","Exit","SL","Status"]
+dt.range(f"a1:d1").value = ["Namee","Scriptcodee","Stop Loss","Add Till","Buy At","Target" ,"Term","Time", "","","","","","","","","","","","","","Quantity","Entry","Exit","SL","Status"]
 oc.range("a:b").value = oc.range("d8:e30").value = oc.range("g1:v4000").value = None
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
@@ -559,17 +559,7 @@ while True:
             maxxx = max(list(max_min))
             minnn = min(list(max_min))
             print(maxxx,minnn)
-            scpts = pd.DataFrame(scpt, columns=['Symbol','Stop_Loss','Add_Till','Buy_At','Target','Term','Time'])
-            scpts['Symbol'] = scpts['Symbol'].apply(lambda x : str(x))
-            #scpts['Time'] = scpts['Time'].apply(lambda x : pd.TimedeltaIndex(x))
-            scpts = scpts.replace(to_replace='None', value=np.nan).dropna()
-            # scpts['Time'] = scpts['Time'].astype(str)            
-            # scpts['Time'] = scpts['Time'].values.astype(str)
-            # scpts['Time'] = scpts['Time'].map(str)
-            # scpts['Time'] = scpts['Time'].apply(str)
-            print(scpts)
-            scpts['Time1'] = pd.to_timedelta(scpts['Time'])
-            print(scpts)
+           
             index = ['N:C:NIFTY:999920000','N:C:BANKNIFTY:999920005','N:C:FINNIFTY:999920041'] #999920000 999920005 999920041
 
             for li in index:                 
@@ -651,9 +641,9 @@ while True:
             #main_list3[::-1]
             main_list4 = main_list3.iloc[::-1]
             main_list4 = main_list4[['Symbol','Open','High','Low','LTP','Close','NetChange','Time']]
-            dt.range("i1").options(index=False).value = main_list4  
+            dt.range("j1").options(index=False).value = main_list4  
 
-
+            
             # positionn = pd.DataFrame(client.positions())
             # positionn.rename(columns={'ScripName': 'Symbol','LTP':'LTPP'}, inplace=True)
             # main_list5 = pd.merge(main_list4, positionn, on=['Symbol'], how='outer')
@@ -765,6 +755,36 @@ while True:
             niftt_50 = round(float(nift_50['Per']),2)
             niftt_bank = round(float(nift_bank['Per']),2)
 
+            scpts = pd.DataFrame(scpt, columns=['Symbol','Scriptcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime'])
+            scpts['Symbol'] = scpts['Symbol'].apply(lambda x : str(x))
+            scpts = scpts[scpts['Symbol'] != 'None']
+            scpts['TimeNow'] = datetime.now()
+            scpts['Minutes'] = pd.to_datetime(scpts['TimeNow'])-pd.to_datetime(scpts["Datetime"])
+            scpts['Minutes'] = round((scpts['Minutes']/np.timedelta64(1,'m')),2)
+            scpts['Buy'] = np.where(scpts['Minutes']<50,"Yes","")
+            by.range("a1").options(index=False).value = scpts
+
+            fund0 = pd.DataFrame(client.margin())['AvailableMargin'] 
+
+            order_frame = scpts[scpts['Buy'] == 'Yes']
+            order_frame_list = np.unique([str(i) for i in order_frame['Symbol']])
+            for aa in order_frame_list:
+                print(f"Name of Stock {price_of_stock}")
+                order_frame1 = order_frame[order_frame['Symbol'] == aa]
+                price_of_stock = float(order_frame1['Buy_At'])
+                print(f"Price of Stock {price_of_stock}")
+                if price_of_stock < 100:
+                    quantity_of_stock = 200
+                if price_of_stock > 100 and price_of_stock < 200:
+                    quantity_of_stock = 100
+                if price_of_stock > 200 and price_of_stock < 300:
+                    quantity_of_stock = 80
+                if price_of_stock > 300:
+                    quantity_of_stock = 50
+                print(f"Quantity of Stock {quantity_of_stock}")
+            by.range("a15").options(index=False).value = order_frame
+
+
             current_data = lot_size
             quantity = lot_size*1
 
@@ -804,8 +824,12 @@ while True:
             Loss = -200
 
             funn = pd.DataFrame(client.margin())['AvailableMargin'] 
+            print(funn)
             fund1 = funn*2
             fund2 = funn         
+
+
+
 
             if main_list1.empty:
                 print("main_list1 Is Empty")

@@ -677,24 +677,30 @@ while True:
     # eq_data_pd_intra['Duration'] = eq_data_pd_intra['TimeNow'] - eq_data_pd_intra['Datetime']  
     # eq_data_pd_intra['duration_in_s'] = eq_data_pd_intra['Duration'].total_seconds()
     # eq_data_pd_intra['minutes'] = divmod(eq_data_pd_intra['duration_in_s'], 60)[0]
-    eq_data_pd_intra['minutes'] = pd.Timedelta(eq_data_pd_intra['TimeNow']-eq_data_pd_intra["Datetime"]).seconds / 3600.0
+    eq_data_pd_intra['Minutes'] = eq_data_pd_intra['TimeNow']-eq_data_pd_intra["Datetime"]
+    eq_data_pd_intra['Minutes'] = eq_data_pd_intra['Minutes']/np.timedelta64(1,'m')
     #eq_data_pd_intra['minutes'] = (eq_data_pd_intra['TimeNow']-eq_data_pd_intra["Datetime"]).astype('timedelta64[h]')
     by.range("a1").options(index=False).value = eq_data_pd_intra
     
     
     #eq_data_pd_intra["Date"] = eq_data_pd_intra["Datetime"].str.split(' ').str[0]
+    #print(eq_data_pd_intra.head(2))
     # eq_data_pd_intra["Time"] = pd.to_datetime(eq_data_pd_intra["Datetime"])
     #eq_data_pd_intra["Time"] = eq_data_pd_intra["Datetime"].str.split('T').str[-1]
     
-    eq_data_pd_intra["Date"] = pd.to_datetime(eq_data_pd_intra["Datetime"])
-    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Datetime"] == current_trading_day) & (eq_data_pd_intra["RSI_14"] > 70 )]
+    #eq_data_pd_intra["Date"] = pd.to_datetime(eq_data_pd_intra["Datetime"])
+    eq_data_pd_intra["Date"] = eq_data_pd_intra["Datetime"].dt.date
+    print(eq_data_pd_intra.head(1))
+    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == current_trading_day) & (eq_data_pd_intra["RSI_14"] > 70 )]
     orders_select4["Watchlist"] = "N" + ":" + "C" + ":" + orders_select4["Name"]
-    orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
+    orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
     
     intraday_sym_list_new = np.unique([str(i) for i in orders_select4['Name']])
+    print(intraday_sym_list_new)
     eq_data_pd5 = pd.DataFrame()
     for int_list in intraday_sym_list_new:
         eq_data5 = orders_select4[orders_select4['Name'] == int_list]
+        print(eq_data5)
         eq_data5['Buy/Sell1'] = np.where(eq_data5['Close'] > (eq_data5['High']).shift(-1),"Buy_new","") 
         eq_data_pd5 = pd.concat([eq_data5, eq_data_pd5])                                        
         print(int_list)
@@ -720,7 +726,7 @@ while True:
     five_df_new1['Target'] = round((((five_df_new1['Buy_At']*2)/100) + five_df_new1['Buy_At']),2)
     five_df_new1['Term'] = "SFT"
     
-    five_df_new1 = five_df_new1[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow']]
+    five_df_new1 = five_df_new1[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes']]
     strategy3.range("a:ae").value = None
     strategy3.range("a1").options(index=False).value = five_df_new1
     
