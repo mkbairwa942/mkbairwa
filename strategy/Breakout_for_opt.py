@@ -762,14 +762,23 @@ while True:
             fund0 = pd.DataFrame(client.margin())['AvailableMargin'] 
             print(fund0)
 
+            def round_up(n, decimals = 0): 
+                multiplier = 10 ** decimals 
+                return math.ceil(n * multiplier) / multiplier
+
             order_frame = scpts[scpts['Buy'] == 'Yes']
             order_frame_list = np.unique([str(i) for i in order_frame['Namee']])
             print(order_frame_list)
+            buy_order_list = [0]
+            print(buy_order_list)
             for aa in order_frame_list:
-                print(f"Name of Stock {aa}")
+                # print(f"Name of Stock {aa}")   
                 order_frame1 = order_frame[order_frame['Namee'] == aa]
+                Scriptcodee = int(order_frame1['Scriptcodee'])
+                # print(f"Scriptcode of Stock {Scriptcodee}")
                 price_of_stock = float(order_frame1['Buy_At'])
-                print(f"Price of Stock {price_of_stock}")
+                price_of_stock = round_up(price_of_stock, 1)
+                # print(f"Price of Stock {price_of_stock}")
                 if price_of_stock < 100:
                     quantity_of_stock = 200
                 if price_of_stock > 100 and price_of_stock < 200:
@@ -778,7 +787,15 @@ while True:
                     quantity_of_stock = 80
                 if price_of_stock > 300:
                     quantity_of_stock = 50
-                print(f"Quantity of Stock {quantity_of_stock}")
+                # print(f"Quantity of Stock {quantity_of_stock}")
+                quantity_of_stock = round_up(quantity_of_stock, 1)
+                buy_order_list.append(Scriptcodee)
+                print("Buy Order of "+str(aa)+" at : Rs "+str(price_of_stock)+" and Quantity is "+str(quantity_of_stock))
+                # order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = Scriptcodee, Qty=quantity_of_stock,Price=price_of_stock, IsIntraday=True)#, IsStopLossOrder=True, StopLossPrice=BuySl_ATM_price)
+                # pwk.sendwhatmsg_instantly("+919610033622","Buy Order of "+str(aa)+" at : Rs "+str(price_of_stock)+" and Quantity is "+str(quantity_of_stock),10,True,5)
+                # pwk.sendwhatmsg_instantly("+918000637245","Buy Order of "+str(aa)+" at : Rs "+str(price_of_stock)+" and Quantity is "+str(quantity_of_stock),10,True,5)            
+                #buy_order_list += [aa]
+                
             by.range("a15").options(index=False).value = order_frame
 
 
