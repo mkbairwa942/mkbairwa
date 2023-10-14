@@ -288,7 +288,7 @@ st2.range("a:u").value = None
 st3.range("a:u").value = None
 st4.range("a:i").value = None
 #oc.range("a:z").value = None
-dt.range(f"a1:d1").value = ["Namee","Scriptcodee","Stop Loss","Add Till","Buy At","Target" ,"Term","Time", "","","","","","","","","","","","","","Quantity","Entry","Exit","SL","Status"]
+dt.range(f"a1:d1").value = ["Namee","Scriptcodee","Stop_Loss","Add_Till","Buy_At","Target" ,"Term","Datetime", "","","","","","","","","","","","","","Quantity","Entry","Exit","SL","Status"]
 oc.range("a:b").value = oc.range("d8:e30").value = oc.range("g1:v4000").value = None
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
@@ -544,7 +544,7 @@ while True:
             index1 = index1.tolist()
 
             time.sleep(0.5)            
-            scpt = dt.range(f"a{2}:g{50}").value            
+            scpt = dt.range(f"a{1}:h{50}").value            
             sym = dt.range(f"a{2}:a{500}").value
             symbols = list(filter(lambda item: item is not None, sym))
             symb_frame = exchange2[(exchange2['Root'].isin(symbols))]
@@ -642,7 +642,6 @@ while True:
             main_list4 = main_list3.iloc[::-1]
             main_list4 = main_list4[['Symbol','Open','High','Low','LTP','Close','NetChange','Time']]
             dt.range("j1").options(index=False).value = main_list4  
-
             
             # positionn = pd.DataFrame(client.positions())
             # positionn.rename(columns={'ScripName': 'Symbol','LTP':'LTPP'}, inplace=True)
@@ -696,15 +695,12 @@ while True:
             bank_nifty1 = index_frame[(index_frame["Index"] == "NIFTY BANK")]
             bank_nifty1 = bank_nifty1[['identifier','change','pChange','Weitage']]
             nifty2 = index_frame_one[(index_frame_one["Index"] == "NIFTY 50")]
-            bank_nifty2 = index_frame_one[(index_frame_one["Index"] == "NIFTY BANK")]
-      
+            bank_nifty2 = index_frame_one[(index_frame_one["Index"] == "NIFTY BANK")]      
 
             st4.range("a1").options(index=False).value = nifty1
             st4.range("f1").options(index=False).value = bank_nifty1
             st4.range("k2").options(index=False).value = "=INDIRECT(ADDRESS((ROW($B1)-1)*5+COLUMN(B2),2))"
             st4.range("q2").options(index=False).value = "=INDIRECT(ADDRESS((ROW($B1)-1)*3+COLUMN(B2),7))"
-
-  
 
             # def insert_heading(rng,text):
             #     rng.value = text
@@ -749,28 +745,29 @@ while True:
 
         
             #st4.range("q20").options(index=False).value = cht
-            
+
             nift_50 = index_frame_one[index_frame_one['Index'] == "NIFTY 50"] 
             nift_bank = index_frame_one[index_frame_one['Index'] == "NIFTY BANK"] 
             niftt_50 = round(float(nift_50['Per']),2)
             niftt_bank = round(float(nift_bank['Per']),2)
-
-            scpts = pd.DataFrame(scpt, columns=['Symbol','Scriptcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime'])
-            scpts['Symbol'] = scpts['Symbol'].apply(lambda x : str(x))
-            scpts = scpts[scpts['Symbol'] != 'None']
+            scpts = pd.DataFrame(scpt[1:],columns=scpt[0])
+            scpts['Namee'] = scpts['Namee'].apply(lambda x : str(x))
+            scpts = scpts[scpts['Namee'] != 'None']
             scpts['TimeNow'] = datetime.now()
-            scpts['Minutes'] = pd.to_datetime(scpts['TimeNow'])-pd.to_datetime(scpts["Datetime"])
+            scpts['Minutes'] = scpts['TimeNow']-scpts["Datetime"]
             scpts['Minutes'] = round((scpts['Minutes']/np.timedelta64(1,'m')),2)
             scpts['Buy'] = np.where(scpts['Minutes']<50,"Yes","")
             by.range("a1").options(index=False).value = scpts
 
             fund0 = pd.DataFrame(client.margin())['AvailableMargin'] 
+            print(fund0)
 
             order_frame = scpts[scpts['Buy'] == 'Yes']
-            order_frame_list = np.unique([str(i) for i in order_frame['Symbol']])
+            order_frame_list = np.unique([str(i) for i in order_frame['Namee']])
+            print(order_frame_list)
             for aa in order_frame_list:
-                print(f"Name of Stock {price_of_stock}")
-                order_frame1 = order_frame[order_frame['Symbol'] == aa]
+                print(f"Name of Stock {aa}")
+                order_frame1 = order_frame[order_frame['Namee'] == aa]
                 price_of_stock = float(order_frame1['Buy_At'])
                 print(f"Price of Stock {price_of_stock}")
                 if price_of_stock < 100:

@@ -691,7 +691,7 @@ while True:
     #eq_data_pd_intra["Date"] = pd.to_datetime(eq_data_pd_intra["Datetime"])
     eq_data_pd_intra["Date"] = eq_data_pd_intra["Datetime"].dt.date
     print(eq_data_pd_intra.head(1))
-    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == current_trading_day) & (eq_data_pd_intra["RSI_14"] > 70 )]
+    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == current_trading_day.date()) & (eq_data_pd_intra["RSI_14"] > 70 )]
     orders_select4["Watchlist"] = "N" + ":" + "C" + ":" + orders_select4["Name"]
     orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
     
