@@ -1,5 +1,5 @@
 import os
-from five_paisa import *
+from five_paisa1 import *
 import time,json,datetime,sys
 import xlwings as xw
 import pandas as pd
@@ -8,7 +8,6 @@ import numpy as np
 import time
 import requests 
 import dateutil.parser
-
 import threading
 from datetime import datetime,timedelta
 import pandas_ta as pta
@@ -27,7 +26,13 @@ from py_vollib.black_scholes.greeks.analytical import delta, gamma, rho, theta, 
 
 pd.options.mode.copy_on_write = True
 
-#client = credentials('alpesh','602422')
+username = input("Enter Username : ")
+username1 = str(username)
+print("Hii "+str(username1)+" have a Good Day")
+username_totp = input("Enter TOTP : ")
+username_totp1 = str(username_totp)
+print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+client = credentials(username1,username_totp1)
 
 from_d = (date.today() - timedelta(days=4))
 # from_d = date(2022, 12, 29)
@@ -274,7 +279,7 @@ st2 = wb.sheets("Stat2")
 st3 = wb.sheets("Stat3")
 st4 = wb.sheets("Stat4")
 dt.range("i:s").value = None
-by.range("a:z").value = None
+by.range("a:aa").value = None
 sl.range("a:ab").value = None
 fl.range("a:az").value = None
 exc.range("a:z").value = None
@@ -290,6 +295,18 @@ st4.range("a:i").value = None
 #oc.range("a:z").value = None
 dt.range(f"a1:d1").value = ["Namee","Scriptcodee","Stop_Loss","Add_Till","Buy_At","Target" ,"Term","Datetime", "","","","","","","","","","","","","","Quantity","Entry","Exit","SL","Status"]
 oc.range("a:b").value = oc.range("d8:e30").value = oc.range("g1:v4000").value = None
+
+#st4.range("k2").options(index=False).value = "=INDIRECT(ADDRESS((ROW($B1)-1)*5+COLUMN(B2),2))"
+# dt.range("a2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$A2="","",'D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$A2)"
+# dt.range("b2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$B2="","",'D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$B2)"
+# dt.range("c2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$C2="","",'D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$C2)"
+# dt.range("d2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$D2="","",'D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$D2)"
+# dt.range("e2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$E2="","",'D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$E2)"
+# dt.range("f2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$F2="","",'D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$F2)"
+# dt.range("g2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$G2="","",'D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$G2)"
+# dt.range("h2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$H2="","",'D:\STOCK\Capital_vercel_new\[Breakout_vol_pri_mix.xlsx]Strategy3'!$H2)"
+# dt.range("w2").options(index=False).value = "=IF(N2<C2,"SL_Hit",IF(F2=0,IF(AND(N2>D2,N2<((E2*0.5%)+E2)),"Buy","Already_Up"),IF(L2>=F2,"Target_Hit",IF(AND(N2>D2,N2<((E2*0.5%)+E2)),"Buy","Already_Up"))))"
+
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
@@ -358,34 +375,13 @@ put_counter = 0
 # print(dfg)
 # today_range = np.round(((dfg['High'].iloc[-1]) - dfg['Low'].iloc[-1]),2)
 
+buy_order_list = []
 while True:
     oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
     pos.range("a1").value = pd.DataFrame(client.margin())
     pos.range("a4").value = pd.DataFrame(client.positions())
     pos.range("a10").value = pd.DataFrame(client.holdings())  
     # pos.range("a12").value = pd.DataFrame(client.get_tradebook())
-
-
-    ordbook = pd.DataFrame(client.order_book())
-    ob1.range("a1").value = ordbook 
-    if ordbook is not None:
-        print("Order Book not Empty")
-        # print(ordbook.head(1))
-        # ordbook = ordbook[ordbook.iloc[9] != "Fully Executed"]
-        # ordbook = ordbook[['BrokerOrderTime', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','ScripName','AtMarket']]
-        # Datetimeee = []
-        # for i in range(len(ordbook)):
-        #     print(i,ordbook['BrokerOrderTime'])
-        #     datee = ordbook['BrokerOrderTime'][i]
-        #     timestamp = pd.to_datetime(datee[6:19], unit='ms')
-        #     ExpDate = datetime.strftime(timestamp, '%d-%m-%Y %H:%M:%S')
-        #     d1 = datetime(int(ExpDate[6:10]),int(ExpDate[3:5]),int(ExpDate[0:2]),int(ExpDate[11:13]),int(ExpDate[14:16]),int(ExpDate[17:19]))
-        #     d2 = d1 + timedelta(hours = 5.5)
-        #     Datetimeee.append(d2)
-    else:
-        print("Order Book Empty")
-
-    ob.range("a1").value = ordbook 
 
     if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:
         oc.range("g:v").value = None
@@ -398,6 +394,7 @@ while True:
         pre_oc_symbol = oc_symbol
         pre_oc_expiry = oc_expiry
     if oc_symbol is not None:
+        
         try:
             if not expiries_list:
                 df = copy.deepcopy(exchange)
@@ -754,50 +751,89 @@ while True:
             scpts['Namee'] = scpts['Namee'].apply(lambda x : str(x))
             scpts = scpts[scpts['Namee'] != 'None']
             scpts['TimeNow'] = datetime.now()
-            scpts['Minutes'] = scpts['TimeNow']-scpts["Datetime"]
+            scpts['Minutes'] = pd.to_datetime(scpts['TimeNow'])-pd.to_datetime(scpts["Datetime"])
             scpts['Minutes'] = round((scpts['Minutes']/np.timedelta64(1,'m')),2)
-            scpts['Buy'] = np.where(scpts['Minutes']<50,"Yes","")
+            scpts['Buy'] = np.where(scpts['Minutes']<5,"Yes","")
+            scpts['Timeover'] = np.where(scpts['Minutes']>30,"Yes","")
             by.range("a1").options(index=False).value = scpts
-
-            fund0 = pd.DataFrame(client.margin())['AvailableMargin'] 
-            print(fund0)
-
+            print("1")
+            print("2")
             def round_up(n, decimals = 0): 
                 multiplier = 10 ** decimals 
                 return math.ceil(n * multiplier) / multiplier
 
             order_frame = scpts[scpts['Buy'] == 'Yes']
             order_frame_list = np.unique([str(i) for i in order_frame['Namee']])
-            print(order_frame_list)
-            buy_order_list = [0]
+
+            time_over_frame = scpts[scpts['Timeover'] == 'Yes']
+            time_over_frame_list = np.unique([str(i) for i in order_frame['Namee']])
+            print("3")
             print(buy_order_list)
             for aa in order_frame_list:
-                # print(f"Name of Stock {aa}")   
-                order_frame1 = order_frame[order_frame['Namee'] == aa]
-                Scriptcodee = int(order_frame1['Scriptcodee'])
-                # print(f"Scriptcode of Stock {Scriptcodee}")
-                price_of_stock = float(order_frame1['Buy_At'])
-                price_of_stock = round_up(price_of_stock, 1)
-                # print(f"Price of Stock {price_of_stock}")
-                if price_of_stock < 100:
-                    quantity_of_stock = 200
-                if price_of_stock > 100 and price_of_stock < 200:
-                    quantity_of_stock = 100
-                if price_of_stock > 200 and price_of_stock < 300:
-                    quantity_of_stock = 80
-                if price_of_stock > 300:
-                    quantity_of_stock = 50
-                # print(f"Quantity of Stock {quantity_of_stock}")
-                quantity_of_stock = round_up(quantity_of_stock, 1)
-                buy_order_list.append(Scriptcodee)
-                print("Buy Order of "+str(aa)+" at : Rs "+str(price_of_stock)+" and Quantity is "+str(quantity_of_stock))
-                # order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = Scriptcodee, Qty=quantity_of_stock,Price=price_of_stock, IsIntraday=True)#, IsStopLossOrder=True, StopLossPrice=BuySl_ATM_price)
-                # pwk.sendwhatmsg_instantly("+919610033622","Buy Order of "+str(aa)+" at : Rs "+str(price_of_stock)+" and Quantity is "+str(quantity_of_stock),10,True,5)
-                # pwk.sendwhatmsg_instantly("+918000637245","Buy Order of "+str(aa)+" at : Rs "+str(price_of_stock)+" and Quantity is "+str(quantity_of_stock),10,True,5)            
-                #buy_order_list += [aa]
-                
-            by.range("a15").options(index=False).value = order_frame
+                if aa in buy_order_list: 
+                    print(str(aa)+" is Already Buy") 
+                else: 
+                    order_frame1 = order_frame[order_frame['Namee'] == aa]
+                    Buy_Scriptcodee = int(order_frame1['Scriptcodee'])
+                    Buy_price_of_stock = float(order_frame1['Buy_At'])                    
+                    Buy_price_of_stock = round_up(Buy_price_of_stock, 1)
+                    Buy_Stop_Loss = round((float(order_frame1['Buy_At']) - (float(order_frame1['Buy_At'])*2)/100),2)
+                    Buy_Stop_Loss = round_up(Buy_Stop_Loss, 1)
+                    if Buy_price_of_stock < 100:
+                        Buy_quantity_of_stock = 200
+                    if Buy_price_of_stock > 100 and Buy_price_of_stock < 200:
+                        Buy_quantity_of_stock = 100                        
+                    if Buy_price_of_stock > 200 and Buy_price_of_stock < 300:
+                        Buy_quantity_of_stock = 80
+                    if Buy_price_of_stock > 300:
+                        Buy_quantity_of_stock = 50
+                    Req_Amount = Buy_quantity_of_stock*Buy_price_of_stock
+                    fundd = pd.DataFrame(client.margin())['AvailableMargin'] 
+                    print(fundd)
+                    if fundd > Req_Amount:
+                        Buy_quantity_of_stock = round_up(Buy_quantity_of_stock, 1)
+                        buy_order_list.append(aa)
+                        print("Buy Order of "+str(aa)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock))
+                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        pwk.sendwhatmsg_instantly("+919610033622","Buy Order of "+str(aa)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock),10,True,5)
+                        # pwk.sendwhatmsg_instantly("+918000637245","Buy Order of "+str(aa)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock),10,True,5)            
+                    else:
+                        print("Available fund is "+str(fundd)+ " and Required Amount is "+str(Req_Amount)+ "is 'LESS'" )
 
+            print("No Stock yet to Buy")
+            by.range("n1").options(index=False).value = order_frame
+            by.range("aa1").options(index=False).value = time_over_frame
+            print("4")
+            ordbook = pd.DataFrame(client.order_book())
+            ob.range("a1").options(index=False).value = ordbook 
+            if ordbook is not None:
+                print("Order Book not Empty")
+                
+                ordbook1 = ordbook[ordbook['OrderStatus'] == "Fully Executed"]                
+                Datetimeee = []
+                for i in range(len(ordbook1)):
+                    datee = ordbook1['BrokerOrderTime'][i]
+                    timestamp = pd.to_datetime(datee[6:19], unit='ms')
+                    ExpDate = datetime.strftime(timestamp, '%d-%m-%Y %H:%M:%S')
+                    d1 = datetime(int(ExpDate[6:10]),int(ExpDate[3:5]),int(ExpDate[0:2]),int(ExpDate[11:13]),int(ExpDate[14:16]),int(ExpDate[17:19]))
+                    d2 = d1 + timedelta(hours = 5.5)
+                    Datetimeee.append(d2)
+                ordbook1['Datetimeee'] = Datetimeee
+                ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','ScripName','AtMarket']]
+                ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+                ob1.range("a1").options(index=False).value = ordbook1
+            else:
+                print("Order Book Empty")               
+            buy_order_list = np.unique([str(i) for i in ordbook1['ScripName']])
+            # for ti in time_over_frame_list:
+            #     time_over_frame1 = time_over_frame[time_over_frame['Namee'] == ti]
+            #     Sale_Scriptcodee = int(order_frame1['Scriptcodee'])
+            #     Sale_price_of_stock = float(order_frame1['Buy_At'])
+            #     Sale_price_of_stock = round_up(Sale_price_of_stock, 1)
+            #     # client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 1660, Qty=1, Price=350, IsIntraday=False, StopLossPrice=345)
+            #     order = client.place_order(OrderType='S',Exchange='N',ExchangeType='C', ScripCode = Sale_Scriptcodee, Qty=quantity_of_stock,Price=0, IsIntraday=True)#, IsStopLossOrder=True, StopLossPrice=BuySl_ATM_price)
+            #print(fundd)
+            print("5")
 
             current_data = lot_size
             quantity = lot_size*1
@@ -841,9 +877,6 @@ while True:
             print(funn)
             fund1 = funn*2
             fund2 = funn         
-
-
-
 
             if main_list1.empty:
                 print("main_list1 Is Empty")
@@ -1115,6 +1148,3 @@ while True:
         #     print("Call counter is : "+str(call_counter))
         #     print("Put counter is : "+str(put_counter))
                    
-
-
-
