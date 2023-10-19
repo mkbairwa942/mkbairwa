@@ -204,8 +204,8 @@ exp = wb.sheets("Expiry")
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 
-exc.range("a:s").value = None
-exc.range("a1").options(index=False).value = script_code_5paisa
+# exc.range("a:s").value = None
+# exc.range("a1").options(index=False).value = script_code_5paisa
 print("Excel : Started")
 exchange = None
 
@@ -233,6 +233,7 @@ while True:
 symb = pd.DataFrame({"Name": list(exc_equity["Root"].unique())})
 symb = symb.set_index("Name",drop=True)
 #oc.range("a1").options(index=False).value = symb
+flt_exc.range("a1").options(index=False).value = exc_equity
 
 flt_exc_eq = pd.merge(symb, exc_equity, on=['Name'], how='inner')
 flt_exc_eq.sort_values(['Name'], ascending=[True], inplace=True)
