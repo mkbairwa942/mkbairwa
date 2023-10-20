@@ -34,6 +34,9 @@ username_totp1 = str(username_totp)
 print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
 client = credentials(username1,username_totp1)
 
+#order = client.place_order(OrderType='S',Exchange='N',ExchangeType='C', ScripCode = 1336, Qty=10,Price=1835, IsIntraday=True)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+
+
 from_d = (date.today() - timedelta(days=4))
 # from_d = date(2022, 12, 29)
 
