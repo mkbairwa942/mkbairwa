@@ -53,6 +53,8 @@ print("Last Trading Day is :- "+str(last_trading_day))
 print("Second Last Trading Day is :- "+str(second_last_trading_day))
 print("Last 365 Day is :- "+str(days_365))
 
+dfghg = client.historical_data('N', 'C', 324, '5m', lastTradingDay, current_trading_day)
+print(dfghg)
 
 days_count = len(trading_days)
 
@@ -578,7 +580,7 @@ while True:
         five_df.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
         return five_df  
     
-    five_df_intra_new = five_df_intra(intraday_list,'5m',last_trading_day,current_trading_day)
+    five_df_intra_new = five_df_intra(intraday_list,'5m',lastTradingDay,current_trading_day)
     five_delv.range("a:i").value = None
     five_delv.range("a1").options(index=False).value = five_df_intra_new
     
@@ -692,10 +694,10 @@ while True:
     #eq_data_pd_intra["Date"] = pd.to_datetime(eq_data_pd_intra["Datetime"])
     eq_data_pd_intra["Date"] = eq_data_pd_intra["Datetime"].dt.date
     print(eq_data_pd_intra.head(1))
-    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == current_trading_day.date()) & (eq_data_pd_intra["RSI_14"] > 70 )]
+    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == lastTradingDay.date()) & (eq_data_pd_intra["RSI_14"] > 70 )]
     orders_select4["Watchlist"] = "N" + ":" + "C" + ":" + orders_select4["Name"]
     orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
-    
+    print(orders_select4.tail(5))
     intraday_sym_list_new = np.unique([str(i) for i in orders_select4['Name']])
     print(intraday_sym_list_new)
     eq_data_pd5 = pd.DataFrame()
