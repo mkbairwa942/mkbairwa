@@ -22,6 +22,14 @@ import sys
 from zipfile import ZipFile
 import requests
 import itertools
+import math 
+from telethon.sync import TelegramClient
+
+telegram_first_name = "mkbairwa"
+telegram_username = "mkbairwa_bot"
+telegram_id = ":758543600"
+
+telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage"
 
 #client = credentials('alpesh','091254')
 
@@ -217,6 +225,10 @@ script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 print("Excel : Started")
 exchange = None
 
+def round_up(n, decimals = 0): 
+    multiplier = 10 ** decimals 
+    return math.ceil(n * multiplier) / multiplier
+
 while True:    
     if exchange is None: 
         try:
@@ -225,6 +237,7 @@ while True:
             exc_equity = exc_equity[exc_equity["Series"] == "EQ"]
             exc_equity = exc_equity[exc_equity["CpType"] == "XX"]
             exc_equity["Watchlist"] = exc_equity["Exch"] + ":" + exc_equity["ExchType"] + ":" + exc_equity["Name"]
+            exc_equity.sort_values(['Name'], ascending=[True], inplace=True)
             break
         except:
             print("Exchange Download Error....")
@@ -244,9 +257,9 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-script_list = [324,	380,	19585,	23804,	9879,	18520,	22233,	17357,	14535,	10993,	1630,	2085,	31181,	7679,	2313,	18371,	10791,	8797,	2256,	25358,	15330,	25574,	19,	7129,]
-stk_list = ['ANGELONE',	'BBTC',	'BSE',	'BSLGOLDETF',	'CHEVIOT',	'CUPID',	'DHUNINV',	'GKWLIMITED',	'GOLDSHARE',	'INDORAMA',	'IONEXCHANG',	'MAHSCOOTER',	'MCX',	'MONARCH',	'MURUDCERA',	'NDGL',	'NUCLEUS',	'OBCL',	'PENINLAND',	'PGEL',	'QGOLDHALF',	'SHAKTIPUMP',	'STYRENIX',	'ZODIAC']
-
+script_list = [19585,	4421,	6606,	22347,	7129,]
+stk_list = ['BSE',	'CREDITACC',	'DSPNEWETF',	'MACPOWER',	'ZODIAC',]
+	
 # script_list = np.unique(exc_equity['Scripcode'])
 # stk_list = np.unique(exc_equity["Root"])
 print("Total Stock : "+str(len(script_list)))
@@ -482,14 +495,16 @@ while True:
     five_df4 = pd.DataFrame()
     for a in script_list:
         try:
-            print("1 Day Data Download and Scan "+str(a))
-            dfg = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day)
+            # print("1 Day Data Download and Scan "+str(a))
+            dfg = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day)            
             dfg['Scripcode'] = a
-            #dfg['Date'] = current_trading_day
+            dfg = pd.merge(flt_exc_eq, dfg, on=['Scripcode'], how='inner') 
+            dfg = dfg[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume']]
+
+            dfg['Date'] = current_trading_day
             dfg["SMA_200"] = np.round((pta.sma(dfg["Close"], length=200,offset=0)),2)
             dfg["RSI_14"] = np.round((pta.rsi(dfg["Close"], length=14)),2)
-       
-            
+
             dfg['TimeNow'] = datetime.now()
             dfg['200+'] = ((dfg['SMA_200']*1)/100)+(dfg['SMA_200'])
 
@@ -550,6 +565,10 @@ while True:
                                                     abs(dfg['High'] - dfg['Low']) * 0.7, "s", ""))
             
             dfg = dfg.astype({"Datetime": "datetime64"})
+
+            stk_name = dfg['Name'][0]
+            print("1 Day Data Download and Scan "+str(stk_name)+" ("+str(a)+")")
+            
             dfg["Date"] = dfg["Datetime"].dt.date
 
             five_df1 = pd.concat([dfg, five_df1])
@@ -557,17 +576,17 @@ while True:
             dfgg = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["RSI_14"] > 70 ) & (dfg["Date"] == current_trading_day.date())]
             five_df2 = pd.concat([dfgg, five_df2])
 
-
             #print(dfg["Scripcode"])
 
             if dfgg.empty:
                 pass
             else:
-                #print(dfgg["Scripcode"])
                 aa = int(dfgg["Scripcode"])
-                print("5 Minute Data Download and Scan "+str(aa))
-                dfg1 = client.historical_data('N', 'C', aa, '5m',lastTradingDay,current_trading_day)
-                dfg1['Scripcode'] = aa
+                dfg1 = client.historical_data('N', 'C', aa, '5m',lastTradingDay,current_trading_day)    
+                dfg1['Scripcode'] = aa            
+                dfg1 = pd.merge(flt_exc_eq, dfg1, on=['Scripcode'], how='inner') 
+                dfg1 = dfg1[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume']]
+                
                 dfg1['Date'] = current_trading_day 
                 dfg1["RSI_14"] = np.round((pta.rsi(dfg1["Close"], length=14)),2) 
 
@@ -633,47 +652,77 @@ while True:
                 dfg1['Buy/Sell1'] = np.where(dfg1['Close'] > (dfg1['High']).shift(-1),"Buy_new","")
                 dfg1['Buy_At'] = round((dfg1['Close']),2)
                 dfg1['Stop_Loss'] = round((dfg1['Buy_At'] - (dfg1['Buy_At']*2)/100),2)
-                dfg1['Add_Till'] = ""            
+                dfg1['Add_Till'] = 0            
                 dfg1['Target'] = round((((dfg1['Buy_At']*2)/100) + dfg1['Buy_At']),2)
                 dfg1['Term'] = "SFT"
-                five_df3 = pd.concat([dfg1, five_df3])
 
-                dfgg1 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Buy_new") & (dfg1["RSI_14"] > 70 ) & (dfg1["Date"] == lastTradingDay.date())]
+                stk_name1 = dfg1['Name'][0]
+                print("5 Minute Data Download and Scan "+str(stk_name1)+" ("+str(aa)+")")               
+
+                five_df3 = pd.concat([dfg1, five_df3])
+                dfgg1 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Buy_new") & (dfg1["RSI_14"] > 70 ) & (dfg1["Date"] == current_trading_day.date())]
                 #dfgg1 = dfgg1.iloc[[1]]
                 dfgg1 = dfgg1.iloc[1:2]
+      
                 five_df4 = pd.concat([dfgg1, five_df4])
-                
+
                 if dfgg1.empty:
-                    pass
+                    parameters = {"chat_id" : "6143172607","text" : "No Stock Selected "+str(stk_name1)}
+                    resp = requests.get(telegram_basr_url, data=parameters)
+                    #print(resp.text)
                 else:
-                    #print(dfgg["Scripcode"])                    
-                    aa = int(dfgg1["Scripcode"])
-                    print("5 Minute Data Selected "+str(aa))
+                    Buy_Scriptcodee = aa
+                    Buy_price_of_stock = float(dfgg1['Buy_At'])  
+                    Buy_Add_Till = float(dfgg1['Add_Till'])                       
+                    Buy_Stop_Loss = float(dfgg1['Stop_Loss'])    
+                    Buy_Target = float(dfgg1['Target']) 
+                    Buy_timee = str((dfgg1['Datetime'].values)[0])[0:19] 
+                    Buy_timee1= Buy_timee.replace("T", " " )
+                    print(Buy_timee1)
+
+                    if Buy_price_of_stock < 100:
+                        Buy_quantity_of_stock = 200
+                    if Buy_price_of_stock > 100 and Buy_price_of_stock < 200:
+                        Buy_quantity_of_stock = 100                        
+                    if Buy_price_of_stock > 200 and Buy_price_of_stock < 300:
+                        Buy_quantity_of_stock = 80
+                    if Buy_price_of_stock > 300:
+                        Buy_quantity_of_stock = 50
+                    Req_Amount = Buy_quantity_of_stock*Buy_price_of_stock                  
+   
+                    #print("5 Minute Data Selected "+str(stk_name1)+" ("+str(Buy_Scriptcodee)+")")
+                    #print("Buy Order of "+str(stk_name1)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on"+str(Buy_timee1))
+                    
+                    print("SYMBOL : "+str(stk_name1)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1))
+
+                    parameters1 = {"chat_id" : "6143172607","text" : "STOCK : "+str(stk_name1)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
+                    resp = requests.get(telegram_basr_url, data=parameters1)
+                    # print(resp.text)
                     
             #five_df2 = pd.concat([dfg, five_df2])
         except Exception as e:
                 print(e) 
-        print("---------------------------------")
+        print("------------------------------------------------")
     
-    five_df11 = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner') 
-    five_df11 = five_df11[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Sma_200_break','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+    # five_df11 = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner') 
+    # five_df11 = five_df11[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Sma_200_break','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
     Fiv_dt.range("a:az").value = None
-    Fiv_dt.range("a1").options(index=False).value = five_df11
+    Fiv_dt.range("a1").options(index=False).value = five_df1
 
-    five_df12 = pd.merge(flt_exc_eq, five_df2, on=['Scripcode'], how='inner') 
-    five_df12 = five_df12[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Sma_200_break','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+    # five_df12 = pd.merge(flt_exc_eq, five_df2, on=['Scripcode'], how='inner') 
+    # five_df12 = five_df12[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Sma_200_break','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
     delv_dt.range("a:az").value = None
-    delv_dt.range("a1").options(index=False).value = five_df12
+    delv_dt.range("a1").options(index=False).value = five_df2
 
-    five_df13 = pd.merge(flt_exc_eq, five_df3, on=['Scripcode'], how='inner') 
-    five_df13 = five_df13[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+    # five_df13 = pd.merge(flt_exc_eq, five_df3, on=['Scripcode'], how='inner') 
+    # five_df13 = five_df13[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
     five_delv.range("a:az").value = None
-    five_delv.range("a1").options(index=False).value = five_df13
+    five_delv.range("a1").options(index=False).value = five_df3
 
-    five_df14 = pd.merge(flt_exc_eq, five_df4, on=['Scripcode'], how='inner') 
-    five_df14 = five_df14[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+    # five_df14 = pd.merge(flt_exc_eq, five_df4, on=['Scripcode'], how='inner') 
+    # five_df14 = five_df14[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
     fl_data.range("a:az").value = None
-    fl_data.range("a1").options(index=False).value = five_df14
+    fl_data.range("a1").options(index=False).value = five_df4
 
 
 

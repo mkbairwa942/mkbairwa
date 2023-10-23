@@ -53,8 +53,8 @@ print("Last Trading Day is :- "+str(last_trading_day))
 print("Second Last Trading Day is :- "+str(second_last_trading_day))
 print("Last 365 Day is :- "+str(days_365))
 
-dfghg = client.historical_data('N', 'C', 324, '5m', lastTradingDay, current_trading_day)
-print(dfghg)
+# dfghg = client.historical_data('N', 'C', 324, '5m', current_trading_day, current_trading_day)
+# print(dfghg)
 
 days_count = len(trading_days)
 
@@ -146,6 +146,8 @@ nse = NseIndia()
 
 # pdf = nse.get_stock_info("RELIANCE", trade_info=True)["securityWiseDP"]
 # print(pdf)
+
+
 print("hii")
 stk_li = np.unique(bhavcopy(last_trading_day)['SYMBOL'])
 
@@ -536,7 +538,6 @@ while True:
 
     orders_select1 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == current_trading_day) & (eq_data_pd["RSI_14"] > 70 )]
     orders_select1["Watchlist"] = "N" + ":" + "C" + ":" + orders_select1["Name"]
-    print(orders_select1.tail(1))
     orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
     strategy1.range("a:r").value = None
     strategy1.range("a1").options(index=False).value = orders_select1
@@ -580,7 +581,7 @@ while True:
         five_df.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
         return five_df  
     
-    five_df_intra_new = five_df_intra(intraday_list,'5m',lastTradingDay,current_trading_day)
+    five_df_intra_new = five_df_intra(intraday_list,'5m',current_trading_day,current_trading_day)
     five_delv.range("a:i").value = None
     five_delv.range("a1").options(index=False).value = five_df_intra_new
     
@@ -693,46 +694,49 @@ while True:
     
     #eq_data_pd_intra["Date"] = pd.to_datetime(eq_data_pd_intra["Datetime"])
     eq_data_pd_intra["Date"] = eq_data_pd_intra["Datetime"].dt.date
-    print(eq_data_pd_intra.head(1))
-    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == lastTradingDay.date()) & (eq_data_pd_intra["RSI_14"] > 70 )]
-    orders_select4["Watchlist"] = "N" + ":" + "C" + ":" + orders_select4["Name"]
-    orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
-    print(orders_select4.tail(5))
-    intraday_sym_list_new = np.unique([str(i) for i in orders_select4['Name']])
-    print(intraday_sym_list_new)
-    eq_data_pd5 = pd.DataFrame()
-    for int_list in intraday_sym_list_new:
-        eq_data5 = orders_select4[orders_select4['Name'] == int_list]
-        print(eq_data5)
-        eq_data5['Buy/Sell1'] = np.where(eq_data5['Close'] > (eq_data5['High']).shift(-1),"Buy_new","") 
-        eq_data_pd5 = pd.concat([eq_data5, eq_data_pd5])                                        
-        print(int_list)
-    eq_data_pd5.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-    strategy2.range("a:ae").value = None
-    strategy2.range("a1").options(index=False).value = eq_data_pd5
-
-
-    eq_data_pd5.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
-    orders_select5 = eq_data_pd5[(eq_data_pd5["Buy/Sell1"] == "Buy_new") ]
-
-
-    intraday_sym_list_new1 = np.unique([str(i) for i in orders_select5['Name']])
-    five_df_new1 = pd.DataFrame()
-    for aa in intraday_sym_list_new1:
-        eq_data5 = orders_select5[orders_select5['Name'] == aa]
-        five_df_new1 = pd.concat([eq_data5.iloc[:1], five_df_new1])
-    five_df_new1.sort_values(['Name',], ascending=[True], inplace=True)
-    five_df_new1['Buy_At'] = round((five_df_new1['Close']),2)
-    five_df_new1['Stop_Loss'] = round((five_df_new1['Buy_At'] - (five_df_new1['Buy_At']*2)/100),2)
-    five_df_new1['Add_Till'] = ""
+    orders_select4 = eq_data_pd_intra[(eq_data_pd_intra["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd_intra["Buy/Sell"] != "")  & (eq_data_pd_intra["Date"] == current_trading_day.date()) & (eq_data_pd_intra["RSI_14"] > 70 )]
     
-    five_df_new1['Target'] = round((((five_df_new1['Buy_At']*2)/100) + five_df_new1['Buy_At']),2)
-    five_df_new1['Term'] = "SFT"
-    
-    five_df_new1 = five_df_new1[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes']]
-    strategy3.range("a:ae").value = None
-    strategy3.range("a1").options(index=False).value = five_df_new1
-    
+    if orders_select4.empty:
+        print("No Stock Selected")
+    else:
+        orders_select4["Watchlist"] = "N" + ":" + "C" + ":" + orders_select4["Name"]
+        orders_select4 = orders_select4[['Name','Buy/Sell','Scripcode','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Watchlist']]
+        intraday_sym_list_new = np.unique([str(i) for i in orders_select4['Name']])
+        print(intraday_sym_list_new)
+        eq_data_pd5 = pd.DataFrame()
+        for int_list in intraday_sym_list_new:
+            eq_data5 = orders_select4[orders_select4['Name'] == int_list]
+            eq_data5['Buy/Sell1'] = np.where(eq_data5['Close'] > (eq_data5['High']).shift(-1),"Buy_new","") 
+            eq_data_pd5 = pd.concat([eq_data5, eq_data_pd5])                                      
+  
+        eq_data_pd5.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+        strategy2.range("a:ae").value = None
+        strategy2.range("a1").options(index=False).value = eq_data_pd5
+
+
+        eq_data_pd5.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
+        orders_select5 = eq_data_pd5[(eq_data_pd5["Buy/Sell1"] == "Buy_new") ]
+        if orders_select5.empty:
+            print("No Stock Selected")
+        else:
+            intraday_sym_list_new1 = np.unique([str(i) for i in orders_select5['Name']])
+            five_df_new1 = pd.DataFrame()
+            for aa in intraday_sym_list_new1:
+                eq_data5 = orders_select5[orders_select5['Name'] == aa]
+                five_df_new1 = pd.concat([eq_data5.iloc[:1], five_df_new1])
+            print(five_df_new1)
+            five_df_new1.sort_values(['Name'], ascending=[True], inplace=True)
+            five_df_new1['Buy_At'] = round((five_df_new1['Close']),2)
+            five_df_new1['Stop_Loss'] = round((five_df_new1['Buy_At'] - (five_df_new1['Buy_At']*2)/100),2)
+            five_df_new1['Add_Till'] = ""
+            
+            five_df_new1['Target'] = round((((five_df_new1['Buy_At']*2)/100) + five_df_new1['Buy_At']),2)
+            five_df_new1['Term'] = "SFT"
+            
+            five_df_new1 = five_df_new1[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes']]
+            strategy3.range("a:ae").value = None
+            strategy3.range("a1").options(index=False).value = five_df_new1
+            
 
     # posit = orders_select1
       
