@@ -31,6 +31,7 @@ import time
 first_name = "mkbairwa"
 username = "mkbairwa_bot"
 id = ":758543600"
+zealous = "-4048562236"
 
 print("hi")
 resp = requests.get("https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/getMe")
@@ -49,7 +50,8 @@ parameters = {
 resp = requests.get(basr_url, data=parameters)
 #print(resp.text)
 
-basr_url1 = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage"
+basr_url1 = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/getUpdates"
+send_msg = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessags?chat_id=-4048562236"
 
 jokes = ["I Invented a New Bot","jokes1","jokes2","jokes3"]
 for joke in jokes:

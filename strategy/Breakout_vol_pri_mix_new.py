@@ -10,6 +10,7 @@ import copy
 import numpy as np
 import xlwings as xw
 from five_paisa import *
+from five_paisa1 import *
 from datetime import datetime,timedelta
 from numpy import log as nplog
 from numpy import NaN as npNaN
@@ -31,7 +32,13 @@ telegram_id = ":758543600"
 
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage"
 
-#client = credentials('alpesh','091254')
+username = input("Enter Username : ")
+username1 = str(username)
+print("Hii "+str(username1)+" have a Good Day")
+username_totp = input("Enter TOTP : ")
+username_totp1 = str(username_totp)
+print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+client = credentials(username1,username_totp1)
 
 from_d = (date.today() - timedelta(days=10))
 # from_d = date(2022, 12, 29)
@@ -689,7 +696,7 @@ while True:
                     if Buy_price_of_stock > 300:
                         Buy_quantity_of_stock = 50
                     Req_Amount = Buy_quantity_of_stock*Buy_price_of_stock                  
-   
+                    order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                     #print("5 Minute Data Selected "+str(stk_name1)+" ("+str(Buy_Scriptcodee)+")")
                     #print("Buy Order of "+str(stk_name1)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on"+str(Buy_timee1))
                     
