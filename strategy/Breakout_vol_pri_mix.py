@@ -10,6 +10,7 @@ import copy
 import numpy as np
 import xlwings as xw
 from five_paisa import *
+#from five_paisa1 import *
 from datetime import datetime,timedelta
 from numpy import log as nplog
 from numpy import NaN as npNaN
@@ -22,8 +23,21 @@ import sys
 from zipfile import ZipFile
 import requests
 import itertools
+from telethon.sync import TelegramClient
 
-#client = credentials('alpesh','091254')
+telegram_first_name = "mkbairwa"
+telegram_username = "mkbairwa_bot"
+telegram_id = ":758543600"
+#telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
+telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
+
+# username = input("Enter Username : ")
+# username1 = str(username)
+# print("Hii "+str(username1)+" have a Good Day")
+# username_totp = input("Enter TOTP : ")
+# username_totp1 = str(username_totp)
+# print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+# client = credentials(username1,username_totp1)
 
 from_d = (date.today() - timedelta(days=10))
 # from_d = date(2022, 12, 29)
@@ -37,7 +51,11 @@ to_days = (date.today()-timedelta(days=1))
 days_365 = (date.today() - timedelta(days=365))
 print(days_365)
 
-trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holidays())
+holida = pd.read_excel('D:\STOCK\Capital_vercel_new\strategy\holida.xlsx')
+holida["Date"] = holida["Date1"].dt.date
+holida1 = np.unique(holida['Date'])
+
+trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holida1)
 trading_dayss = trading_days_reverse[::-1]
 trading_days = trading_dayss[1:]
 # trading_days = trading_dayss[2:]

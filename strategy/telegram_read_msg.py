@@ -65,3 +65,9 @@ for joke in jokes:
     print(resp.text)
 
 print("hi_all")
+
+for joke in jokes:
+    #print(joke) 
+    urll = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
+    #print(urll)
+    requests.get(urll)
