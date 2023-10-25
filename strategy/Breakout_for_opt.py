@@ -526,7 +526,7 @@ while True:
 
             exc_df = copy.deepcopy(exchange1)
             exc_df = exc_df[(exc_df['Root'].isin(['NIFTY', 'BANKNIFTY'])) & (exc_df["Expiry1"] == oc_expiry.date())]
-            nifty_current_ltp = get_live_data("N","C","NIFTY")['Data'][0]["LastTradedPrice"]
+            nifty_current_ltp = get_live_data("N","C",current_data_nifty"NIFTY")['Data'][0]["LastTradedPrice"]
             bank_nifty_current_ltp = get_live_data("N","C","BANKNIFTY")['Data'][0]["LastTradedPrice"]
             current_data_nifty = round(nifty_current_ltp/diff,0)*diff
             current_data_bank_nifty = round(bank_nifty_current_ltp/diff,0)*diff
