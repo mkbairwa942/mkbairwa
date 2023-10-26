@@ -269,11 +269,11 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-# script_list = [22347,	20302,	18967,	4587,	3908,	1923,	1508,]
-# stk_list = ['MACPOWER',	'PRESTIGE',	'KAPSTON',	'RAMCOIND',	'PREMIERPOL',	'WEALTH',	'ASTERDM',]
+script_list = [22347,	20302,	18967,	4587,	3908,	1923,	1508,]
+stk_list = ['MACPOWER',	'PRESTIGE',	'KAPSTON',	'RAMCOIND',	'PREMIERPOL',	'WEALTH',	'ASTERDM',]
 	
-script_list = np.unique(exc_equity['Scripcode'])
-stk_list = np.unique(exc_equity["Root"])
+# script_list = np.unique(exc_equity['Scripcode'])
+# stk_list = np.unique(exc_equity["Root"])
 
 print("Total Stock : "+str(len(script_list)))
 
@@ -282,6 +282,7 @@ print("Total Stock : "+str(len(script_list)))
 def ordef_func():
     try:
         ordbook = pd.DataFrame(client.order_book())
+        #print(ordbook.tail(2))
         pos.range("a10").options(index=False).value = ordbook
     except Exception as e:
                 print(e)
@@ -310,6 +311,7 @@ def ordef_func():
     return ordbook1
             
 buy_order_li = ordef_func()
+#print(buy_order_li.tail(1))
 buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
 print(buy_order_list)
 
@@ -552,7 +554,9 @@ while True:
     for a in script_list:
         try:
             # print("1 Day Data Download and Scan "+str(a))
-            dfg = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day)            
+            print(a)
+            dfg = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day) 
+            print(dfg.tail(1))           
             dfg['Scripcode'] = a
             dfg = pd.merge(flt_exc_eq, dfg, on=['Scripcode'], how='inner') 
             dfg = dfg[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume']]
