@@ -44,7 +44,7 @@ print(intraday)
 engine = sqlalchemy.create_engine('mysql+pymysql://mkbairwa942:vaa2829m@5.183.11.143:3306/capitalsscope')
 
 def credentials (name,TOTPP):
-    if name=='bhavna':
+    if name.upper() =='BHAVNA':
         cred = {
             "APP_NAME": "5P50464800",
             "APP_SOURCE": "16351",
@@ -61,7 +61,7 @@ def credentials (name,TOTPP):
         client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
         client.login()
 
-    if name=='mukesh':
+    if name.upper() == 'MUKESH':
         cred = {
             "APP_NAME": "5P57141743",
             "APP_SOURCE": "9997",
@@ -78,7 +78,7 @@ def credentials (name,TOTPP):
         client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
         client.login()
 
-    if name=='haresh':
+    if name.upper() == 'HARESH':
         cred = {
             "APP_NAME": "5P50645842",
             "APP_SOURCE": "16771",
@@ -95,7 +95,7 @@ def credentials (name,TOTPP):
         client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
         client.login()
 
-    if name == 'alpesh':
+    if name.upper() == 'ALPESH':
         cred = {
             "APP_NAME": "5P50840495",
             "APP_SOURCE": "19325",
