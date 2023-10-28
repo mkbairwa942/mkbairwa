@@ -2,6 +2,7 @@
 import pandas as pd
 #from py5paisa.order import Order, OrderType, Exchange
 from py5paisa1 import FivePaisaClient
+import pyotp
 import os
 import pprint
 from datetime import date, datetime, timedelta
@@ -12,12 +13,6 @@ from datetime import datetime
 import time
 from dateutil.utils import today
 import sqlalchemy
-
-
-s=415593
-op='"{}"'.format(s)
-print(op)
-
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -43,7 +38,7 @@ print(intraday)
 
 engine = sqlalchemy.create_engine('mysql+pymysql://mkbairwa942:vaa2829m@5.183.11.143:3306/capitalsscope')
 
-def credentials (name,TOTPP):
+def credentials (name):
     if name.upper() =='BHAVNA':
         cred = {
             "APP_NAME": "5P50464800",
@@ -107,9 +102,10 @@ def credentials (name,TOTPP):
 
         user = 'agnagar300678@gmail.com'
         pwd = 'agnagar@123'
-        dob = '19780630'
+        dob = '19780630'        
+        TOTP=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
         print(user)
-        TOTP=TOTPP
+        print(TOTP)
         client_code='50840495'
         Pin='200200'
         RequestToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjUwODQwNDk1Iiwicm9sZSI6IkRrZldGQTFuUktoa0pMNG9MZnlubmwzYU50dzFBZzVmIiwiU3RhdGUiOiIiLCJuYmYiOjE2OTcwOTkyMzAsImV4cCI6MTY5NzA5OTI5MCwiaWF0IjoxNjk3MDk5MjMwfQ.ZePYRN6mi7F_FRrgyujAQjQ4WKANUoQuiJJboLIgVDU'

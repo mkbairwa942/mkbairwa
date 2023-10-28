@@ -21,6 +21,7 @@ from numpy import NaN as npNaN
 import pywhatkit as pwk
 import dateutil.parser
 import threading
+import pyotp
 from datetime import datetime,timedelta
 from py_vollib.black_scholes.implied_volatility import implied_volatility
 from py_vollib.black_scholes.greeks.analytical import delta, gamma, rho, theta, vega
@@ -30,13 +31,15 @@ pd.options.mode.copy_on_write = True
 operate = input("Do you want to go with TOTP (yes/no): ")
 if operate.upper() == "YES":
     from five_paisa1 import *
+    # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
+    # print(p)
     username = input("Enter Username : ")
     username1 = str(username)
     print("Hii "+str(username1)+" have a Good Day")
-    username_totp = input("Enter TOTP : ")
-    username_totp1 = str(username_totp)
-    print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
-    client = credentials(username1,username_totp1)
+    # username_totp = input("Enter TOTP : ")
+    # username_totp1 = str(username_totp)
+    # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+    client = credentials(username1)
 else:
     from five_paisa import *
 
@@ -231,7 +234,7 @@ st2 = wb.sheets("Stat2")
 st3 = wb.sheets("Stat3")
 st4 = wb.sheets("Stat4")
 dt.range("i:s").value = None
-by.range("a:u").value = None
+by.range("a:x").value = None
 sl.range("a:ab").value = None
 fl.range("a:az").value = None
 exc.range("a:z").value = None
@@ -330,6 +333,11 @@ put_counter = 0
 buy_order_list = []
 ord_buy_df_list = []
 ord_sell_df_list = []
+
+
+by.range("a1:x1").color = (54,226,0)
+by.range("a1:x1").font.bold = True
+by.range("a1:x1").api.WrapText = True
 
 while True:
     oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
@@ -464,6 +472,12 @@ while True:
             df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp', 'StrikeRate',
                     'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
             oc.range("g1").value = df1
+            num_col = ['CE_Volume','CE_Chg_OI','PE_Chg_OI','PE_Volume']
+            df1.style.highlight_max()
+            df1.style.highlight_max(subset=num_col,color='lightgreen')
+            df1.style.highlight_min(subset=num_col,color='pink')
+            
+
 
             time.sleep(0.5)            
             scpt = dt.range(f"a{1}:h{50}").value            
@@ -531,7 +545,7 @@ while True:
 
                                 if trade_info[1].upper() == "BUY" and trade_info[2] is None:  
                                     print("Buy order")   
-                                    dt.range(f"t{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"B")
+                                    #dt.range(f"t{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"B")
 
                                 if trade_info[1].upper() == "BUY" and trade_info[2].upper() == "SELL":
                                     print("Sell order")  
@@ -539,7 +553,7 @@ while True:
 
                                 if trade_info[1].upper() == "SELL" and trade_info[2] is None:  
                                     print("Sell order")                                    
-                                    dt.range(f"t{idx +2 }").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"S")
+                                    #dt.range(f"t{idx +2 }").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"S")
 
                                 if trade_info[1].upper() == "SELL" and trade_info[2].upper() == "BUY":   
                                     print("Buy order")                                   
@@ -629,21 +643,23 @@ while True:
 
             if posit.empty:
                 flt_df = flt_df[['Name','Scriptcodee','Stop_Loss','Add_Till','Buy_At','Target','Term',
-                                'Datetime','TimeNow','Minutes','Buy','Timeover','Open','High','Low','LTP','Close','NetChange']]                                
+                                'Datetime','TimeNow','Minutes','Buy','Open','High','Low','LTP','Close','NetChange','Status']]                                
+                by.range(f"s1:x1").value = ["MTOM","BookedPL","BuyQty","Entry","Exit","X" ]
                 by.range("a1").options(index=False).value = flt_df
+
             else:
                 posit.rename(columns={'ScripName': 'Name'},inplace=True)
                 flt_df1 = pd.merge(flt_df, posit, on=['Name'], how='outer')
                 flt_df1 = flt_df1[['Name','Scriptcodee','Stop_Loss','Add_Till','Buy_At','Target','Term',
                                 'Datetime','TimeNow','Minutes','Buy','Open','High','Low','LTP_x','Close',
-                                'NetChange','MTOM','BookedPL','Status','BuyQty']]
+                                'NetChange','Status','MTOM','BookedPL','BuyQty']]
                 
-                flt_df1['Entry'] = np.where(flt_df1['BuyQty'] != "","BUY","")
+                flt_df1['Entry'] = np.where(flt_df1['MTOM'] != "","BUY","")
                 flt_df1['Exit'] = np.where((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Sl_Hit") | (flt_df1['Status'] == "Target_Hit"),"SELL","")
                 
 
 
-                by.range("a:w").value = None         
+                by.range("a:x").value = None         
                 by.range("a1").options(index=False).value = flt_df1
 
             print("44444")
