@@ -9,8 +9,6 @@ import pandas as pd
 import copy
 import numpy as np
 import xlwings as xw
-#from five_paisa import *
-from five_paisa1 import *
 from datetime import datetime,timedelta
 from numpy import log as nplog
 from numpy import NaN as npNaN
@@ -32,13 +30,20 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-username = input("Enter Username : ")
-username1 = str(username)
-print("Hii "+str(username1)+" have a Good Day")
-username_totp = input("Enter TOTP : ")
-username_totp1 = str(username_totp)
-print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
-client = credentials(username1,username_totp1)
+operate = input("Do you want to go with TOTP (yes/no): ")
+if operate.upper() == "YES":
+    from five_paisa1 import *
+    # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
+    # print(p)
+    username = input("Enter Username : ")
+    username1 = str(username)
+    print("Hii "+str(username1)+" have a Good Day")
+    # username_totp = input("Enter TOTP : ")
+    # username_totp1 = str(username_totp)
+    # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+    client = credentials(username1)
+else:
+    from five_paisa import *
 
 from_d = (date.today() - timedelta(days=10))
 # from_d = date(2022, 12, 29)
@@ -207,6 +212,19 @@ pos = wb.sheets("Position")
 strategy1 = wb.sheets("Strategy1")
 strategy2 = wb.sheets("Strategy2")
 strategy3 = wb.sheets("Strategy3")
+
+exc.range("a:u").value = None
+flt_exc.range("a:u").value = None
+bhv.range("a:u").value = None
+bhv_fo.range("a:u").value = None
+Fiv_dt.range("a:u").value = None
+delv_dt.range("a:u").value = None
+five_delv.range("a:u").value = None
+fl_data.range("a:u").value = None
+pos.range("a:u").value = None
+strategy1.range("a:u").value = None
+strategy2.range("a:u").value = None
+strategy3.range("a:u").value = None
 
 st = wb.sheets("Stat")
 st1 = wb.sheets("Stat1")
@@ -578,7 +596,7 @@ while True:
                                                 'Pri_Up_brk',
                                                 (np.where((dfg['Close'] < (dfg.Low.rolling(5).min()).shift(-5)),
                                                             'Pri_Dwn_brk', "")))
-            dfg['Vol_break'] = np.where(dfg['Volume'] > (dfg.Volume.rolling(5).mean() * 2).shift(-5),
+            dfg['Vol_break'] = np.where(dfg['Volume'] > (dfg.Volume.rolling(5).mean() * 1.75).shift(-5),
                                                 "Vol_brk","")       
                                                                                                                 
             dfg['Vol_Price_break'] = np.where((dfg['Vol_break'] == "Vol_brk") &
@@ -638,8 +656,8 @@ while True:
 
             five_df1 = pd.concat([dfg, five_df1])
 
-            dfgg_up = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["RSI_14"] > 70 ) & (dfg["Week52"] == "Week52High" ) & (dfg["Date"] == current_trading_day.date())]
-            dfgg_dn = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["RSI_14"] < 30 ) & (dfg["Week52"] == "Week52Low" ) & (dfg["Date"] == current_trading_day.date())]
+            dfgg_up = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["RSI_14"] > 70 ) &  (dfg["Date"] == current_trading_day.date())]
+            dfgg_dn = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["RSI_14"] < 30 ) &  (dfg["Date"] == current_trading_day.date())]
 
             five_df2 = pd.concat([dfgg_up, five_df2])            
             five_df5 = pd.concat([dfgg_dn, five_df5])
@@ -680,7 +698,7 @@ while True:
                                                         'Pri_Up_brk',
                                                         (np.where((dfg1['Close'] < (dfg1.Low.rolling(5).min()).shift(-5)),
                                                                     'Pri_Dwn_brk', "")))
-                    dfg1['Vol_break'] = np.where(dfg1['Volume'] > (dfg1.Volume.rolling(5).mean() * 2).shift(-5),
+                    dfg1['Vol_break'] = np.where(dfg1['Volume'] > (dfg1.Volume.rolling(5).mean() * 2.5).shift(-5),
                                                         "Vol_brk","")       
                                                                                                                         
                     dfg1['Vol_Price_break'] = np.where((dfg1['Vol_break'] == "Vol_brk") &
@@ -732,7 +750,7 @@ while True:
                     dfg1['Buy/Sell1'] = np.where(dfg1['Close'] > (dfg1['High']).shift(-1),"Buy_new",np.where(dfg1['Close'] < (dfg1['Low']).shift(-1),"Sell_new",""))
                     dfg1['Buy_At'] = round((dfg1['Close']),1)
                     dfg1['Stop_Loss'] = np.where(dfg1['Buy/Sell1'] == "Buy_new",round((dfg1['Buy_At'] - (dfg1['Buy_At']*1)/100),1),np.where(dfg1['Buy/Sell1'] == "Sell_new",round((((dfg1['Buy_At']*2)/100) + dfg1['Buy_At']),1),""))
-                    dfg1['Add_Till'] = dfg1['Buy_At']-((dfg1['Buy_At']*0.5)/100)         
+                    dfg1['Add_Till'] = round((dfg1['Buy_At']-((dfg1['Buy_At']*0.5)/100)),1)         
                     dfg1['Target'] = np.where(dfg1['Buy/Sell1'] == "Buy_new",round((((dfg1['Buy_At']*2)/100) + dfg1['Buy_At']),1),np.where(dfg1['Buy/Sell1'] == "Sell_new",round((dfg1['Buy_At'] - (dfg1['Buy_At']*2)/100),1),""))
                     dfg1['Term'] = "SFT"
 
@@ -859,7 +877,7 @@ while True:
         # five_df11 = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner') 
         five_df1 = five_df1[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df1.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        Fiv_dt.range("a:az").value = None
+        #Fiv_dt.range("a:az").value = None
         Fiv_dt.range("a1").options(index=False).value = five_df1
 
     if five_df2.empty:
@@ -868,7 +886,7 @@ while True:
         # five_df12 = pd.merge(flt_exc_eq, five_df2, on=['Scripcode'], how='inner') 
         five_df2 = five_df2[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df2.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        delv_dt.range("a:az").value = None
+        #delv_dt.range("a:az").value = None
         delv_dt.range("a1").options(index=False).value = five_df2
 
     if five_df3.empty:
@@ -877,7 +895,7 @@ while True:
         # five_df13 = pd.merge(flt_exc_eq, five_df3, on=['Scripcode'], how='inner') 
         five_df3 = five_df3[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','Date','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df3.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        five_delv.range("a:az").value = None
+        #five_delv.range("a:az").value = None
         five_delv.range("a1").options(index=False).value = five_df3
 
     if five_df4.empty:
@@ -886,7 +904,7 @@ while True:
         # five_df14 = pd.merge(flt_exc_eq, five_df4, on=['Scripcode'], how='inner') 
         five_df4 = five_df4[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        fl_data.range("a:az").value = None
+        #fl_data.range("a:az").value = None
         fl_data.range("a1").options(index=False).value = five_df4
 
     if five_df5.empty:
@@ -895,7 +913,7 @@ while True:
         # five_df12 = pd.merge(flt_exc_eq, five_df5, on=['Scripcode'], how='inner') 
         five_df5 = five_df5[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df5.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        delv_dt.range("a:az").value = None
+        #delv_dt.range("a:az").value = None
         delv_dt.range("a10").options(index=False).value = five_df5
 
     if five_df6.empty:
@@ -905,7 +923,7 @@ while True:
         five_df6 = five_df6[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df6.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         #fl_data.range("a:az").value = None
-        fl_data.range("a20").options(index=False).value = five_df6
+        fl_data.range("a30").options(index=False).value = five_df6
 
     if five_df3.empty:
         pass
@@ -913,11 +931,21 @@ while True:
         # five_df13 = pd.merge(flt_exc_eq, five_df3, on=['Scripcode'], how='inner') 
         five_df3 = five_df3[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','Date','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df3.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+        
         not_selected_up = five_df3[(five_df3["Vol_Price_break"] == "Vol_Pri_break") & (five_df3["Buy/Sell1"] == "Buy_new") & (five_df3["RSI_14"] > 70 ) & (five_df3["Date"] == current_trading_day.date())]
         not_selected_dn = five_df3[(five_df3["Vol_Price_break"] == "Vol_Pri_break") & (five_df3["Buy/Sell1"] == "Sell_new") & (five_df3["RSI_14"] < 30 ) & (five_df3["Date"] == current_trading_day.date())]
+        
+        #First Two Row
+        not_selected_up1 = not_selected_up.iloc[:2]
+        not_selected_dn1 = not_selected_dn.iloc[:2]
+
+        # # Last Two Row
+        # not_selected_up1 = not_selected_up.iloc[-2:] 
+        # not_selected_dn1 = not_selected_dn.iloc[-2:] 
+        
         fl_data.range("a:az").value = None
-        fl_data.range("a6").options(index=False).value = not_selected_up
-        fl_data.range("a15").options(index=False).value = not_selected_dn
+        fl_data.range("a6").options(index=False).value = not_selected_up1
+        fl_data.range("a20").options(index=False).value = not_selected_dn1
     #     try:
     #         print(a)
     #         dfg1 = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day)
