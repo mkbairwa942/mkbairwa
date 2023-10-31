@@ -287,15 +287,43 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-# script_list = [22347,	20302,	18967,	4587,	3908,	1923,	1508,]
-# stk_list = ['MACPOWER',	'PRESTIGE',	'KAPSTON',	'RAMCOIND',	'PREMIERPOL',	'WEALTH',	'ASTERDM',]
+script_list = [22347,	20302,	18967,	4587,	3908,	1923,	1508,]
+stk_list = ['MACPOWER',	'PRESTIGE',	'KAPSTON',	'RAMCOIND',	'PREMIERPOL',	'WEALTH',	'ASTERDM',]
 	
-script_list = np.unique(exc_equity['Scripcode'])
-stk_list = np.unique(exc_equity["Root"])
+# script_list = np.unique(exc_equity['Scripcode'])
+# stk_list = np.unique(exc_equity["Root"])
 
 print("Total Stock : "+str(len(script_list)))
 
 #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
+
+def bhavcopy_func():
+    eq_bhav = pd.DataFrame()
+    for i in trading_days:
+        try:
+            print(i)
+            bh_df = bhavcopy(i)
+            bh_df = pd.DataFrame(bh_df)
+            eq_bhav = pd.concat([bh_df, eq_bhav])
+        except Exception as e:
+            print(e)
+    
+    eq_bhav.sort_values(['SYMBOL', 'DATE1'], ascending=[True, False], inplace=True)
+    eq_bhav = eq_bhav[
+            ['SYMBOL', 'DATE1', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'TTL_TRD_QNTY',
+            'DELIV_QTY', 'DELIV_PER']]
+    eq_bhav.rename(columns={'SYMBOL': 'Name', 'DATE1': 'Date','OPEN_PRICE': 'Open','HIGH_PRICE': 'High', 'LOW_PRICE': 'Low',
+                                'CLOSE_PRICE': 'Close','TTL_TRD_QNTY': 'Volume','DELIV_QTY': 'Deliv_qty','DELIV_PER': 'Deliv_per', },inplace=True)
+     
+    #eq_bhav = eq_bhav[['Name', 'Date', 'Deliv_qty', 'Deliv_per']]
+    eq_bhav['Date'] = eq_bhav['Date'].astype('datetime64[ns]')    
+    return eq_bhav
+
+eq_bhav = bhavcopy_func()
+bhv.range("a:i").value = None                          
+bhv.range("a1").options(index=False).value = eq_bhav
+print(str(days_count)+" Days STOCK Data Download")
+
 
 def ordef_func():
     try:
@@ -429,14 +457,7 @@ while True:
     
     # five_df_new1 = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout_vol_pri_mix_new.xlsx', sheet_name='Five_data')
 
-    print("Five Paisa Data Download")
-
-    # data_eq1 = pd.concat([delv_data, five_df_new11])
-    # data_eq1.bfill(axis ='rows')
-    # data_eq1.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
-    # data_eq1.bfill(axis ='rows')
-    # sl.range("a1").options(index=False).value = data_eq1
-    # print("Data Analysis Started....")
+ 
 
     start_time3 = time.time()
     # def final_data_func(scp_lst,data_fram):
@@ -573,12 +594,31 @@ while True:
         try:
             # print("1 Day Data Download and Scan "+str(a))
             print(a)
-            dfg = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day)      
-            dfg['Scripcode'] = a
-            dfg = pd.merge(flt_exc_eq, dfg, on=['Scripcode'], how='inner') 
-            dfg = dfg[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume']]
+            dfggg = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day)      
+            dfggg['Scripcode'] = a
+            dfggg = pd.merge(flt_exc_eq, dfggg, on=['Scripcode'], how='inner') 
+            dfggg = dfggg[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume']]
+            dfggg = dfggg.astype({"Datetime": "datetime64[ns]"})
+            dfggg["Date"] = dfggg["Datetime"].dt.date
+            name1 = dfggg['Name'][0]
+            print
+            eq_bhav1 = eq_bhav[eq_bhav["Name"] == name1]
 
-            dfg['Date'] = current_trading_day
+            dfggg22 = pd.concat([dfggg, eq_bhav1], axis=0, sort=False)
+
+            dfg = dfggg22.drop_duplicates(subset=['Volume'],keep='last')
+            #dfg = dfggg22
+            #dfg = pd.merge(dfggg, eq_bhav[['Name', 'Date']], how="left", left_on=['Name', 'Date'], right_on=['Name', 'Date']);
+            #dfg = dfggg.merge(eq_bhav, how='inner', left_on=['Name', 'Date'], right_on=['Name', 'Date'])
+            print(dfg.tail(1))
+
+            # dfg = pd.concat([eq_bhav, dfggg])
+            # dfg.bfill(axis ='rows')
+            # dfg.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
+            # dfg.bfill(axis ='rows')
+            sl.range("a1").options(index=False).value = dfg
+
+            dfg['Date_Now'] = current_trading_day
             dfg["SMA_200"] = np.round((pta.sma(dfg["Close"], length=200,offset=0)),2)
             dfg["RSI_14"] = np.round((pta.rsi(dfg["Close"], length=14)),2)
 
@@ -587,10 +627,13 @@ while True:
 
             dfg['200-'] = (dfg['SMA_200'])-((dfg['SMA_200']*1)/100)
 
-            dfg.sort_values(['Datetime'], ascending=[False], inplace=True)
+            dfg.sort_values(['Date'], ascending=[False], inplace=True)
+
             dfg['Price_Chg'] = round(((dfg['Close'] * 100) / (dfg['Close'].shift(-1)) - 100), 2).fillna(0)      
             
             dfg['Vol_Chg'] = round(((dfg['Volume'] * 100) / (dfg['Volume'].shift(-1)) - 100), 2).fillna(0)
+
+            dfg['Deliv_break'] = np.where(dfg['Deliv_qty'] > (dfg.Deliv_qty.rolling(5).mean() * 1.1).shift(-5),"Deliv_brk", "")
 
             dfg['Price_break'] = np.where((dfg['Close'] > (dfg.High.rolling(5).max()).shift(-5)),
                                                 'Pri_Up_brk',
@@ -601,6 +644,10 @@ while True:
                                                                                                                 
             dfg['Vol_Price_break'] = np.where((dfg['Vol_break'] == "Vol_brk") &
                                                         (dfg['Price_break'] != ""), "Vol_Pri_break", "")
+            
+            dfg['Del_Vol_Pri_break'] = np.where((dfg['Deliv_break'].shift(-1) == "Deliv_brk") &
+                                                    (dfg['Vol_Price_break'] == "Vol_Pri_break"), "Del_Vol_Pri_break", "")
+            
             dfg['Sma_200_break'] = np.where((dfg['Close'] < dfg['200+']) & (dfg['Close'] > dfg['200-']),"Nr. 200_Sma Break","")
 
             dfg['Week52'] = np.where((dfg['High'] > (dfg.High.rolling(245).max()).shift(-245)),
@@ -646,12 +693,12 @@ while True:
                                             np.where(abs(dfg['Open'] - dfg['Close']) >
                                                     abs(dfg['High'] - dfg['Low']) * 0.7, "s", ""))
             
-            dfg = dfg.astype({"Datetime": "datetime64"})
-
+            
+            
             stk_name = dfg['Name'][0]
             print("1 Day Data Download and Scan "+str(stk_name)+" ("+str(a)+")")
             
-            dfg["Date"] = dfg["Datetime"].dt.date
+            #dfg["Date"] = dfg["Datetime"].dt.date
             dfg = dfg[0:25]
 
             five_df1 = pd.concat([dfg, five_df1])
@@ -875,8 +922,8 @@ while True:
         pass
     else:
         # five_df11 = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner') 
-        five_df1 = five_df1[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
-        five_df1.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+        five_df1 = five_df1[['Name','Scripcode','Date','TimeNow','Open','High','Low','Close','Volume','Deliv_qty','Deliv_per','RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','Deliv_break','Del_Vol_Pri_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+        five_df1.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
         #Fiv_dt.range("a:az").value = None
         Fiv_dt.range("a1").options(index=False).value = five_df1
 
@@ -884,7 +931,8 @@ while True:
         pass
     else:
         # five_df12 = pd.merge(flt_exc_eq, five_df2, on=['Scripcode'], how='inner') 
-        five_df2 = five_df2[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+        five_df2 = five_df2[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume',
+                             'RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df2.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         #delv_dt.range("a:az").value = None
         delv_dt.range("a1").options(index=False).value = five_df2
