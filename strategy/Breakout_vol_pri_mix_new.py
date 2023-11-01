@@ -287,11 +287,11 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-script_list = [13587,	1134,	193,	21174,	5142,	14218,	11423,	25690,	11530,	13421,	2868,	3776,	14947,	357,	31475,	9652,	8175,	714,	11233,	3748,	5385,	2716,	3744,	11027,	17625,	3150,]
-stk_list = ['APOLLO',	'ARVIND',	'CDSL',	'CIGNITITEC',	'CTE',	'DATAMATICS',	'DSSL',	'EMIL',	'EMKAY',	'HITECH',	'IWEL',	'MOTILALOFS',	'NAM-INDIA',	'ORBTEXP',	'RELCHEMQ',	'SAGARDEEP',	'SHALBY',	'SUVEN',	'WEIZMANIND',	'AAVAS',	'BUTTERFLY',	'FINEORG',	'INFOBEAN',	'MOLDTECH',	'SIEMENS']
+# script_list = [13587,	1134,	193,	21174,	5142,	14218,	11423,	25690,	11530,	13421,	2868,	3776,	14947,	357,	31475,	9652,	8175,	714,	11233,	3748,	5385,	2716,	3744,	11027,	17625,	3150,]
+# stk_list = ['APOLLO',	'ARVIND',	'CDSL',	'CIGNITITEC',	'CTE',	'DATAMATICS',	'DSSL',	'EMIL',	'EMKAY',	'HITECH',	'IWEL',	'MOTILALOFS',	'NAM-INDIA',	'ORBTEXP',	'RELCHEMQ',	'SAGARDEEP',	'SHALBY',	'SUVEN',	'WEIZMANIND',	'AAVAS',	'BUTTERFLY',	'FINEORG',	'INFOBEAN',	'MOLDTECH',	'SIEMENS']
 	
-# script_list = np.unique(exc_equity['Scripcode'])
-# stk_list = np.unique(exc_equity["Root"])
+script_list = np.unique(exc_equity['Scripcode'])
+stk_list = np.unique(exc_equity["Root"])
 
 print("Total Stock : "+str(len(script_list)))
 
