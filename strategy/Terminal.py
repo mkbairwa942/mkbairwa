@@ -149,8 +149,8 @@ def place_trade(Exche,ExchTypee,symbol,scripte,quantity, direction):
                         ExchangeType=ExchTypee,
                         ScripCode = scripte,
                         Qty=int(quantity),
-                        Price=0.0,
-                        IsIntraday=True,)
+                        Price=0.0,)
+                        #IsIntraday=True,)
                         #IsStopLossOrder=True
                         #StopLossPrice=StopLossPrice)
         print("CALL PLACE TRADE")
@@ -339,6 +339,14 @@ by.range("a1:x1").color = (54,226,0)
 by.range("a1:x1").font.bold = True
 by.range("a1:x1").api.WrapText = True
 
+def get_fibonachi(high,low,direct,fib_level):
+    if direct == "UP":
+        fib_price = high - (high-low)*fib_level
+        return fib_price
+    elif direct == "DOWN":
+        fib_price = low + (high-low)*fib_level
+        return fib_price  
+
 while True:
     oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
     pos.range("a1").value = pd.DataFrame(client.margin())
@@ -346,20 +354,6 @@ while True:
     pos.range("a10").value = pd.DataFrame(client.holdings())  
     # pos.range("a12").value = pd.DataFrame(client.get_tradebook())
     
-    posi = pd.DataFrame(client.positions())
-    if posi.empty:
-        print("No Positions")
-    else:
-        posi = posi[['ScripName','ScripCode','BuyAvgRate']]
-        posi.rename(columns={'ScripName': 'Namee','ScripCode':'Scriptcodee','BuyAvgRate':'Buy_At'}, inplace=True)
-        posi['Stop_Loss'] = round((posi['Buy_At'] - (posi['Buy_At']*1)/100),1)
-        posi['Add_Till'] = round((posi['Buy_At']-((posi['Buy_At']*0.5)/100)),1)      
-        posi['Target'] = round((((posi['Buy_At']*2)/100) + posi['Buy_At']),1)
-        posi['Term'] = "SFT"
-        posi.sort_values(['Namee'], ascending=[True], inplace=True)
-        posi = posi[['Namee','Scriptcodee','Stop_Loss','Add_Till','Buy_At','Target','Term']]
-        dt.range("a1").options(index=False).value = posi
-
     if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:
         oc.range("g:v").value = None
         instrument_dict = {}
@@ -584,6 +578,47 @@ while True:
             main_list3 = main_list
             main_list4 = main_list3.iloc[::-1]
             main_list4 = main_list4[['Symbol','Open','High','Low','LTP','Close','NetChange','Time']]
+
+            
+
+            posi = pd.DataFrame(client.positions())
+            if posi.empty:
+                print("No Positions")
+            else:
+                posi = posi[['ScripName','ScripCode','BuyAvgRate']]
+                posi.rename(columns={'ScripName': 'Namee','ScripCode':'Scriptcodee','BuyAvgRate':'Buy_At'}, inplace=True)
+                
+                for i in range(0,len(main_list4)):
+
+                    hhigh = 232.80 #float(main_list4.iloc[i]['High'])
+                    llow = 217.20 #float(main_list4.iloc[i]['Low'])
+
+                    TGT_3 = round((get_fibonachi(hhigh,llow,"UP",-0.500)),2)
+                    TGT_2 = round((get_fibonachi(hhigh,llow,"UP",-0.382)),2)
+                    TGT_1 = round((get_fibonachi(hhigh,llow,"UP",-0.236)),2)
+                    PP = round((get_fibonachi(hhigh,llow,"UP",0.000)),2)
+                    SL_1 = round((get_fibonachi(hhigh,llow,"UP",0.236)),2)
+                    SL_2 = round((get_fibonachi(hhigh,llow,"UP",0.382)),2)
+                    SL_3 = round((get_fibonachi(hhigh,llow,"UP",0.500)),2)
+
+                    # print('TGT_3 -->',TGT_3)
+                    # print('TGT_2 -->',TGT_2)
+                    # print('TGT_1 -->',TGT_1)
+                    # print('PP -->',PP)                              
+                    # print('SL_1 -->',SL_1)
+                    # print('SL_2 -->',SL_2)
+                    # print('SL_3 -->',SL_3)
+
+
+                posi['Stop_Loss'] = SL_2 # round((posi['Buy_At'] - (posi['Buy_At']*1)/100),1)
+                posi['Add_Till'] = SL_1 # round((posi['Buy_At']-((posi['Buy_At']*0.5)/100)),1)      
+                posi['Target'] = TGT_2 # round((((posi['Buy_At']*2)/100) + posi['Buy_At']),1)
+                posi['Term'] = "SFT"
+                posi.sort_values(['Namee'], ascending=[True], inplace=True)
+                posi = posi[['Namee','Scriptcodee','Stop_Loss','Add_Till','Buy_At','Target','Term']]
+                #dt.range("a1").options(index=False).value = posi
+
+
             dt.range("j1").options(index=False).value = main_list4  
 
             scpts = pd.DataFrame(scpt[1:],columns=scpt[0])
@@ -696,7 +731,7 @@ while True:
                         d2 = d1 + timedelta(hours = 5.5)
                         Datetimeee.append(d2)
                     ordbook1['Datetimeee'] = Datetimeee
-                    ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','ScripName','AtMarket']]
+                    ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','OrderStatus','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','ScripName','AtMarket']]
                     ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
                     ob1.range("a1").options(index=False).value = ordbook1
                     buy_order_list = np.unique([str(i) for i in ordbook1['ScripName']])
