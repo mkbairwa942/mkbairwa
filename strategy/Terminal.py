@@ -588,35 +588,31 @@ while True:
                 posi = posi[['ScripName','ScripCode','BuyAvgRate']]
                 posi.rename(columns={'ScripName': 'Namee','ScripCode':'Scriptcodee','BuyAvgRate':'Buy_At'}, inplace=True)
                 
-                for i in range(0,len(main_list4)):
+                # for i in range(0,len(main_list4)):
 
-                    hhigh = 232.80 #float(main_list4.iloc[i]['High'])
-                    llow = 217.20 #float(main_list4.iloc[i]['Low'])
+                #     hhigh = float(main_list4.iloc[i]['High'])
+                #     llow = float(main_list4.iloc[i]['Low'])
 
-                    TGT_3 = round((get_fibonachi(hhigh,llow,"UP",-0.500)),2)
-                    TGT_2 = round((get_fibonachi(hhigh,llow,"UP",-0.382)),2)
-                    TGT_1 = round((get_fibonachi(hhigh,llow,"UP",-0.236)),2)
-                    PP = round((get_fibonachi(hhigh,llow,"UP",0.000)),2)
-                    SL_1 = round((get_fibonachi(hhigh,llow,"UP",0.236)),2)
-                    SL_2 = round((get_fibonachi(hhigh,llow,"UP",0.382)),2)
-                    SL_3 = round((get_fibonachi(hhigh,llow,"UP",0.500)),2)
+                #     TGT_3 = round((get_fibonachi(hhigh,llow,"UP",-0.500)),2)
+                #     TGT_2 = round((get_fibonachi(hhigh,llow,"UP",-0.382)),2)
+                #     TGT_1 = round((get_fibonachi(hhigh,llow,"UP",-0.236)),2)
+                #     PP = round((get_fibonachi(hhigh,llow,"UP",0.000)),2)
+                #     SL_1 = round((get_fibonachi(hhigh,llow,"UP",0.236)),2)
+                #     SL_2 = round((get_fibonachi(hhigh,llow,"UP",0.382)),2)
+                #     SL_3 = round((get_fibonachi(hhigh,llow,"UP",0.500)),2)
+                    
+                #     posi['Stop_Loss'] = SL_2 
+                #     posi['Add_Till'] = SL_1       
+                #     posi['Target'] = TGT_2 
 
-                    # print('TGT_3 -->',TGT_3)
-                    # print('TGT_2 -->',TGT_2)
-                    # print('TGT_1 -->',TGT_1)
-                    # print('PP -->',PP)                              
-                    # print('SL_1 -->',SL_1)
-                    # print('SL_2 -->',SL_2)
-                    # print('SL_3 -->',SL_3)
+                posi['Stop_Loss'] = round((posi['Buy_At'] - (posi['Buy_At']*1)/100),1)
+                posi['Add_Till'] = round((posi['Buy_At']-((posi['Buy_At']*0.5)/100)),1)      
+                posi['Target'] = round((((posi['Buy_At']*2)/100) + posi['Buy_At']),1)
 
-
-                posi['Stop_Loss'] = SL_2 # round((posi['Buy_At'] - (posi['Buy_At']*1)/100),1)
-                posi['Add_Till'] = SL_1 # round((posi['Buy_At']-((posi['Buy_At']*0.5)/100)),1)      
-                posi['Target'] = TGT_2 # round((((posi['Buy_At']*2)/100) + posi['Buy_At']),1)
                 posi['Term'] = "SFT"
                 posi.sort_values(['Namee'], ascending=[True], inplace=True)
                 posi = posi[['Namee','Scriptcodee','Stop_Loss','Add_Till','Buy_At','Target','Term']]
-                #dt.range("a1").options(index=False).value = posi
+                dt.range("a1").options(index=False).value = posi
 
 
             dt.range("j1").options(index=False).value = main_list4  
