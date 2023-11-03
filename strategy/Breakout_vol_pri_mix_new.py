@@ -460,128 +460,12 @@ while True:
  
 
     start_time3 = time.time()
-    # def final_data_func(scp_lst,data_fram):
-    #     eq_data_pd = pd.DataFrame()
-    #     for d in scp_lst:
-    #         print(d)
-    #         eq_data1 = data_fram[data_fram['Name'] == d]
-    #         eq_data1.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
-
-    #         eq_data1['Time'] = datetime.now()
-
-    #         eq_data1['200+'] = ((eq_data1['SMA_200']*1)/100)+(eq_data1['SMA_200'])
-    #         eq_data1['200-'] = (eq_data1['SMA_200'])-((eq_data1['SMA_200']*1)/100)
-            
-    #         eq_data1['Delv_Chg'] = round(((eq_data1['Deliv_qty'] * 100) / (eq_data1['Deliv_qty'].shift(-1)) - 100), 2).fillna(0)      
-
-    #         eq_data1['Price_Chg'] = round(((eq_data1['Close'] * 100) / (eq_data1['Close'].shift(-1)) - 100), 2).fillna(0)      
-            
-    #         eq_data1['Vol_Chg'] = round(((eq_data1['Volume'] * 100) / (eq_data1['Volume'].shift(-1)) - 100), 2).fillna(0)
-
-    #         #eq_data1['OI_Chg'] = round(((eq_data1['OI']*100)/(eq_data1['OI'].shift(-1))-100),2)
-            
-    #         eq_data1['Deliv_break'] = np.where(eq_data1['Deliv_qty'] > (eq_data1.Deliv_qty.rolling(5).mean() * 1.5).shift(-5),"Deliv_brk", "")
-
-    #         eq_data1['Price_break'] = np.where((eq_data1['Close'] > (eq_data1.High.rolling(5).max()).shift(-5)),
-    #                                             'Pri_Up_brk',
-    #                                             (np.where((eq_data1['Close'] < (eq_data1.Low.rolling(5).min()).shift(-5)),
-    #                                                         'Pri_Dwn_brk', "")))
-    #         eq_data1['Vol_break'] = np.where(eq_data1['Volume'] > (eq_data1.Volume.rolling(5).mean() * 2).shift(-5),
-    #                                             "Vol_brk","")     
-    #         #eq_data1['OI_break'] = np.where(eq_data1['OI'] > (eq_data1.OI.rolling(5).mean() * 1.5).shift(-5),"OI_brk", "")     
-                                                                                                                  
-    #         eq_data1['Vol_Price_break'] = np.where((eq_data1['Vol_break'] == "Vol_brk") &
-    #                                                     (eq_data1['Price_break'] != ""), "Vol_Pri_break", "")
-    #         eq_data1['Del_Vol_Pri_break'] = np.where((eq_data1['Deliv_break'].shift(-1) == "Deliv_brk") &
-    #                                                 (eq_data1['Vol_Price_break'] == "Vol_Pri_break"), "Del_Vol_Pri_break", "")
-    #         #eq_data1['OI_Vol_Pri_break'] = np.where((eq_data1['OI_break'].shift(-1) == "OI_brk") & (eq_data1['Vol_Price_break'] == "Vol_Pri_break"), "OI_Vol_Pri_break", "")
-                                                    
-    #         eq_data1['Sma_200_break'] = np.where((eq_data1['Close'] < eq_data1['200+']) & (eq_data1['Close'] > eq_data1['200-']),"Nr. 200_Sma Break","")
-            
-    #         eq_data1['O=H=L'] = np.where((eq_data1['Open'] == eq_data1['High']), 'Open_High',
-    #                                         (np.where((eq_data1['Open'] == eq_data1['Low']), 'Open_Low', "")))
-    #         eq_data1['Pattern'] = np.where((eq_data1['High'] < eq_data1['High'].shift(-1)) &
-    #                                         (eq_data1['Low'] > eq_data1['Low'].shift(-1)), 'Inside_Bar',
-    #                                         (np.where((eq_data1['Low'] < eq_data1['Low'].shift(-1)) &
-    #                                                     (eq_data1['Close'] > eq_data1['High'].shift(-1)), 'Bullish',
-    #                                                     (np.where((eq_data1['High'] > eq_data1['High'].shift(-1)) &
-    #                                                             (eq_data1['Close'] < eq_data1['Low'].shift(-1)), 'Bearish',
-    #                                                             "")))))
-    #         eq_data1["Buy/Sell"] = np.where((eq_data1['Vol_break'] == "Vol_brk") & (eq_data1['Price_break'] == "Pri_Up_brk"),
-    #                                         "BUY", np.where((eq_data1['Vol_break'] == "Vol_brk")
-    #                                             & (eq_data1['Price_break'] == "Pri_Dwn_brk") , "SELL", ""))
-                                        
-    #         eq_data1['R3'] = round(eq_data1['High'] + (
-    #                 2 * (((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3) - eq_data1['Low'])), 2).fillna(0)
-    #         eq_data1['R2'] = round((((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3) + eq_data1['High']) - \
-    #                                 eq_data1['Low'], 2).fillna(0)
-    #         eq_data1['R1'] = round(
-    #             (2 * ((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3)) - eq_data1['Low'], 2).fillna(0)
-    #         eq_data1['Pivot'] = round(((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3), 2).fillna(0)
-    #         eq_data1['S1'] = round(
-    #             (2 * ((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3)) - eq_data1['High'], 2).fillna(0)
-    #         eq_data1['S2'] = round(((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3) - (eq_data1['High'] -
-    #                                                                                                    eq_data1['Low']),2).fillna(0)
-                                   
-    #         eq_data1['S3'] = round(eq_data1['Low'] - (
-    #                 2 * (eq_data1['High'] - ((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3))), 2)
-    #         eq_data1['Mid_point'] = round(((eq_data1['High'] + eq_data1['Low']) / 2), 2).fillna(0)
-    #         eq_data1['CPR'] = round(
-    #             abs((round(((eq_data1['High'] + eq_data1['Low'] + eq_data1['Close']) / 3), 2)) - eq_data1['Mid_point']),
-    #             2).fillna(0)
-    #         eq_data1['CPR_SCAN'] = np.where((eq_data1['CPR'] < ((eq_data1.CPR.rolling(10).min()).shift(-10))), "CPR_SCAN",
-    #                                         "")
-    #         eq_data1['Candle'] = np.where(abs(eq_data1['Open'] - eq_data1['Close']) <
-    #                                         abs(eq_data1['High'] - eq_data1['Low']) * 0.2, "DOZI",
-    #                                         np.where(abs(eq_data1['Open'] - eq_data1['Close']) >
-    #                                                 abs(eq_data1['High'] - eq_data1['Low']) * 0.7, "s", ""))
-    #         eq_data_pd = pd.concat([eq_data1, eq_data_pd])
-    #     eq_data_pd.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
-    #     return eq_data_pd
-
+ 
     end3 = time.time() - start_time3
 
-    # eq_data_pd = final_data_func(stk_list,data_eq1)
-    # eq_data_pd.loc[:,['RSI_14','Scripcode']].fillna(method='ffill', inplace=True)
-    # #eq_data_pd['Scripcode'].fillna(method='ffill', inplace = True)
-    # fl_data.range("a:aj").value = None
-    # fl_data.range("a1").options(index=False).value = eq_data_pd
-    # eq_data_pd = pd.read_excel('E:\STOCK\Capital_vercel1\Breakout_vol_pri_mix_new.xlsx', sheet_name='Final_Data')
-
     print("Data Analysis Completed")    
-
-    #eq_data_pd = pd.merge(eq_data_pd, future_dataframe, on=['Name'], how='outer')
-    #eq_data_pd['concate'] = eq_data_pd['Deliv_break'] + eq_data_pd['Price_break'] + eq_data_pd['Vol_break'] + eq_data_pd['Del_Vol_Pri_break']
-
-    # stat1 = eq_data_pd[(eq_data_pd["Vol_break"] == "Vol_brk") & (eq_data_pd["Price_break"] != "") & (eq_data_pd["Buy/Sell"] != "")]                 
-    # exp.range("a1:ah2000").value = None
-    # exp.range("a1").options(index=False).value = stat1
-
-
-    # orders_select1 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Pri_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == current_trading_day) & (eq_data_pd["RSI_14"] > 70 )]
-    # orders_select1["Watchlist"] = "N" + ":" + "C" + ":" + orders_select1["Name"]
-    # print(orders_select1.tail(1))
-    # orders_select1 = orders_select1[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
-    # strategy1.range("a:r").value = None
-    # strategy1.range("a1").options(index=False).value = orders_select1
-
-    # orders_select2 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Date"] == current_trading_day) & (eq_data_pd["RSI_14"] > 70 )]
-    # orders_select2["Watchlist"] = "N" + ":" + "C" + ":" + orders_select2["Name"]
-    # orders_select2 = orders_select2[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
-    # strategy2.range("a:r").value = None
-    # strategy2.range("a1").options(index=False).value = orders_select2
-
-    # orders_select3 = eq_data_pd[(eq_data_pd["Vol_Price_break"] == "Vol_Price_break") & (eq_data_pd["Buy/Sell"] != "") & (eq_data_pd["Deliv_break"] != "") & (eq_data_pd["Close"] < 300)]
-    # orders_select3["Watchlist"] = "N" + ":" + "C" + ":" + orders_select3["Name"]
-    # orders_select3 = orders_select3[['Name','Buy/Sell','Scripcode','Date','Time','Open','High','Low','Close','Volume','RSI_14','OPT','Delv_Chg','Price_Chg','Vol_Chg','Price_break','Deliv_break','O=H=L','Watchlist']]
-    # strategy3.range("a:r").value = None
-    # strategy3.range("a1").options(index=False).value = orders_select3
-     
+  
     print("complete") 
-
-    #intraday_list = np.unique([int(i) for i in orders_select1['Scripcode']])
-
-    #five_df_intra_new = five_df_intra(script_list,'5m',current_trading_day,current_trading_day)
 
     five_df1 = pd.DataFrame()
     five_df2 = pd.DataFrame()
@@ -607,14 +491,6 @@ while True:
             dfggg22 = pd.concat([dfggg, eq_bhav1], axis=0, sort=False)
 
             dfg = dfggg22.drop_duplicates(subset=['Volume'],keep='last')
-            #dfg = dfggg22
-            #dfg = pd.merge(dfggg, eq_bhav[['Name', 'Date']], how="left", left_on=['Name', 'Date'], right_on=['Name', 'Date']);
-            #dfg = dfggg.merge(eq_bhav, how='inner', left_on=['Name', 'Date'], right_on=['Name', 'Date'])
-            # dfg = pd.concat([eq_bhav, dfggg])
-            # dfg.bfill(axis ='rows')
-            # dfg.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
-            # dfg.bfill(axis ='rows')
-            sl.range("a1").options(index=False).value = dfg
 
             dfg['Date_Now'] = current_trading_day
             dfg["SMA_200"] = np.round((pta.sma(dfg["Close"], length=200,offset=0)),2)
@@ -637,7 +513,7 @@ while True:
                                                 'Pri_Up_brk',
                                                 (np.where((dfg['Close'] < (dfg.Low.rolling(5).min()).shift(-5)),
                                                             'Pri_Dwn_brk', "")))
-            dfg['Vol_break'] = np.where(dfg['Volume'] > (dfg.Volume.rolling(5).mean() * 1.75).shift(-5),
+            dfg['Vol_break'] = np.where(dfg['Volume'] > (dfg.Volume.rolling(5).mean() * 1.5).shift(-5),
                                                 "Vol_brk","")       
                                                                                                                 
             dfg['Vol_Price_break'] = np.where((dfg['Vol_break'] == "Vol_brk") &
@@ -652,6 +528,9 @@ while True:
                                                 'Week52High',
                                                 (np.where((dfg['Low'] < (dfg.Low.rolling(245).min()).shift(-245)),
                                                             'Week52Low', "")))
+
+            dfg['P_D_H_B'] = np.where(dfg['Close'] > dfg['High'].shift(-1),"PDHB",np.where(dfg['Close'] < dfg['Low'].shift(-1),"PDLB",""))
+
 
             dfg['O=H=L'] = np.where((dfg['Open'] == dfg['High']), 'Open_High',
                                             (np.where((dfg['Open'] == dfg['Low']), 'Open_Low', "")))
@@ -703,8 +582,8 @@ while True:
 
             curr_day = (dfggg['Datetime'].apply(pd.to_datetime)).iloc[-1]
 
-            dfgg_up = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["RSI_14"] > 70 ) & (dfg["Del_Vol_Pri_break"] != "") & (dfg['Date'] == curr_day)]
-            dfgg_dn = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["RSI_14"] < 30 ) & (dfg["Del_Vol_Pri_break"] != "") & (dfg['Date'] == curr_day)]
+            dfgg_up = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 70 ) & (dfg["Del_Vol_Pri_break"] != "") & (dfg['Date'] == curr_day)]
+            dfgg_dn = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 30 ) & (dfg["Del_Vol_Pri_break"] != "") & (dfg['Date'] == curr_day)]
             
             five_df2 = pd.concat([dfgg_up, five_df2])            
             five_df3 = pd.concat([dfgg_dn, five_df3])
@@ -922,7 +801,7 @@ while True:
         pass
     else:
         # five_df11 = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner') 
-        five_df1 = five_df1[['Name','Scripcode','Date','TimeNow','Open','High','Low','Close','Volume','Deliv_qty','Deliv_per','RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','Deliv_break','Del_Vol_Pri_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+        five_df1 = five_df1[['Name','Scripcode','Date','TimeNow','Open','High','Low','Close','Volume','Deliv_qty','Deliv_per','RSI_14','Sma_200_break','Week52','P_D_H_B','Price_Chg','Vol_Chg','Vol_Price_break','Deliv_break','Del_Vol_Pri_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df1.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
         Fiv_dt.range("a:az").value = None
         Fiv_dt.range("a1").options(index=False).value = five_df1
@@ -932,7 +811,7 @@ while True:
     else:
         # five_df12 = pd.merge(flt_exc_eq, five_df2, on=['Scripcode'], how='inner') 
         five_df2 = five_df2[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume',
-                             'RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','Deliv_break',
+                             'RSI_14','Sma_200_break','Week52','P_D_H_B','Price_Chg','Vol_Chg','Vol_Price_break','Deliv_break',
                              'O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df2.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         delv_dt.range("a:az").value = None
@@ -944,7 +823,7 @@ while True:
     else:
         # five_df12 = pd.merge(flt_exc_eq, five_df3, on=['Scripcode'], how='inner') 
         five_df3 = five_df3[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume',
-                             'RSI_14','Sma_200_break','Week52','Price_Chg','Vol_Chg','Vol_Price_break','Deliv_break',
+                             'RSI_14','Sma_200_break','Week52','P_D_H_B','Price_Chg','Vol_Chg','Vol_Price_break','Deliv_break',
                              'O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df3.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         delv_dt.range("a15").options(index=False).value = five_df3

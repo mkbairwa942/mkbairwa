@@ -625,7 +625,7 @@ while True:
             scpts['Minutes'] = round((scpts['Minutes']/np.timedelta64(1,'m')),2)
             scpts['Buy'] = np.where(scpts['Minutes']<5,"Yes","")
             scpts['Timeover'] = np.where(scpts['Minutes']>30,"Yes","")
-            #by.range("a1").options(index=False).value = scpts
+            # by.range("a1").options(index=False).value = scpts
 
             def round_up(n, decimals = 0): 
                 multiplier = 10 ** decimals 
