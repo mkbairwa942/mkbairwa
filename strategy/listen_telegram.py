@@ -1,8 +1,10 @@
 from telethon import TelegramClient, events
 from telegram_read_msg import *
 import re
+import numpy as np
+from five_paisa import *
 
-client = TelegramClient('mukesh', api_id, api_hash)
+clientt = TelegramClient('mukesh', api_id, api_hash)
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
@@ -14,18 +16,41 @@ exc_equity["Watchlist"] = exc_equity["Exch"] + ":" + exc_equity["ExchType"] + ":
 exc_equity.sort_values(['Name'], ascending=[True], inplace=True)
 #print(exc_equity)
 
+# symbol1 = 'JK TYRE'
+# res = symbol1.split() 
+     
+# ignore_list = ['FOR','TOMORROW','BREAKOUT','STOCK']
+
+# list1 = []
+# for i in res: 
+#     if i in ignore_list:
+#         print("1")
+#         print(i)
+#     else: 
+#         list1.append(i)
+#         print("2")
+#         print(i) 
+# resss = "".join([str(item) for item in list1])
+# ressss = str(resss)
+# print(ressss)
+# #exc_equity1 = exc_equity[exc_equity.select_dtypes(object).apply(lambda row: row.str.contains('ZYDUSWELL'), axis=1).any(axis=1)]
+# exc_equity1 = exc_equity[exc_equity['Root'].astype(str).str.contains((str(ressss)), regex=False)]
+    
+# print(exc_equity1.tail(5))
+
 
 # statment1= 'LINCOLN PHARMA LOOKS GOOD ABOVE 515 ADD TILL 510 SUPPORT 505'
 # statment1.split()
 # print(statment1)
 # print("hi")
 
-@client.on(events.NewMessage)
+@clientt.on(events.NewMessage)
 async def my_event_handler(event):
     if 'hello' in event.raw_text:
         await event.reply('hi!')
 
-def placeOrder(transType,symbol,isBuy,SL,target):
+def placeOrder(transType,symbol,scriptcode,Qty,isBuy,SL,target):
+    order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = scriptcode, Qty=Qty,Price=isBuy, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=SL)
     print(f'Place {transType} Order of {symbol} AT {isBuy} SL {SL} Target {target}')
 
 
@@ -39,12 +64,39 @@ def check_stat(statment):
 
 def find_stat(statment,target_word):
 
-    global symbol
+    global symbol2,scriptcode1
     regex = r'\b{}\b\s+(\w+)'.format(target_word)
     match = re.search(regex,statment,re.IGNORECASE)
     symbol = statment[0:statment.find("LOOKS")]
-    exc_equity['ExerciseDay'] = exc_equity['Root'].str.contains(symbol).astype(int)
-    print(exc_equity['ExerciseDay'])
+    res = symbol.split() 
+        
+    ignore_list = ['FOR','TOMORROW','BREAKOUT','STOCK']
+
+    list1 = []
+    for i in res: 
+        if i in ignore_list:
+            print("1")
+            print(i)
+        else: 
+            list1.append(i)
+            print("2")
+            print(i) 
+    resss = "".join([str(item) for item in list1])
+    ressss = str(resss)
+    #exc_equity1 = exc_equity[exc_equity.select_dtypes(object).apply(lambda row: row.str.contains('ZYDUSWELL'), axis=1).any(axis=1)]
+    exc_equity1 = exc_equity[exc_equity['Root'].astype(str).str.contains((str(ressss)), regex=False)]
+    if exc_equity1.empty:
+        print('Symbol Not Matched')
+    else:
+        symbol1 = np.unique([str(i) for i in exc_equity1['Root']]).tolist()
+        symbol2 = symbol1[0]
+        symbol2 = str(symbol2)
+        scriptcode = np.unique([int(i) for i in exc_equity1['Scripcode']]).tolist()
+        scriptcode1 = scriptcode[0]
+        scriptcode1 = int(scriptcode1)
+        #symbol1 = str(exc_equity1['Root'][0])
+        print(symbol2)
+        print(scriptcode1)
 
     if match:
         return match.group(1)
@@ -65,7 +117,7 @@ def find_stat(statment,target_word):
 # elif isSell:
 #     placeOrder('SELL',symbol,isBuy,sl,target)
 
-@client.on(events.NewMessage(chats=-4048562236))
+@clientt.on(events.NewMessage(chats=-4048562236))
 async def my_event_handler(event):
     statmen = event.raw_text
     statment = " ".join(line.strip() for line in statmen.splitlines())
@@ -73,20 +125,35 @@ async def my_event_handler(event):
     print(statment)
     if check_stat(statment):
         print(check_stat(statment))
-        await client.send_message(6432816471,f'Got Signal {statment}')
+        await clientt.send_message(6432816471,f'Got Signal {statment}')
         print(f'Pattern match for entry {statment}')
         isBuy = find_stat(statment,'LOOKS GOOD ABOVE')
         add_till = find_stat(statment,'ADD TILL')
         sl = find_stat(statment,'SUPPORT')
         target = find_stat(statment,'TARGET')
         isSell = ''
+        isBuy = float(isBuy)
+        sl = float(sl)
+
+
+        if isBuy < 100:
+            Qtyy = 200
+        if isBuy > 100 and isBuy < 200:
+            Qtyy = 100                        
+        if isBuy > 200 and isBuy < 300:
+            Qtyy = 80
+        if isBuy > 300:
+            Qtyy = 50
+        Req_Amount = Qtyy*isBuy  
+        print("Required Amount is "+str(Req_Amount))
+        
         if isBuy:
-            placeOrder('BUY',symbol,isBuy,sl,target)
+            placeOrder('BUY',symbol2,scriptcode1,Qtyy,isBuy,sl,target)
         elif isSell:
-            placeOrder('SELL',symbol,isBuy,sl,target)
+            placeOrder('SELL',symbol2,scriptcode1,Qtyy,isBuy,sl,target)
 
 
 
 
-client.start()
-client.run_until_disconnected()
+clientt.start()
+clientt.run_until_disconnected()
