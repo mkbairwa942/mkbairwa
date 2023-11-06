@@ -260,7 +260,7 @@ oc.range("a:b").value = oc.range("d8:e30").value = oc.range("g1:v4000").value = 
 # dt.range("f2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Terminal.xlsx]Strategy3'!$F2="","",'D:\STOCK\Capital_vercel_new\[Terminal.xlsx]Strategy3'!$F2)"
 # dt.range("g2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Terminal.xlsx]Strategy3'!$G2="","",'D:\STOCK\Capital_vercel_new\[Terminal.xlsx]Strategy3'!$G2)"
 # dt.range("h2").options(index=False).value = "=IF('D:\STOCK\Capital_vercel_new\[Terminal.xlsx]Strategy3'!$H2="","",'D:\STOCK\Capital_vercel_new\[Terminal.xlsx]Strategy3'!$H2)"
-# dt.range("w2").options(index=False).value = "=IF(N2<C2,"SL_Hit",IF(F2=0,IF(AND(N2>D2,N2<((E2*0.5%)+E2)),"Buy","Already_Up"),IF(L2>=F2,"Target_Hit",IF(AND(N2>D2,N2<((E2*0.5%)+E2)),"Buy","Already_Up"))))"
+dt.range("w2").options(index=False).value = '=IF(N2<C2,"SL_Hit",IF(F2=0,IF(AND(N2>D2,N2<((E2*0.5%)+E2)),"Buy","Already_Up"),IF(L2>=F2,"Target_Hit",IF(AND(N2>D2,N2<((E2*0.5%)+E2)),"Buy","Already_Up"))))'
 
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"

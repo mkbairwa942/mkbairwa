@@ -14,40 +14,7 @@ exc_equity = exc_equity[exc_equity["Series"] == "EQ"]
 exc_equity = exc_equity[exc_equity["CpType"] == "XX"]
 exc_equity["Watchlist"] = exc_equity["Exch"] + ":" + exc_equity["ExchType"] + ":" + exc_equity["Name"]
 exc_equity.sort_values(['Name'], ascending=[True], inplace=True)
-#print(exc_equity)
 
-# symbol1 = 'JK TYRE'
-# res = symbol1.split() 
-     
-# ignore_list = ['FOR','TOMORROW','BREAKOUT','STOCK']
-
-# list1 = []
-# for i in res: 
-#     if i in ignore_list:
-#         print("1")
-#         print(i)
-#     else: 
-#         list1.append(i)
-#         print("2")
-#         print(i) 
-# resss = "".join([str(item) for item in list1])
-# ressss = str(resss)
-# print(ressss)
-# #exc_equity1 = exc_equity[exc_equity.select_dtypes(object).apply(lambda row: row.str.contains('ZYDUSWELL'), axis=1).any(axis=1)]
-# exc_equity1 = exc_equity[exc_equity['Root'].astype(str).str.contains((str(ressss)), regex=False)]
-    
-# print(exc_equity1.tail(5))
-
-
-# statment1= 'LINCOLN PHARMA LOOKS GOOD ABOVE 515 ADD TILL 510 SUPPORT 505'
-# statment1.split()
-# print(statment1)
-# print("hi")
-
-@clientt.on(events.NewMessage)
-async def my_event_handler(event):
-    if 'hello' in event.raw_text:
-        await event.reply('hi!')
 
 def placeOrder(transType,symbol,scriptcode,Qty,isBuy,SL,target):
     order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = scriptcode, Qty=Qty,Price=isBuy, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=SL)
@@ -64,7 +31,7 @@ def check_stat(statment):
 
 def find_stat(statment,target_word):
 
-    global symbol2,scriptcode1
+    global symbol3,scriptcode2
     regex = r'\b{}\b\s+(\w+)'.format(target_word)
     match = re.search(regex,statment,re.IGNORECASE)
     symbol = statment[0:statment.find("LOOKS")]
@@ -75,12 +42,9 @@ def find_stat(statment,target_word):
     list1 = []
     for i in res: 
         if i in ignore_list:
-            print("1")
-            print(i)
+            pass
         else: 
             list1.append(i)
-            print("2")
-            print(i) 
     resss = "".join([str(item) for item in list1])
     ressss = str(resss)
     #exc_equity1 = exc_equity[exc_equity.select_dtypes(object).apply(lambda row: row.str.contains('ZYDUSWELL'), axis=1).any(axis=1)]
@@ -90,42 +54,32 @@ def find_stat(statment,target_word):
     else:
         symbol1 = np.unique([str(i) for i in exc_equity1['Root']]).tolist()
         symbol2 = symbol1[0]
-        symbol2 = str(symbol2)
+        symbol3 = str(symbol2)
         scriptcode = np.unique([int(i) for i in exc_equity1['Scripcode']]).tolist()
         scriptcode1 = scriptcode[0]
-        scriptcode1 = int(scriptcode1)
+        scriptcode2 = int(scriptcode1)
         #symbol1 = str(exc_equity1['Root'][0])
-        print(symbol2)
-        print(scriptcode1)
+        print(symbol3)
+        print(scriptcode2)
 
     if match:
         return match.group(1)
     else:
         return None
 
-# statment = statment1
-# isBuy = find_stat(statment,'LOOKS GOOD ABOVE')
-# add_till = find_stat(statment,'ADD TILL')
-# sl = find_stat(statment,'SUPPORT')
-# target = find_stat(statment,'TARGET')
-# isSell = ''
+@clientt.on(events.NewMessage)
+async def my_event_handler(event):
+    if 'hello' in event.raw_text:
+        await event.reply('hi!')
 
-# print(symbol,isBuy,add_till,sl,target)
-
-# if isBuy:
-#     placeOrder('BUY',symbol,isBuy,sl,target)
-# elif isSell:
-#     placeOrder('SELL',symbol,isBuy,sl,target)
-
-@clientt.on(events.NewMessage(chats=-4048562236))
+@clientt.on(events.NewMessage(chats=-1001762746549))
 async def my_event_handler(event):
     statmen = event.raw_text
     statment = " ".join(line.strip() for line in statmen.splitlines())
     #statment.split()
-    print(statment)
     if check_stat(statment):
         print(check_stat(statment))
-        await clientt.send_message(6432816471,f'Got Signal {statment}')
+        await clientt.send_message(-4048562236,f'Got Signal {statment}')
         print(f'Pattern match for entry {statment}')
         isBuy = find_stat(statment,'LOOKS GOOD ABOVE')
         add_till = find_stat(statment,'ADD TILL')
@@ -148,12 +102,9 @@ async def my_event_handler(event):
         print("Required Amount is "+str(Req_Amount))
         
         if isBuy:
-            placeOrder('BUY',symbol2,scriptcode1,Qtyy,isBuy,sl,target)
+            placeOrder('BUY',symbol3,scriptcode2,Qtyy,isBuy,sl,target)
         elif isSell:
-            placeOrder('SELL',symbol2,scriptcode1,Qtyy,isBuy,sl,target)
-
-
-
+            placeOrder('SELL',symbol3,scriptcode2,Qtyy,isBuy,sl,target)
 
 clientt.start()
 clientt.run_until_disconnected()
