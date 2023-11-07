@@ -295,7 +295,7 @@ stk_list = np.unique(exc_equity["Root"])
 
 print("Total Stock : "+str(len(script_list)))
 
-#order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
+order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
 
 def bhavcopy_func():
     eq_bhav = pd.DataFrame()
