@@ -2,8 +2,16 @@ from tkinter import *
 import tkinter as tk
 import pandas as pd
 from tkinter import ttk,filedialog
+from sqlalchemy import create_engine
+import urllib
 
+con = urllib.parse.quote_plus(
+    'DRIVER={SQL Server Native Client 11.0};SERVER=MUKESH\SQLEXPRESS;DATABASE=BBCSORG;trusted_connection=yes')
+engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(con))
 
+sqlquery1 = ("select * from dbo.AgentMaster")
+ag_ma = pd.read_sql(sql=sqlquery1, con=engine)
+df1 = ag_ma[['AgCode', 'AgName','City','Mobile','PanNo']]
 
 root =Tk()
 root.title("Excel")
@@ -27,7 +35,7 @@ def file_open():
             my_label.config(text="File Could Not be found")
     clear_tree()
 
-    my_tree["column"] = list(df.columns)
+    my_tree["column"] = list(df1.columns)
     my_tree["show"] = "headings"
     s = ttk.Style(root)
     s.theme_use("clam")
@@ -37,7 +45,7 @@ def file_open():
         my_tree.heading(column,text=column,anchor=tk.CENTER)
         my_tree.column(column,width=200,minwidth=50,anchor=tk.CENTER)
 
-    df_rows = df.to_numpy().tolist()
+    df_rows = df1.to_numpy().tolist()
     for row in df_rows:
         my_tree.insert("","end",values=row)
 

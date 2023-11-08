@@ -1,21 +1,23 @@
-# from copy import copy
-# import numpy as np
-# from sqlalchemy import create_engine
-# import urllib
-# import itertools
-# import pprint
-# import pandas as pd
-# from datetime import date
-# import xlwings as xw
-# import os
-
 from tkinter import *
-from tkinter import ttk
-from PIL import Image,ImageTk
+import tkinter as tk
+import pandas as pd
+from tkinter import ttk,filedialog
+from sqlalchemy import create_engine
+import urllib
 import random,os
 from tkinter import messagebox
 import tempfile
 from time import strftime
+
+
+con = urllib.parse.quote_plus(
+    'DRIVER={SQL Server Native Client 11.0};SERVER=MUKESH\SQLEXPRESS;DATABASE=BBCSORG;trusted_connection=yes')
+engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(con))
+
+sqlquery1 = ("select * from dbo.SupplierMaster")
+sup_mas = pd.read_sql(sql=sqlquery1, con=engine)
+#sup_mas = sup_mas[['AgCode', 'AgName','City','Mobile','PanNo']]
+
 
 class Account_App:
     def __init__(self,root):
@@ -31,6 +33,7 @@ class Account_App:
         self.sub_group_code=StringVar()
         self.agent_code=StringVar()
         self.party_group_code=StringVar()
+        self.serachh_name=StringVar()
 
         self.party_name=StringVar()
         self.sub_group=StringVar()
@@ -59,6 +62,9 @@ class Account_App:
         self.GSTIN=StringVar()
         self.email=StringVar()
 
+        self.Time_label = Label(root, font=('digital-7', 50), background='white', foreground='black')
+        self.Time_label.place(x=695,y=5,width=200,height=60)
+        self.time()
         
         # lbl_title=Label(self.root,text="BILLING SOFTWARE USING PYTHON",font=("times new roman",35,"bold"),bg="white",fg="red")
         # lbl_title.place(x=0,y=0,width=500,height=45)
@@ -109,6 +115,126 @@ class Account_App:
         self.entry_address2.grid(row=5,column=1,columnspan=3,sticky=W,padx=1,pady=3)
         self.entry_address3=ttk.Entry(Main_Frame,textvariable=self.address3,font=("arial",10,"bold"),width=62)
         self.entry_address3.grid(row=6,column=1,columnspan=3,sticky=W,padx=1,pady=3)
+
+        self.my_table_frame=LabelFrame(self.root,text="Table Area",border=2, font=("times new roman",12,"bold"),bg="white",fg="red")
+        self.my_table_frame.place(x=5,y=390,width=890,height=200)
+
+        my_table_frame = Frame(self.root)
+        my_table_frame.pack(pady=20)
+
+        self.my_tree = ttk.Treeview(self.my_table_frame)
+
+        self.my_tree["column"] = list(sup_mas.columns)
+        self.my_tree["show"] = "headings"
+        s = ttk.Style(root)
+        s.theme_use("clam")
+        s.configure(",",font=('Helvetica',11))
+        s.configure("Treeview.Heading",foreground='red',font=('Helvetica',11,"bold"))
+        for column in self.my_tree["column"]:
+            self.my_tree.heading(column,text=column,anchor=tk.CENTER)
+            self.my_tree.column(column,width=180,minwidth=50,anchor=tk.CENTER)
+
+        df_rows = sup_mas.to_numpy().tolist()
+        for row in df_rows:
+            self.my_tree.insert("","end",values=row)
+
+        hsb =ttk.Scrollbar(self.my_table_frame,orient="horizontal")
+        hsb.configure(command=self.my_tree.xview)
+        self.my_tree.configure(xscrollcommand=hsb.set)
+        hsb.pack(fill="x",side="bottom")
+
+        vsb =ttk.Scrollbar(self.my_table_frame,orient="vertical")
+        vsb.configure(command=self.my_tree.yview)
+        self.my_tree.configure(yscrollcommand=vsb.set)
+        vsb.pack(fill="y",side="right")
+        self.my_tree.pack()
+
+        Btn_Frame=LabelFrame(root,text="Button", padx=5,font=("times new roman",12,"bold"),bg="white",fg="red")
+        Btn_Frame.place(x=100,y=330,width=710,height=60)
+
+        self.entry_Search=ttk.Entry(Btn_Frame,textvariable=self.serachh_name,font=("arial",10,"bold"),width=24)
+        self.entry_Search.grid(row=0,column=1,sticky=W,padx=2)
+        
+        self.BtnSearch=Button(Btn_Frame,command=self.find_bill,width=15,text="Search",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnSearch.grid(row=0,column=2,sticky=W,padx=7)
+
+        self.BtnAddToCart=Button(Btn_Frame,command=self.Save,height=1,width=8,text="Save",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnAddToCart.grid(row=0,column=3)
+
+        self.BtnGenBill=Button(Btn_Frame,command=self.New,height=1,width=8,text="New",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnGenBill.grid(row=0,column=4)
+
+        self.BtnSaveBill=Button(Btn_Frame,command=self.Delete,height=1,width=8,text="Delete",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnSaveBill.grid(row=0,column=5)
+
+        self.BtnPrint=Button(Btn_Frame,height=1,command=self.Print,width=8,text="Print",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnPrint.grid(row=0,column=6)
+
+        self.BtnExit=Button(Btn_Frame,command=self.root.destroy,height=1,width=8,text="Exit",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
+        self.BtnExit.grid(row=0,column=7)
+
+    def Save(self):
+        pass
+
+    def New(self):
+        pass
+
+    def Delete(self):
+        pass    
+
+    def Print(self):
+        q=self.party_nam_query1.get(1.0,"end-1c")
+        filename=tempfile.mktemp('.csv')
+        open(filename,'w').write(q)
+        os.startfile(filename,"print")
+      
+    def search_name(self):
+        pass 
+
+    def find_bill(self):
+        party_nam = self.serachh_name.get()
+        self.party_nam_query = ("select * from dbo.SupplierMaster WHERE SName LIKE '%"+party_nam+"%'")
+        self.party_nam_query1 = pd.read_sql(sql=self.party_nam_query, con=engine)
+        self.update_tree(self.party_nam_query1)
+        #self.clear_tree()
+
+    # def clear_tree(self):
+    #     self.my_tree.delete(*self.my_tree.get_children())
+
+    def update_tree(self,party_nam_query1):
+        #self.my_tree = ttk.Treeview(self.my_table_frame)
+
+        self.my_tree.delete(*self.my_tree.get_children())        
+
+        self.my_tree["column"] = list(self.party_nam_query1.columns)
+        self.my_tree["show"] = "headings"
+        s = ttk.Style(root)
+        s.theme_use("clam")
+        s.configure(",",font=('Helvetica',11))
+        s.configure("Treeview.Heading",foreground='red',font=('Helvetica',11,"bold"))
+        for column in self.my_tree["column"]:
+            self.my_tree.heading(column,text=column,anchor=tk.CENTER)
+            self.my_tree.column(column,anchor=tk.CENTER)
+
+        df_rows1 = party_nam_query1.to_numpy().tolist()
+        for rows in df_rows1:
+            self.my_tree.insert("","end",values=rows)
+
+        hsb =ttk.Scrollbar(self.my_table_frame,orient="horizontal")
+        hsb.configure(command=self.my_tree.xview)
+        self.my_tree.configure(xscrollcommand=hsb.set)
+        hsb.pack(fill="x",side="bottom")
+        vsb =ttk.Scrollbar(self.my_table_frame,orient="vertical")
+        vsb.configure(command=self.my_tree.yview)
+        self.my_tree.configure(yscrollcommand=vsb.set)
+        vsb.pack(fill="y",side="right")
+        self.my_tree.pack()
+
+    def time(self):
+        #string = strftime('%H:%M:%S %p')
+        string = strftime('%H:%M:%S')
+        self.Time_label.config(text=string)
+        self.Time_label.after(50, self.time)
 
         # #Product Categories
         # self.Category=["Select Option","Clothing","LifeStyle","Mobiles"]
