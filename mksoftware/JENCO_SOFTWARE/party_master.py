@@ -62,8 +62,8 @@ class Account_App:
         self.GSTIN=StringVar()
         self.email=StringVar()
 
-        self.Time_label = Label(root, font=('digital-7', 50), background='white', foreground='black')
-        self.Time_label.place(x=695,y=5,width=200,height=60)
+        self.Time_label = Label(root, font=('digital-7', 25), background='black', foreground='magenta')
+        self.Time_label.place(x=790,y=5,width=100,height=40)
         self.time()
         
         # lbl_title=Label(self.root,text="BILLING SOFTWARE USING PYTHON",font=("times new roman",35,"bold"),bg="white",fg="red")
