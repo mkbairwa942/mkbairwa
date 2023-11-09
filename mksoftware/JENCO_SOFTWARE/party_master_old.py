@@ -84,35 +84,35 @@ class Account_App:
         # lbl.place(x=5,y=0,width=120,height=50)
         # time()
 
-        self.lbl_name=ttk.Label(Main_Frame,bootstyle="inverse",text="Party Name")
+        self.lbl_name=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Party Name",bd=4)
         self.lbl_name.grid(row=0,column=0,sticky=W,padx=1)
-        self.entry_code=ttk.Entry(Main_Frame,bootstyle="success",textvariable=self.party_code,width=10)
+        self.entry_code=ttk.Entry(Main_Frame,textvariable=self.party_code,font=("arial",10,"bold"),width=10)
         self.entry_code.grid(row=0,column=1,sticky=W,padx=1)
-        self.entry_name=ttk.Entry(Main_Frame,bootstyle="success",textvariable=self.party_name,width=50)
+        self.entry_name=ttk.Entry(Main_Frame,textvariable=self.party_name,font=("arial",10,"bold"),width=50)
         self.entry_name.grid(row=0,column=1,sticky=W,padx=85)
 
-        self.lbl_sub_group=ttk.Label(Main_Frame,bootstyle="inverse",text="Sub Group")
+        self.lbl_sub_group=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Sub Group",bd=4)
         self.lbl_sub_group.grid(row=1,column=0,sticky=W,padx=1)
         self.entry_sub_gcode=ttk.Entry(Main_Frame,textvariable=self.sub_group_code,font=("arial",10,"bold"),width=10)
         self.entry_sub_gcode.grid(row=1,column=1,sticky=W,padx=1)
         self.entry_sub_group=ttk.Entry(Main_Frame,textvariable=self.sub_group,font=("arial",10,"bold"),width=50)
         self.entry_sub_group.grid(row=1,column=1,sticky=W,padx=85)
 
-        self.lbl_agent=ttk.Label(Main_Frame,bootstyle="inverse",text="Agent Name")
+        self.lbl_agent=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Agent Name",bd=4)
         self.lbl_agent.grid(row=2,column=0,sticky=W,padx=1)
         self.entry_acode=ttk.Entry(Main_Frame,textvariable=self.agent_code,font=("arial",10,"bold"),width=10)
         self.entry_acode.grid(row=2,column=1,sticky=W,padx=1)
         self.entry_agent=ttk.Entry(Main_Frame,textvariable=self.agent_name,font=("arial",10,"bold"),width=50)
         self.entry_agent.grid(row=2,column=1,sticky=W,padx=85)
 
-        self.lbl_party_group=ttk.Label(Main_Frame,bootstyle="inverse",text="Party Group")
+        self.lbl_party_group=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Party Group",bd=4)
         self.lbl_party_group.grid(row=3,column=0,sticky=W,padx=1)
         self.entry_party_gcode=ttk.Entry(Main_Frame,textvariable=self.party_group_code,font=("arial",10,"bold"),width=10)
         self.entry_party_gcode.grid(row=3,column=1,sticky=W,padx=1)
         self.entry_party_group=ttk.Entry(Main_Frame,textvariable=self.party_group,font=("arial",10,"bold"),width=50)
         self.entry_party_group.grid(row=3,column=1,sticky=W,padx=85)
 
-        self.lbl_address=ttk.Label(Main_Frame,bootstyle="inverse",text="Address")
+        self.lbl_address=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Address",bd=4)
         self.lbl_address.grid(row=4,column=0,sticky=W,padx=1,pady=(15,2))
         self.entry_address=ttk.Entry(Main_Frame,textvariable=self.address1,font=("arial",10,"bold"),width=62)
         self.entry_address.grid(row=4,column=1,columnspan=3,sticky=W,padx=1,pady=(15,2))
@@ -121,93 +121,93 @@ class Account_App:
         self.entry_address3=ttk.Entry(Main_Frame,textvariable=self.address3,font=("arial",10,"bold"),width=62)
         self.entry_address3.grid(row=6,column=1,columnspan=3,sticky=W,padx=1,pady=3)
 
-        self.lbl_city=ttk.Label(Main_Frame,bootstyle="inverse",text="City")
+        self.lbl_city=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="City",bd=4)
         self.lbl_city.grid(row=7,column=0,sticky=W,padx=1,pady=(15,2))
         self.entry_city=ttk.Entry(Main_Frame,textvariable=self.city,font=("arial",10,"bold"),width=30)
         self.entry_city.grid(row=7,column=1,sticky=W,padx=1,pady=(15,2))
 
-        self.lbl_pincode=ttk.Label(Main_Frame,bootstyle="inverse",text="Pincode")
+        self.lbl_pincode=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Pincode",bd=4)
         self.lbl_pincode.grid(row=7,column=1,sticky=W,padx=220,pady=(15,2))
         self.entry_pincode=ttk.Entry(Main_Frame,textvariable=self.pincode,font=("arial",10,"bold"),width=15)
         self.entry_pincode.grid(row=7,column=1,sticky=W,padx=330,pady=(15,2))
 
-        self.lbl_state=ttk.Label(Main_Frame,bootstyle="inverse",text="State")
+        self.lbl_state=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="State",bd=4)
         self.lbl_state.grid(row=8,column=0,sticky=W,padx=1)
         self.entry_state=ttk.Entry(Main_Frame,textvariable=self.state,font=("arial",10,"bold"),width=30)
         self.entry_state.grid(row=8,column=1,sticky=W,padx=1)
 
-        self.lbl_C_days=ttk.Label(Main_Frame,bootstyle="inverse",text="Credit Days")
+        self.lbl_C_days=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Credit Days",bd=4)
         self.lbl_C_days.grid(row=8,column=1,sticky=W,padx=220)
         self.entry_C_days=ttk.Entry(Main_Frame,textvariable=self.state,font=("arial",10,"bold"),width=15)
         self.entry_C_days.grid(row=8,column=1,sticky=W,padx=330)
 
-        self.lbl_transport=ttk.Label(Main_Frame,bootstyle="inverse",text="Transport")
+        self.lbl_transport=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Transport",bd=4)
         self.lbl_transport.grid(row=9,column=0,sticky=W,padx=1)
         self.entry_transport=ttk.Entry(Main_Frame,textvariable=self.transport,font=("arial",10,"bold"),width=30)
         self.entry_transport.grid(row=9,column=1,sticky=W,padx=1)
 
-        self.lbl_Int_rate=ttk.Label(Main_Frame,bootstyle="inverse",text="Int. Rate (%)")
+        self.lbl_Int_rate=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Int. Rate (%)",bd=4)
         self.lbl_Int_rate.grid(row=9,column=1,sticky=W,padx=220)
         self.entry_Int_rate=ttk.Entry(Main_Frame,textvariable=self.interest_rate,font=("arial",10,"bold"),width=15)
         self.entry_Int_rate.grid(row=9,column=1,sticky=W,padx=330)
 
-        self.lbl_ac_lock=ttk.Label(Main_Frame,bootstyle="inverse",text="Ac Lock")
+        self.lbl_ac_lock=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Ac Lock",bd=4)
         self.lbl_ac_lock.grid(row=10,column=0,sticky=W,padx=1)
         self.entry_ac_lock=ttk.Entry(Main_Frame,textvariable=self.ac_lock,font=("arial",10,"bold"),width=30)
         self.entry_ac_lock.grid(row=10,column=1,sticky=W,padx=1)
 
-        self.lbl_discount=ttk.Label(Main_Frame,bootstyle="inverse",text="Discount (%)")
+        self.lbl_discount=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Discount (%)",bd=4)
         self.lbl_discount.grid(row=10,column=1,sticky=W,padx=220)
         self.entry_discount=ttk.Entry(Main_Frame,textvariable=self.discount,font=("arial",10,"bold"),width=15)
         self.entry_discount.grid(row=10,column=1,sticky=W,padx=330)
 
-        self.lbl_remarks=ttk.Label(Main_Frame,bootstyle="inverse",text="Remarks")
+        self.lbl_remarks=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Remarks",bd=4)
         self.lbl_remarks.grid(row=11,column=0,sticky=W,padx=1)
         self.entry_remarks=ttk.Entry(Main_Frame,textvariable=self.payment_terms,font=("arial",10,"bold"),width=110)
         self.entry_remarks.grid(row=11,column=1,sticky=E,padx=1,pady=(10,2))
 
         
-        self.belong_to_frame=ttk.LabelFrame(self.root,text="Belongs To",border=2)
+        self.belong_to_frame=ttk.LabelFrame(self.root,text="Belongs To",border=2, font=("times new roman",12,"bold"),bg="white",fg="red")
         self.belong_to_frame.place(x=570,y=5,width=180,height=110)
 
         # self.belong = ['General','Purchase','Sales']
 
         # for bel in self.belong:
-        self.radio_general=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="General",variable=self.radio_button,value="GEN").pack(anchor=tk.W,padx=5)
-        self.radio_pur=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="Purchase",variable=self.radio_button,value="PUR").pack(anchor=tk.W,padx=5)
-        self.radio_sale=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="Sales",variable=self.radio_button,value="SAL").pack(anchor=tk.W,padx=5)
+        self.radio_general=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get,font=("arial",11,"bold"),bg="white", text="General",variable=self.radio_button,value="GEN").pack(anchor=tk.W,padx=5)
+        self.radio_pur=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get,font=("arial",11,"bold"),bg="white", text="Purchase",variable=self.radio_button,value="PUR").pack(anchor=tk.W,padx=5)
+        self.radio_sale=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get,font=("arial",11,"bold"),bg="white", text="Sales",variable=self.radio_button,value="SAL").pack(anchor=tk.W,padx=5)
         
-        self.lbl_phone_1=ttk.Label(Main_Frame,bootstyle="inverse",text="Phone No")
+        self.lbl_phone_1=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Phone No",bd=4)
         self.lbl_phone_1.grid(row=4,column=1,sticky=W,padx=465)
         self.entry_phone_1=ttk.Entry(Main_Frame,textvariable=self.phone_1,font=("arial",10,"bold"),width=30)
         self.entry_phone_1.grid(row=4,column=1,sticky=W,padx=555)
 
-        self.lbl_Mobile_1=ttk.Label(Main_Frame,bootstyle="inverse",text="Mobile_1")
+        self.lbl_Mobile_1=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Mobile_1",bd=4)
         self.lbl_Mobile_1.grid(row=5,column=0,sticky=W,padx=465)
         self.entry_Mobile_1=ttk.Entry(Main_Frame,textvariable=self.Mobile_1,font=("arial",10,"bold"),width=30)
         self.entry_Mobile_1.grid(row=5,column=1,sticky=W,padx=555)
 
-        self.lbl_Mobile_2=ttk.Label(Main_Frame,bootstyle="inverse",text="Mobile_2")
+        self.lbl_Mobile_2=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Mobile_2",bd=4)
         self.lbl_Mobile_2.grid(row=8,column=0,sticky=W,padx=1)
         self.entry_Mobile_2=ttk.Entry(Main_Frame,textvariable=self.Mobile_2,font=("arial",10,"bold"),width=30)
         self.entry_Mobile_2.grid(row=8,column=1,sticky=W,padx=1)
 
-        self.lbl_email_id=ttk.Label(Main_Frame,bootstyle="inverse",text="Email Id")
+        self.lbl_email_id=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Email Id",bd=4)
         self.lbl_email_id.grid(row=8,column=0,sticky=W,padx=1)
         self.entry_email_id=ttk.Entry(Main_Frame,textvariable=self.email,font=("arial",10,"bold"),width=30)
         self.entry_email_id.grid(row=8,column=1,sticky=W,padx=1)
 
-        self.lbl_pan_no=ttk.Label(Main_Frame,bootstyle="inverse",text="Pan No.")
+        self.lbl_pan_no=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Pan No.",bd=4)
         self.lbl_pan_no.grid(row=8,column=0,sticky=W,padx=1)
         self.entry_pan_no=ttk.Entry(Main_Frame,textvariable=self.pan_no,font=("arial",10,"bold"),width=30)
         self.entry_pan_no.grid(row=8,column=1,sticky=W,padx=1)
         
-        self.lbl_limita_amt=ttk.Label(Main_Frame,bootstyle="inverse",text="Limit Amt")
+        self.lbl_limita_amt=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="Limit Amt",bd=4)
         self.lbl_limita_amt.grid(row=8,column=0,sticky=W,padx=1)
         self.entry_limita_amt=ttk.Entry(Main_Frame,textvariable=self.limit_amount,font=("arial",10,"bold"),width=30)
         self.entry_limita_amt.grid(row=8,column=1,sticky=W,padx=1)
         
-        self.lbl_GSTIN=ttk.Label(Main_Frame,bootstyle="inverse",text="GSTIN NO")
+        self.lbl_GSTIN=ttk.Label(Main_Frame,font=("arial",11,"bold"),bg="white",text="GSTIN NO",bd=4)
         self.lbl_GSTIN.grid(row=8,column=0,sticky=W,padx=1)
         self.entry_GSTIN=ttk.Entry(Main_Frame,textvariable=self.GSTIN,font=("arial",10,"bold"),width=30)
         self.entry_GSTIN.grid(row=8,column=1,sticky=W,padx=1)
@@ -215,7 +215,7 @@ class Account_App:
 
 
         
-        self.my_table_frame=ttk.LabelFrame(self.root,text="Table Area",border=2)
+        self.my_table_frame=ttk.LabelFrame(self.root,text="Table Area",border=2, font=("times new roman",12,"bold"),bg="white",fg="red")
         self.my_table_frame.place(x=5,y=445,width=890,height=200)
 
         my_table_frame =ttk.Frame(self.root)
@@ -225,10 +225,10 @@ class Account_App:
 
         self.my_tree["column"] = list(sup_mas.columns)
         self.my_tree["show"] = "headings"
-        # s = ttk.Style(root)
-        # s.theme_use("clam")
-        # s.configure(",",font=('Helvetica',11))
-        # s.configure("Treeview.Heading",foreground='red',font=('Helvetica',11,"bold"))
+        s = ttk.Style(root)
+        s.theme_use("clam")
+        s.configure(",",font=('Helvetica',11))
+        s.configure("Treeview.Heading",foreground='red',font=('Helvetica',11,"bold"))
         for column in self.my_tree["column"]:
             self.my_tree.heading(column,text=column,anchor=tk.CENTER)
             self.my_tree.column(column,width=180,minwidth=50,anchor=tk.CENTER)
@@ -248,28 +248,28 @@ class Account_App:
         vsb.pack(fill="y",side="right")
         self.my_tree.pack()
 
-        Btn_Frame=ttk.LabelFrame(root,text="Button", )
+        Btn_Frame=ttk.LabelFrame(root,text="Button", padx=5,font=("times new roman",12,"bold"),bg="white",fg="red")
         Btn_Frame.place(x=100,y=390,width=710,height=60)
 
         self.entry_Search=ttk.Entry(Btn_Frame,textvariable=self.serachh_name,font=("arial",10,"bold"),width=24)
         self.entry_Search.grid(row=0,column=1,sticky=W,padx=2)
         
-        self.BtnSearch=ttk.Button(Btn_Frame,command=self.find_bill,width=15,text="Search",cursor="hand2")
+        self.BtnSearch=ttk.Button(Btn_Frame,command=self.find_bill,width=15,text="Search",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnSearch.grid(row=0,column=2,sticky=W,padx=7)
 
-        self.BtnAddToCart=ttk.Button(Btn_Frame,command=self.Save,width=8,text="Save",cursor="hand2")
+        self.BtnAddToCart=ttk.Button(Btn_Frame,command=self.Save,height=1,width=8,text="Save",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnAddToCart.grid(row=0,column=3)
 
-        self.BtnGenBill=ttk.Button(Btn_Frame,command=self.New,width=8,text="New",cursor="hand2")
+        self.BtnGenBill=ttk.Button(Btn_Frame,command=self.New,height=1,width=8,text="New",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnGenBill.grid(row=0,column=4)
 
-        self.BtnSaveBill=ttk.Button(Btn_Frame,command=self.Delete,width=8,text="Delete",cursor="hand2")
+        self.BtnSaveBill=ttk.Button(Btn_Frame,command=self.Delete,height=1,width=8,text="Delete",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnSaveBill.grid(row=0,column=5)
 
-        self.BtnPrint=ttk.Button(Btn_Frame,command=self.Print,width=8,text="Print",cursor="hand2")
+        self.BtnPrint=ttk.Button(Btn_Frame,height=1,command=self.Print,width=8,text="Print",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnPrint.grid(row=0,column=6)
 
-        self.BtnExit=ttk.Button(Btn_Frame,command=self.root.destroy,width=8,text="Exit",cursor="hand2")
+        self.BtnExit=ttk.Button(Btn_Frame,command=self.root.destroy,height=1,width=8,text="Exit",font=('arial',10,'bold'),bg="orangered",fg="white",cursor="hand2")
         self.BtnExit.grid(row=0,column=7)
 
     def radio_button_get(self):
@@ -330,14 +330,12 @@ class Account_App:
         self.Time_label.config(text=string)
         self.Time_label.after(50, self.time)
 
-light_theme = ["cosmo","flatly","journal","litera","lumen","minty","pulse","sandstone","united","yeti","morph","simplex","cerculean"]
-dark_theme = ["solar","superhero","darkly","cyborg","vapor",""]
+
 
 if __name__== '__main__':
     root=tk.Tk()
     obj=Account_App(root)
-    root = ttk.Window(themename="pulse")
-    root.mainloop()
+    obj.mainloop()
 
         # #Product Categories
         # self.Category=["Select Option","Clothing","LifeStyle","Mobiles"]
