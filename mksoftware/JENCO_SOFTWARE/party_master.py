@@ -1,9 +1,11 @@
-# from tkinter import *
-import tkinter as tk
+from tkinter import *
+from tkinter import ttk
+
+# import tkinter as tk
 # from tkinter import ttk,filedialog
-import ttkbootstrap as ttk
-from ttkbootstrap.tableview import Tableview
-from ttkbootstrap.constants import *
+# import ttkbootstrap as ttk
+# from ttkbootstrap.tableview import Tableview
+# from ttkbootstrap.constants import *
 from sqlalchemy import create_engine
 import urllib
 import random,os
@@ -12,245 +14,265 @@ import tempfile
 import pandas as pd
 from time import strftime
 
+pd.set_option("display.max_rows", None)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", None)
+pd.options.mode.copy_on_write = True
 
 con = urllib.parse.quote_plus(
     'DRIVER={SQL Server Native Client 11.0};SERVER=MUKESH\SQLEXPRESS;DATABASE=BBCSORG;trusted_connection=yes')
 engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(con))
 
-sqlquery1 = ("select * from dbo.SupplierMaster")
-sup_mas = pd.read_sql(sql=sqlquery1, con=engine)
-#sup_mas = sup_mas[['AgCode', 'AgName','City','Mobile','PanNo']]
+sup_mas_query = ("select * from dbo.SupplierMaster")
+sup_mas = pd.read_sql(sql=sup_mas_query, con=engine)
+
+sub_group_query = ("select * from dbo.SubGroupMaster")
+sub_group = pd.read_sql(sql=sub_group_query, con=engine)
+sub_group.rename({'SGCODE': 'SgCode'}, axis=1, inplace=True)
 
 
+agent_query = ("select * from dbo.AgentMaster")
+agent = pd.read_sql(sql=agent_query, con=engine)
+agent = agent[['AgCode','AgName', 'Mobile']]
+agent.rename({'AgCode': 'AGCode'}, axis=1, inplace=True)
+
+sup_masss = sup_mas[['SCode','SName']]
+sup_masss.rename({'SCode': 'PGCode'}, axis=1, inplace=True)
+
+sup_mas1 = pd.merge(sup_mas, sub_group, on=['SgCode'], how='left')
+sup_mas2 = pd.merge(sup_mas1, agent, on=['AGCode'], how='left')
+sup_mas_new = pd.merge(sup_mas2, sup_masss, on=['PGCode'], how='left')
+
+#sup_mas_new = sup_mas
 class Account_App:
     def __init__(self,root):
         self.root=root
         self.root.geometry("900x650+240+30")
         self.root.title("Account Master")
         style = ttk.Style()
-
-        Main_Frame=ttk.Frame(self.root,relief=GROOVE)
-        Main_Frame.place(x=0,y=0,width=900,height=600)
-
+        style.theme_use('default')
+        style.configure("Treeview",
+                        background="#D3D3D3",
+                        foreground="black",
+                        fieldbackground="D3D3D3")
+        style.map("Treeview",
+                  background=[("selected","#347083")])
+        
         #Variables
-        self.party_code=ttk.StringVar()
-        self.sub_group_code=ttk.StringVar()
-        self.agent_code=ttk.StringVar()
-        self.party_group_code=ttk.StringVar()
-        self.serachh_name=ttk.StringVar()
+        self.party_code=StringVar()
+        self.sub_group_code=StringVar()
+        self.agent_code=StringVar()
+        self.party_group_code=StringVar()
+        self.serachh_name=StringVar()
 
-        self.party_name=ttk.StringVar()
-        self.sub_group=ttk.StringVar()
-        self.agent_name=ttk.StringVar()
-        self.party_group=ttk.StringVar()
+        self.party_name=StringVar()
+        self.sub_group=StringVar()
+        self.agent_name=StringVar()
+        self.party_group=StringVar()
 
-        self.address1=ttk.StringVar()
-        self.address2=ttk.StringVar()
-        self.address3=ttk.StringVar()
-        self.city=ttk.StringVar()
-        self.state=ttk.StringVar()
-        self.transport=ttk.StringVar()
-        self.ac_lock=ttk.StringVar()
-        self.payment_terms=ttk.StringVar()
-        self.phone_1=ttk.StringVar()
-        self.Mobile_1=ttk.StringVar()
-        self.Mobile_2=ttk.StringVar()
-        self.email=ttk.StringVar()
-        self.pincode=ttk.IntVar()
-        self.credit_days=ttk.IntVar()
-        self.interest_rate=ttk.IntVar()
-        self.discount=ttk.IntVar()
-        self.belong_to=ttk.StringVar()
-        self.radio_button = ttk.StringVar()
+        self.address1=StringVar()
+        self.address2=StringVar()
+        self.address3=StringVar()
+        self.city=StringVar()
+        self.state=StringVar()
+        self.transport=StringVar()
+        self.ac_lock=StringVar()
+        self.payment_terms=StringVar()
+        self.phone_1=StringVar()
+        self.Mobile_1=StringVar()
+        self.Mobile_2=StringVar()
+        self.email=StringVar()
+        self.pincode=IntVar()
+        self.credit_days=IntVar()
+        self.interest_rate=IntVar()
+        self.discount=IntVar()
+        self.belong_to=StringVar()
+        self.radio_button = StringVar()
 
-        self.pan_no=ttk.StringVar()
-        self.limit_amount=ttk.IntVar()
-        self.GSTIN=ttk.StringVar()
+        self.pan_no=StringVar()
+        self.limit_amount=IntVar()
+        self.GSTIN=StringVar()
  
 
-        self.Time_label = ttk.Label(root, font=('digital-7', 25), background='black', foreground='magenta')
+        self.Main_Frame=Frame(self.root,relief=GROOVE)
+        self.Main_Frame.place(x=0,y=5,width=900,height=600)
+
+        self.Time_label = ttk.Label(self.Main_Frame, font=('digital-7', 25), background='black', foreground='magenta')
         self.Time_label.place(x=790,y=5,width=100,height=40)
         self.time()
-        
-        # lbl_title=Label(self.root,text="BILLING SOFTWARE USING PYTHON",font=("times new roman",35,"bold"),bg="white",fg="red")
-        # lbl_title.place(x=0,y=0,width=500,height=45)
 
-        #time
-        # def time():
-        #     string=strftime('%H:%M:%S %p')
-        #     lbl.config(text=string)
-        #     lbl.after(1000,time)
-
-        # lbl=Label(lbl_title,font=("arial",15,"bold"),fg="blue",bg="white")
-        # lbl.place(x=5,y=0,width=120,height=50)
-        # time()
-
-        self.lbl_name=ttk.Label(Main_Frame,bootstyle="primary",text="Party Name")
+        self.lbl_name=Label(self.Main_Frame,text="Party Name")
         self.lbl_name.grid(row=0,column=0,sticky=W,padx=5)
-        self.entry_code=ttk.Entry(Main_Frame,bootstyle="primary",textvariable=self.party_code,font=("arial",8,"bold"),width=12)
+        self.entry_code=Entry(self.Main_Frame,textvariable=self.party_code,font=("arial",9,"bold"),width=12)
         self.entry_code.grid(row=0,column=1,sticky=W,padx=3,pady=1)
-        self.entry_name=ttk.Entry(Main_Frame,bootstyle="primary",textvariable=self.party_name,font=("arial",8,"bold"),width=60)
+        self.entry_name=Entry(self.Main_Frame,textvariable=self.party_name,font=("arial",9,"bold"),width=60)
         self.entry_name.grid(row=0,column=1,sticky=W,padx=95,pady=1)
 
-        self.lbl_sub_group=ttk.Label(Main_Frame,bootstyle="primary",text="Sub Group")
+        self.lbl_sub_group=Label(self.Main_Frame,text="Sub Group")
         self.lbl_sub_group.grid(row=1,column=0,sticky=W,padx=3)
-        self.entry_sub_gcode=ttk.Entry(Main_Frame,textvariable=self.sub_group_code,font=("arial",8,"bold"),width=12)
+        self.entry_sub_gcode=Entry(self.Main_Frame,textvariable=self.sub_group_code,font=("arial",9,"bold"),width=12)
         self.entry_sub_gcode.grid(row=1,column=1,sticky=W,padx=3,pady=1)
-        self.entry_sub_group=ttk.Entry(Main_Frame,textvariable=self.sub_group,font=("arial",8,"bold"),width=60)
+        self.entry_sub_group=Entry(self.Main_Frame,textvariable=self.sub_group,font=("arial",9,"bold"),width=60)
         self.entry_sub_group.grid(row=1,column=1,sticky=W,padx=95,pady=1)
 
-        self.lbl_agent=ttk.Label(Main_Frame,bootstyle="primary",text="Agent Name")
+        self.lbl_agent=Label(self.Main_Frame,text="Agent Name")
         self.lbl_agent.grid(row=2,column=0,sticky=W,padx=3)
-        self.entry_acode=ttk.Entry(Main_Frame,textvariable=self.agent_code,font=("arial",8,"bold"),width=12)
+        self.entry_acode=Entry(self.Main_Frame,textvariable=self.agent_code,font=("arial",9,"bold"),width=12)
         self.entry_acode.grid(row=2,column=1,sticky=W,padx=3,pady=1)
-        self.entry_agent=ttk.Entry(Main_Frame,textvariable=self.agent_name,font=("arial",8,"bold"),width=60)
+        self.entry_agent=Entry(self.Main_Frame,textvariable=self.agent_name,font=("arial",9,"bold"),width=60)
         self.entry_agent.grid(row=2,column=1,sticky=W,padx=95,pady=1)
 
-        self.lbl_party_group=ttk.Label(Main_Frame,bootstyle="primary",text="Party Group")
+        self.lbl_party_group=Label(self.Main_Frame,text="Party Group")
         self.lbl_party_group.grid(row=3,column=0,sticky=W,padx=3)
-        self.entry_party_gcode=ttk.Entry(Main_Frame,textvariable=self.party_group_code,font=("arial",8,"bold"),width=12)
+        self.entry_party_gcode=Entry(self.Main_Frame,textvariable=self.party_group_code,font=("arial",9,"bold"),width=12)
         self.entry_party_gcode.grid(row=3,column=1,sticky=W,padx=3,pady=1)
-        self.entry_party_group=ttk.Entry(Main_Frame,textvariable=self.party_group,font=("arial",8,"bold"),width=60)
+        self.entry_party_group=Entry(self.Main_Frame,textvariable=self.party_group,font=("arial",9,"bold"),width=60)
         self.entry_party_group.grid(row=3,column=1,sticky=W,padx=95,pady=1)
 
-        self.lbl_address=ttk.Label(Main_Frame,bootstyle="primary",text="Address")
+        self.lbl_address=Label(self.Main_Frame,text="Address")
         self.lbl_address.grid(row=4,column=0,sticky=W,padx=3,pady=(15,1))
-        self.entry_address=ttk.Entry(Main_Frame,textvariable=self.address1,font=("arial",8,"bold"),width=62)
+        self.entry_address=ttk.Entry(self.Main_Frame,textvariable=self.address1,font=("arial",9,"bold"),width=62)
         self.entry_address.grid(row=4,column=1,columnspan=3,sticky=W,padx=3,pady=(15,1))
-        self.entry_address2=ttk.Entry(Main_Frame,textvariable=self.address2,font=("arial",8,"bold"),width=62)
+        self.entry_address2=Entry(self.Main_Frame,textvariable=self.address2,font=("arial",9,"bold"),width=62)
         self.entry_address2.grid(row=5,column=1,columnspan=3,sticky=W,padx=3,pady=1)
-        self.entry_address3=ttk.Entry(Main_Frame,textvariable=self.address3,font=("arial",8,"bold"),width=62)
+        self.entry_address3=Entry(self.Main_Frame,textvariable=self.address3,font=("arial",9,"bold"),width=62)
         self.entry_address3.grid(row=6,column=1,columnspan=3,sticky=W,padx=3,pady=1)
 
-        self.lbl_city=ttk.Label(Main_Frame,bootstyle="primary",text="City")
+        self.lbl_city=Label(self.Main_Frame,text="City")
         self.lbl_city.grid(row=7,column=0,sticky=W,padx=1,pady=(15,2))
-        self.entry_city=ttk.Entry(Main_Frame,textvariable=self.city,font=("arial",10,"bold"),width=30)
+        self.entry_city=Entry(self.Main_Frame,textvariable=self.city,font=("arial",9,"bold"),width=30)
         self.entry_city.grid(row=7,column=1,sticky=W,padx=1,pady=(15,2))
 
-        self.lbl_pincode=ttk.Label(Main_Frame,bootstyle="primary",text="Pincode")
+        self.lbl_pincode=Label(self.Main_Frame,text="Pincode")
         self.lbl_pincode.grid(row=7,column=1,sticky=W,padx=220,pady=(15,2))
-        self.entry_pincode=ttk.Entry(Main_Frame,textvariable=self.pincode,font=("arial",10,"bold"),width=15)
+        self.entry_pincode=Entry(self.Main_Frame,textvariable=self.pincode,font=("arial",9,"bold"),width=15)
         self.entry_pincode.grid(row=7,column=1,sticky=W,padx=330,pady=(15,2))
 
-        self.lbl_state=ttk.Label(Main_Frame,bootstyle="primary",text="State")
+        self.lbl_state=Label(self.Main_Frame,text="State")
         self.lbl_state.grid(row=8,column=0,sticky=W,padx=1)
-        self.entry_state=ttk.Entry(Main_Frame,textvariable=self.state,font=("arial",10,"bold"),width=30)
+        self.entry_state=Entry(self.Main_Frame,textvariable=self.state,font=("arial",9,"bold"),width=30)
         self.entry_state.grid(row=8,column=1,sticky=W,padx=1)
 
-        self.lbl_C_days=ttk.Label(Main_Frame,bootstyle="primary",text="Credit Days")
+        self.lbl_C_days=Label(self.Main_Frame,text="Credit Days")
         self.lbl_C_days.grid(row=8,column=1,sticky=W,padx=220)
-        self.entry_C_days=ttk.Entry(Main_Frame,textvariable=self.state,font=("arial",10,"bold"),width=15)
+        self.entry_C_days=Entry(self.Main_Frame,textvariable=self.credit_days,font=("arial",9,"bold"),width=15)
         self.entry_C_days.grid(row=8,column=1,sticky=W,padx=330)
 
-        self.lbl_transport=ttk.Label(Main_Frame,bootstyle="primary",text="Transport")
+        self.lbl_transport=Label(self.Main_Frame,text="Transport")
         self.lbl_transport.grid(row=9,column=0,sticky=W,padx=1)
-        self.entry_transport=ttk.Entry(Main_Frame,textvariable=self.transport,font=("arial",10,"bold"),width=30)
+        self.entry_transport=Entry(self.Main_Frame,textvariable=self.transport,font=("arial",9,"bold"),width=30)
         self.entry_transport.grid(row=9,column=1,sticky=W,padx=1)
 
-        self.lbl_Int_rate=ttk.Label(Main_Frame,bootstyle="primary",text="Int. Rate (%)")
+        self.lbl_Int_rate=Label(self.Main_Frame,text="Int. Rate (%)")
         self.lbl_Int_rate.grid(row=9,column=1,sticky=W,padx=220)
-        self.entry_Int_rate=ttk.Entry(Main_Frame,textvariable=self.interest_rate,font=("arial",10,"bold"),width=15)
+        self.entry_Int_rate=Entry(self.Main_Frame,textvariable=self.interest_rate,font=("arial",9,"bold"),width=15)
         self.entry_Int_rate.grid(row=9,column=1,sticky=W,padx=330)
 
-        self.lbl_ac_lock=ttk.Label(Main_Frame,bootstyle="primary",text="Ac Lock")
+        self.lbl_ac_lock=Label(self.Main_Frame,text="Ac Lock")
         self.lbl_ac_lock.grid(row=10,column=0,sticky=W,padx=1)
-        self.entry_ac_lock=ttk.Entry(Main_Frame,textvariable=self.ac_lock,font=("arial",10,"bold"),width=30)
+        self.entry_ac_lock=Entry(self.Main_Frame,textvariable=self.ac_lock,font=("arial",9,"bold"),width=30)
         self.entry_ac_lock.grid(row=10,column=1,sticky=W,padx=1)
 
-        self.lbl_discount=ttk.Label(Main_Frame,bootstyle="primary",text="Discount (%)")
+        self.lbl_discount=Label(self.Main_Frame,text="Discount (%)")
         self.lbl_discount.grid(row=10,column=1,sticky=W,padx=220)
-        self.entry_discount=ttk.Entry(Main_Frame,textvariable=self.discount,font=("arial",10,"bold"),width=15)
+        self.entry_discount=Entry(self.Main_Frame,textvariable=self.discount,font=("arial",9,"bold"),width=15)
         self.entry_discount.grid(row=10,column=1,sticky=W,padx=330)
 
-        self.lbl_remarks=ttk.Label(Main_Frame,bootstyle="primary",text="Remarks")
+        self.lbl_remarks=Label(self.Main_Frame,text="Remarks")
         self.lbl_remarks.grid(row=11,column=0,sticky=W,padx=1)
-        self.entry_remarks=ttk.Entry(Main_Frame,textvariable=self.payment_terms,font=("arial",10,"bold"),width=110)
-        self.entry_remarks.grid(row=11,column=1,sticky=E,padx=1,pady=(10,2))
+        self.entry_remarks=Entry(self.Main_Frame,textvariable=self.payment_terms,font=("arial",9,"bold"),width=109)
+        self.entry_remarks.grid(row=11,column=1,sticky=W,padx=1,pady=(10,2))
 
         
-        self.belong_to_frame=ttk.LabelFrame(self.root,text="Belongs To",border=2)
-        self.belong_to_frame.place(x=570,y=5,width=180,height=110)
+        self.belong_to_frame=LabelFrame(self.Main_Frame,text="Belongs To",border=2)
+        self.belong_to_frame.place(x=570,y=5,width=180,height=80)
 
         # self.belong = ['General','Purchase','Sales']
 
         # for bel in self.belong:
-        self.radio_general=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="General",variable=self.radio_button,value="GEN").pack(anchor=tk.W,padx=5)
-        self.radio_pur=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="Purchase",variable=self.radio_button,value="PUR").pack(anchor=tk.W,padx=5)
-        self.radio_sale=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="Sales",variable=self.radio_button,value="SAL").pack(anchor=tk.W,padx=5)
+        self.radio_general=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="General",variable=self.radio_button,value="GEN").pack(anchor=W,padx=5)
+        self.radio_pur=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="Purchase",variable=self.radio_button,value="PUR").pack(anchor=W,padx=5)
+        self.radio_sale=ttk.Radiobutton(self.belong_to_frame,command=self.radio_button_get, text="Sales",variable=self.radio_button,value="SAL").pack(anchor=W,padx=5)
         
-        # self.lbl_phone_1=ttk.Label(Main_Frame,bootstyle="primary",text="Phone No")
-        # self.lbl_phone_1.grid(row=4,column=1,sticky=W,padx=465)
-        # self.entry_phone_1=ttk.Entry(Main_Frame,textvariable=self.phone_1,font=("arial",10,"bold"),width=30)
-        # self.entry_phone_1.grid(row=4,column=1,sticky=W,padx=555)
-
-        # self.lbl_Mobile_1=ttk.Label(Main_Frame,bootstyle="primary",text="Mobile_1")
-        # self.lbl_Mobile_1.grid(row=5,column=0,sticky=W,padx=465)
-        # self.entry_Mobile_1=ttk.Entry(Main_Frame,textvariable=self.Mobile_1,font=("arial",10,"bold"),width=30)
-        # self.entry_Mobile_1.grid(row=5,column=1,sticky=W,padx=555)
-
-        # self.lbl_Mobile_2=ttk.Label(Main_Frame,bootstyle="primary",text="Mobile_2")
-        # self.lbl_Mobile_2.grid(row=8,column=0,sticky=W,padx=1)
-        # self.entry_Mobile_2=ttk.Entry(Main_Frame,textvariable=self.Mobile_2,font=("arial",10,"bold"),width=30)
-        # self.entry_Mobile_2.grid(row=8,column=1,sticky=W,padx=1)
-
-        # self.lbl_email_id=ttk.Label(Main_Frame,bootstyle="primary",text="Email Id")
-        # self.lbl_email_id.grid(row=8,column=0,sticky=W,padx=1)
-        # self.entry_email_id=ttk.Entry(Main_Frame,textvariable=self.email,font=("arial",10,"bold"),width=30)
-        # self.entry_email_id.grid(row=8,column=1,sticky=W,padx=1)
-
-        # self.lbl_pan_no=ttk.Label(Main_Frame,bootstyle="primary",text="Pan No.")
-        # self.lbl_pan_no.grid(row=8,column=0,sticky=W,padx=1)
-        # self.entry_pan_no=ttk.Entry(Main_Frame,textvariable=self.pan_no,font=("arial",10,"bold"),width=30)
-        # self.entry_pan_no.grid(row=8,column=1,sticky=W,padx=1)
+        self.lbl_limita_amt=Label(self.Main_Frame,text="Limit Amt")
+        self.lbl_limita_amt.grid(row=4,column=1,sticky=W,padx=465,pady=(15,1))
+        self.entry_limita_amt=Entry(self.Main_Frame,textvariable=self.limit_amount,font=("arial",9,"bold"),width=30)
+        self.entry_limita_amt.grid(row=4,column=1,sticky=W,padx=555,pady=(15,1))
         
-        # self.lbl_limita_amt=ttk.Label(Main_Frame,bootstyle="primary",text="Limit Amt")
-        # self.lbl_limita_amt.grid(row=8,column=0,sticky=W,padx=1)
-        # self.entry_limita_amt=ttk.Entry(Main_Frame,textvariable=self.limit_amount,font=("arial",10,"bold"),width=30)
-        # self.entry_limita_amt.grid(row=8,column=1,sticky=W,padx=1)
         
-        # self.lbl_GSTIN=ttk.Label(Main_Frame,bootstyle="primary",text="GSTIN NO")
-        # self.lbl_GSTIN.grid(row=8,column=0,sticky=W,padx=1)
-        # self.entry_GSTIN=ttk.Entry(Main_Frame,textvariable=self.GSTIN,font=("arial",10,"bold"),width=30)
-        # self.entry_GSTIN.grid(row=8,column=1,sticky=W,padx=1)
-        
+        self.lbl_pan_no=Label(self.Main_Frame,text="Pan No.")
+        self.lbl_pan_no.grid(row=5,column=1,sticky=W,padx=465)
+        self.entry_pan_no=Entry(self.Main_Frame,textvariable=self.pan_no,font=("arial",9,"bold"),width=30)
+        self.entry_pan_no.grid(row=5,column=1,sticky=W,padx=555)
 
+        self.lbl_GSTIN=Label(self.Main_Frame,text="GSTIN NO")
+        self.lbl_GSTIN.grid(row=6,column=1,sticky=W,padx=465)
+        self.entry_GSTIN=Entry(self.Main_Frame,textvariable=self.GSTIN,font=("arial",9,"bold"),width=30)
+        self.entry_GSTIN.grid(row=6,column=1,sticky=W,padx=555)        
 
-        
+        self.lbl_phone_1=Label(self.Main_Frame,text="Phone No")
+        self.lbl_phone_1.grid(row=7,column=1,sticky=W,padx=465,pady=(15,2))
+        self.entry_phone_1=Entry(self.Main_Frame,textvariable=self.phone_1,font=("arial",9,"bold"),width=30)
+        self.entry_phone_1.grid(row=7,column=1,sticky=W,padx=555,pady=(15,2))
+
+        self.lbl_Mobile_1=Label(self.Main_Frame,text="Mobile_1")
+        self.lbl_Mobile_1.grid(row=8,column=1,sticky=W,padx=465)
+        self.entry_Mobile_1=Entry(self.Main_Frame,textvariable=self.Mobile_1,font=("arial",9,"bold"),width=30)
+        self.entry_Mobile_1.grid(row=8,column=1,sticky=W,padx=555)
+
+        self.lbl_Mobile_2=Label(self.Main_Frame,text="Mobile_2")
+        self.lbl_Mobile_2.grid(row=9,column=1,sticky=W,padx=465)
+        self.entry_Mobile_2=Entry(self.Main_Frame,textvariable=self.Mobile_2,font=("arial",9,"bold"),width=30)
+        self.entry_Mobile_2.grid(row=9,column=1,sticky=W,padx=555)
+
+        self.lbl_email_id=Label(self.Main_Frame,text="Email Id")
+        self.lbl_email_id.grid(row=10,column=1,sticky=W,padx=465)
+        self.entry_email_id=Entry(self.Main_Frame,textvariable=self.email,font=("arial",9,"bold"),width=30)
+        self.entry_email_id.grid(row=10,column=1,sticky=W,padx=555)      
+      
         self.my_table_frame=ttk.LabelFrame(self.root,text="Table Area",border=2)
-        self.my_table_frame.place(x=5,y=445,width=890,height=200)
+        self.my_table_frame.place(x=5,y=390,width=890,height=250)
 
-        my_table_frame =ttk.Frame(self.root)
-        my_table_frame.pack(pady=20)
+        tree_scrolly = Scrollbar(self.my_table_frame,orient="vertical")
+        tree_scrolly.pack(side="right",fill="y")
+        
+        tree_scrollx = Scrollbar(self.my_table_frame,orient="horizontal")
+        tree_scrollx.pack(side="bottom",fill="x")
 
-        self.my_tree = ttk.Treeview(self.my_table_frame)
+        self.my_tree = ttk.Treeview(self.my_table_frame,yscrollcommand=tree_scrolly.set,xscrollcommand=tree_scrollx.set,selectmode="extended")
+        self.my_tree.pack()
+        tree_scrolly.config(command=self.my_tree.yview)
+        tree_scrollx.config(command=self.my_tree.xview)
 
-        self.my_tree["column"] = list(sup_mas.columns)
+        self.my_tree["column"] = list(sup_mas_new.columns)
         self.my_tree["show"] = "headings"
         # s = ttk.Style(root)
         # s.theme_use("clam")
         # s.configure(",",font=('Helvetica',11))
         # s.configure("Treeview.Heading",foreground='red',font=('Helvetica',11,"bold"))
         for column in self.my_tree["column"]:
-            self.my_tree.heading(column,text=column,anchor=tk.CENTER)
-            self.my_tree.column(column,width=180,minwidth=50,anchor=tk.CENTER)
+            self.my_tree.heading(column,text=column,anchor=CENTER)
+            if column == "SName":
+                self.my_tree.column(column,width=180,minwidth=50,stretch=NO,anchor=W)
+            else:
+                self.my_tree.column(column,width=180,minwidth=50,stretch=NO,anchor=CENTER)
 
-        df_rows = sup_mas.to_numpy().tolist()
+        self.my_tree.tag_configure("oddrow",background="white")
+        self.my_tree.tag_configure("evenrow",background="lightblue")
+
+        global count
+        count = 0
+
+        df_rows = sup_mas_new.to_numpy().tolist()
         for row in df_rows:
-            self.my_tree.insert("","end",values=row)
-
-        hsb =ttk.Scrollbar(self.my_table_frame,orient="horizontal")
-        hsb.configure(command=self.my_tree.xview)
-        self.my_tree.configure(xscrollcommand=hsb.set)
-        hsb.pack(fill="x",side="bottom")
-
-        vsb =ttk.Scrollbar(self.my_table_frame,orient="vertical")
-        vsb.configure(command=self.my_tree.yview)
-        self.my_tree.configure(yscrollcommand=vsb.set)
-        vsb.pack(fill="y",side="right")
-        self.my_tree.pack()
+            if count % 2 ==0:
+                self.my_tree.insert(parent="",index="end",iid=count,text="",values=row,tags=('evenrow',))
+            else:
+                self.my_tree.insert(parent="",index="end",iid=count,text="",values=row,tags=('oddrow',))
+            count +=1
 
         Btn_Frame=ttk.LabelFrame(root,text="Button", )
-        Btn_Frame.place(x=100,y=390,width=710,height=60)
+        Btn_Frame.place(x=100,y=320,width=710,height=60)
 
         self.entry_Search=ttk.Entry(Btn_Frame,textvariable=self.serachh_name,font=("arial",10,"bold"),width=24)
         self.entry_Search.grid(row=0,column=1,sticky=W,padx=2)
@@ -273,18 +295,103 @@ class Account_App:
         self.BtnExit=ttk.Button(Btn_Frame,command=self.root.destroy,width=8,text="Exit",cursor="hand2")
         self.BtnExit.grid(row=0,column=7)
 
+        self.my_tree.bind("<ButtonRelease-1>",self.select_record)
+
     def radio_button_get(self):
         selection = "You selected the option " +self.radio_button.get()
         print(selection)
 
+    def clear_records(self):
+        self.entry_code.delete(0,END)
+        self.entry_name.delete(0,END)
+        self.entry_sub_gcode.delete(0,END)
+        self.entry_sub_group.delete(0,END)
+        self.entry_acode.delete(0,END)
+        self.entry_agent.delete(0,END)
+        self.entry_party_gcode.delete(0,END)
+        self.entry_party_group.delete(0,END)
+        self.entry_address.delete(0,END)
+        self.entry_address2.delete(0,END)
+        self.entry_address3.delete(0,END)
+        self.entry_city.delete(0,END)
+        self.entry_pincode.delete(0,END)
+        self.entry_state.delete(0,END)
+        self.entry_C_days.delete(0,END)
+        self.entry_transport.delete(0,END)
+        self.entry_Int_rate.delete(0,END)
+        self.entry_ac_lock.delete(0,END)
+        self.entry_discount.delete(0,END)
+        self.entry_remarks.delete(0,END)
+        self.entry_limita_amt.delete(0,END)
+        self.entry_pan_no.delete(0,END)
+        self.entry_GSTIN.delete(0,END)
+        self.entry_phone_1.delete(0,END)
+        self.entry_Mobile_1.delete(0,END)
+        self.entry_Mobile_2.delete(0,END)
+        self.entry_email_id.delete(0,END)
+        self.entry_Search.delete(0,END)
+
+    def select_record(self,e):
+        
+        self.clear_records()
+        selected = self.my_tree.focus()
+        values = self.my_tree.item(selected,'values')
+
+        self.entry_code.insert(0,values[0])
+        self.entry_name.insert(0,values[1])
+        self.entry_sub_gcode.insert(0,values[2])
+        self.entry_sub_group.insert(0,values[39])
+        self.entry_acode.insert(0,values[4])
+        self.entry_agent.insert(0,values[41])
+        self.entry_party_gcode.insert(0,values[6])
+        self.entry_party_group.insert(0,values[43])
+        self.entry_address.insert(0,values[7])
+        self.entry_address2.insert(0,values[8])
+        self.entry_address3.insert(0,values[9])
+        self.entry_city.insert(0,values[10])
+        self.entry_pincode.insert(0,values[11])
+        self.entry_state.insert(0,values[12])
+        self.entry_C_days.insert(0,values[3])
+        self.entry_transport.insert(0,values[20])
+        self.entry_Int_rate.insert(0,values[22])
+        self.entry_ac_lock.insert(0,values[34])
+        self.entry_discount.insert(0,values[36])
+        self.entry_remarks.insert(0,values[32])
+        self.entry_limita_amt.insert(0,values[29])
+        self.entry_pan_no.insert(0,values[13])
+        self.entry_GSTIN.insert(0,values[35])
+        self.entry_phone_1.insert(0,values[16])
+        self.entry_Mobile_1.insert(0,values[17])
+        self.entry_Mobile_2.insert(0,values[18])
+        self.entry_email_id.insert(0,values[19])
+        
+
     def Save(self):
-        pass
+        self.clear_records()
 
     def New(self):
-        pass
+        self.clear_records()
+
+    def update(self):
+        selected = self.my_tree.focus()
+        self.my_tree.item(selected,text="",values=(self.entry_email_id.get(),self.entry_Mobile_2.gey(),))
+        self.clear_records()
 
     def Delete(self):
-        pass    
+        x = self.my_tree.selection()[0]
+        self.my_tree.delete(x)
+        self.clear_records()
+
+    def Delete_one(self):
+        x = self.my_tree.selection()
+        for record in x:
+            self.my_tree.delete(record)
+            self.clear_records()
+
+    def Delete_all(self):
+        for record in self.my_tree.get_children():
+            self.my_tree.delete(record)
+            self.clear_records()
 
     def Print(self):
         q=self.party_nam_query1.get(1.0,"end-1c")
@@ -295,35 +402,62 @@ class Account_App:
     def find_bill(self):
         party_nam = self.serachh_name.get()
         self.party_nam_query = ("select * from dbo.SupplierMaster WHERE SName LIKE '%"+party_nam+"%'")
-        self.party_nam_query1 = pd.read_sql(sql=self.party_nam_query, con=engine)
-        self.update_tree(self.party_nam_query1)
+        self.party_nam = pd.read_sql(sql=self.party_nam_query, con=engine)
+
+        sub_group_query = ("select * from dbo.SubGroupMaster")
+        sub_group = pd.read_sql(sql=sub_group_query, con=engine)
+        sub_group.rename({'SGCODE': 'SgCode'}, axis=1, inplace=True)
+
+
+        agent_query = ("select * from dbo.AgentMaster")
+        agent = pd.read_sql(sql=agent_query, con=engine)
+        agent = agent[['AgCode','AgName', 'Mobile']]
+        agent.rename({'AgCode': 'AGCode'}, axis=1, inplace=True)
+
+        sup_masss = sup_mas[['SCode','SName']]
+        sup_masss.rename({'SCode': 'PGCode'}, axis=1, inplace=True)
+
+        sup_mas1 = pd.merge(self.party_nam, sub_group, on=['SgCode'], how='left')
+        sup_mas2 = pd.merge(sup_mas1, agent, on=['AGCode'], how='left')
+        self.party_nam_new = pd.merge(sup_mas2, sup_masss, on=['PGCode'], how='left')
+
+        self.update_tree(self.party_nam_new)
    
 
-    def update_tree(self,party_nam_query1):
+    def update_tree(self,party_nam_new):
         self.my_tree.delete(*self.my_tree.get_children())     
-        self.my_tree["column"] = list(self.party_nam_query1.columns)
+        self.my_tree["column"] = list(self.party_nam_new.columns)
         self.my_tree["show"] = "headings"
-        s = ttk.Style(root)
-        s.theme_use("clam")
-        s.configure(",",font=('Helvetica',11))
-        s.configure("Treeview.Heading",foreground='red',font=('Helvetica',11,"bold"))
+        # s = ttk.Style(root)
+        # s.theme_use("clam")
+        # s.configure(",",font=('Helvetica',11))
+        # s.configure("Treeview.Heading",foreground='red',font=('Helvetica',11,"bold"))
         for column in self.my_tree["column"]:
-            self.my_tree.heading(column,text=column,anchor=tk.CENTER)
-            self.my_tree.column(column,anchor=tk.CENTER)
+            self.my_tree.heading(column,text=column,anchor=CENTER)
+            if column == "SName":
+                self.my_tree.column(column,width=180,minwidth=50,stretch=NO,anchor=W)
+            else:
+                self.my_tree.column(column,width=180,minwidth=50,stretch=NO,anchor=CENTER)
+        
+        self.my_tree.tag_configure("oddrow",background="white")
+        self.my_tree.tag_configure("evenrow",background="lightblue")
 
-        df_rows1 = party_nam_query1.to_numpy().tolist()
+        global count1
+        count1 = 0
+
+        df_rows1 = party_nam_new.to_numpy().tolist()
         for rows in df_rows1:
             self.my_tree.insert("","end",values=rows)
 
-        hsb =ttk.Scrollbar(self.my_table_frame,orient="horizontal")
-        hsb.configure(command=self.my_tree.xview)
-        self.my_tree.configure(xscrollcommand=hsb.set)
-        hsb.pack(fill="x",side="bottom")
-        vsb =ttk.Scrollbar(self.my_table_frame,orient="vertical")
-        vsb.configure(command=self.my_tree.yview)
-        self.my_tree.configure(yscrollcommand=vsb.set)
-        vsb.pack(fill="y",side="right")
-        self.my_tree.pack()
+        # hsb =ttk.Scrollbar(self.my_table_frame,orient="horizontal")
+        # hsb.configure(command=self.my_tree.xview)
+        # self.my_tree.configure(xscrollcommand=hsb.set)
+        # hsb.pack(fill="x",side="bottom")
+        # vsb =ttk.Scrollbar(self.my_table_frame,orient="vertical")
+        # vsb.configure(command=self.my_tree.yview)
+        # self.my_tree.configure(yscrollcommand=vsb.set)
+        # vsb.pack(fill="y",side="right")
+        # self.my_tree.pack()
 
     def time(self):
         #string = strftime('%H:%M:%S %p')
@@ -335,7 +469,7 @@ light_theme = ["cosmo","flatly","journal","litera","lumen","minty","pulse","sand
 dark_theme = ["solar","superhero","darkly","cyborg","vapor",""]
 
 if __name__== '__main__':
-    root=tk.Tk()
+    root=Tk()
     obj=Account_App(root)
     # root = ttk.Window(themename="flatly")
     root.mainloop()
@@ -421,12 +555,12 @@ if __name__== '__main__':
     #     lbl.place(x=5,y=0,width=120,height=50)
     #     time()
 
-    #     # Main_Frame
-    #     Main_Frame=Frame(self.root,bd=5,relief=GROOVE,bg="white")
-    #     Main_Frame.place(x=0,y=175,width=1360,height=520)
+    #     # self.Main_Frame
+    #     self.Main_Frame=Frame(self.root,bd=5,relief=GROOVE,bg="white")
+    #     self.Main_Frame.place(x=0,y=175,width=1360,height=520)
         
     #     # Customer_Frame
-    #     Cust_Frame=LabelFrame(Main_Frame,text="Customer",font=("times new roman",12,"bold"),bg="white",fg="red")
+    #     Cust_Frame=LabelFrame(self.Main_Frame,text="Customer",font=("times new roman",12,"bold"),bg="white",fg="red")
     #     Cust_Frame.place(x=10,y=5,width=300,height=140)
 
     #     # Custome_frame_Deatils
@@ -449,7 +583,7 @@ if __name__== '__main__':
     #     self.entry_email.grid(row=2,column=1,sticky=W,padx=8,pady=5)
 
     #     # Product Label_Frame
-    #     Prod_Frame=LabelFrame(Main_Frame,text="Product",font=("times new roman",12,"bold"),bg="white",fg="red")
+    #     Prod_Frame=LabelFrame(self.Main_Frame,text="Product",font=("times new roman",12,"bold"),bg="white",fg="red")
     #     Prod_Frame.place(x=320,y=5,width=540,height=140)
 
     #     # Category
@@ -492,7 +626,7 @@ if __name__== '__main__':
     #     self.ComboQty.grid(row=1,column=3,sticky=W,padx=8,pady=5)
 
     #     #Middle Frame
-    #     Middle_Frame=Frame(Main_Frame,bd=10,bg="white")
+    #     Middle_Frame=Frame(self.Main_Frame,bd=10,bg="white")
     #     Middle_Frame.place(x=10,y=150,width=848,height=240)
 
     #     imgMiddle1=Image.open("D:\STOCK\Capital_vercel1\mksoftware\image/image1.jpg")
@@ -510,7 +644,7 @@ if __name__== '__main__':
     #     lbl_img2.place(x=400,y=0,width=426,height=250)
 
     #     # Search Area
-    #     Search_Frame=Frame(Main_Frame,bd=2,bg="white")
+    #     Search_Frame=Frame(self.Main_Frame,bd=2,bg="white")
     #     Search_Frame.place(x=870,y=10,width=500,height=35)
 
     #     self.lblBill=Label(Search_Frame,font=("arial",10,"bold"),fg="white",bg="red",text="Bill Number")
@@ -523,7 +657,7 @@ if __name__== '__main__':
     #     self.BtnSearch.grid(row=0,column=2,sticky=W,padx=7)
 
     #     # Right frame Bill Area
-    #     RightLabelFrame=LabelFrame(Main_Frame,text="Bill Area",font=("times new roman",12,"bold"),bg="white",fg="red")
+    #     RightLabelFrame=LabelFrame(self.Main_Frame,text="Bill Area",font=("times new roman",12,"bold"),bg="white",fg="red")
     #     RightLabelFrame.place(x=870,y=45,width=470,height=350)
 
     #     scroll_y=Scrollbar(RightLabelFrame,orient=VERTICAL)
@@ -533,7 +667,7 @@ if __name__== '__main__':
     #     self.textarea.pack(fill=BOTH,expand=1)
 
     #     # Bill Counter Label_Frame
-    #     Bottom_Frame=LabelFrame(Main_Frame,text="Bill Counter",font=("times new roman",12,"bold"),bg="white",fg="red")
+    #     Bottom_Frame=LabelFrame(self.Main_Frame,text="Bill Counter",font=("times new roman",12,"bold"),bg="white",fg="red")
     #     Bottom_Frame.place(x=0,y=395,width=1345,height=115)
 
         

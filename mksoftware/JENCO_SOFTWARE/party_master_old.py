@@ -12,6 +12,10 @@ import tempfile
 import pandas as pd
 from time import strftime
 
+pd.set_option("display.max_rows", None)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", None)
+pd.options.mode.copy_on_write = True
 
 con = urllib.parse.quote_plus(
     'DRIVER={SQL Server Native Client 11.0};SERVER=MUKESH\SQLEXPRESS;DATABASE=BBCSORG;trusted_connection=yes')
