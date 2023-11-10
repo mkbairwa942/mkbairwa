@@ -366,15 +366,66 @@ class Account_App:
         self.entry_email_id.insert(0,values[19])
         
 
-    def Save(self):
-        self.clear_records()
+    # def Save(self):
+    #     self.clear_records()
 
     def New(self):
         self.clear_records()
 
-    def update(self):
+    def Save(self):
         selected = self.my_tree.focus()
-        self.my_tree.item(selected,text="",values=(self.entry_email_id.get(),self.entry_Mobile_2.gey(),))
+        #self.my_tree.item(selected,text="",values=(self.entry_email_id.get(),self.entry_Mobile_2.get(),))
+
+        sup_mas_query = ("select * from dbo.SupplierMaster")
+        sup_mas = pd.read_sql(sql=sup_mas_query, con=engine)
+
+        sub_group_query = ("select * from dbo.SubGroupMaster")
+        sub_group = pd.read_sql(sql=sub_group_query, con=engine)
+        sub_group.rename({'SGCODE': 'SgCode'}, axis=1, inplace=True)
+
+
+        agent_query = ("select * from dbo.AgentMaster")
+        agent = pd.read_sql(sql=agent_query, con=engine)
+        agent = agent[['AgCode','AgName', 'Mobile']]
+        agent.rename({'AgCode': 'AGCode'}, axis=1, inplace=True)
+
+        sup_masss = sup_mas[['SCode','SName']]
+        sup_masss.rename({'SCode': 'PGCode'}, axis=1, inplace=True)
+
+        sup_mas1 = pd.merge(sup_mas, sub_group, on=['SgCode'], how='left')
+        sup_mas2 = pd.merge(sup_mas1, agent, on=['AGCode'], how='left')
+        sup_mas_new = pd.merge(sup_mas2, sup_masss, on=['PGCode'], how='left')
+
+        updateee = ("update dbo.SupplierMaster set Pincode  = 382447 where SCode = 9717")
+
+        update_database = ("""
+                           update dbo.SupplierMaster set
+                            SName = self.entry_name.get(),
+                            SgCode = self.entry_sub_gcode,
+                            CreditDays = self.entry_C_days,
+                            AGCode = self.entry_acode,
+                            PGCode = self.entry_party_gcode,
+                            Add1 = self.entry_address,
+                            Add2 = self.entry_address2,
+                            Add3 = self.entry_address3,
+                            City = self.entry_city,
+                            Pincode = self.entry_pincode,
+                            State = self.entry_state,
+                            PanNo = self.entry_pan_no,
+                            OPhone = self.entry_phone_1,
+                            RPhone = self.entry_Mobile_1,
+                            Mobile = self.entry_Mobile_2,
+                            Email = self.entry_email_id,
+                            Transport = self.entry_transport,
+                            IntRate = self.entry_Int_rate,
+                            LimitAmount = self.entry_limita_amt,
+                            PaymentWeek =self.entry_remarks,
+                            AccountCheck = self.entry_ac_lock,
+                            GSTNONEW =self.entry_GSTIN,,
+                            DiscountPer = self.entry_discount
+                            where SCode = self.entry_code.get()
+                           """)
+
         self.clear_records()
 
     def Delete(self):
