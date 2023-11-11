@@ -61,7 +61,7 @@ def find_stat(statment,target_word):
         #symbol1 = str(exc_equity1['Root'][0])
         print(symbol3)
         print(scriptcode2)
-
+s
     if match:
         return match.group(1)
     else:
