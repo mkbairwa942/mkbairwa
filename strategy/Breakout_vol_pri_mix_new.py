@@ -582,8 +582,8 @@ while True:
 
             curr_day = (dfggg['Datetime'].apply(pd.to_datetime)).iloc[-1]
 
-            dfgg_up = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 70 ) & (dfg["Del_Vol_Pri_break"] != "") & (dfg['Date'] == curr_day)]
-            dfgg_dn = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 30 ) & (dfg["Del_Vol_Pri_break"] != "") & (dfg['Date'] == curr_day)]
+            dfgg_up = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 70 ) & (dfg['Date'] == curr_day) & (dfg["Week52"] != "")]# & (dfg["Del_Vol_Pri_break"] != "") ]
+            dfgg_dn = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 30 ) & (dfg['Date'] == curr_day) & (dfg["Week52"] != "")]# & (dfg["Del_Vol_Pri_break"] != "")]
             
             five_df2 = pd.concat([dfgg_up, five_df2])            
             five_df3 = pd.concat([dfgg_dn, five_df3])
@@ -726,7 +726,7 @@ while True:
                                     Buy_quantity_of_stock = 50
                                 Req_Amount = Buy_quantity_of_stock*Buy_price_of_stock   
 
-                                #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                             
                                 #print("5 Minute Data Selected "+str(stk_name1)+" ("+str(Buy_Scriptcodee)+")")
                                 #print("Buy Order of "+str(stk_name1)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on"+str(Buy_timee1))
@@ -826,7 +826,7 @@ while True:
                              'RSI_14','Sma_200_break','Week52','P_D_H_B','Price_Chg','Vol_Chg','Vol_Price_break','Deliv_break',
                              'O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df3.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        delv_dt.range("a15").options(index=False).value = five_df3
+        delv_dt.range("a25").options(index=False).value = five_df3
 
     if five_df4.empty:
         pass
@@ -873,7 +873,7 @@ while True:
             up4 = pd.concat([up3, up4])
             up4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
             by.range("a:az").value = None
-            by.range("a10").options(index=False).value = up4
+            by.range("a1").options(index=False).value = up4
 
         dn1 = np.unique([int(i) for i in not_selected_dn['Scripcode']]).tolist()
         dn4 = pd.DataFrame()

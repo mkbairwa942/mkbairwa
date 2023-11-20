@@ -86,9 +86,15 @@ def credentials (name):
         user = 'hareshgnagar84@gmail.com'
         pwd = '1H825JV6'
         dob = '19920702'
+        TOTP=pyotp.TOTP("GUYDMNBVHA2DEXZVKBDUWRKZ").now()
         print(user)
-        client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
-        client.login()
+        print(TOTP)
+        client_code='50645842'
+        Pin='701520'
+        RequestToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjUwODQwNDk1Iiwicm9sZSI6IkRrZldGQTFuUktoa0pMNG9MZnlubmwzYU50dzFBZzVmIiwiU3RhdGUiOiIiLCJuYmYiOjE2OTcwOTkyMzAsImV4cCI6MTY5NzA5OTI5MCwiaWF0IjoxNjk3MDk5MjMwfQ.ZePYRN6mi7F_FRrgyujAQjQ4WKANUoQuiJJboLIgVDU'
+        client = FivePaisaClient(cred=cred)
+        client.get_totp_session(client_code,TOTP,Pin)
+        #client.get_access_token(RequestToken)
 
     if name.upper() == 'ALPESH':
         cred = {

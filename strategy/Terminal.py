@@ -43,7 +43,7 @@ if operate.upper() == "YES":
 else:
     from five_paisa import *
 
-#order = client.place_order(OrderType='S',Exchange='N',ExchangeType='C', ScripCode = 1336, Qty=10,Price=1835, IsIntraday=True)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+#order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
 
 
 from_d = (date.today() - timedelta(days=4))
@@ -716,7 +716,8 @@ while True:
             try:
                 if ordbook is not None:
                     print("Order Book not Empty")        
-                    ordbook1 = ordbook[ordbook['TerminalId'] != 0]   
+                    #ordbook1 = ordbook[ordbook['TerminalId'] != 0]   
+                    ordbook1 = ordbook[ordbook['BuySell'] == "B"] 
                     #ordbook1 = ordbook           
                     Datetimeee = []
                     for i in range(len(ordbook1)):
