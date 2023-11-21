@@ -173,15 +173,6 @@ nse = NseIndia()
 tre = nse.week52()
 print
 
-# pdf = nse.get_stock_info("RELIANCE", trade_info=True)["securityWiseDP"]
-# print(pdf)
-print("hii")
-# stk_li = np.unique(bhavcopy(last_trading_day)['SYMBOL'])
-
-# opt_li = pd.unique(bhavcopy_fno(last_trading_day)['SYMBOL'])
-
-# stk_list = stk_li
-
 print("---- Data Process Started ----")
 
 if not os.path.exists("Breakout_vol_pri_mix_new.xlsx"):
@@ -256,8 +247,6 @@ exchange = None
 def round_up(n, decimals = 0): 
     multiplier = 10 ** decimals 
     return math.ceil(n * multiplier) / multiplier
-
-
 
 while True:    
     if exchange is None: 
@@ -357,13 +346,8 @@ def ordef_func():
     return ordbook1
             
 buy_order_li = ordef_func()
-#print(buy_order_li.tail(1))
 buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
 print(buy_order_list)
-
-# ordbook11 = pd.DataFrame(client.order_book())
-# buy_order_list = (np.unique([str(i) for i in ordbook11['ScripName']])).tolist()
-# print(buy_order_list)
 
 while True:
     #time.sleep(60)
@@ -459,9 +443,9 @@ while True:
 
  
 
-    start_time3 = time.time()
+    # start_time3 = time.time()
  
-    end3 = time.time() - start_time3
+    # end3 = time.time() - start_time3
 
     print("Data Analysis Completed")    
   
@@ -884,129 +868,16 @@ while True:
             dn4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
             by.range("a35").options(index=False).value = dn4
 
-        # # Last Two Row
-        # not_selected_up1 = not_selected_up.iloc[-2:] 
-        # not_selected_dn1 = not_selected_dn.iloc[-2:] 
-        
-        
-        
-
-    #     try:
-    #         print(a)
-    #         dfg1 = client.historical_data('N', 'C', a, '1d', days_365, current_trading_day)
-    #         dfg1['Scripcode'] = a
-    #         dfg1['Date'] = current_trading_day 
-    #         dfg1["RSI_14"] = np.round((pta.rsi(dfg1["Close"], length=14)),2)            
-            
-    #         dfg1['TimeNow'] = datetime.now()
-    #         dfg1.sort_values(['Datetime'], ascending=[False], inplace=True)
-    #         dfg1['Price_Chg'] = round(((dfg1['Close'] * 100) / (dfg1['Close'].shift(-1)) - 100), 2).fillna(0)      
-            
-    #         dfg1['Vol_Chg'] = round(((dfg1['Volume'] * 100) / (dfg1['Volume'].shift(-1)) - 100), 2).fillna(0)
-
-    #         dfg1['Price_break'] = np.where((dfg1['Close'] > (dfg1.High.rolling(5).max()).shift(-5)),
-    #                                             'Pri_Up_brk',
-    #                                             (np.where((dfg1['Close'] < (dfg1.Low.rolling(5).min()).shift(-5)),
-    #                                                         'Pri_Dwn_brk', "")))
-    #         dfg1['Vol_break'] = np.where(dfg1['Volume'] > (dfg1.Volume.rolling(5).mean() * 2).shift(-5),
-    #                                             "Vol_brk","")     
   
-                                                                                                                
-    #         dfg1['Vol_Price_break'] = np.where((dfg1['Vol_break'] == "Vol_brk") &
-    #                                                     (dfg1['Price_break'] != ""), "Vol_Pri_break", "")
-            
-    #         dfg1['O=H=L'] = np.where((dfg1['Open'] == dfg1['High']), 'Open_High',
-    #                                         (np.where((dfg1['Open'] == dfg1['Low']), 'Open_Low', "")))
-    #         dfg1['Pattern'] = np.where((dfg1['High'] < dfg1['High'].shift(-1)) &
-    #                                         (dfg1['Low'] > dfg1['Low'].shift(-1)), 'Inside_Bar',
-    #                                         (np.where((dfg1['Low'] < dfg1['Low'].shift(-1)) &
-    #                                                     (dfg1['Close'] > dfg1['High'].shift(-1)), 'Bullish',
-    #                                                     (np.where((dfg1['High'] > dfg1['High'].shift(-1)) &
-    #                                                             (dfg1['Close'] < dfg1['Low'].shift(-1)), 'Bearish',
-    #                                                             "")))))
-    #         dfg1["Buy/Sell"] = np.where((dfg1['Vol_break'] == "Vol_brk") & (dfg1['Price_break'] == "Pri_Up_brk"),
-    #                                         "BUY", np.where((dfg1['Vol_break'] == "Vol_brk")
-    #                                             & (dfg1['Price_break'] == "Pri_Dwn_brk") , "SELL", ""))
-                                        
-    #         dfg1['R3'] = round(dfg1['High'] + (
-    #                 2 * (((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3) - dfg1['Low'])), 2).fillna(0)
-    #         dfg1['R2'] = round((((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3) + dfg1['High']) - \
-    #                                 dfg1['Low'], 2).fillna(0)
-    #         dfg1['R1'] = round(
-    #             (2 * ((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3)) - dfg1['Low'], 2).fillna(0)
-    #         dfg1['Pivot'] = round(((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3), 2).fillna(0)
-    #         dfg1['S1'] = round(
-    #             (2 * ((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3)) - dfg1['High'], 2).fillna(0)
-    #         dfg1['S2'] = round(((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3) - (dfg1['High'] -
-    #                                                                                                 dfg1['Low']),2).fillna(0)
-                                
-    #         dfg1['S3'] = round(dfg1['Low'] - (
-    #                 2 * (dfg1['High'] - ((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3))), 2)
-    #         dfg1['Mid_point'] = round(((dfg1['High'] + dfg1['Low']) / 2), 2).fillna(0)
-    #         dfg1['CPR'] = round(
-    #             abs((round(((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3), 2)) - dfg1['Mid_point']),
-    #             2).fillna(0)
-    #         dfg1['CPR_SCAN'] = np.where((dfg1['CPR'] < ((dfg1.CPR.rolling(10).min()).shift(-10))), "CPR_SCAN",
-    #                                         "")
-    #         dfg1['Candle'] = np.where(abs(dfg1['Open'] - dfg1['Close']) <
-    #                                         abs(dfg1['High'] - dfg1['Low']) * 0.2, "DOZI",
-    #                                         np.where(abs(dfg1['Open'] - dfg1['Close']) >
-    #                                                 abs(dfg1['High'] - dfg1['Low']) * 0.7, "s", ""))
-    #         dfg1 = dfg1.astype({"Datetime": "datetime64"})
-    #         dfg1['Minutes'] = dfg1['TimeNow']-dfg1["Datetime"]
-    #         dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)
-    #         dfg1["Date"] = dfg1["Datetime"].dt.date
-    #         dfg1['Buy/Sell1'] = np.where(dfg1['Close'] > (dfg1['High']).shift(-1),"Buy_new","")
-    #         dfg1['Buy_At'] = round((dfg1['Close']),2)
-    #         dfg1['Stop_Loss'] = round((dfg1['Buy_At'] - (dfg1['Buy_At']*2)/100),2)
-    #         dfg1['Add_Till'] = ""            
-    #         dfg1['Target'] = round((((dfg1['Buy_At']*2)/100) + dfg1['Buy_At']),2)
-    #         dfg1['Term'] = "SFT"
-    #         dfgg1 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Buy_new") & (dfg1["Date"] == current_trading_day.date()) & (dfg1["RSI_14"] > 70 )]
-    #         #print(dfgg1)
-    #         if dfgg1.empty:
-    #             pass
-    #         else:
-    #             print(dfgg1["Scripcode"])
-    #         five_df4 = pd.concat([dfgg1, five_df4])
-    #         five_df5 = pd.concat([dfg1, five_df5])
-    #     except Exception as e:
-    #             print(e) 
-    
-    #     five_df11 = pd.merge(flt_exc_eq, five_df1, on=['Scripcode'], how='inner')          
-    # five_df11 = five_df11[(five_df11["Vol_Price_break"] == "Vol_Pri_break") & (five_df11["Buy/Sell1"] == "Buy_new") & (five_df11["Date"] == current_trading_day.date()) & (five_df11["RSI_14"] > 70 )]
-    # five_df11 = five_df11[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Pattern','Buy/Sell1','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
-    # five_delv.range("a:i").value = None
-    # five_delv.range("a1").options(index=False).value = five_df11
-
-    # five_df12 = pd.merge(flt_exc_eq, five_df2, on=['Scripcode'], how='inner')  
-    # five_df12 = five_df12[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
-
-    # fl_data.range("a:i").value = None
-    # fl_data.range("a1").options(index=False).value = five_df12
-
-
-    # five_df13 = pd.merge(flt_exc_eq, five_df33, on=['Scripcode'], how='inner')          
-    # five_df13 = five_df13[(five_df13["Vol_Price_break"] == "Vol_Pri_break") & (five_df13["Buy/Sell1"] == "Buy_new") & (five_df13["Date"] == current_trading_day.date()) & (five_df13["RSI_14"] > 70 )]
-    # five_df13 = five_df13[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Pattern','Buy/Sell1','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
-    # delv_dt.range("a:i").value = None
-    # delv_dt.range("a1").options(index=False).value = five_df13
-
-    # five_df14 = pd.merge(flt_exc_eq, five_df5, on=['Scripcode'], how='inner')  
-    # five_df14 = five_df14[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
-
-    # Fiv_dt.range("a:i").value = None
-    # Fiv_dt.range("a1").options(index=False).value = five_df14
- 
     end = time.time() - start_time
  
-    print("Five Paisa Data Download New")
+    # print("Five Paisa Data Download New")
 
     end4 = time.time() - start_time
-    print(f"Five Paisa Data Download Time: {end:.2f}s")
+    # print(f"Five Paisa Data Download Time: {end:.2f}s")
     # print(f"Live OI Data Download Time: {end1:.2f}s")
     # print(f"Live Delivery Data Download Time: {end2:.2f}s")
-    print(f"Data Analysis Completed Time: {end3:.2f}s")
+    #print(f"Data Analysis Completed Time: {end3:.2f}s")
     print(f"Total Data Analysis Completed Time: {end4:.2f}s")
 
     wb.save("Breakout_vol_pri_mix_new.xlsx")
