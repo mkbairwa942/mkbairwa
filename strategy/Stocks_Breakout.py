@@ -56,6 +56,7 @@ to_days = (date.today()-timedelta(days=1))
 
 days_365 = (date.today() - timedelta(days=365))
 print(days_365)
+PRINT("Hii")
 
 holida = pd.read_excel('D:\STOCK\Capital_vercel_new\strategy\holida.xlsx')
 holida["Date"] = holida["Date1"].dt.date
