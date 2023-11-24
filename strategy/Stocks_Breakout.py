@@ -867,8 +867,26 @@ while True:
             dn3 = dn2.iloc[:2]
             dn4 = pd.concat([dn3, dn4])
             dn4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-            by.range("a35").options(index=False).value = dn4
+            by.range("a100").options(index=False).value = dn4
 
+
+
+        up11 = np.unique([int(i) for i in not_selected_up['Scripcode']]).tolist()
+        up41 = pd.DataFrame()
+        for j in up11:
+            up21 = not_selected_up[(not_selected_up["Scripcode"] == j)]
+            up41 = pd.concat([up21, up41])
+            up41.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+            sl.range("a:az").value = None
+            sl.range("a1").options(index=False).value = up41
+            
+        dn11 = np.unique([int(i) for i in not_selected_dn['Scripcode']]).tolist()
+        dn41 = pd.DataFrame()
+        for k in dn11:
+            dn21 = not_selected_dn[(not_selected_dn["Scripcode"] == k)]
+            dn41 = pd.concat([dn21, dn41])
+            dn41.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+            sl.range("a100").options(index=False).value = dn41
   
     end = time.time() - start_time
  
