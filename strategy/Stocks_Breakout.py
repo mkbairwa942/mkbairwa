@@ -69,6 +69,10 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
 
+current_trading_day = date(2023, 11, 24)
+last_trading_day = date(2023, 11, 23)
+second_last_trading_day = date(2023, 11, 22)
+
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
 print("Trading Days is :- "+str(trading_dayss))
 print("Last Trading Days Is :- "+str(trading_days))
@@ -285,7 +289,7 @@ stk_list = np.unique(exc_equity["Root"])
 print("Total Stock : "+str(len(script_list)))
 print(script_list)
 
-order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
+#order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
 
 def bhavcopy_func():
     eq_bhav = pd.DataFrame()
