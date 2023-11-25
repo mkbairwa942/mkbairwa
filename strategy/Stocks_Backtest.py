@@ -321,40 +321,40 @@ print(script_list)
 # print(str(days_count)+" Days STOCK Data Download")
 
 
-def ordef_func():
-    try:
-        ordbook = pd.DataFrame(client.order_book())
-        #print(ordbook.tail(2))
-        pos.range("q1").options(index=False).value = ordbook
-    except Exception as e:
-                print(e)
+# def ordef_func():
+#     try:
+#         ordbook = pd.DataFrame(client.order_book())
+#         #print(ordbook.tail(2))
+#         pos.range("q1").options(index=False).value = ordbook
+#     except Exception as e:
+#                 print(e)
 
-    try:
-        if ordbook is not None:
-            print("Order Book not Empty")        
-            ordbook1 = ordbook[ordbook['OrderStatus'] != "Rejected By 5P"]   
-            ordbook1 = ordbook           
-            Datetimeee = []
-            for i in range(len(ordbook1)):
-                datee = ordbook1['BrokerOrderTime'][i]
-                timestamp = pd.to_datetime(datee[6:19], unit='ms')
-                ExpDate = datetime.strftime(timestamp, '%d-%m-%Y %H:%M:%S')
-                d1 = datetime(int(ExpDate[6:10]),int(ExpDate[3:5]),int(ExpDate[0:2]),int(ExpDate[11:13]),int(ExpDate[14:16]),int(ExpDate[17:19]))
-                d2 = d1 + timedelta(hours = 5.5)
-                Datetimeee.append(d2)
-            ordbook1['Datetimeee'] = Datetimeee
-            ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','ScripName','AtMarket']]
-            ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
-            pos.range("a1").options(index=False).value = ordbook1
-        else:
-            print("Order Book Empty")
-    except Exception as e:
-                print(e)
-    return ordbook1
+#     try:
+#         if ordbook is not None:
+#             print("Order Book not Empty")        
+#             ordbook1 = ordbook[ordbook['OrderStatus'] != "Rejected By 5P"]   
+#             ordbook1 = ordbook           
+#             Datetimeee = []
+#             for i in range(len(ordbook1)):
+#                 datee = ordbook1['BrokerOrderTime'][i]
+#                 timestamp = pd.to_datetime(datee[6:19], unit='ms')
+#                 ExpDate = datetime.strftime(timestamp, '%d-%m-%Y %H:%M:%S')
+#                 d1 = datetime(int(ExpDate[6:10]),int(ExpDate[3:5]),int(ExpDate[0:2]),int(ExpDate[11:13]),int(ExpDate[14:16]),int(ExpDate[17:19]))
+#                 d2 = d1 + timedelta(hours = 5.5)
+#                 Datetimeee.append(d2)
+#             ordbook1['Datetimeee'] = Datetimeee
+#             ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','ScripName','AtMarket']]
+#             ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+#             pos.range("a1").options(index=False).value = ordbook1
+#         else:
+#             print("Order Book Empty")
+#     except Exception as e:
+#                 print(e)
+#     return ordbook1
             
-buy_order_li = ordef_func()
-buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
-print(buy_order_list)
+# buy_order_li = ordef_func()
+# buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+# print(buy_order_list)
 
 while True:
     #time.sleep(60)
@@ -722,12 +722,19 @@ while True:
 
                 targettt = float(round((((dfgg_up_1['Close']*2)/100) + dfgg_up_1['Close']),1))
                 sllll = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*1)/100),1))
-                print(targettt,sllll)
+                buy_time = dfgg_up_1['Datetime'].dt.time
+                #buy_time1 = pd.to_datetime(buy_time)
+                print(targettt,sllll,buy_time)
 
                 
                 dfg2['TGT_SL'] = np.where(dfg2['Close'] > targettt,"TGTT",np.where(dfg2['Close'] < sllll,"SLLL",""))
-                print(dfg2.tail(2))
-                five_df4 = pd.concat([dfg2, five_df4])
+                dfg3 = dfg2[(dfg2["TGT_SL"] != "") & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Datetime"].time() > buy_time)]# & dfg1['Close'] > (dfg1['Close']).shift(-1)]
+
+                five_df4 = pd.concat([dfgg_up_1, five_df4])
+                dfg3.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
+                #dfg3.iloc[1:, :]
+                #dfg4 = dfg3[1:]
+                dfg5 = dfg3.iloc[[0]]
                 # count = 0
                 # for i in dfg1:
                 #     ce_dataaa = dfg1.iloc[count]
@@ -762,7 +769,7 @@ while True:
 
 
 
-                five_df5 = pd.concat([dfgg_up_1, five_df5])        
+                five_df5 = pd.concat([dfg5, five_df5])        
 
                 if dfgg_up_1.empty:
                     #parameters = {"chat_id" : "6143172607","text" : "Stock Selected but more than '5 MINUTE' ago : "+str(stk_name1)}
