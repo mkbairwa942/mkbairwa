@@ -573,7 +573,8 @@ while True:
 
                 targettt = float(round((((dfgg_up_1['Close']*2)/100) + dfgg_up_1['Close']),1))
                 sllll = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*2)/100),1))
-                timee = list(dfgg_up_1['Datetime'])[0]   
+                timee = list(dfgg_up_1['Datetime'])[0] 
+                print(timee)  
                
                 dfg22['TGT_SL'] = np.where(dfg22['High'] > targettt,"TGTT",np.where(dfg22['Low'] < sllll,"SLLL",""))
                 dfg222 = dfg22[(dfg22["TGT_SL"] != "") & (dfg22["Date"] == current_trading_day.date()) & (dfg22["Datetime"] > timee)]
