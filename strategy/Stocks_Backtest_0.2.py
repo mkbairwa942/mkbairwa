@@ -24,6 +24,7 @@ import itertools
 import math 
 from telethon.sync import TelegramClient
 from five_paisa import *
+import matplotlib.pyplot as plt
 
 telegram_first_name = "mkbairwa"
 telegram_username = "mkbairwa_bot"
@@ -58,9 +59,9 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_dayss[1]
 second_last_trading_day = trading_days[1]
 
-# current_trading_day = trading_dayss[1]
-# last_trading_day = trading_dayss[2]
-# second_last_trading_day = trading_days[3]
+current_trading_day = trading_dayss[1]
+last_trading_day = trading_dayss[2]
+second_last_trading_day = trading_days[3]
 
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
@@ -270,7 +271,7 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-script_list = [1185,	19867,	100,	10457,	1663,	2144,	383,	404,	7848,	480,	559,	20160,	21749,	21740,	11731,	11423,	7358,	21690,	17851,	25690,	15214,	4525,	19277,	13966,	10619,	1455,	14203,	7852,	13982,	1720,	19020,	3637,	6951,	2841,	12686,	17957,	20830,	10822,	357,	14111,	17400,	21469,	926,	2493,	6656,	25718,	2711,	2739,	10990,	15157,	5279,	19410,	10453,	14139,	11520,	13598,	15342,	5068,	7200,	11050,	13826,	3021,	13801,	5162,	3493,	5428,	14208,	3857,	3063,	8652,	3766,	3812,]
+script_list = [13868,	13771,	2598,]#	25328,	5435,	15204,	16913,	13441,	341,	4668,	12153,	13400,	19585,	6216,	19447,	595,	1879,	21174,	2049,	5049,	11731,	6051,	17187,	11667,	21314,	916,	9750,	1038,	14304,	1085,	10905,	277,	1415,	8529,	16705,	14480,	11606,	14712,	30125,	21957,	20261,	14932,	4410,	13720,	7287,	2955,	1782,	1859,	14912,	6818,	18321,	3220,	10590,	21392,	17527,	17603,	17022,	22377,	14947,	10557,	31415,	14547,	399,	255,	2442,	8797,	30089,	471,	2610,	2256,	25358,	18908,	6656,	2711,	20302,	4344,	13116,	7401,	18962,	13451,	2866,	12026,	1547,	6718,	3048,	11520,	708,	9422,	31837,	13801,	21828,	3466,	19196,	10717,	11582,	13081,	20188,]
 script_list.sort()
 # stk_list = ['APOLLO',	'ARVIND',	'CDSL',	'CIGNITITEC',	'CTE',	'DATAMATICS',	'DSSL',	'EMIL',	'EMKAY',	'HITECH',	'IWEL',	'MOTILALOFS',	'NAM-INDIA',	'ORBTEXP',	'RELCHEMQ',	'SAGARDEEP',	'SHALBY',	'SUVEN',	'WEIZMANIND',	'AAVAS',	'BUTTERFLY',	'FINEORG',	'INFOBEAN',	'MOLDTECH',	'SIEMENS']
 	
@@ -384,7 +385,8 @@ def fiveminute_data(scode,time,start,end):
 
 def one_Day_Data(scode,time,start,end):
     print("1 Day Data Download and Scan "+str(aa))
-    dfggg = client.historical_data('N', 'C', scode,time,start,end)      
+    dfggg = client.historical_data('N', 'C', scode,time,start,end)   
+   
     dfggg['Scripcode'] = aa
     dfggg = pd.merge(flt_exc_eq, dfggg, on=['Scripcode'], how='inner') 
     dfggg = dfggg[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume']]
@@ -517,6 +519,7 @@ while True:
             dfgg_up_1122 = dfg1[(dfg1["Date"] == last_trading_day.date())]
             maxxx = dfgg_up_1122['High'].max()
             minnn = dfgg_up_1122['Low'].min()
+            
             dfg1['P_D_H_L_B'] = np.where(dfg1['Close'] > maxxx,"PDHB",np.where(dfg1['Close'] < minnn,"PDLB",""))         
             dfg1['Filt_Buy_Sell'] = np.where((dfg1["Vol_Price_break"].shift(-1) == "Vol_Pri_break") & (dfg1["Buy/Sell1"].shift(-1) == "Buy_new") & (dfg1["RSI_14"].shift(-1) > 65 ) & (dfg1["P_D_H_L_B"].shift(-1) == "PDHB" ) & (dfg1["Date"].shift(-1) == current_trading_day.date()),"Filt_Buy","")# & (dfg1["Minutes"].shift(-1) < 5 )]
             
@@ -535,68 +538,39 @@ while True:
                 five_df1 = pd.concat([dfg126, five_df1])
                 dfgg_up_11.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
                 dfgg_up_1 = dfgg_up_11.iloc[[0]]
+                dfgg_up_1['Benchmark'] = ""
+                dfgg_up_1['StopLoss'] = ""
                 dfgg_up_1['TGT_SL'] = "Entry"
+
                 five_df2 = pd.concat([dfgg_up_1, five_df2])
 
-                dfg22 = dfg1                
+                dfg22 = dfg1.copy()    
+                dfg22.sort_values(['Name','Date', 'Times'], ascending=[True,True, True], inplace=True)           
                 close = list(dfgg_up_1['Close'])
                 entry = close[0]
                 sllll = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*2)/100),1))
                 targettt = float(round((((dfgg_up_1['Close']*2)/100) + dfgg_up_1['Close']),1))
-                trail = 1
-                forwardMove = 1
-                SL = sllll
-                # print(entry,sllll,targettt,trail,forwardMove,SL)
 
-
-                roww = dfg22.shape[0]
-                print(roww)
-                count = 0
-                for i in range(0, len(dfg22)):
-                    print(entry,sllll,targettt,dfg22.iloc[i]['Close'],dfg22.iloc[i]['Name'], dfg22.iloc[i]['Times'])
-                    if dfg22.iloc[i]['High'] > targettt + 1 :
-                        print("yes")
-                    if dfg22.iloc[i]['Low'] < sllll - 1 :
-                        print("no")
-
-                # if dfg22['High'] > targettt+1:
-                #     sllll+1
-                # else:
-                #      sllll+0
-
-
-                # for i in range(0,len(dfg22['Close'])-1):
-                #     print(i)
-                #     diff = round((entry-close[i]),2)
-                #     point = int(diff/forwardMove) if diff > 0 else 0
-                #     SLmove = point*trail
-
-                #     if sllll - SL < SLmove:
-                #         SL = sllll - SLmove
-                #         print(f'{i } {dfg22.loc[i]["Datetime"]} close{close[i]} New SL {SL} Diff {diff}')
-                #     elif SL<= close[i]:
-                #         print('SL Hit : ',dfg22.loc[i]['Datetime'],close[i],' ',SL)
-                #         break
-                #     else:
-                #        print(f'{i } {dfg22.loc[i]["Datetime"]} close{close[i]} SL {SL} Diff {diff}')
-
-
-
-                # targettt = float(round((((dfgg_up_1['Close']*2)/100) + dfgg_up_1['Close']),1))
-                # sllll = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*2)/100),1))
+                dfg22['Benchmark'] = dfg22['Close'].cummax()
+                dfg22['StopLoss'] = dfg22['Benchmark'] * 0.98
+                dfg22['TGT_SL'] = np.where(dfg22['Close'] < dfg22['StopLoss'],"TSL",np.where(dfg22['Close'] < sllll,"SL",""))
                 timee = list(dfgg_up_1['Datetime'])[0] 
                 print(timee)  
                
-                dfg22['TGT_SL'] = np.where(dfg22['High'] > targettt,"TGTT",np.where(dfg22['Low'] < sllll,"SLLL",""))
-                dfg222 = dfg22[(dfg22["TGT_SL"] != "") & (dfg22["Date"] == current_trading_day.date()) & (dfg22["Datetime"] > timee)]
+                dfg222 = dfg22[(dfg22["TGT_SL"] != "")  & (dfg22["Datetime"] > timee) &  (dfg22["Date"] == current_trading_day.date())]
                 dfg222.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
                 dfg2222 = dfg222.iloc[[0]]                
                 five_df4 = pd.concat([dfg2222, five_df4])
        
                 datae = [dfgg_up_1, dfg2222]
                 final_df = pd.concat(datae)
+                print("1")
                 final_df['Time_use'] = (final_df['Date'] - final_df['Date'].shift(1)) / pd.Timedelta(minutes=1)
-                final_df['P&L'] = final_df['Close'] - final_df['Close'].shift(1)
+                print("2")
+                final_df['P&L'] = final_df['StopLoss'] - final_df['Close'].shift(1)
+                print("3")
+                #final_df['P&L_%'] = ((100*(final_df['StopLoss']))/final_df['Close'])-100
+                print("4")
                 five_df5 = pd.concat([final_df, five_df5])
                
                 dfggg = one_Day_Data(aa, '1d', days_365, current_trading_day)
@@ -639,7 +613,7 @@ while True:
         pass
     else:
         #five_df12 = pd.merge(flt_exc_eq, five_df2, on=['Scripcode'], how='inner') 
-        five_df2 = five_df2[['Name','Scripcode','Date','Times','TimeNow','Minutes','TGT_SL','Open','High','Low','Close','Volume',
+        five_df2 = five_df2[['Name','Scripcode','Date','Times','TimeNow','Minutes','Benchmark','StopLoss','TGT_SL','Open','High','Low','Close','Volume',
                              'RSI_14','Cand_col','Cand_Body','Top_Wick','Bot_Wick','Cand_Size','Price_Chg','Vol_Chg','Vol_Price_break',                             
                              'Buy_At','Stop_Loss','Add_Till','Target','Term','Filt_Buy_Sell',
                              'O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
@@ -664,19 +638,22 @@ while True:
         pass
     else:
         # five_df13 = pd.merge(flt_exc_eq, five_df4, on=['Scripcode'], how='inner') 
-        five_df4 = five_df4[['Name','Scripcode','Date','Times','TimeNow','Minutes','TGT_SL','Open','High','Low','Close','Volume',
-                             'RSI_14','Cand_col','Cand_Body','Top_Wick','Bot_Wick','Cand_Size','Price_Chg','Vol_Chg','Vol_Price_break',                             
-                             'Buy_At','Stop_Loss','Add_Till','Target','Term','Filt_Buy_Sell',
-                             'O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+        five_df4 = five_df4[['Name','Scripcode','Date','Times','TimeNow','Minutes','Benchmark','StopLoss','TGT_SL','Open','High','Low','Close','Volume',
+                              'RSI_14','Cand_col','Cand_Body','Top_Wick','Bot_Wick','Cand_Size','Price_Chg','Vol_Chg','Vol_Price_break',                             
+                              'Buy_At','Stop_Loss','Add_Till','Target','Term','Filt_Buy_Sell',
+                              'O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df4.sort_values(['Name', 'Date','Times'], ascending=[True, False,False], inplace=True) 
         five_delv.range("a:az").value = None
         five_delv.range("a1").options(index=False).value = five_df4
+        five_df4['Close'].plot()
+
 
     if five_df5.empty:
         pass
     else:
         # five_df14 = pd.merge(flt_exc_eq, five_df5, on=['Scripcode'], how='inner') 
-        five_df5 = five_df5[['Name','Scripcode','Date','Times','TimeNow','Minutes','TGT_SL','Time_use','P&L','Buy_At','Stop_Loss','Add_Till','Target',
+        
+        five_df5 = five_df5[['Name','Scripcode','Date','Times','TimeNow','Minutes','Benchmark','StopLoss','TGT_SL','Time_use','P&L','Buy_At','Stop_Loss','Add_Till','Target',
                              'Open','High','Low','Close','Volume',
                              'RSI_14','Cand_col','Cand_Body','Top_Wick','Bot_Wick','Cand_Size','Price_Chg','Vol_Chg','Vol_Price_break',                             
                              'Term','Filt_Buy_Sell',
