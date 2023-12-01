@@ -207,20 +207,20 @@ bhv_fo.range("a:u").value = None
 # five_delv.range("a:u").value = None
 # fl_data.range("a:u").value = None
 pos.range("a:u").value = None
-strategy1.range("a:u").value = None
-strategy2.range("a:u").value = None
-strategy3.range("a:u").value = None
+# strategy1.range("a:u").value = None
+# strategy2.range("a:u").value = None
+# strategy3.range("a:u").value = None
 
 st = wb.sheets("Stat")
 st1 = wb.sheets("Stat1")
 st2 = wb.sheets("Stat2")
 st3 = wb.sheets("Stat3")
 st4 = wb.sheets("Stat4")
-st.range("a:u").value = None
-st1.range("a:u").value = None
-st2.range("a:u").value = None
-st3.range("a:u").value = None
-st4.range("a:i").value = None
+# st.range("a:u").value = None
+# st1.range("a:u").value = None
+# st2.range("a:u").value = None
+# st3.range("a:u").value = None
+# st4.range("a:i").value = None
 
 by = wb.sheets("Buy")
 sl = wb.sheets("Sale")
@@ -270,7 +270,7 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-script_list = [31138,	30089,	25492,	17945,	17388,	17256,	14657,	13786,	12009,	11852,	11427,	10557,	10238,	8153,	6066,	4391,	4040,	3563,	3481,	1406,	1389,	445,	399,	277,]
+script_list = [1185,	19867,	100,	10457,	1663,	2144,	383,	404,	7848,	480,	559,	20160,	21749,	21740,	11731,	11423,	7358,	21690,	17851,	25690,	15214,	4525,	19277,	13966,	10619,	1455,	14203,	7852,	13982,	1720,	19020,	3637,	6951,	2841,	12686,	17957,	20830,	10822,	357,	14111,	17400,	21469,	926,	2493,	6656,	25718,	2711,	2739,	10990,	15157,	5279,	19410,	10453,	14139,	11520,	13598,	15342,	5068,	7200,	11050,	13826,	3021,	13801,	5162,	3493,	5428,	14208,	3857,	3063,	8652,	3766,	3812,]
 script_list.sort()
 # stk_list = ['APOLLO',	'ARVIND',	'CDSL',	'CIGNITITEC',	'CTE',	'DATAMATICS',	'DSSL',	'EMIL',	'EMKAY',	'HITECH',	'IWEL',	'MOTILALOFS',	'NAM-INDIA',	'ORBTEXP',	'RELCHEMQ',	'SAGARDEEP',	'SHALBY',	'SUVEN',	'WEIZMANIND',	'AAVAS',	'BUTTERFLY',	'FINEORG',	'INFOBEAN',	'MOLDTECH',	'SIEMENS']
 	
@@ -546,12 +546,23 @@ while True:
                 trail = 1
                 forwardMove = 1
                 SL = sllll
-                print(entry,sllll,targettt,trail,forwardMove,SL)
+                # print(entry,sllll,targettt,trail,forwardMove,SL)
 
-                if dfg22['High'] > targettt+1:
-                    sllll+1
-                else:
-                     sllll+0
+
+                roww = dfg22.shape[0]
+                print(roww)
+                count = 0
+                for i in range(0, len(dfg22)):
+                    print(entry,sllll,targettt,dfg22.iloc[i]['Close'],dfg22.iloc[i]['Name'], dfg22.iloc[i]['Times'])
+                    if dfg22.iloc[i]['High'] > targettt + 1 :
+                        print("yes")
+                    if dfg22.iloc[i]['Low'] < sllll - 1 :
+                        print("no")
+
+                # if dfg22['High'] > targettt+1:
+                #     sllll+1
+                # else:
+                #      sllll+0
 
 
                 # for i in range(0,len(dfg22['Close'])-1):
@@ -571,8 +582,8 @@ while True:
 
 
 
-                targettt = float(round((((dfgg_up_1['Close']*2)/100) + dfgg_up_1['Close']),1))
-                sllll = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*2)/100),1))
+                # targettt = float(round((((dfgg_up_1['Close']*2)/100) + dfgg_up_1['Close']),1))
+                # sllll = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*2)/100),1))
                 timee = list(dfgg_up_1['Datetime'])[0] 
                 print(timee)  
                
