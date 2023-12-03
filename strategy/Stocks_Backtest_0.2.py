@@ -170,16 +170,16 @@ print
 
 print("---- Data Process Started ----")
 
-if not os.path.exists("Stocks_Backtest_0.1.xlsx"):
+if not os.path.exists("Stocks_Backtest_0.2.xlsx"):
     try:
         wb = xw.Book()
         wb.sheets.add("optionchain")
-        wb.save("Stocks_Backtest_0.1.xlsx")
+        wb.save("Stocks_Backtest_0.2.xlsx")
         wb.close()
     except Exception as e:
         print(f"Error : {e}")
         sys.exit()
-wb = xw.Book('Stocks_Backtest_0.1.xlsx')
+wb = xw.Book('Stocks_Backtest_0.2.xlsx')
 for i in ["Exchange","Filt_Exc","Bhavcopy","FO_Bhavcopy","Five_data","Delv_data","Five_Delv","Final_Data","Position","Strategy1","Strategy2","Strategy3","Buy","Sale",
            "Expiry","stats","Stat","Stat1","Stat2","Stat3","Stat4"]:
     try:
@@ -271,7 +271,7 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-script_list = [13868,	13771,	2598,]#	25328,	5435,	15204,	16913,	13441,	341,	4668,	12153,	13400,	19585,	6216,	19447,	595,	1879,	21174,	2049,	5049,	11731,	6051,	17187,	11667,	21314,	916,	9750,	1038,	14304,	1085,	10905,	277,	1415,	8529,	16705,	14480,	11606,	14712,	30125,	21957,	20261,	14932,	4410,	13720,	7287,	2955,	1782,	1859,	14912,	6818,	18321,	3220,	10590,	21392,	17527,	17603,	17022,	22377,	14947,	10557,	31415,	14547,	399,	255,	2442,	8797,	30089,	471,	2610,	2256,	25358,	18908,	6656,	2711,	20302,	4344,	13116,	7401,	18962,	13451,	2866,	12026,	1547,	6718,	3048,	11520,	708,	9422,	31837,	13801,	21828,	3466,	19196,	10717,	11582,	13081,	20188,]
+script_list = [13868,	13771,	2598,	25328,	5435,	15204,	16913,	13441,	341,	4668,	12153,	13400,	19585,	6216,	19447,	595,	1879,	21174,	2049,	5049,	11731,	6051,	17187,	11667,	21314,	916,	9750,	1038,	14304,	1085,	10905,	277,	1415,	8529,	16705,	14480,	11606,	14712,	30125,	21957,	20261,	14932,	4410,	13720,	7287,	2955,	1782,	1859,	14912,	6818,	18321,	3220,	10590,	21392,	17527,	17603,	17022,	22377,	14947,	10557,	31415,	14547,	399,	255,	2442,	8797,	30089,	471,	2610,	2256,	25358,	18908,	6656,	2711,	20302,	4344,	13116,	7401,	18962,	13451,	2866,	12026,	1547,	6718,	3048,	11520,	708,	9422,	31837,	13801,	21828,	3466,	19196,	10717,	11582,	13081,	20188,]
 script_list.sort()
 # stk_list = ['APOLLO',	'ARVIND',	'CDSL',	'CIGNITITEC',	'CTE',	'DATAMATICS',	'DSSL',	'EMIL',	'EMKAY',	'HITECH',	'IWEL',	'MOTILALOFS',	'NAM-INDIA',	'ORBTEXP',	'RELCHEMQ',	'SAGARDEEP',	'SHALBY',	'SUVEN',	'WEIZMANIND',	'AAVAS',	'BUTTERFLY',	'FINEORG',	'INFOBEAN',	'MOLDTECH',	'SIEMENS']
 	
@@ -564,13 +564,11 @@ while True:
        
                 datae = [dfgg_up_1, dfg2222]
                 final_df = pd.concat(datae)
-                print("1")
+        
                 final_df['Time_use'] = (final_df['Date'] - final_df['Date'].shift(1)) / pd.Timedelta(minutes=1)
-                print("2")
+
                 final_df['P&L'] = final_df['StopLoss'] - final_df['Close'].shift(1)
-                print("3")
-                #final_df['P&L_%'] = ((100*(final_df['StopLoss']))/final_df['Close'])-100
-                print("4")
+   
                 five_df5 = pd.concat([final_df, five_df5])
                
                 dfggg = one_Day_Data(aa, '1d', days_365, current_trading_day)
@@ -733,7 +731,7 @@ while True:
     #print(f"Data Analysis Completed Time: {end3:.2f}s")
     print(f"Total Data Analysis Completed Time: {end4:.2f}s")
 
-    wb.save("Stocks_Backtest_0.1.xlsx")
+    wb.save("Stocks_Backtest_0.2.xlsx")
 
 
 

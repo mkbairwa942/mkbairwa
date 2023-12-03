@@ -69,9 +69,9 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
 
-# current_trading_day = date(2023, 11, 24)
-# last_trading_day = date(2023, 11, 23)
-# second_last_trading_day = date(2023, 11, 22)
+current_trading_day = trading_dayss[1]
+last_trading_day = trading_dayss[2]
+second_last_trading_day = trading_days[3]
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
 print("Trading Days is :- "+str(trading_dayss))
@@ -289,7 +289,7 @@ stk_list = np.unique(exc_equity["Root"])
 print("Total Stock : "+str(len(script_list)))
 print(script_list)
 
-#order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
+order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
 
 def bhavcopy_func():
     eq_bhav = pd.DataFrame()
@@ -571,8 +571,8 @@ while True:
 
             curr_day = (dfggg['Datetime'].apply(pd.to_datetime)).iloc[-1]
 
-            dfgg_up = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 70 ) & (dfg['Date'] == curr_day) & (dfg["Week52"] != "")]# & (dfg["Del_Vol_Pri_break"] != "") ]
-            dfgg_dn = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 30 ) & (dfg['Date'] == curr_day) & (dfg["Week52"] != "")]# & (dfg["Del_Vol_Pri_break"] != "")]
+            dfgg_up = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 60 ) & (dfg['Date'] == curr_day) & (dfg["Week52"] != "")]# & (dfg['Close'] > 300)]# & (dfg["Del_Vol_Pri_break"] != "") ]
+            dfgg_dn = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 40 ) & (dfg['Date'] == curr_day) & (dfg["Week52"] != "")]# & (dfg["Del_Vol_Pri_break"] != "")]
             
             five_df2 = pd.concat([dfgg_up, five_df2])            
             five_df3 = pd.concat([dfgg_dn, five_df3])
@@ -674,8 +674,8 @@ while True:
 
                     five_df4 = pd.concat([dfg1, five_df4])
 
-                    dfgg_up_11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Buy_new") & (dfg1["RSI_14"] > 70 ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]
-                    dfgg_dn_11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Sell_new") & (dfg1["RSI_14"] < 30 ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]
+                    dfgg_up_11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Buy_new") & (dfg1["RSI_14"] > 60 ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]
+                    dfgg_dn_11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Sell_new") & (dfg1["RSI_14"] < 40 ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]
 
                     #dfgg1 = dfgg1.iloc[[1]]
                     #dfgg1 = dfgg1.iloc[1:2]

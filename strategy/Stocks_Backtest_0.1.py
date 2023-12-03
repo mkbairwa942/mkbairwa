@@ -58,9 +58,9 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_dayss[1]
 second_last_trading_day = trading_days[1]
 
-# current_trading_day = trading_dayss[1]
-# last_trading_day = trading_dayss[2]
-# second_last_trading_day = trading_days[3]
+current_trading_day = trading_dayss[1]
+last_trading_day = trading_dayss[2]
+second_last_trading_day = trading_days[3]
 
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
@@ -270,7 +270,7 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-script_list = [31138,	30089,	25492,	17945,	17388,	17256,	14657,	13786,	12009,	11852,	11427,	10557,	10238,	8153,	6066,	4391,	4040,	3563,	3481,	1406,	1389,	445,	399,	277,]
+script_list = [13868,	13771,	2598,	25328,	5435,15204,	16913,	13441,	341,	4668,]#	12153,	13400,	19585,	6216,	19447,	595,	1879,	21174,	2049,	5049,	11731,	6051,	17187,	11667,	21314,	916,	9750,	1038,	14304,	1085,	10905,	277,	1415,	8529,	16705,	14480,	11606,	14712,	30125,	21957,	20261,	14932,	4410,	13720,	7287,	2955,	1782,	1859,	14912,	6818,	18321,	3220,	10590,	21392,	17527,	17603,	17022,	22377,	14947,	10557,	31415,	14547,	399,	255,	2442,	8797,	30089,	471,	2610,	2256,	25358,	18908,	6656,	2711,	20302,	4344,	13116,	7401,	18962,	13451,	2866,	12026,	1547,	6718,	3048,	11520,	708,	9422,	31837,	13801,	21828,	3466,	19196,	10717,	11582,	13081,	20188,]
 script_list.sort()
 # stk_list = ['APOLLO',	'ARVIND',	'CDSL',	'CIGNITITEC',	'CTE',	'DATAMATICS',	'DSSL',	'EMIL',	'EMKAY',	'HITECH',	'IWEL',	'MOTILALOFS',	'NAM-INDIA',	'ORBTEXP',	'RELCHEMQ',	'SAGARDEEP',	'SHALBY',	'SUVEN',	'WEIZMANIND',	'AAVAS',	'BUTTERFLY',	'FINEORG',	'INFOBEAN',	'MOLDTECH',	'SIEMENS']
 	
@@ -310,17 +310,39 @@ bhv.range("a:i").value = None
 bhv.range("a1").options(index=False).value = eq_bhav
 print(str(days_count)+" Days STOCK Data Download")
 
+def get_adx(High, Low, Close, lookback):
+    plus_dm = High.diff()
+    minus_dm = Low.diff()
+    plus_dm[plus_dm < 0] = 0
+    minus_dm[minus_dm > 0] = 0
+    
+    tr1 = pd.DataFrame(High - Low)
+    tr2 = pd.DataFrame(abs(High - Close.shift(1)))
+    tr3 = pd.DataFrame(abs(Low - Close.shift(1)))
+    frames = [tr1, tr2, tr3]
+    tr = pd.concat(frames, axis = 1, join = 'inner').max(axis = 1)
+    atr = tr.rolling(lookback).mean()
+    
+    plus_di = 100 * (plus_dm.ewm(alpha = 1/lookback).mean() / atr)
+    minus_di = abs(100 * (minus_dm.ewm(alpha = 1/lookback).mean() / atr))
+    dx = (abs(plus_di - minus_di) / abs(plus_di + minus_di)) * 100
+    adx = ((dx.shift(1) * (lookback - 1)) + dx) / lookback
+    adx_smooth = adx.ewm(alpha = 1/lookback).mean()
+    return plus_di, minus_di, adx_smooth
+
+
 def fiveminute_data(scode,time,start,end):    
     dfg1 = client.historical_data('N', 'C', scode, time,start,end) 
     dfg1['Scripcode'] = aa  
+    ADX_1 = pta.adx(dfg1['High'], dfg1['Low'],dfg1["Close"], length=14)
+    dfg1['ADX'] = np.round((ADX_1[ADX_1.columns[0]]),2)
+    dfg1['ADX_+'] = np.round((ADX_1[ADX_1.columns[1]]),2)
+    dfg1['ADX_-'] = np.round((ADX_1[ADX_1.columns[2]]),2)
 
     dfg1 = pd.merge(flt_exc_eq, dfg1, on=['Scripcode'], how='inner') 
-    dfg1 = dfg1[['Scripcode','Name','Datetime','Open','High','Low','Close','Volume']]
 
     dfg1['Date'] = current_trading_day 
     dfg1["RSI_14"] = np.round((pta.rsi(dfg1["Close"], length=14)),2) 
-    
-    dfg1.sort_values(['Datetime'], ascending=[False], inplace=True)
     dfg1['TimeNow'] = datetime.now()
     dfg1['Cand_col'] = np.where(dfg1['Close'] > dfg1['Open'],"Green",np.where(dfg1['Close'] < dfg1['Open'],"Red","Dozi"))
     dfg1['Cand_Body'] = dfg1['High'] - dfg1['Low']
@@ -498,14 +520,26 @@ while True:
     five_df6 = pd.DataFrame()
     bhv_fo1 = pd.DataFrame()
     one_day = pd.DataFrame()
+    Strategy11 = pd.DataFrame()
 
     for aa in script_list:
         try:        
             dfg1 = fiveminute_data(aa,'5m',last_trading_day,current_trading_day)
-
+            print(aa)
             dfg1["Times"] = dfg1['Datetime'].apply(lambda x: x.split('T')[-1])
             dfg1 = dfg1.astype({"Datetime": "datetime64"})    
             dfg1["Date"] = dfg1["Datetime"].dt.date
+            # print(dfg1.tail(2))
+
+            # dfg1.sort_values(['Date','Times'], ascending=[False,True], inplace=True)
+            # ADX_1 = pta.adx(dfg1['High'], dfg1['Low'],dfg1["Close"], length=14)
+            # dfg1['ADX_1'] = np.round((ADX_1[ADX_1.columns[0]]),2)
+            
+            #dfg1['ADX'] = pta.adx(dfg1['High'], dfg1['Low'],dfg1["Close"], length=14)
+            #dfg1['plus_di'] = pd.DataFrame(get_adx(dfg1['High'], dfg1['Low'], dfg1['Close'], 14)[0]).rename(columns = {0:'plus_di'})
+            #dfg1['minus_di'] = pd.DataFrame(get_adx(dfg1['High'], dfg1['Low'], dfg1['Close'], 14)[1]).rename(columns = {0:'minus_di'})
+            #dfg1['adx'] = pd.DataFrame(get_adx(dfg1['High'], dfg1['Low'], dfg1['Close'], 14)[2]).rename(columns = {0:'adx'})
+
             dfg1['Minutes'] = dfg1['TimeNow']-dfg1["Datetime"]
             dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)
             dfg1['Buy/Sell1'] = np.where(dfg1['High'] > (dfg1['High']).shift(-1),"Buy_new",np.where(dfg1['Close'] < (dfg1['Low']).shift(-1),"Sell_new",""))
@@ -518,63 +552,74 @@ while True:
             maxxx = dfgg_up_1122['High'].max()
             minnn = dfgg_up_1122['Low'].min()
             dfg1['P_D_H_L_B'] = np.where(dfg1['Close'] > maxxx,"PDHB",np.where(dfg1['Close'] < minnn,"PDLB",""))         
-            dfg1['Filt_Buy_Sell'] = np.where((dfg1["Vol_Price_break"].shift(-1) == "Vol_Pri_break") & (dfg1["Buy/Sell1"].shift(-1) == "Buy_new") & (dfg1["RSI_14"].shift(-1) > 65 ) & (dfg1["P_D_H_L_B"].shift(-1) == "PDHB" ) & (dfg1["Date"].shift(-1) == current_trading_day.date()),"Filt_Buy","")# & (dfg1["Minutes"].shift(-1) < 5 )]
-            
+            dfg1['ADX_Filt'] = np.where(((dfg1['ADX'] > 25) & (dfg1['ADX_-'] < 15) &(dfg1['ADX'] > 25)),"ADX_OK","")
+            #dfg1['Filt_Buy_Sell'] = np.where((dfg1["Vol_Price_break"].shift(-1) == "Vol_Pri_break") & (dfg1["Buy/Sell1"].shift(-1) == "Buy_new") & (dfg1["RSI_14"].shift(-1) > 65 ) & (dfg1["P_D_H_L_B"].shift(-1) == "PDHB" ) & (dfg1["Date"].shift(-1) == current_trading_day.date()),"Filt_Buy","")# & (dfg1["Minutes"].shift(-1) < 5 )]
+            #dfg1 = dfg1[0:75]
+            Strategy11 = pd.concat([dfg1, Strategy11])
+
             stk_name1 = dfg1['Name'][0]
             print("5 Minute Data Download and Scan "+str(stk_name1)+" ("+str(aa)+")")               
 
-            dfgg_dn_11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Sell_new") & (dfg1["RSI_14"] < 35 ) & (dfg1["P_D_H_L_B"] == "PDLB" ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]
+            # dfgg_dn_11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell1"] == "Sell_new") & (dfg1["RSI_14"] < 35 ) & (dfg1["P_D_H_L_B"] == "PDLB" ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]
             
-            dfgg_up_11 = dfg1[(dfg1["Filt_Buy_Sell"] == "Filt_Buy") & (dfg1["RSI_14"] > 65) & (dfg1["Buy/Sell1"] == "Buy_new")]
+            # dfgg_up_11 = dfg1[(dfg1["Filt_Buy_Sell"] == "Filt_Buy") & (dfg1["RSI_14"] > 65) & (dfg1["Buy/Sell1"] == "Buy_new")]
 
-            if len(dfgg_up_11) == 0:
-                print("111")
-            else:
-                print("1111")
-                dfg126 = dfg1[(dfg1["Date"] == current_trading_day.date())]
-                five_df1 = pd.concat([dfg126, five_df1])
-                dfgg_up_11.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
-                dfgg_up_1 = dfgg_up_11.iloc[[0]]
-                dfgg_up_1['TGT_SL'] = "Entry"
-                five_df2 = pd.concat([dfgg_up_1, five_df2])
+            # if len(dfgg_up_11) == 0:
+            #     print("111")
+            # else:
+            #     print("1111")
+            #     dfg126 = dfg1[(dfg1["Date"] == current_trading_day.date())]
+            #     five_df1 = pd.concat([dfg126, five_df1])
+            #     dfgg_up_11.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
+            #     dfgg_up_1 = dfgg_up_11.iloc[[0]]
+            #     dfgg_up_1['TGT_SL'] = "Entry"
+            #     five_df2 = pd.concat([dfgg_up_1, five_df2])
 
-                dfg22 = dfg1                
+            #     dfg22 = dfg1.copy()                
                 
-                targettt = float(round((((dfgg_up_1['Close']*2)/100) + dfgg_up_1['Close']),1))
-                sllll = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*2)/100),1))
-                timee = list(dfgg_up_1['Datetime'])[0]   
+            #     targettt = float(round((((dfgg_up_1['Close']*2)/100) + dfgg_up_1['Close']),1))
+            #     sllll = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*2)/100),1))
+            #     timee = list(dfgg_up_1['Datetime'])[0]   
+            #     print(timee)
                
-                dfg22['TGT_SL'] = np.where(dfg22['High'] > targettt,"TGTT",np.where(dfg22['Low'] < sllll,"SLLL",""))
-                dfg222 = dfg22[(dfg22["TGT_SL"] != "") & (dfg22["Date"] == current_trading_day.date()) & (dfg22["Datetime"] > timee)]
-                dfg222.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
-                dfg2222 = dfg222.iloc[[0]]                
-                five_df4 = pd.concat([dfg2222, five_df4])
+            #     dfg22['TGT_SL'] = np.where(dfg22['High'] > targettt,"TGTT",np.where(dfg22['Low'] < sllll,"SLLL",""))
+            #     dfg222 = dfg22[(dfg22["TGT_SL"] != "") & (dfg22["Date"] == current_trading_day.date()) & (dfg22["Datetime"] > timee)]
+            #     dfg222.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
+            #     dfg2222 = dfg222.iloc[[0]]   
+                             
+            #     five_df4 = pd.concat([dfg2222, five_df4])
        
-                datae = [dfgg_up_1, dfg2222]
-                final_df = pd.concat(datae)
-                final_df['Time_use'] = (final_df['Date'] - final_df['Date'].shift(1)) / pd.Timedelta(minutes=1)
-                final_df['P&L'] = final_df['Close'] - final_df['Close'].shift(1)
-                five_df5 = pd.concat([final_df, five_df5])
+            #     datae = [dfgg_up_1, dfg2222]
+            #     final_df = pd.concat(datae)
+            #     final_df['Time_use'] = (final_df['Date'] - final_df['Date'].shift(1)) / pd.Timedelta(minutes=1)
+            #     final_df['P&L'] = final_df['Close'] - final_df['Close'].shift(1)
+            #     five_df5 = pd.concat([final_df, five_df5])
+    
                
-                dfggg = one_Day_Data(aa, '1d', days_365, current_trading_day)
-                dfgggg = dfggg.iloc[[0]]  
-                bhv_fo1 = pd.concat([dfgggg, bhv_fo1])
+            #     dfggg = one_Day_Data(aa, '1d', days_365, current_trading_day)
+  
+            #     dfgggg = dfggg.iloc[[0]]  
+            #     bhv_fo1 = pd.concat([dfgggg, bhv_fo1])
 
-                five_df1221 = pd.merge(dfgg_up_1, dfgggg, on=['Scripcode'], how='inner')
-                five_df12211 = five_df1221[(five_df1221["Vol_Price_break_y"] == "Vol_Pri_break") & (five_df1221["Buy/Sell1"] == "Buy_new") & (five_df1221["RSI_14_y"] > 65 ) & (five_df1221["P_D_H_L_B"] == "PDHB" )]# & (five_df1221["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]
-                one_day = pd.concat([five_df12211, one_day])    
+            #     five_df1221 = pd.merge(dfgg_up_1, dfgggg, on=['Scripcode'], how='inner')
+            #     five_df12211 = five_df1221[(five_df1221["Vol_Price_break_y"] == "Vol_Pri_break") & (five_df1221["Buy/Sell1"] == "Buy_new") & (five_df1221["RSI_14_y"] > 65 ) & (five_df1221["P_D_H_L_B"] == "PDHB" )]# & (five_df1221["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]
+            #     one_day = pd.concat([five_df12211, one_day])    
 
         except Exception as e:
                 print(e) 
         print("------------------------------------------------")
     
-    bhv_fo1.sort_values(['Name'], ascending=[True], inplace=True)
-    bhv_fo.range("a:az").value = None
-    bhv_fo.range("a1").options(index=False).value = bhv_fo1
+    # bhv_fo1.sort_values(['Name'], ascending=[True], inplace=True)
+    # bhv_fo.range("a:az").value = None
+    # bhv_fo.range("a1").options(index=False).value = bhv_fo1
 
-    one_day.sort_values(['Name_x'], ascending=[True], inplace=True)
-    by.range("a:az").value = None
-    by.range("a1").options(index=False).value = one_day
+    # one_day.sort_values(['Name_x'], ascending=[True], inplace=True)
+    # by.range("a:az").value = None
+    # by.range("a1").options(index=False).value = one_day
+
+    #Strategy11.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
+    st.range("a:az").value = None
+    st.range("a1").options(index=False).value = Strategy11
 
 
     if five_df1.empty:
