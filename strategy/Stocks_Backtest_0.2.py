@@ -59,9 +59,9 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_dayss[1]
 second_last_trading_day = trading_days[1]
 
-current_trading_day = trading_dayss[1]
-last_trading_day = trading_dayss[2]
-second_last_trading_day = trading_days[3]
+# current_trading_day = trading_dayss[1]
+# last_trading_day = trading_dayss[2]
+# second_last_trading_day = trading_days[3]
 
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))

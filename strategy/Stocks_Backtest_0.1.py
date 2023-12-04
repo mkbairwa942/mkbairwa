@@ -58,9 +58,9 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_dayss[1]
 second_last_trading_day = trading_days[1]
 
-current_trading_day = trading_dayss[1]
-last_trading_day = trading_dayss[2]
-second_last_trading_day = trading_days[3]
+# current_trading_day = trading_dayss[1]
+# last_trading_day = trading_dayss[2]
+# second_last_trading_day = trading_days[3]
 
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
@@ -84,37 +84,37 @@ price_limit = 300
 Available_Cash = 12000
 Exposer = 2
 
-def bhavcopy(lastTradingDay):
-    dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
-    url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
-    bhav_eq1 = pd.read_csv(url)
-    bhav_eq1 = pd.DataFrame(bhav_eq1)
-    bhav_eq1.columns = bhav_eq1.columns.str.strip()
-    bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-    bhav_eq1['DATE1'] = pd.to_datetime(bhav_eq1['DATE1'])
-    bhav_eq = bhav_eq1[bhav_eq1['SERIES'] == 'EQ']
-    bhav_eq['LAST_PRICE'] = bhav_eq['LAST_PRICE'].replace(' -', 0).astype(float)
-    bhav_eq['DELIV_QTY'] = bhav_eq['DELIV_QTY'].replace(' -', 0).astype(float)
-    bhav_eq['DELIV_PER'] = bhav_eq['DELIV_PER'].replace(' -', 0).astype(float)
-    return bhav_eq
+# def bhavcopy(lastTradingDay):
+#     dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
+#     url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
+#     bhav_eq1 = pd.read_csv(url)
+#     bhav_eq1 = pd.DataFrame(bhav_eq1)
+#     bhav_eq1.columns = bhav_eq1.columns.str.strip()
+#     bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+#     bhav_eq1['DATE1'] = pd.to_datetime(bhav_eq1['DATE1'])
+#     bhav_eq = bhav_eq1[bhav_eq1['SERIES'] == 'EQ']
+#     bhav_eq['LAST_PRICE'] = bhav_eq['LAST_PRICE'].replace(' -', 0).astype(float)
+#     bhav_eq['DELIV_QTY'] = bhav_eq['DELIV_QTY'].replace(' -', 0).astype(float)
+#     bhav_eq['DELIV_PER'] = bhav_eq['DELIV_PER'].replace(' -', 0).astype(float)
+#     return bhav_eq
 
 # print(bhavcopy(lastTradingDay))
 
-def bhavcopy_fno(lastTradingDay):
-    dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
-    MMM = datetime.strftime(lastTradingDay, '%b').upper()
-    yyyy = datetime.strftime(lastTradingDay, '%Y')
-    url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
-    content = requests.get(url1)
-    zf = ZipFile(BytesIO(content.content))
-    match = [s for s in zf.namelist() if ".csv" in s][0]
-    bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
-    bhav_fo.columns = bhav_fo.columns.str.strip()
-    bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-    bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
-    bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
-    bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
-    return bhav_fo
+# def bhavcopy_fno(lastTradingDay):
+#     dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
+#     MMM = datetime.strftime(lastTradingDay, '%b').upper()
+#     yyyy = datetime.strftime(lastTradingDay, '%Y')
+#     url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
+#     content = requests.get(url1)
+#     zf = ZipFile(BytesIO(content.content))
+#     match = [s for s in zf.namelist() if ".csv" in s][0]
+#     bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
+#     bhav_fo.columns = bhav_fo.columns.str.strip()
+#     bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+#     bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
+#     bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
+#     bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
+#     return bhav_fo
 
 live_market_keys = ['NIFTY 50','NIFTY BANK',]#,'Securities in F&O', ]
 
@@ -270,7 +270,7 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-script_list = [13868,	13771,	2598,	25328,	5435,15204,	16913,	13441,	341,	4668,]#	12153,	13400,	19585,	6216,	19447,	595,	1879,	21174,	2049,	5049,	11731,	6051,	17187,	11667,	21314,	916,	9750,	1038,	14304,	1085,	10905,	277,	1415,	8529,	16705,	14480,	11606,	14712,	30125,	21957,	20261,	14932,	4410,	13720,	7287,	2955,	1782,	1859,	14912,	6818,	18321,	3220,	10590,	21392,	17527,	17603,	17022,	22377,	14947,	10557,	31415,	14547,	399,	255,	2442,	8797,	30089,	471,	2610,	2256,	25358,	18908,	6656,	2711,	20302,	4344,	13116,	7401,	18962,	13451,	2866,	12026,	1547,	6718,	3048,	11520,	708,	9422,	31837,	13801,	21828,	3466,	19196,	10717,	11582,	13081,	20188,]
+script_list = [	1333,	1922,	4668,	4745, 4963,	2263,	13441,	341,	4668,	12153,	13400,	19585,	6216,	19447,	595,	1879,	21174,	2049,	5049,	11731,	6051,	17187,	11667,	21314,	916,	9750,	1038,	14304,	1085,	10905,	277,	1415,	8529,	16705,	14480,	11606,	14712,	30125,	21957,	20261,	14932,	4410,	13720,	7287,	2955,	1782,	1859,	14912,	6818,	18321,	3220,	10590,	21392,	17527,	17603,	17022,	22377,	14947,	10557,	31415,	14547,	399,	255,	2442,	8797,	30089,	471,	2610,	2256,	25358,	18908,	6656,	2711,	20302,	4344,	13116,	7401,	18962,	13451,	2866,	12026,	1547,	6718,	3048,	11520,	708,	9422,	31837,	13801,	21828,	3466,	19196,	10717,	11582,	13081,	20188,]
 script_list.sort()
 # stk_list = ['APOLLO',	'ARVIND',	'CDSL',	'CIGNITITEC',	'CTE',	'DATAMATICS',	'DSSL',	'EMIL',	'EMKAY',	'HITECH',	'IWEL',	'MOTILALOFS',	'NAM-INDIA',	'ORBTEXP',	'RELCHEMQ',	'SAGARDEEP',	'SHALBY',	'SUVEN',	'WEIZMANIND',	'AAVAS',	'BUTTERFLY',	'FINEORG',	'INFOBEAN',	'MOLDTECH',	'SIEMENS']
 	
@@ -283,32 +283,89 @@ print(script_list)
 
 #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
 
-def bhavcopy_func():
-    eq_bhav = pd.DataFrame()
-    for i in trading_days:
-        try:
-            print(i)
-            bh_df = bhavcopy(i)
-            bh_df = pd.DataFrame(bh_df)
-            eq_bhav = pd.concat([bh_df, eq_bhav])
-        except Exception as e:
-            print(e)
+# def bhavcopy_func():
+#     eq_bhav = pd.DataFrame()
+#     for i in trading_days:
+#         try:
+#             print(i)
+#             bh_df = bhavcopy(i)
+#             bh_df = pd.DataFrame(bh_df)
+#             eq_bhav = pd.concat([bh_df, eq_bhav])
+#         except Exception as e:
+#             print(e)
     
-    eq_bhav.sort_values(['SYMBOL', 'DATE1'], ascending=[True, False], inplace=True)
-    eq_bhav = eq_bhav[
-            ['SYMBOL', 'DATE1', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'TTL_TRD_QNTY',
-            'DELIV_QTY', 'DELIV_PER']]
-    eq_bhav.rename(columns={'SYMBOL': 'Name', 'DATE1': 'Date','OPEN_PRICE': 'Open','HIGH_PRICE': 'High', 'LOW_PRICE': 'Low',
-                                'CLOSE_PRICE': 'Close','TTL_TRD_QNTY': 'Volume','DELIV_QTY': 'Deliv_qty','DELIV_PER': 'Deliv_per', },inplace=True)
+#     eq_bhav.sort_values(['SYMBOL', 'DATE1'], ascending=[True, False], inplace=True)
+#     eq_bhav = eq_bhav[
+#             ['SYMBOL', 'DATE1', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'TTL_TRD_QNTY',
+#             'DELIV_QTY', 'DELIV_PER']]
+#     eq_bhav.rename(columns={'SYMBOL': 'Name', 'DATE1': 'Date','OPEN_PRICE': 'Open','HIGH_PRICE': 'High', 'LOW_PRICE': 'Low',
+#                                 'CLOSE_PRICE': 'Close','TTL_TRD_QNTY': 'Volume','DELIV_QTY': 'Deliv_qty','DELIV_PER': 'Deliv_per', },inplace=True)
      
-    #eq_bhav = eq_bhav[['Name', 'Date', 'Deliv_qty', 'Deliv_per']]
-    eq_bhav['Date'] = eq_bhav['Date'].astype('datetime64[ns]')    
-    return eq_bhav
+#     #eq_bhav = eq_bhav[['Name', 'Date', 'Deliv_qty', 'Deliv_per']]
+#     eq_bhav['Date'] = eq_bhav['Date'].astype('datetime64[ns]')    
+#     return eq_bhav
 
-eq_bhav = bhavcopy_func()
-bhv.range("a:i").value = None                          
-bhv.range("a1").options(index=False).value = eq_bhav
-print(str(days_count)+" Days STOCK Data Download")
+# eq_bhav = bhavcopy_func()
+# bhv.range("a:i").value = None                          
+# bhv.range("a1").options(index=False).value = eq_bhav
+# print(str(days_count)+" Days STOCK Data Download")
+
+def fisher1(high, low, length=None, signal=None, offset=None, **kwargs):
+    """Indicator: Fisher Transform (FISHT)"""
+    # Validate Arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    length = int(length) if length and length > 0 else 9
+    signal = int(signal) if signal and signal > 0 else 1
+    offset = get_offset(offset)
+
+    # Calculate Result
+    hl2_ = hl2(high, low)
+    highest_hl2 = hl2_.rolling(length).max()
+    lowest_hl2 = hl2_.rolling(length).min()
+
+    #hlr = high_low_range(highest_hl2, lowest_hl2)
+    hlr  = highest_hl2-lowest_hl2
+    hlr[hlr < 0.001] = 0.001
+
+    position = ((hl2_ - lowest_hl2) / hlr) - 0.5
+    v = 0
+    m = high.size
+    result = [npNaN for _ in range(0, length - 1)] + [0]
+    for i in range(length, m):
+        v = 0.66 * position[i] + 0.67 * v
+        if v < -0.99: v = -0.999
+        if v >  0.99: v =  0.999
+        result.append(0.5 * (nplog((1 + v) / (1 - v)) + result[i - 1]))
+    fisher = Series(result, index=high.index)
+    signalma = fisher.shift(signal)
+
+
+    # Offset
+    if offset != 0:
+        fisher = fisher.shift(offset)
+        signalma = signalma.shift(offset)
+
+    # Handle fills
+    if "fillna" in kwargs:
+        fisher.fillna(kwargs["fillna"], inplace=True)
+        signalma.fillna(kwargs["fillna"], inplace=True)
+    if "fill_method" in kwargs:
+        fisher.fillna(method=kwargs["fill_method"], inplace=True)
+        signalma.fillna(method=kwargs["fill_method"], inplace=True)
+
+    # Name and Categorize it
+    props = f"{length}_{signal}"
+    fisher.name = f"FISHERT{props}"
+    signalma.name = f"FISHERTs{props}"
+    fisher.category = signalma.category = "momentum"
+
+    # Prepare DataFrame to return
+    data = {fisher.name: fisher, signalma.name: signalma}
+    df = DataFrame(data)
+    df.name = f"FISHERT{props}"
+    df.category = fisher.category
+    return df
 
 def get_adx(High, Low, Close, lookback):
     plus_dm = High.diff()
@@ -338,6 +395,10 @@ def fiveminute_data(scode,time,start,end):
     dfg1['ADX'] = np.round((ADX_1[ADX_1.columns[0]]),2)
     dfg1['ADX_+'] = np.round((ADX_1[ADX_1.columns[1]]),2)
     dfg1['ADX_-'] = np.round((ADX_1[ADX_1.columns[2]]),2)
+    fisher_transform = (fisher1(high=dfg1['High'],low=dfg1['Low'],length=20))
+    dfg1['FISHERT_WH'] = np.round((fisher_transform[fisher_transform.columns[0]]),2)
+    dfg1['FISHERTs_RED'] = np.round((fisher_transform[fisher_transform.columns[1]]),2)
+    dfg1['El_Fis_diff'] = np.round(abs((dfg1['FISHERT_WH']-dfg1['FISHERTs_RED'])),2)
 
     dfg1 = pd.merge(flt_exc_eq, dfg1, on=['Scripcode'], how='inner') 
 
@@ -521,10 +582,11 @@ while True:
     bhv_fo1 = pd.DataFrame()
     one_day = pd.DataFrame()
     Strategy11 = pd.DataFrame()
+    Strategy12 = pd.DataFrame()
 
     for aa in script_list:
         try:        
-            dfg1 = fiveminute_data(aa,'5m',last_trading_day,current_trading_day)
+            dfg1 = fiveminute_data(aa,'5m',second_last_trading_day,current_trading_day)
             print(aa)
             dfg1["Times"] = dfg1['Datetime'].apply(lambda x: x.split('T')[-1])
             dfg1 = dfg1.astype({"Datetime": "datetime64"})    
@@ -551,11 +613,15 @@ while True:
             dfgg_up_1122 = dfg1[(dfg1["Date"] == last_trading_day.date())]
             maxxx = dfgg_up_1122['High'].max()
             minnn = dfgg_up_1122['Low'].min()
-            dfg1['P_D_H_L_B'] = np.where(dfg1['Close'] > maxxx,"PDHB",np.where(dfg1['Close'] < minnn,"PDLB",""))         
-            dfg1['ADX_Filt'] = np.where(((dfg1['ADX'] > 25) & (dfg1['ADX_-'] < 15) &(dfg1['ADX'] > 25)),"ADX_OK","")
+            dfg1['P_D_H_L_B'] = np.where(dfg1['Close'] > maxxx,"PDHB",np.where(dfg1['Close'] < minnn,"PDLB","")) 
+            dfg1['ADX_Filt_prev'] = np.where(((dfg1['ADX'].shift(1) < dfg1['ADX']) & (dfg1['ADX_-'].shift(1) > dfg1['ADX_-']) & (dfg1['ADX_+'].shift(1) < dfg1['ADX_+'])),"ADX_OK_prev","")        
+            dfg1['ADX_Filt'] = np.where(((dfg1['ADX'] > 25) & (dfg1['ADX'] < 50) & (dfg1['ADX_-'] < 20) &(dfg1['ADX_+'] > 25)),"ADX_OK","")
+            dfg12 = dfg1[(dfg1['ADX_Filt'] == 'ADX_OK') & (dfg1['ADX_Filt_prev'] == 'ADX_OK_prev')]
+            dfg12['ADX_Filt_prev_new'] = np.where(((dfg12['ADX'].shift(1) < dfg12['ADX']) & (dfg12['ADX_-'].shift(1) > dfg12['ADX_-'])),"ADX_OK_prev","")        
             #dfg1['Filt_Buy_Sell'] = np.where((dfg1["Vol_Price_break"].shift(-1) == "Vol_Pri_break") & (dfg1["Buy/Sell1"].shift(-1) == "Buy_new") & (dfg1["RSI_14"].shift(-1) > 65 ) & (dfg1["P_D_H_L_B"].shift(-1) == "PDHB" ) & (dfg1["Date"].shift(-1) == current_trading_day.date()),"Filt_Buy","")# & (dfg1["Minutes"].shift(-1) < 5 )]
             #dfg1 = dfg1[0:75]
             Strategy11 = pd.concat([dfg1, Strategy11])
+            Strategy12 = pd.concat([dfg12, Strategy12])
 
             stk_name1 = dfg1['Name'][0]
             print("5 Minute Data Download and Scan "+str(stk_name1)+" ("+str(aa)+")")               
@@ -620,6 +686,9 @@ while True:
     #Strategy11.sort_values(['Name','Datetime'], ascending=[True,False], inplace=True)
     st.range("a:az").value = None
     st.range("a1").options(index=False).value = Strategy11
+
+    st1.range("a:az").value = None
+    st1.range("a1").options(index=False).value = Strategy12
 
 
     if five_df1.empty:

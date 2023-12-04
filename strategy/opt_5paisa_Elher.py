@@ -1,57 +1,85 @@
-import os
-from five_paisa import *
-import time,json,datetime,sys
-import xlwings as xw
+#import yfinance as yf
+#import ta
+#from ta import add_all_ta_features
+#from ta.utils import dropna
+import pandas_ta as pta
+#from finta import TA
+# import talib
 import pandas as pd
 import copy
 import numpy as np
-import time
-import dateutil.parser
-import threading
-from datetime import datetime,timedelta
-import pandas_ta as pta
-import math 
+import xlwings as xw
+from datetime import datetime,timedelta,date,time
+from numpy import log as nplog
+from numpy import NaN as npNaN
 from pandas import DataFrame, Series
 from pandas_ta.overlap import ema, hl2
 from pandas_ta.utils import get_offset, high_low_range, verify_series, zero
-from numpy import log as nplog
-from numpy import NaN as npNaN
-import pywhatkit as pwk
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.webdriver.common.by import By
-# from time import sleep
-# import urllib.parse as urlparse
+from io import BytesIO
+import os
+import sys
+from zipfile import ZipFile
+import requests
+import itertools
+import math 
+from telethon.sync import TelegramClient
+from five_paisa import *
 
-# der = pta.indicators()
-# print(der)
+telegram_first_name = "mkbairwa"
+telegram_username = "mkbairwa_bot"
+telegram_id = ":758543600"
+#telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
+telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-from py_vollib.black_scholes.implied_volatility import implied_volatility
-from py_vollib.black_scholes.greeks.analytical import delta, gamma, rho, theta, vega
 
-from_d = (date.today() - timedelta(days=4))
+
+
+from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
 
 to_d = (date.today())
-# to_d = date(2023, 1, 23)
+#to_d = date(2023, 2, 3)
 
-symbol1 = '999920005'
+to_days = (date.today()-timedelta(days=1))
+# to_d = date(2023, 1, 20)
 
-datess = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holidays())
-dates = datess[::-1]
-intraday = datess[-1]
-lastTradingDay = dates[1]
+days_365 = (date.today() - timedelta(days=365))
+print(days_365)
 
-intradayy = intraday.date()
-lastTradingDayy =  lastTradingDay.date()
+holida = pd.read_excel('D:\STOCK\Capital_vercel_new\strategy\holida.xlsx')
+holida["Date"] = holida["Date1"].dt.date
+holida1 = np.unique(holida['Date'])
+
+trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holida1)
+trading_dayss = trading_days_reverse[::-1]
+trading_days = trading_dayss[1:]
+# trading_days = trading_dayss[2:]
+current_trading_day = trading_dayss[0]
+last_trading_day = trading_dayss[1]
+second_last_trading_day = trading_days[1]
+
+# current_trading_day = trading_dayss[1]
+# last_trading_day = trading_dayss[2]
+# second_last_trading_day = trading_days[3]
+
+
+print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
+print("Trading Days is :- "+str(trading_dayss))
+print("Last Trading Days Is :- "+str(trading_days))
+print("Current Trading Day is :- "+str(current_trading_day))
+print("Last Trading Day is :- "+str(last_trading_day))
+print("Second Last Trading Day is :- "+str(second_last_trading_day))
+print("Last 365 Day is :- "+str(days_365))
+
+days_count = len(trading_days)
 
 pd.set_option("display.max_rows", None)
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 current_time = (datetime.now()).strftime("%H:%M")
+
+symbol1 = '999920005'
 
 def fisher1(high, low, length=None, signal=None, offset=None, **kwargs):
     """Indicator: Fisher Transform (FISHT)"""
@@ -210,8 +238,8 @@ print("Excel : Started")
 
 call_counter = 0
 put_counter = 0
-
-dfg = client.historical_data('N', 'C', symbol1, '1d', from_d, to_d)
+dfg = client.historical_data('N', 'C',symbol1, '1d', last_trading_day, current_trading_day)
+#dfg = client.historical_data('N', 'C', symbol1, '1d', from_d, to_d)
 print(dfg)
 today_range = np.round(((dfg['High'].iloc[-1]) - dfg['Low'].iloc[-1]),2)
 
