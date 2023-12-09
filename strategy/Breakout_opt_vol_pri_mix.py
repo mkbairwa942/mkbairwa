@@ -69,6 +69,10 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
 
+current_trading_day = trading_dayss[1]
+last_trading_day = trading_dayss[2]
+second_last_trading_day = trading_days[3]
+
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
 print("Trading Days is :- "+str(trading_dayss))
 print("Last Trading Days Is :- "+str(trading_days))
@@ -529,8 +533,8 @@ while True:
 
                 
 
-                dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 60 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
-                dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 40 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 60 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 40 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
 
                 #dfgg1 = dfgg1.iloc[[1]]
                 #dfgg1 = dfgg1.iloc[1:2]
@@ -542,8 +546,8 @@ while True:
                     five_df5 = pd.concat([dfgg_up_1, five_df5])        
 
                     if dfgg_up_1.empty:
-                        parameters = {"chat_id" : "6143172607","text" : "Stock Selected but more than '5 MINUTE' ago : "+str(stk_name1)}
-                        resp = requests.get(telegram_basr_url, data=parameters)
+                        #parameters = {"chat_id" : "6143172607","text" : "Stock Selected but more than '5 MINUTE' ago : "+str(stk_name1)}
+                        #resp = requests.get(telegram_basr_url, data=parameters)
                         #print(resp.text)
                         print("Stock Selected for Buy but more than '5 MINUTE' ago : "+str(stk_name2))
 
@@ -570,15 +574,15 @@ while True:
                                 Buy_quantity_of_stock = 50
                             Req_Amount = Buy_quantity_of_stock*Buy_price_of_stock   
 
-                            order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                            #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         
                             #print("5 Minute Data Selected "+str(stk_name2)+" ("+str(Buy_Scriptcodee)+")")
                             #print("Buy Order of "+str(stk_name2)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on"+str(Buy_timee1))
                         
                             print("SYMBOL : "+str(stk_name2)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1))
 
-                            parameters1 = {"chat_id" : "6143172607","text" : "STOCK : "+str(stk_name2)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
-                            resp = requests.get(telegram_basr_url, data=parameters1)
+                            #parameters1 = {"chat_id" : "6143172607","text" : "STOCK : "+str(stk_name2)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
+                            #resp = requests.get(telegram_basr_url, data=parameters1)
                             # print(resp.text)
 
                             # buy_order_list.append(aa)
@@ -591,8 +595,8 @@ while True:
                     five_df6 = pd.concat([dfgg_dn_1, five_df6])
 
                     if dfgg_dn_1.empty:
-                        parameters = {"chat_id" : "6143172607","text" : "Stock Selected but more than '5 MINUTE' ago : "+str(stk_name2)}
-                        resp = requests.get(telegram_basr_url, data=parameters)
+                        #parameters = {"chat_id" : "6143172607","text" : "Stock Selected but more than '5 MINUTE' ago : "+str(stk_name2)}
+                        #resp = requests.get(telegram_basr_url, data=parameters)
                         #print(resp.text)
                         print("Stock Selected for Sell but more than '5 MINUTE' ago : "+str(stk_name2))
 
@@ -626,8 +630,8 @@ while True:
                             
                             print("SYMBOL : "+str(stk_name2)+"\n SELL AT : "+str(Sell_price_of_stock)+"\n ADD TILL : "+str(Sell_Add_Till)+"\n STOP LOSS : "+str(Sell_Stop_Loss)+"\n TARGET : "+str(Sell_Target)+"\n QUANTITY : "+str(Sell_quantity_of_stock)+"\n TIME : "+str(Sell_timee1))
 
-                            parameters1 = {"chat_id" : "6143172607","text" : "STOCK : "+str(stk_name2)+"\n SELL AT : "+str(Sell_price_of_stock)+"\n ADD TILL : "+str(Sell_Add_Till)+"\n STOP LOSS : "+str(Sell_Stop_Loss)+"\n TARGET : "+str(Sell_Target)+"\n QUANTITY : "+str(Sell_quantity_of_stock)+"\n TIME : "+str(Sell_timee1)}
-                            resp = requests.get(telegram_basr_url, data=parameters1)
+                            #parameters1 = {"chat_id" : "6143172607","text" : "STOCK : "+str(stk_name2)+"\n SELL AT : "+str(Sell_price_of_stock)+"\n ADD TILL : "+str(Sell_Add_Till)+"\n STOP LOSS : "+str(Sell_Stop_Loss)+"\n TARGET : "+str(Sell_Target)+"\n QUANTITY : "+str(Sell_quantity_of_stock)+"\n TIME : "+str(Sell_timee1)}
+                            #resp = requests.get(telegram_basr_url, data=parameters1)
                             # print(resp.text)
 
                             # buy_order_list.append(aa)
@@ -660,12 +664,12 @@ while True:
         delv_dt.range("a:az").value = None
         delv_dt.range("a1").options(index=False).value = five_df2
     
-    if five_df3.empty:
-        pass
-    else:
-        five_df3 = five_df3[['Name','Scripcode','Datetime','Date','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
-        five_df3.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        delv_dt.range("a50").options(index=False).value = five_df3
+    # if five_df3.empty:
+    #     pass
+    # else:
+    #     five_df3 = five_df3[['Name','Scripcode','Datetime','Date','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+    #     five_df3.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+    #     delv_dt.range("a50").options(index=False).value = five_df3
 
     if five_df4.empty:
         pass
@@ -691,7 +695,7 @@ while True:
         five_df6 = five_df6[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df6.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         #fl_data.range("a:az").value = None
-        fl_data.range("a30").options(index=False).value = five_df6
+        #fl_data.range("a30").options(index=False).value = five_df6
 
     if five_df4.empty:
         pass
@@ -703,25 +707,25 @@ while True:
         not_selected_up = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Buy_new") & (five_df4["RSI_14"] > 60 ) & (five_df4["Date"] == current_trading_day.date())]
         not_selected_dn = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Sell_new") & (five_df4["RSI_14"] < 40 ) & (five_df4["Date"] == current_trading_day.date())]
         
-        fl_data.range("a:az").value = None
-        #First Two Row
-        up1 = np.unique([int(i) for i in not_selected_up['Scripcode']]).tolist()
-        up4 = pd.DataFrame()
-        for j in up1:
-            up2 = not_selected_up[(not_selected_up["Scripcode"] == j)]
-            up3 = up2.iloc[:2]
-            up4 = pd.concat([up3, up4])
-            up4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-            fl_data.range("a10").options(index=False).value = up4
+        # fl_data.range("a:az").value = None
+        # #First Two Row
+        # up1 = np.unique([int(i) for i in not_selected_up['Scripcode']]).tolist()
+        # up4 = pd.DataFrame()
+        # for j in up1:
+        #     up2 = not_selected_up[(not_selected_up["Scripcode"] == j)]
+        #     up3 = up2.iloc[:2]
+        #     up4 = pd.concat([up3, up4])
+        #     up4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+        #     fl_data.range("a10").options(index=False).value = up4
 
-        dn1 = np.unique([int(i) for i in not_selected_dn['Scripcode']]).tolist()
-        dn4 = pd.DataFrame()
-        for k in dn1:
-            dn2 = not_selected_dn[(not_selected_dn["Scripcode"] == k)]
-            dn3 = dn2.iloc[:2]
-            dn4 = pd.concat([dn3, dn4])
-            dn4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-            fl_data.range("a50").options(index=False).value = dn4
+        # dn1 = np.unique([int(i) for i in not_selected_dn['Scripcode']]).tolist()
+        # dn4 = pd.DataFrame()
+        # for k in dn1:
+        #     dn2 = not_selected_dn[(not_selected_dn["Scripcode"] == k)]
+        #     dn3 = dn2.iloc[:2]
+        #     dn4 = pd.concat([dn3, dn4])
+        #     dn4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+        #     fl_data.range("a50").options(index=False).value = dn4
 
         # # Last Two Row
         # not_selected_up1 = not_selected_up.iloc[-2:] 
