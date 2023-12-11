@@ -287,8 +287,8 @@ while True:
         except:
             print("Exchange Download Error....")
             time.sleep(10)
-exc.range("v1").value = exchange1
-exc.range("ar1").value = exchange2
+#exc.range("v1").value = exchange1
+#exc.range("ar1").value = exchange2
 df = pd.DataFrame({"FNO Symbol": list(exchange["Root"].unique())})
 df = df.set_index("FNO Symbol",drop=True)
 oc.range("a1").value = df
@@ -491,10 +491,14 @@ while True:
             scpt = dt.range(f"a{1}:h{50}").value            
             sym = dt.range(f"a{2}:a{500}").value
             symbols = list(filter(lambda item: item is not None, sym))
-            symb_frame = exchange2[(exchange2['Root'].isin(symbols))]
-            symb_frame['Concate'] = "N:C:"+symb_frame['Name']+":"+symb_frame['Scripcode'].astype(str)
+
+            symb_frame = exchange1[(exchange1['Name'].isin(symbols))]
+
+            symb_frame['Concate'] = symb_frame['Exch']+":"+symb_frame['ExchType']+":"+symb_frame['Name']+":"+symb_frame['Scripcode'].astype(str)+":"+symb_frame['LotSize'].astype(str)
+
             symbolss = list(symb_frame['Concate'])
             symbolss.sort()
+
 
 
             max_min = oc.range(f"e{17}:e{22}").value
@@ -504,7 +508,7 @@ while True:
             minnn = min(list(max_min))
             print(maxxx,minnn)
            
-            index = ['N:C:NIFTY:999920000','N:C:BANKNIFTY:999920005','N:C:FINNIFTY:999920041'] #999920000 999920005 999920041
+            index = ['N:C:NIFTY:999920000:2000','N:C:BANKNIFTY:999920005:2000','N:C:FINNIFTY:999920041:2000'] #999920000 999920005 999920041
 
             for li in index:                 
                 symbolss.append(li)
@@ -527,12 +531,16 @@ while True:
                     if i in subs_lst:
                         try:
                             main_li = pd.DataFrame()
+           
                             Exche = i.split(":")[0]
                             ExchTypee = i.split(":")[1]
                             Namee = i.split(":")[2]
                             Scripcodee = i.split(":")[3]
+                            Lotsize = i.split(":")[4]
+                            #print(Exche,ExchTypee,Namee,Scripcodee,Lotsize)
                             live_data = get_live_data(Exche,ExchTypee,Namee)
                             main_li['Symbol'] = Namee,
+                            main_li['Lotsize'] = Lotsize,
                             main_li['Open'] = live_data['Data'][0]['Open'],
                             main_li['High'] = live_data['Data'][0]['High'],
                             main_li['Low'] = live_data['Data'][0]['Low'],
@@ -577,7 +585,7 @@ while True:
             main_list['Time'] = datetime.now()
             main_list3 = main_list
             main_list4 = main_list3.iloc[::-1]
-            main_list4 = main_list4[['Symbol','Open','High','Low','LTP','Close','NetChange','Time']]
+            main_list4 = main_list4[['Symbol','Open','High','Low','LTP','Close','Lotsize','Time']]
 
             
 
