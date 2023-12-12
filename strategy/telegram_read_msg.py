@@ -97,8 +97,8 @@ async def main():
     #print(me.phone)
 
     # You can print all the dialogs/conversations that you are part of:
-    # async for dialog in client.iter_dialogs():
-    #     print(dialog.name, 'has ID', dialog.id)
+    async for dialog in client.iter_dialogs():
+        print(dialog.name, 'has ID', dialog.id)
 
     # You can send messages to yourself...
     await client.send_message('me', 'Hello, myself!')
