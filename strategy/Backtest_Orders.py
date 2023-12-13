@@ -270,6 +270,7 @@ for a in buy_order_list:
     Buy_Stop_Loss = float(round((dfgg_up_1['Rate'] - (dfgg_up_1['Rate']*2)/100),1))  
     Buy_Target = float(round((((dfgg_up_1['Rate']*2)/100) + dfgg_up_1['Rate']),1))
     Buy_Type = list(dfgg_up_1['ExchType'])[0]
+    Buy_Qty = int(dfgg_up_1['Qty'])
     
     Buy_timee = list(dfgg_up_1['Datetimeee'])[0]
     Buy_timee1 = str(Buy_timee).replace(' ','T')
@@ -288,29 +289,65 @@ for a in buy_order_list:
     dfg1['Entry_Price'] = Buy_price
     dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
     dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] < dfg1['Datetime'],"OK","")
+    dfg1['StopLoss'] = Buy_Stop_Loss
+    dfg1['Target'] = Buy_Target
+    dfg1['Benchmark'] = dfg1['Close'].cummax()
+    dfg1['TStopLoss'] = dfg1['Benchmark'] * 0.98
     dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
-    dfg2['TGT_SL'] = np.where(dfg2['High'] > Buy_Target,"TGTT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SLLL",""))
-    dfg2['P&L'] = dfg2['Close'] - dfg2['Entry_Price']
-    dfg3 = dfg2[(dfg2['TGT_SL'] != '')]
-    dfg4 = dfg3.iloc[0] 
-    print(dfg3.head(1))
-    five_df1 = pd.concat([dfg3, five_df1])
+    dfgg2 = dfg2.copy()
+    dfg2['TGT_SL'] = np.where(dfg2['High'] > Buy_Target,"TGT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
+    dfg2['Qty'] = Buy_Qty
+    dfg2['SValue'] = np.where(dfg2['TGT_SL'] == "SL",Buy_Stop_Loss*Buy_Qty,np.where(dfg2['TGT_SL'] == "TGT",Buy_Target*Buy_Qty,""))  
+    dfg2['BValue'] = dfg2['Entry_Price']*Buy_Qty
+    dfg2['P&L'] = pd.to_numeric(dfg2['SValue']) - dfg2['BValue']
+    five_df2 = pd.concat([dfg2, five_df2])
+    dfg3 = dfg2[(dfg2['TGT_SL'] != '')]    
+    dfg4 = dfg3.iloc[0:1]
+    five_df1 = pd.concat([dfg4, five_df1])
 
+    dfgg2['TGT_SL'] = np.where(dfgg2['Close'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Close'] < Buy_Stop_Loss,"SL",""))
+    dfgg2['Qty'] = Buy_Qty
+    dfgg3 = dfgg2[(dfgg2['TGT_SL'] != '')] 
+    dfgg4 = dfgg3.iloc[0:1]
+    dfgg4['P&L'] = (dfgg4['TStopLoss'] - dfgg4['Close'])*Buy_Qty
+
+    five_df3 = pd.concat([dfgg4, five_df3])
     
 
 
 if five_df1.empty:
     pass
 else:
+    five_df1.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
+    five_df1 = five_df1[['Scripcode','Entry_Date','Exit_Date','ScripName','Entry_Price','Close',
+                         'StopLoss','Target','TGT_SL','Qty','P&L']]
+    five_df1.sort_values(['Entry_Date', 'Exit_Date',], ascending=[True, True], inplace=True) 
+                
+    strategy1.range("a:az").value = None
+    strategy1.range("a1").options(index=False).value = five_df1
+
+if five_df3.empty:
+    pass
+else:
+    five_df3.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
+    five_df3 = five_df3[['Scripcode','Entry_Date','Exit_Date','ScripName','Entry_Price','Close',
+                         'TStopLoss','TGT_SL','Qty','P&L']]
+    five_df3.sort_values(['Entry_Date', 'Exit_Date',], ascending=[True, True], inplace=True) 
+                
+    strategy2.range("a:az").value = None
+    strategy2.range("a1").options(index=False).value = five_df3
+
+if five_df2.empty:
+    pass
+else:
     # five_df1 = five_df1[['Name','Scripcode','Date','Times','TimeNow','Minutes','TGT_SL','Open','High','Low','Close','Volume',
     #                         'RSI_14','Cand_col','Cand_Body','Top_Wick','Bot_Wick','Cand_Size','Price_Chg','Vol_Chg','Vol_Price_break',                             
     #                         'Buy_At','Stop_Loss','Add_Till','Target','Term','Filt_Buy_Sell',
     #                         'O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
-    #five_df1.sort_values(['Name', 'Date','Times'], ascending=[True, False,False], inplace=True) 
+    five_df2.sort_values(['Entry_Date', 'Datetime',], ascending=[True, True], inplace=True) 
                 
-    Fiv_dt.range("a:az").value = None
-    Fiv_dt.range("a1").options(index=False).value = five_df1
-
+    delv_dt.range("a:az").value = None
+    delv_dt.range("a1").options(index=False).value = five_df2
 
 def fiveminute_data(scode,time,start,end):    
     dfg1 = client.historical_data('N', 'C', scode, time,start,end) 
