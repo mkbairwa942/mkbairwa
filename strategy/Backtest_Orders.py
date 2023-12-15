@@ -156,6 +156,14 @@ sl = wb.sheets("Sale")
 st = wb.sheets("stats")
 exp = wb.sheets("Expiry")
 
+strategy1.range("a1:l1").color = (54,226,0)
+strategy1.range("a1:l1").font.bold = True
+strategy1.range("a1:l1").api.WrapText = True
+
+strategy2.range("a1:l1").color = (54,226,0)
+strategy2.range("a1:l1").font.bold = True
+strategy2.range("a1:l1").api.WrapText = True
+
 # st.range("a:z").value = None
 # exp.range("a:z").value = None
 

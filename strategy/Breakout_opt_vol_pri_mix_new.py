@@ -305,6 +305,8 @@ stop_thread = False
 stk_list = np.unique(exc_fut['Root'])
 print("Total Stock : "+str(len(stk_list)))
 
+#order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
+
 def ordef_func():
     try:
         ordbook = pd.DataFrame(client.order_book())
@@ -355,7 +357,8 @@ while True:
 
     for sc in stk_list:
         try:
-            scpt1 = exc_fut[exc_fut['Root'] == sc]
+            scpt0 = exc_fut[exc_fut['Root'] == sc]
+            scpt1 = scpt0[(scpt0['Expiry'].apply(pd.to_datetime) >= current_trading_day) ]
             scpt1.sort_values(['Expiry'], ascending=[False], inplace=True)
             scpt2 = (np.unique(scpt1['Expiry']).tolist())[0]
             scpt3 = scpt1[scpt1['Expiry'] == scpt2]

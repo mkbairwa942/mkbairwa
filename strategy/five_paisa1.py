@@ -118,7 +118,34 @@ def credentials (name):
         client = FivePaisaClient(cred=cred)
         client.get_totp_session(client_code,TOTP,Pin)
         #client.get_access_token(RequestToken)
+
+    if name.upper() == 'ASHWIN':
+        cred = {
+            "APP_NAME": "5P52997960",
+            "APP_SOURCE": "20565",
+            "USER_ID": "FElaBH50yu3",
+            "PASSWORD": "553pD6kdtmr",
+            "USER_KEY": "4H0ZtTsiy3H45EbLASavvsDKiakZPZEr",
+            "ENCRYPTION_KEY": "mfTu3GGC28s0JTfV0JVRM2euCvAGL5ot",
+        }
+
+        user = 'ashwinpjoshi@gmail.com'
+        pwd = '101010'
+        dob = '19840905'
+        TOTP=pyotp.TOTP("GUZDSOJXHE3DAXZVKBDUWRKZ").now()
+        print(user)
+        print(TOTP)
+        client_code='52997960'
+        Pin='101010'
+        RequestToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjUwODQwNDk1Iiwicm9sZSI6IkRrZldGQTFuUktoa0pMNG9MZnlubmwzYU50dzFBZzVmIiwiU3RhdGUiOiIiLCJuYmYiOjE2OTcwOTkyMzAsImV4cCI6MTY5NzA5OTI5MCwiaWF0IjoxNjk3MDk5MjMwfQ.ZePYRN6mi7F_FRrgyujAQjQ4WKANUoQuiJJboLIgVDU'
+        client = FivePaisaClient(cred=cred)
+        client.get_totp_session(client_code,TOTP,Pin)
+        #client.get_access_token(RequestToken)
+
+
     return client
+
+    
 
 # client = credentials('alpesh','431070')
 
