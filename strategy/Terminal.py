@@ -32,13 +32,15 @@ telegram_id = ":758543600"
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
 operate = input("Do you want to go with TOTP (yes/no): ")
+TGTT_SLL = input("Do you want to go with FIXED or TRALING STOPLOSS (fsl/tsl): ")
 if operate.upper() == "YES":
     from five_paisa1 import *
     # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
     # print(p)
     username = input("Enter Username : ")
     username1 = str(username)
-    print("Hii "+str(username1)+" have a Good Day")
+    username2 = username1.upper()
+    print("HII "+str(username2)+" HAVE A GOOD DAY")
     # username_totp = input("Enter TOTP : ")
     # username_totp1 = str(username_totp)
     # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
@@ -345,8 +347,9 @@ def ordef_func():
                 d2 = d1 + timedelta(hours = 5.5)
                 Datetimeee.append(d2)
             ordbook1['Datetimeee'] = Datetimeee
-            ordbook1 = ordbook1[['Datetimeee', 'ScripName','BuySell','AveragePrice', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
+            ordbook1 = ordbook1[['Datetimeee', 'ScripName','BuySell','AveragePrice', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason','Exch','ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
             ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+            ordbook1['Datetimeee1'] = ordbook1['Datetimeee'] - timedelta(days=3)
             # ordbook2 = pd.DataFrame(ordbook1)
             # print(ordbook2.dtypes())
             pos.range("a1").options(index=False).value = ordbook1
@@ -405,11 +408,22 @@ def get_fibonachi(high,low,direct,fib_level):
         fib_price = low + (high-low)*fib_level
         return fib_price  
 
+Dummy_positionss = buy_order_li.copy()
+print("11")
+print(Dummy_positionss.head(1))
+Dummy_positionss.rename(columns={'Qty': 'BuyQty','Rate':'BuyAvgRate'}, inplace=True)
+Dummy_positionss['BookedPL'] = 10
+Dummy_positionss['MTOM'] = 0
+Dummy_positionss['LTP'] = Dummy_positionss['BuyAvgRate']
+Dummy_positionss = Dummy_positionss[['Exch','ExchType','ScripCode','ScripName','BuyAvgRate','BuyQty','LTP','BookedPL','MTOM',]]
+print("22")
+print(Dummy_positionss.head(1))
+
 while True:
     oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
     pos.range("a1").value = pd.DataFrame(client.margin())
-    pos.range("a4").value = pd.DataFrame(client.positions())
-    pos.range("a10").value = pd.DataFrame(client.holdings())  
+    pos.range("a10").value = Dummy_positionss #pd.DataFrame(client.positions())
+    pos.range("a20").value = pd.DataFrame(client.holdings())  
     # pos.range("a12").value = pd.DataFrame(client.get_tradebook())
     
     if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:
@@ -629,7 +643,7 @@ while True:
 
                                 if trade_info[1].upper() == "BUY" and trade_info[2].upper() == "SELL":
                                     print("Sell order")  
-                                    dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"S")
+                                    #dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"S")
 
                                 if trade_info[1].upper() == "SELL" and trade_info[2] is None:  
                                     print("Sell order")                                    
@@ -653,14 +667,17 @@ while True:
 
             dt.range("j1").options(index=False).value = main_list4 
 
-            posii = pd.DataFrame(client.positions())
+            posii = Dummy_positionss #pd.DataFrame(client.positions())
+
+
+                
             if posii.empty:
                 print("No Positions")
             else:
                 buy_order_lii = buy_order_li[buy_order_li['BuySell'] == 'B'] 
                 posi = pd.merge(buy_order_lii, posii, on=['ScripCode'], how='inner')
-                posi = posi[['ScripName_y','ScripCode','BuyAvgRate','Datetimeee']]
-                posi.rename(columns={'ScripName_y': 'Namee','ScripCode':'Scriptcodee','BuyAvgRate':'Buy_At','Datetimeee':'Datetime'}, inplace=True)
+                posi = posi[['ScripName_y','ScripCode','BuyAvgRate','Datetimeee1']]
+                posi.rename(columns={'ScripName_y': 'Namee','ScripCode':'Scriptcodee','BuyAvgRate':'Buy_At','Datetimeee1':'Datetime'}, inplace=True)
                 
                 posi['Stop_Loss'] = round((posi['Buy_At'] - (posi['Buy_At']*2)/100),1)
                 posi['Add_Till'] = round((posi['Buy_At']-((posi['Buy_At']*0.5)/100)),1)      
@@ -674,13 +691,9 @@ while True:
                 buy_order_list = (np.unique([int(i) for i in buy_order_lii['ScripCode']])).tolist()
 
                 for ae in buy_order_list:
-                    print(ae)
                     orderboo = buy_order_lii[(buy_order_lii['ScripCode'] == ae) & (buy_order_lii['BuySell'] == "B")]
-                    print("2")
-                    orderboo.sort_values(['Datetimeee','Rate'], ascending=[True,True], inplace=True)
-                    print("1")
+                    orderboo.sort_values(['Datetimeee1','Rate'], ascending=[True,True], inplace=True)
                     dfgg_up_1 = orderboo.iloc[[0]]
-                    print(dfgg_up_1)
 
                     Buy_Scriptcodee = int(dfgg_up_1['ScripCode'])
                     Buy_Name = list(dfgg_up_1['ScripName'])[0]
@@ -690,16 +703,18 @@ while True:
                     Buy_Type = list(dfgg_up_1['ExchType'])[0]
                     Buy_Qty = int(dfgg_up_1['Qty'])
                     
-                    Buy_timee = list(dfgg_up_1['Datetimeee'])[0]
+                    Buy_timee = list(dfgg_up_1['Datetimeee1'])[0]
                     Buy_timee1 = str(Buy_timee).replace(' ','T')
-
+                    print(Buy_Scriptcodee,Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Type,Buy_Qty,Buy_timee1)
                     dfg1 = client.historical_data('N', str(Buy_Type), ae, '1m',last_trading_day,current_trading_day) 
-                    print(dfg1.tail(1))
+                    
                     dfg1['Scripcode'] = ae
                     dfg1['ScripName'] = Buy_Name
                     dfg1['Entry_Date'] = Buy_timee1
                     dfg1['Entry_Price'] = Buy_price
+
                     dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
+                    st.range("a1").options(index=False).value = dfg1
                     dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
                     dfg1['StopLoss'] = Buy_Stop_Loss
                     dfg1['Target'] = Buy_Target
@@ -714,21 +729,26 @@ while True:
                     
                     dfg2['P&L_SL'] = pd.to_numeric(dfg2['SValue']) - dfg2['BValue']
                     dfg2['Qty'] = Buy_Qty
-                    dfgg2 = dfg2.copy()
                     five_df2 = pd.concat([dfg2, five_df2])
+                    #st3.range("a1").options(index=False).value = dfg2
+                    
+                    
+                    
                     dfg3 = dfg2[(dfg2['TGT_SL'] != '')]    
                     dfg4 = dfg3.iloc[0:1]
                     five_df1 = pd.concat([dfg4, five_df1])
-
+                    #st1.range("a1").options(index=False).value = dfg4
+                    dfgg2 = dfg2.copy()                    
                     dfgg2['TGT_TSL'] = np.where(dfgg2['Close'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Low'] < Buy_Stop_Loss,"SL",""))
                     
                     five_df4 = pd.concat([dfgg2, five_df4])
+                    #st4.range("a1").options(index=False).value = dfgg2
                     dfgg3 = dfgg2[(dfgg2['TGT_TSL'] != '')] 
                     dfgg4 = dfgg3.iloc[0:1]
                     #dfgg4['P&L'] = (dfgg4['TStopLoss'] - dfgg4['Entry_Price'])*Buy_Qty
                     dfgg4['P&L_TSL'] = np.where(dfgg4['TGT_TSL'] == "SL",(dfgg4['StopLoss'] - dfgg4['Entry_Price'])*Buy_Qty,np.where(dfgg4['TGT_TSL'] == "TSL",(dfgg4['TStopLoss'] - dfgg4['Entry_Price'])*Buy_Qty,"" ))
                     five_df3 = pd.concat([dfgg4, five_df3])
-
+                    #st2.range("a1").options(index=False).value = dfgg4
 
                 # for i in range(0,len(main_list4)):
 
@@ -760,6 +780,7 @@ while True:
             scpts['Minutes'] = round((scpts['Minutes']/np.timedelta64(1,'m')),2)
             scpts['Buy'] = np.where(scpts['Minutes']<5,"Yes","")
             scpts['Timeover'] = np.where(scpts['Minutes']>30,"Yes","")
+
             
 
             # by.range("a1").options(index=False).value = scpts
@@ -813,41 +834,54 @@ while True:
 
             scpts.rename(columns={'Namee': 'Name'},inplace=True)
             main_list4.rename(columns={'Symbol': 'Name'},inplace=True)
-            flt_df = pd.merge(scpts, main_list4, on=['Name'], how='inner')
+
+            flt_df34 = pd.merge(scpts, main_list4, on=['Name'], how='inner')
+            flt_df34.rename(columns={'Name':'ScripName'},inplace=True)
+
+            five_df33 = five_df3.copy()
+            five_df33 = five_df33[['ScripName','Benchmark','TStopLoss','TGT_TSL']]
+            flt_df = pd.merge(five_df33, flt_df34, on=['ScripName'], how='outer')
+            sl.range("a15").options(index=False).value = flt_df
             flt_df['Buy_up'] = ((flt_df['Buy_At']*0.5)/100)+flt_df['Buy_At']
             flt_df['Buy_dn'] = flt_df['Buy_At']-((flt_df['Buy_At']*0.5)/100)
-            flt_df['Status'] = np.where(flt_df['LTP'] < flt_df['Stop_Loss'],"Sl_Hit",
-                               np.where((flt_df['LTP'] < flt_df['Buy_up']) & (flt_df['LTP'] > flt_df['Buy_dn']),"Buy_Range",
-                               np.where((flt_df['LTP'] > flt_df['Target']),"Target_Hit",
-                               np.where((flt_df['LTP'] < flt_df['Buy_At']),"Already_Dn",
-                               np.where((flt_df['LTP'] > flt_df['Buy_At']),"Already_Up","")))))
 
-            posit = pd.DataFrame(client.positions())
+            if TGTT_SLL.upper() == "FSL":
+                flt_df['Status'] = np.where(flt_df['LTP'] < flt_df['Stop_Loss'],"Sl_Hit",
+                                np.where((flt_df['LTP'] < flt_df['Buy_up']) & (flt_df['LTP'] > flt_df['Buy_dn']),"Buy_Range",
+                                np.where((flt_df['LTP'] > flt_df['Target']),"Target_Hit",
+                                np.where((flt_df['LTP'] < flt_df['Buy_At']),"Already_Dn",
+                                np.where((flt_df['LTP'] > flt_df['Buy_At']),"Already_Up","")))))
+            
+            if TGTT_SLL.upper() == "TSL" or TGTT_SLL.upper() == "":
+                flt_df['Status'] = flt_df['TGT_TSL']
+            posit = Dummy_positionss #pd.DataFrame(client.positions())
+
 
             if posit.empty:
                 
                 flt_df = flt_df[['Name','Scriptcodee','Stop_Loss','Add_Till','Buy_At','Target','Term',
                                 'Datetime','TimeNow','Minutes','Buy','Open','High','Low','LTP','Close','NetChange','Status']]                                
                 by.range(f"s1:x1").value = ["BookedPL","MTOM","BuyQty","Entry","Exit","X" ]
+
+                flt_df.sort_values(['Datetime', 'Name',], ascending=[True, True], inplace=True)
                 by.range("a1").options(index=False).value = flt_df
 
             else:
-                posit.rename(columns={'ScripName': 'Name'},inplace=True)
-                sl.range("a15").options(index=False).value = flt_df
-                flt_df1 = pd.merge(flt_df, posit, on=['Name'], how='outer')
+                flt_df0 = flt_df.copy()
+                flt_df1 = pd.merge(flt_df0, posit, on=['ScripName'], how='outer')
                 sl.range("a20").options(index=False).value = flt_df1
-                flt_df1 = flt_df1[['Name','Scriptcodee','Stop_Loss','Add_Till','Buy_At','Target','Term',
+                flt_df1 = flt_df1[['ScripName','Scriptcodee','Buy_At','Stop_Loss','Target','Benchmark','TStopLoss',
                                 'Datetime','TimeNow','Minutes','Buy','Open','High','Low','LTP_x','Close',
                                 'NetChange','Status','BookedPL','MTOM','BuyQty']]
-
+                # flt_df1 = flt_df1[['ScripName','Scriptcodee','Stop_Loss','Add_Till','Buy_At','Target','Term',
+                #                 'Datetime','TimeNow','Minutes','Buy','Open','High','Low','LTP_x','Close',
+                #                 'NetChange','Status','BookedPL','MTOM','BuyQty']]
                 sl.range("a1").options(index=False).value = flt_df1
                 flt_df1['Entry'] = np.where((flt_df1['MTOM'] != 0) & (flt_df1['BuyQty'] != 0),"BUY","")
-                flt_df1['Exit'] = np.where(((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Sl_Hit")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Target_Hit")),"SELL","")
+                flt_df1['Exit'] = np.where(((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Sl_Hit")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Target_Hit")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "TSL")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "SL")),"SELL","")
 
                 sl.range("a10").options(index=False).value = flt_df1
-
-
-                #by.range("a:x").value = None         
+                flt_df1.sort_values(['Datetime', 'ScripName',], ascending=[True, True], inplace=True)
                 by.range("a1").options(index=False).value = flt_df1
 
             if five_df1.empty:
