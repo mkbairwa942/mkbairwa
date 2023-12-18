@@ -349,7 +349,7 @@ def ordef_func():
             ordbook1['Datetimeee'] = Datetimeee
             ordbook1 = ordbook1[['Datetimeee', 'ScripName','BuySell','AveragePrice', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason','Exch','ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
             ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
-            ordbook1['Datetimeee1'] = ordbook1['Datetimeee'] - timedelta(days=3)
+            #ordbook1['Datetimeee1'] = ordbook1['Datetimeee'] - timedelta(days=3)
             # ordbook2 = pd.DataFrame(ordbook1)
             # print(ordbook2.dtypes())
             pos.range("a1").options(index=False).value = ordbook1
@@ -408,21 +408,21 @@ def get_fibonachi(high,low,direct,fib_level):
         fib_price = low + (high-low)*fib_level
         return fib_price  
 
-Dummy_positionss = buy_order_li.copy()
-print("11")
-print(Dummy_positionss.head(1))
-Dummy_positionss.rename(columns={'Qty': 'BuyQty','Rate':'BuyAvgRate'}, inplace=True)
-Dummy_positionss['BookedPL'] = 10
-Dummy_positionss['MTOM'] = 0
-Dummy_positionss['LTP'] = Dummy_positionss['BuyAvgRate']
-Dummy_positionss = Dummy_positionss[['Exch','ExchType','ScripCode','ScripName','BuyAvgRate','BuyQty','LTP','BookedPL','MTOM',]]
-print("22")
-print(Dummy_positionss.head(1))
+# Dummy_positionss = buy_order_li.copy()
+# print("11")
+# print(Dummy_positionss.head(1))
+# Dummy_positionss.rename(columns={'Qty': 'BuyQty','Rate':'BuyAvgRate'}, inplace=True)
+# Dummy_positionss['BookedPL'] = 10
+# Dummy_positionss['MTOM'] = 0
+# Dummy_positionss['LTP'] = Dummy_positionss['BuyAvgRate']
+# Dummy_positionss = Dummy_positionss[['Exch','ExchType','ScripCode','ScripName','BuyAvgRate','BuyQty','LTP','BookedPL','MTOM',]]
+# print("22")
+# print(Dummy_positionss.head(1))
 
 while True:
     oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
     pos.range("a1").value = pd.DataFrame(client.margin())
-    pos.range("a10").value = Dummy_positionss #pd.DataFrame(client.positions())
+    pos.range("a10").value = pd.DataFrame(client.positions()) 
     pos.range("a20").value = pd.DataFrame(client.holdings())  
     # pos.range("a12").value = pd.DataFrame(client.get_tradebook())
     
@@ -667,7 +667,7 @@ while True:
 
             dt.range("j1").options(index=False).value = main_list4 
 
-            posii = Dummy_positionss #pd.DataFrame(client.positions())
+            posii = pd.DataFrame(client.positions())
 
 
                 
@@ -676,8 +676,8 @@ while True:
             else:
                 buy_order_lii = buy_order_li[buy_order_li['BuySell'] == 'B'] 
                 posi = pd.merge(buy_order_lii, posii, on=['ScripCode'], how='inner')
-                posi = posi[['ScripName_y','ScripCode','BuyAvgRate','Datetimeee1']]
-                posi.rename(columns={'ScripName_y': 'Namee','ScripCode':'Scriptcodee','BuyAvgRate':'Buy_At','Datetimeee1':'Datetime'}, inplace=True)
+                posi = posi[['ScripName_y','ScripCode','BuyAvgRate','Datetimeee']]
+                posi.rename(columns={'ScripName_y': 'Namee','ScripCode':'Scriptcodee','BuyAvgRate':'Buy_At','Datetimeee':'Datetime'}, inplace=True)
                 
                 posi['Stop_Loss'] = round((posi['Buy_At'] - (posi['Buy_At']*2)/100),1)
                 posi['Add_Till'] = round((posi['Buy_At']-((posi['Buy_At']*0.5)/100)),1)      
@@ -692,7 +692,7 @@ while True:
 
                 for ae in buy_order_list:
                     orderboo = buy_order_lii[(buy_order_lii['ScripCode'] == ae) & (buy_order_lii['BuySell'] == "B")]
-                    orderboo.sort_values(['Datetimeee1','Rate'], ascending=[True,True], inplace=True)
+                    orderboo.sort_values(['Datetimeee','Rate'], ascending=[True,True], inplace=True)
                     dfgg_up_1 = orderboo.iloc[[0]]
 
                     Buy_Scriptcodee = int(dfgg_up_1['ScripCode'])
@@ -703,7 +703,7 @@ while True:
                     Buy_Type = list(dfgg_up_1['ExchType'])[0]
                     Buy_Qty = int(dfgg_up_1['Qty'])
                     
-                    Buy_timee = list(dfgg_up_1['Datetimeee1'])[0]
+                    Buy_timee = list(dfgg_up_1['Datetimeee'])[0]
                     Buy_timee1 = str(Buy_timee).replace(' ','T')
                     print(Buy_Scriptcodee,Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Type,Buy_Qty,Buy_timee1)
                     dfg1 = client.historical_data('N', str(Buy_Type), ae, '1m',last_trading_day,current_trading_day) 
@@ -854,7 +854,7 @@ while True:
             
             if TGTT_SLL.upper() == "TSL" or TGTT_SLL.upper() == "":
                 flt_df['Status'] = flt_df['TGT_TSL']
-            posit = Dummy_positionss #pd.DataFrame(client.positions())
+            posit = pd.DataFrame(client.positions())
 
 
             if posit.empty:
