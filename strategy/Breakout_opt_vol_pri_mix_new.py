@@ -88,94 +88,94 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 
-nse = NSELive()
+#nse = NSELive()
 
 price_limit = 300
 Available_Cash = 12000
 Exposer = 2
 
-def bhavcopy(lastTradingDay):
-    dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
-    url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
-    bhav_eq1 = pd.read_csv(url)
-    bhav_eq1 = pd.DataFrame(bhav_eq1)
-    bhav_eq1.columns = bhav_eq1.columns.str.strip()
-    bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-    bhav_eq1['DATE1'] = pd.to_datetime(bhav_eq1['DATE1'])
-    bhav_eq = bhav_eq1[bhav_eq1['SERIES'] == 'EQ']
-    bhav_eq['LAST_PRICE'] = bhav_eq['LAST_PRICE'].replace(' -', 0).astype(float)
-    bhav_eq['DELIV_QTY'] = bhav_eq['DELIV_QTY'].replace(' -', 0).astype(float)
-    bhav_eq['DELIV_PER'] = bhav_eq['DELIV_PER'].replace(' -', 0).astype(float)
-    return bhav_eq
+# def bhavcopy(lastTradingDay):
+#     dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
+#     url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
+#     bhav_eq1 = pd.read_csv(url)
+#     bhav_eq1 = pd.DataFrame(bhav_eq1)
+#     bhav_eq1.columns = bhav_eq1.columns.str.strip()
+#     bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+#     bhav_eq1['DATE1'] = pd.to_datetime(bhav_eq1['DATE1'])
+#     bhav_eq = bhav_eq1[bhav_eq1['SERIES'] == 'EQ']
+#     bhav_eq['LAST_PRICE'] = bhav_eq['LAST_PRICE'].replace(' -', 0).astype(float)
+#     bhav_eq['DELIV_QTY'] = bhav_eq['DELIV_QTY'].replace(' -', 0).astype(float)
+#     bhav_eq['DELIV_PER'] = bhav_eq['DELIV_PER'].replace(' -', 0).astype(float)
+#     return bhav_eq
 
-# print(bhavcopy(lastTradingDay))
+# # print(bhavcopy(lastTradingDay))
 
-def bhavcopy_fno(lastTradingDay):
-    dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
-    MMM = datetime.strftime(lastTradingDay, '%b').upper()
-    yyyy = datetime.strftime(lastTradingDay, '%Y')
-    url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
-    content = requests.get(url1)
-    zf = ZipFile(BytesIO(content.content))
-    match = [s for s in zf.namelist() if ".csv" in s][0]
-    bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
-    bhav_fo.columns = bhav_fo.columns.str.strip()
-    bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-    bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
-    bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
-    bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
-    return bhav_fo
+# def bhavcopy_fno(lastTradingDay):
+#     dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
+#     MMM = datetime.strftime(lastTradingDay, '%b').upper()
+#     yyyy = datetime.strftime(lastTradingDay, '%Y')
+#     url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
+#     content = requests.get(url1)
+#     zf = ZipFile(BytesIO(content.content))
+#     match = [s for s in zf.namelist() if ".csv" in s][0]
+#     bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
+#     bhav_fo.columns = bhav_fo.columns.str.strip()
+#     bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+#     bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
+#     bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
+#     bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
+#     return bhav_fo
 
-live_market_keys = ['NIFTY 50','NIFTY BANK',]#,'Securities in F&O', ]
+# live_market_keys = ['NIFTY 50','NIFTY BANK',]#,'Securities in F&O', ]
 
-class NseIndia:
+# class NseIndia:
 
-    def __init__(self):
-        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple'
-                                      'WebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
-        self.session = requests.Session()
-        self.session.get("https://nseindia.com", headers=self.headers)
+#     def __init__(self):
+#         self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple'
+#                                       'WebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
+#         self.session = requests.Session()
+#         self.session.get("https://nseindia.com", headers=self.headers)
   
-    def get_stock_info(self, symbol, trade_info=False):
-        if trade_info:
-            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol + "&section=trade_info"
-        else:
-            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol
-        data = self.session.get(url, headers=self.headers).json()
-        return data
+#     def get_stock_info(self, symbol, trade_info=False):
+#         if trade_info:
+#             url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol + "&section=trade_info"
+#         else:
+#             url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol
+#         data = self.session.get(url, headers=self.headers).json()
+#         return data
 
-    def get_stock_fno_info(self, symbol, trade_info=False):
-        if trade_info:
-            url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol + "&section=trade_info"
-        else:
-            url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol
-        data = self.session.get(url, headers=self.headers).json()
-        return data
+#     def get_stock_fno_info(self, symbol, trade_info=False):
+#         if trade_info:
+#             url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol + "&section=trade_info"
+#         else:
+#             url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol
+#         data = self.session.get(url, headers=self.headers).json()
+#         return data
     
-    def week52(self):
-        url = 'https://www.nseindia.com/market-data/new-52-week-high-low-equity-market'
-        data = self.session.get(url, headers=self.headers)
-        return data
+#     def week52(self):
+#         url = 'https://www.nseindia.com/market-data/new-52-week-high-low-equity-market'
+#         data = self.session.get(url, headers=self.headers)
+#         return data
 
-    def live_market_data(self, key, symbol_list=False):
-        data = self.session.get(
-            f"https://www.nseindia.com/api/equity-stockIndices?index="
-            f"{key.upper().replace(' ', '%20').replace('&', '%26')}",
-            headers=self.headers).json()["data"]
-        df = pd.DataFrame(data)
-        df = df.drop(["meta"], axis=1)
-        df = df.set_index("symbol", drop=True)
-        df =  df[['identifier','open','dayHigh','dayLow',
-            'lastPrice','previousClose','change','pChange',
-            'totalTradedVolume','totalTradedValue','lastUpdateTime']]            
-        if symbol_list:
-            return list(df.index)
-        else:
-            return df
-nse = NseIndia()
+#     def live_market_data(self, key, symbol_list=False):
+#         data = self.session.get(
+#             f"https://www.nseindia.com/api/equity-stockIndices?index="
+#             f"{key.upper().replace(' ', '%20').replace('&', '%26')}",
+#             headers=self.headers).json()["data"]
+#         df = pd.DataFrame(data)
+#         df = df.drop(["meta"], axis=1)
+#         df = df.set_index("symbol", drop=True)
+#         df =  df[['identifier','open','dayHigh','dayLow',
+#             'lastPrice','previousClose','change','pChange',
+#             'totalTradedVolume','totalTradedValue','lastUpdateTime']]            
+#         if symbol_list:
+#             return list(df.index)
+#         else:
+#             return df
+# nse = NseIndia()
 
-tre = nse.week52()
-print
+# tre = nse.week52()
+# print
 
 # pdf = nse.get_stock_info("RELIANCE", trade_info=True)["securityWiseDP"]
 # print(pdf)
@@ -269,6 +269,7 @@ while True:
             exc_fut = pd.DataFrame(script_code_5paisa)
             exc_fut = exc_fut[(exc_fut["Exch"] == "N") & (exc_fut["ExchType"] == "D")]
             exc_fut = exc_fut[exc_fut["CpType"] == "XX"]
+            exc_fut = exc_fut[exc_fut["LotSize"] < 5000]
             exc_fut["Watchlist"] = exc_fut["Exch"] + ":" + exc_fut["ExchType"] + ":" + exc_fut["Name"]
             exc_fut.sort_values(['Name'], ascending=[True], inplace=True)
  

@@ -183,9 +183,9 @@ while True:
     if exchange is None: 
         try:
             exc_equity = pd.DataFrame(script_code_5paisa)
-            exc_equity = exc_equity[(exc_equity["Exch"] == "N") & (exc_equity["ExchType"] == "C")]
-            exc_equity = exc_equity[exc_equity["Series"] == "EQ"]
-            exc_equity = exc_equity[exc_equity["CpType"] == "XX"]
+            # exc_equity = exc_equity[(exc_equity["Exch"] == "N") & (exc_equity["ExchType"] == "C")]
+            # exc_equity = exc_equity[exc_equity["Series"] == "EQ"]
+            # exc_equity = exc_equity[exc_equity["CpType"] == "XX"]
             exc_equity["Watchlist"] = exc_equity["Exch"] + ":" + exc_equity["ExchType"] + ":" + exc_equity["Name"]
             exc_equity.sort_values(['Name'], ascending=[True], inplace=True)
             break
@@ -233,7 +233,7 @@ def ordef_func():
     try:
         if ordbook is not None:
             print("Order Book not Empty")        
-            ordbook1 = ordbook[ordbook['OrderStatus'] != "Rejected By 5P"]   
+            #ordbook1 = ordbook[ordbook['OrderStatus'] != "Rejected By 5P"]   
             ordbook1 = ordbook           
             Datetimeee = []
             for i in range(len(ordbook1)):
@@ -244,9 +244,9 @@ def ordef_func():
                 d2 = d1 + timedelta(hours = 5.5)
                 Datetimeee.append(d2)
             ordbook1['Datetimeee'] = Datetimeee
-            ordbook1 = ordbook1[['Datetimeee', 'ScripName','BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
+            ordbook1 = ordbook1[['Datetimeee', 'ScripName','BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason','Exch', 'ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
             ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
-            pos.range("a1").options(index=False).value = ordbook1
+            ob1.range("a1").options(index=False).value = ordbook1
         else:
             print("Order Book Empty")
     except Exception as e:
@@ -257,7 +257,7 @@ buy_order_li = ordef_func()
 ob1.range("a1").options(index=False).value = buy_order_li
 
 buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
-#print(buy_order_list)
+print(buy_order_list)
 
 five_df1 = pd.DataFrame()
 five_df2 = pd.DataFrame()
@@ -279,17 +279,20 @@ for a in buy_order_list:
     Buy_price = float(dfgg_up_1['Rate'])                 
     Buy_Stop_Loss = float(round((dfgg_up_1['Rate'] - (dfgg_up_1['Rate']*2)/100),1))  
     Buy_Target = float(round((((dfgg_up_1['Rate']*2)/100) + dfgg_up_1['Rate']),1))
-    Buy_Type = list(dfgg_up_1['ExchType'])[0]
+    Buy_Exc = list(dfgg_up_1['Exch'])[0]
+    Buy_Exc_Type = list(dfgg_up_1['ExchType'])[0]
     Buy_Qty = int(dfgg_up_1['Qty'])
     
     Buy_timee = list(dfgg_up_1['Datetimeee'])[0]
     Buy_timee1 = str(Buy_timee).replace(' ','T')
 
-    dfg1 = client.historical_data('N', str(Buy_Type), a, '1m',last_trading_day,current_trading_day) 
+    dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), a, '1m',last_trading_day,current_trading_day) 
+    print(dfg1.head(2))
     dfg1['Scripcode'] = a
     dfg1['ScripName'] = Buy_Name
     dfg1['Entry_Date'] = Buy_timee1
     dfg1['Entry_Price'] = Buy_price
+    print(dfg1.head(2))
     dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
     dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
     dfg1['StopLoss'] = Buy_Stop_Loss

@@ -32,7 +32,7 @@ telegram_id = ":758543600"
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
 operate = input("Do you want to go with TOTP (yes/no): ")
-TGTT_SLL = input("Do you want to go with FIXED or TRALING STOPLOSS (fsl/tsl): ")
+TGTT_SLL = input("Do you want to go with FIXED or TRALING STOPLOSS (FSL/TSL): ")
 if operate.upper() == "YES":
     from five_paisa1 import *
     # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
@@ -298,13 +298,14 @@ while True:
     if exchange is None: 
         try:
             exchange = pd.DataFrame(script_code_5paisa)
-            exchange = exchange[exchange["Exch"] == "N"]
+            #exchange = exchange[exchange["Exch"] == "N"]
             #exchange = exchange[exchange["ExchType"] == "D"]
             exchange['Expiry1'] = pd.to_datetime(exchange['Expiry']).dt.date
-            exchange1 = exchange[(exchange['ExchType'].isin(['C', 'D']))]
-            exchange1 = exchange1[(exchange1['Series'].isin(['EQ', 'XX']))]
-            exchange2 = exchange[exchange["Series"] == "EQ"]
-            exchange = exchange[exchange['CpType'].isin(['CE', 'PE'])]
+            exchange1 = exchange[(exchange["Exch"] == "N") & (exchange['ExchType'].isin(['D'])) & (exchange['CpType'].isin(['EQ', 'XX']))]
+            # exchange1 = exchange[(exchange['ExchType'].isin(['C', 'D']))]
+            # exchange1 = exchange1[(exchange1['Series'].isin(['EQ', 'XX']))]
+            # exchange2 = exchange[exchange["Series"] == "EQ"]
+            #exchange = exchange[exchange['CpType'].isin(['CE', 'PE'])]
             
             # print(exchange.tail(20))
             break
@@ -313,7 +314,7 @@ while True:
             time.sleep(10)
 #exc.range("v1").value = exchange1
 #exc.range("ar1").value = exchange2
-df = pd.DataFrame({"FNO Symbol": list(exchange["Root"].unique())})
+df = pd.DataFrame({"FNO Symbol": list(exchange1["Root"].unique())})
 df = df.set_index("FNO Symbol",drop=True)
 oc.range("a1").value = df
 
@@ -352,7 +353,7 @@ def ordef_func():
             #ordbook1['Datetimeee1'] = ordbook1['Datetimeee'] - timedelta(days=3)
             # ordbook2 = pd.DataFrame(ordbook1)
             # print(ordbook2.dtypes())
-            pos.range("a1").options(index=False).value = ordbook1
+            ob1.range("a1").options(index=False).value = ordbook1
         else:
             print("Order Book Empty")
     except Exception as e:
@@ -360,6 +361,7 @@ def ordef_func():
     return ordbook1
 
 buy_order_li = ordef_func()
+#print(buy_order_li['AveragePrice'].dtypes())
 
 
 def get_oi(data):
@@ -453,7 +455,7 @@ while True:
                 df = df[df["Expiry1"] == oc_expiry.date()]
                 lot_size= list(df["LotSize"])[0]
                 oc.range("e4").value = lot_size
-                
+                print("1")
                 for i in df.index:
                     instrument_dict[f'NFO:{df["FullName"][i]}'] = {"strikePrice":float(df["StrikeRate"][i]),
                                                                         "instrumentType":df["CpType"][i],
@@ -466,7 +468,7 @@ while True:
             instrument_for_ltp = "NIFTY" if oc_symbol == "NIFTY" else (
                 "BANKNIFTY" if oc_symbol == "BANKNIFTY" else oc_symbol)
             underlying_price = (client.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"C","Symbol":instrument_for_ltp}])['Data'][0]['LastTradedPrice'])
-
+            print("2")
             ep = []
             for ei in pd.DataFrame((client.get_expiry("N", oc_symbol))['Expiry'])['ExpiryDate']:
                 #print(ei)
@@ -564,7 +566,7 @@ while True:
             sym = dt.range(f"a{2}:a{500}").value
             symbols = list(filter(lambda item: item is not None, sym))
 
-            symb_frame = exchange1[(exchange1['Name'].isin(symbols))]
+            symb_frame = exchange[(exchange['Name'].isin(symbols))]
 
             symb_frame['Concate'] = symb_frame['Exch']+":"+symb_frame['ExchType']+":"+symb_frame['Name']+":"+symb_frame['Scripcode'].astype(str)+":"+symb_frame['LotSize'].astype(str)
 
@@ -643,7 +645,7 @@ while True:
 
                                 if trade_info[1].upper() == "BUY" and trade_info[2].upper() == "SELL":
                                     print("Sell order")  
-                                    #dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"S")
+                                    dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"S")
 
                                 if trade_info[1].upper() == "SELL" and trade_info[2] is None:  
                                     print("Sell order")                                    
@@ -674,8 +676,8 @@ while True:
             if posii.empty:
                 print("No Positions")
             else:
-                buy_order_lii = buy_order_li[buy_order_li['BuySell'] == 'B'] 
-                posi = pd.merge(buy_order_lii, posii, on=['ScripCode'], how='inner')
+                buy_order_lii = buy_order_li[(buy_order_li['BuySell'] == 'B') & ((buy_order_li['AveragePrice'] != 0))] 
+                posi = pd.merge(posii,buy_order_lii, on=['ScripCode'], how='inner')
                 posi = posi[['ScripName_y','ScripCode','BuyAvgRate','Datetimeee']]
                 posi.rename(columns={'ScripName_y': 'Namee','ScripCode':'Scriptcodee','BuyAvgRate':'Buy_At','Datetimeee':'Datetime'}, inplace=True)
                 
@@ -691,7 +693,7 @@ while True:
                 buy_order_list = (np.unique([int(i) for i in buy_order_lii['ScripCode']])).tolist()
 
                 for ae in buy_order_list:
-                    orderboo = buy_order_lii[(buy_order_lii['ScripCode'] == ae) & (buy_order_lii['BuySell'] == "B")]
+                    orderboo = buy_order_lii[(buy_order_lii['ScripCode'] == ae) & (buy_order_lii['BuySell'] == "B") & (buy_order_lii['AveragePrice'] != 0)]
                     orderboo.sort_values(['Datetimeee','Rate'], ascending=[True,True], inplace=True)
                     dfgg_up_1 = orderboo.iloc[[0]]
 
@@ -700,14 +702,16 @@ while True:
                     Buy_price = float(dfgg_up_1['Rate'])                 
                     Buy_Stop_Loss = float(round((dfgg_up_1['Rate'] - (dfgg_up_1['Rate']*2)/100),1))  
                     Buy_Target = float(round((((dfgg_up_1['Rate']*2)/100) + dfgg_up_1['Rate']),1))
-                    Buy_Type = list(dfgg_up_1['ExchType'])[0]
-                    Buy_Qty = int(dfgg_up_1['Qty'])
-                    
+                    Buy_Exc = list(dfgg_up_1['Exch'])[0]
+                    Buy_Exc_Type = list(dfgg_up_1['ExchType'])[0]
+                    Buy_Qty = int(dfgg_up_1['Qty'])                  
+                  
+
                     Buy_timee = list(dfgg_up_1['Datetimeee'])[0]
                     Buy_timee1 = str(Buy_timee).replace(' ','T')
-                    print(Buy_Scriptcodee,Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Type,Buy_Qty,Buy_timee1)
-                    dfg1 = client.historical_data('N', str(Buy_Type), ae, '1m',last_trading_day,current_trading_day) 
-                    
+                    print(Buy_Scriptcodee,Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc_Type,Buy_Qty,Buy_timee1)
+                    dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ae, '1m',last_trading_day,current_trading_day)
+                                       
                     dfg1['Scripcode'] = ae
                     dfg1['ScripName'] = Buy_Name
                     dfg1['Entry_Date'] = Buy_timee1
@@ -877,7 +881,7 @@ while True:
                 #                 'Datetime','TimeNow','Minutes','Buy','Open','High','Low','LTP_x','Close',
                 #                 'NetChange','Status','BookedPL','MTOM','BuyQty']]
                 sl.range("a1").options(index=False).value = flt_df1
-                flt_df1['Entry'] = np.where((flt_df1['MTOM'] != 0) & (flt_df1['BuyQty'] != 0),"BUY","")
+                flt_df1['Entry'] = np.where((flt_df1['MTOM'] != 0) & (flt_df1['BuyQty'] != 0) & (flt_df1['MTOM'] != "") & (flt_df1['BuyQty'] != ""),"BUY","")
                 flt_df1['Exit'] = np.where(((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Sl_Hit")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Target_Hit")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "TSL")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "SL")),"SELL","")
 
                 sl.range("a10").options(index=False).value = flt_df1
