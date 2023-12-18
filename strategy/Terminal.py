@@ -94,49 +94,49 @@ pd.options.mode.copy_on_write = True
 current_time = (datetime.now()).strftime("%H:%M")
 
 live_market_keys = ['NIFTY 50','NIFTY BANK',]#,'Securities in F&O', ]
+print("1")
+# class NseIndia:
 
-class NseIndia:
-
-    def __init__(self):
-        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple'
-                                      'WebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
-        self.session = requests.Session()
-        self.session.get("https://nseindia.com", headers=self.headers)
+#     def __init__(self):
+#         self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple'
+#                                       'WebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
+#         self.session = requests.Session()
+#         self.session.get("https://nseindia.com", headers=self.headers)
   
-    def get_stock_info(self, symbol, trade_info=False):
-        if trade_info:
-            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol + "&section=trade_info"
-        else:
-            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol
-        data = self.session.get(url, headers=self.headers).json()
-        return data
+#     def get_stock_info(self, symbol, trade_info=False):
+#         if trade_info:
+#             url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol + "&section=trade_info"
+#         else:
+#             url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol
+#         data = self.session.get(url, headers=self.headers).json()
+#         return data
 
-    def get_stock_fno_info(self, symbol, trade_info=False):
-        if trade_info:
-            url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol + "&section=trade_info"
-        else:
-            url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol
-        data = self.session.get(url, headers=self.headers).json()
-        return data
+#     def get_stock_fno_info(self, symbol, trade_info=False):
+#         if trade_info:
+#             url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol + "&section=trade_info"
+#         else:
+#             url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol
+#         data = self.session.get(url, headers=self.headers).json()
+#         return data
 
-    def live_market_data(self, key, symbol_list=False):
-        data = self.session.get(
-            f"https://www.nseindia.com/api/equity-stockIndices?index="
-            f"{key.upper().replace(' ', '%20').replace('&', '%26')}",
-            headers=self.headers).json()["data"]
-        df = pd.DataFrame(data)
-        df = df.drop(["meta"], axis=1)
-        df = df.set_index("symbol", drop=True)
-        df =  df[['identifier','open','dayHigh','dayLow',
-            'lastPrice','previousClose','change','pChange',
-            'totalTradedVolume','totalTradedValue','lastUpdateTime']]            
-        if symbol_list:
-            return list(df.index)
-        else:
-            return df
+#     def live_market_data(self, key, symbol_list=False):
+#         data = self.session.get(
+#             f"https://www.nseindia.com/api/equity-stockIndices?index="
+#             f"{key.upper().replace(' ', '%20').replace('&', '%26')}",
+#             headers=self.headers).json()["data"]
+#         df = pd.DataFrame(data)
+#         df = df.drop(["meta"], axis=1)
+#         df = df.set_index("symbol", drop=True)
+#         df =  df[['identifier','open','dayHigh','dayLow',
+#             'lastPrice','previousClose','change','pChange',
+#             'totalTradedVolume','totalTradedValue','lastUpdateTime']]            
+#         if symbol_list:
+#             return list(df.index)
+#         else:
+#             return df
 
-nse = NseIndia()
-
+# nse = NseIndia()
+print("2")
 def get_live_data(Exchange,ExchangeType,Symbol):
 
     try:
@@ -187,7 +187,7 @@ Exchange = None
 prev_info = {"Symbol": None, "Expiry": None}
 instruments_dict = {}
 option_data = {}
-       
+print("3")      
 def quote(instruments):
     if instruments:
         try:
