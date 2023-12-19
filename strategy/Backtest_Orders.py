@@ -244,7 +244,7 @@ def ordef_func():
                 d2 = d1 + timedelta(hours = 5.5)
                 Datetimeee.append(d2)
             ordbook1['Datetimeee'] = Datetimeee
-            ordbook1 = ordbook1[['Datetimeee', 'ScripName','BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason','Exch', 'ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
+            ordbook1 = ordbook1[['Datetimeee', 'ScripName','BuySell', 'DelvIntra','PendingQty','AveragePrice','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason','Exch', 'ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
             ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
             ob1.range("a1").options(index=False).value = ordbook1
         else:
@@ -253,7 +253,9 @@ def ordef_func():
                 print(e)
     return ordbook1
 
-buy_order_li = ordef_func()
+buy_order_liii = ordef_func()
+buy_order_li = buy_order_liii[(buy_order_liii['AveragePrice'] != 0) & (buy_order_liii['BuySell'] == "B")]
+#buy_order_li = buy_order_liii
 ob1.range("a1").options(index=False).value = buy_order_li
 
 buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()

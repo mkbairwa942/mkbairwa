@@ -306,7 +306,7 @@ stop_thread = False
 stk_list = np.unique(exc_fut['Root'])
 print("Total Stock : "+str(len(stk_list)))
 
-#order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
+order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
 
 def ordef_func():
     try:
@@ -673,6 +673,7 @@ while True:
                                 print("Stock Selected for Buy but more than '5 MINUTE' ago : "+str(stk_name2))
 
                             else:
+                                buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
                                 if aa in buy_order_list: 
                                     print(str(aa)+" is Already Buy")
                                 else:
@@ -725,6 +726,7 @@ while True:
                                 print("Stock Selected for Sell but more than '5 MINUTE' ago : "+str(stk_name2))
 
                             else:
+                                buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
                                 if aa in buy_order_list: 
                                     print(str(aa)+" is Already Buy")
                                 else:

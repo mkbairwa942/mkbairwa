@@ -166,15 +166,15 @@ def greeks(premium,expiry,asset_price,strike_price,interest_rate,instrument_type
             vega(flag,S,K,t,r,imp_v)]
 
 
-def place_trade(Exche,ExchTypee,symbol,scripte,quantity, direction):
+def place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction):
     try:
         order = client.place_order(OrderType=direction,
                         Exchange=Exche,
                         ExchangeType=ExchTypee,
                         ScripCode = scripte,
                         Qty=int(quantity),
-                        Price=0.0,)
-                        #IsIntraday=True,)
+                        Price=0.0,
+                        IsIntraday=True,)
                         #IsStopLossOrder=True
                         #StopLossPrice=StopLossPrice)
         print("CALL PLACE TRADE")
@@ -353,7 +353,7 @@ def ordef_func():
             #ordbook1['Datetimeee1'] = ordbook1['Datetimeee'] - timedelta(days=3)
             # ordbook2 = pd.DataFrame(ordbook1)
             # print(ordbook2.dtypes())
-            ob1.range("a1").options(index=False).value = ordbook1
+            
         else:
             print("Order Book Empty")
     except Exception as e:
@@ -361,6 +361,7 @@ def ordef_func():
     return ordbook1
 
 buy_order_li = ordef_func()
+
 #print(buy_order_li['AveragePrice'].dtypes())
 
 
@@ -424,8 +425,9 @@ def get_fibonachi(high,low,direct,fib_level):
 while True:
     oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
     pos.range("a1").value = pd.DataFrame(client.margin())
-    pos.range("a10").value = pd.DataFrame(client.positions()) 
-    pos.range("a20").value = pd.DataFrame(client.holdings())  
+    pos.range("a10").value = pd.DataFrame(client.holdings())
+    pos.range("a20").value = pd.DataFrame(client.positions()) 
+      
     # pos.range("a12").value = pd.DataFrame(client.get_tradebook())
     
     if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:
@@ -576,7 +578,7 @@ while True:
 
 
             max_min = oc.range(f"e{17}:e{22}").value
-            trading_info = by.range(f"u{2}:x{30}").value  
+            trading_info = by.range(f"u{2}:y{30}").value  
             
             maxxx = max(list(max_min))
             minnn = min(list(max_min))
@@ -633,27 +635,31 @@ while True:
                             main_list = pd.concat([main_li, main_list])     
            
                             trade_info = trading_info[idx]
-                            # place_trade(Exche,ExchTypee,symbol,scripte,quantity, direction)
-                            if trade_info[0] is not None and trade_info[1].upper() is not None:
+
+                            #place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
+                            
+                            if trade_info[0] is not None and trade_info[2].upper() is not None:
 
 
-                                print(trade_info[0],trade_info[1],trade_info[2],trade_info[3])
+                                print(trade_info[0],trade_info[1],trade_info[2],trade_info[3],trade_info[4])
 
-                                if trade_info[1].upper() == "BUY" and trade_info[2] is None:  
+                                if trade_info[2].upper() == "BUY" and trade_info[3] is None:  
                                     print("Buy order")   
-                                    #dt.range(f"t{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"B")
+                                    #dt.range(f"t{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"B")
 
-                                if trade_info[1].upper() == "BUY" and trade_info[2].upper() == "SELL":
-                                    print("Sell order")  
-                                    dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"S")
+                                if trade_info[2].upper() == "BUY" and trade_info[3].upper() == "SELL":
+                                    print("Sell order") 
+                                    #squareoff = client.squareoff_all() 
+                                    dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"S")
 
-                                if trade_info[1].upper() == "SELL" and trade_info[2] is None:  
-                                    print("Sell order")                                    
-                                    #dt.range(f"t{idx +2 }").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"S")
+                                if trade_info[2].upper() == "SELL" and trade_info[3] is None:  
+                                    print("Sell order")   
+                                    #squareoff = client.squareoff_all()                                  
+                                    #dt.range(f"t{idx +2 }").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"S")
 
-                                if trade_info[1].upper() == "SELL" and trade_info[2].upper() == "BUY":   
+                                if trade_info[2].upper() == "SELL" and trade_info[3].upper() == "BUY":   
                                     print("Buy order")                                   
-                                    #dt.range(f"u{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),"B")
+                                    #dt.range(f"u{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"B")
 
                             #print(i,trading_info)
                         except Exception as e:                
@@ -691,6 +697,7 @@ while True:
                 dt.range("a1").options(index=False).value = posi
 
                 buy_order_list = (np.unique([int(i) for i in buy_order_lii['ScripCode']])).tolist()
+                print(buy_order_list)
 
                 for ae in buy_order_list:
                     orderboo = buy_order_lii[(buy_order_lii['ScripCode'] == ae) & (buy_order_lii['BuySell'] == "B") & (buy_order_lii['AveragePrice'] != 0)]
@@ -881,12 +888,14 @@ while True:
                 #                 'Datetime','TimeNow','Minutes','Buy','Open','High','Low','LTP_x','Close',
                 #                 'NetChange','Status','BookedPL','MTOM','BuyQty']]
                 sl.range("a1").options(index=False).value = flt_df1
+                flt_df1['Price'] = flt_df1['LTP_x']
                 flt_df1['Entry'] = np.where((flt_df1['MTOM'] != 0) & (flt_df1['BuyQty'] != 0) & (flt_df1['MTOM'] != "") & (flt_df1['BuyQty'] != ""),"BUY","")
                 flt_df1['Exit'] = np.where(((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Sl_Hit")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "Target_Hit")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "TSL")) | ((flt_df1['Entry'] == "BUY") & (flt_df1['Status'] == "SL")),"SELL","")
+                flt_df11 = flt_df1[flt_df1['LTP_x'] != 0]
+                sl.range("a10").options(index=False).value = flt_df11
+                flt_df11.sort_values(['Datetime', 'ScripName',], ascending=[True, True], inplace=True)
 
-                sl.range("a10").options(index=False).value = flt_df1
-                flt_df1.sort_values(['Datetime', 'ScripName',], ascending=[True, True], inplace=True)
-                by.range("a1").options(index=False).value = flt_df1
+                by.range("a1").options(index=False).value = flt_df11
 
             if five_df1.empty:
                 pass
@@ -957,7 +966,9 @@ while True:
                     # ordbook1['Datetimeee'] = Datetimeee
                     # ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','OrderStatus','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','ScripName','AtMarket']]
                     # ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
-                    ob1.range("a1").options(index=False).value = buy_order_li
+                    #ob1.range("a1").options(index=False).value = buy_order_li
+                    buy_order_liii = buy_order_li[(buy_order_li['AveragePrice'] != 0)]
+                    ob1.range("a1").options(index=False).value = buy_order_liii
                     buy_order_list = np.unique([str(i) for i in buy_order_li['ScripName']])
                 else:
                     print("Order Book Empty")
