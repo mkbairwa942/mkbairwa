@@ -851,7 +851,7 @@ while True:
 
             five_df33 = five_df3.copy()
             five_df33 = five_df33[['ScripName','Benchmark','TStopLoss','TGT_TSL']]
-            flt_df = pd.merge(five_df33, flt_df34, on=['ScripName'], how='outer')
+            flt_df = pd.merge(five_df33, flt_df34, on=['ScripName'], how='inner')
             sl.range("a15").options(index=False).value = flt_df
             flt_df['Buy_up'] = ((flt_df['Buy_At']*0.5)/100)+flt_df['Buy_At']
             flt_df['Buy_dn'] = flt_df['Buy_At']-((flt_df['Buy_At']*0.5)/100)

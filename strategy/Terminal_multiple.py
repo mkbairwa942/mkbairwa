@@ -32,23 +32,26 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-operate = input("Do you want to go with TOTP (yes/no): ")
-TGTT_SLL = input("Do you want to go with FIXED or TRALING STOPLOSS (FSL/TSL): ")
-if operate.upper() == "YES":
-    from five_paisa1 import *
-    # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
-    # print(p)
-    username = input("Enter Username : ")
-    username1 = str(username)
-    username2 = username1.upper()
-    print("HII "+str(username2)+" HAVE A GOOD DAY")
-    # username_totp = input("Enter TOTP : ")
-    # username_totp1 = str(username_totp)
-    # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
-    client = credentials(username1)
-else:
-    from five_paisa import *
-    # from five_paisa1 import *
+# operate = input("Do you want to go with TOTP (yes/no): ")
+# TGTT_SLL = input("Do you want to go with FIXED or TRALING STOPLOSS (FSL/TSL): ")
+# if operate.upper() == "YES":
+#     from five_paisa1 import *
+#     # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
+#     # print(p)
+#     username = input("Enter Username : ")
+#     username1 = str(username)
+#     username2 = username1.upper()
+#     print("HII "+str(username2)+" HAVE A GOOD DAY")
+#     # username_totp = input("Enter TOTP : ")
+#     # username_totp1 = str(username_totp)
+#     # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+#     client = credentials(username1)
+# else:
+#     from five_paisa import *
+#     # from five_paisa1 import *
+    
+TGTT_SLL = "TSL"    
+client = credentials("ashwin")
 
 from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
@@ -94,6 +97,7 @@ pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 
 users = ["ashwin","haresh"]
+stoploss = 2
 # for usew in users:
 #     usew = credentials(str(usew))
 
@@ -311,18 +315,6 @@ def get_oi(data):
                     time.sleep(0.5)
 print("Excel : Started")
 
-call_counter = 0
-put_counter = 0
-
-# dfg = client.historical_data('N', 'C', symbol1, '1d', from_d, to_d)
-# print(dfg)
-# today_range = np.round(((dfg['High'].iloc[-1]) - dfg['Low'].iloc[-1]),2)
-
-buy_order_list = []
-ord_buy_df_list = []
-ord_sell_df_list = []
-
-
 by.range("a1:x1").color = (54,226,0)
 by.range("a1:x1").font.bold = True
 by.range("a1:x1").api.WrapText = True
@@ -343,26 +335,118 @@ while True:
     for sh_na in users:
         if sh_na == "ashwin":
             #client = credentials(sh_na)
-            ash.range("aa1").value = pd.DataFrame(client.margin())
-            ash.range("aa10").value = pd.DataFrame(client.holdings())
-            ash.range("aa20").value = pd.DataFrame(client.positions()) 
+            ash.range("ad1").value = pd.DataFrame(client.margin())
+            ash.range("ad10").value = pd.DataFrame(client.holdings())
+            ash.range("ad20").value = pd.DataFrame(client.positions()) 
 
             buy_order_liii = buy_order_li[(buy_order_li['AveragePrice'] != 0)]
-            ash.range("aa40").options(index=False).value = buy_order_liii
+            ash.range("ad40").options(index=False).value = buy_order_liii
             
 
             posit = pd.DataFrame(client.positions()) 
-            buy_order_list = np.unique([int(i) for i in posit['ScripCode']])
-            print(buy_order_list)
+            buy_order_liiist = buy_order_liii[buy_order_liii['BuySell'] == 'B']
+            buy_order_list = np.unique([int(i) for i in buy_order_liiist['ScripCode']])
 
             buy_ord_new = pd.DataFrame()
+            five_df = pd.DataFrame()
+
             for ord in buy_order_list:
                 new_df = buy_order_liii[(buy_order_liii['ScripCode'] == ord) & (buy_order_liii['BuySell'] == 'B')]
                 new_df.sort_values(['Datetimeee','Rate'], ascending=[True,True], inplace=True)
                 new_df1 = new_df.iloc[[0]]
-                buy_ord_new = pd.concat([new_df1, buy_ord_new])  
-            ash.range("aa70").options(index=False).value = buy_ord_new
+                buy_ord_new = pd.concat([new_df1, buy_ord_new]) 
+                #Buy_Scriptcodee = int(new_df1['ScripCode'])
+                Buy_Name = list(new_df1['ScripName'])[0]
+                Buy_price = float(new_df1['Rate'])                 
+                Buy_Stop_Loss = float(round((new_df1['Rate'] - (new_df1['Rate']*stoploss)/100),1))
+                Buy_Target = float(round((((new_df1['Rate']*stoploss)/100) + new_df1['Rate']),1))
+                Buy_Exc = list(new_df1['Exch'])[0]
+                Buy_Exc_Type = list(new_df1['ExchType'])[0]
+                Buy_Qty = int(new_df1['Qty'])                
+                Buy_timee = list(new_df1['Datetimeee'])[0]
+                Buy_timee1 = str(Buy_timee).replace(' ','T')
+                 
+                
+                
+                dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
+                dfg1['ScripCode'] = ord
+                dfg1['ScripName'] = Buy_Name
+                dfg1['Entry_Date'] = Buy_timee1
+                dfg1['Entry_Price'] = Buy_price
+                
+                dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
+                st.range("a1").options(index=False).value = dfg1
+                dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
+                dfg1['StopLoss'] = Buy_Stop_Loss
+                dfg1['Target'] = Buy_Target
+                dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
+                dfg2['Benchmark'] = dfg2['High'].cummax()
+                dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98   
 
+                if TGTT_SLL.upper() == "FSL":                    
+                    dfg2['Status'] = np.where(dfg2['High'] > Buy_Target,"TGT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))  
+                    dfg3 = dfg2[(dfg2['Status'] != '')]    
+                    dfg4 = dfg3.iloc[0:1]
+                    five_df = pd.concat([dfg4, five_df])
+                
+                if TGTT_SLL.upper() == "TSL" or TGTT_SLL.upper() == "":
+                    dfgg2 = dfg2.copy()                    
+                    dfgg2['Status'] = np.where(dfgg2['Close'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Low'] < Buy_Stop_Loss,"SL",""))
+
+                    dfgg3 = dfgg2[(dfgg2['Status'] != '')] 
+                    dfgg4 = dfgg3.iloc[0:1]
+                    five_df = pd.concat([dfgg4, five_df])
+                
+            #ash.range("aa70").options(index=False).value = buy_ord_new
+            #ash.range("a20").options(index=False).value = buy_ord_new
+            #ash.range("a10").options(index=False).value = five_df
+            #print(five_df.head(1))
+            final_df = pd.merge(posit,buy_ord_new, on=['ScripCode'], how='inner')
+            final_df['TimeNow'] = datetime.now()
+            final_df['Minutes'] = pd.to_datetime(final_df['TimeNow'])-pd.to_datetime(final_df["Datetimeee"])
+            final_df['Minutes'] = round((final_df['Minutes']/np.timedelta64(1,'m')),2)
+
+            final_df1 = pd.merge(final_df,five_df, on=['ScripCode'], how='inner')
+
+            final_df1['Entry'] = np.where((final_df1['MTOM'] != 0) & (final_df1['BuyQty'] != 0) & (final_df1['MTOM'] != "") & (final_df1['BuyQty'] != ""),"BUY","")
+            final_df1['Exit'] = np.where(((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TGT")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TSL")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "SL")),"SELL","")
+            
+
+            final_df1 = final_df1[['ScripName_x','Exch_x','ExchType_x','ScripCode','Datetimeee','Datetime','Minutes','BuyAvgRate','LTP','StopLoss','Target','Benchmark','TStopLoss','Status','BookedPL','MTOM','BuyQty','LTP','Entry','Exit']]	
+            #final_df1 = final_df1[['ScripName_x','ScripCode','Datetimeee','Minutes','BuyAvgRate','LTP','BookedPL','MTOM','BuyQty','LTP']]	
+            ash.range("a1").options(index=False).value = final_df1
+            trading_info = ash.range(f"a{2}:t{19}").value
+            sym = ash.range(f"a{2}:a{19}").value
+            symbols = list(filter(lambda item: item is not None, sym))
+            idx = 0
+            for i in symbols:
+                if i:
+                    trade_info = trading_info[idx]
+                    #place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
+                    print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
+
+                    if trade_info[16] is not None and trade_info[18] is not None:
+
+                        if trade_info[18] == "BUY" and trade_info[19] is None:  
+                            print("Buy order")   
+                            #dt.range(f"t{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"B")
+
+                        if trade_info[18] == "BUY" and trade_info[19] == "SELL":
+                            print("Sell order") 
+                            #squareoff = client.squareoff_all() 
+                            dt.range(f"u{idx +2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
+
+                        if trade_info[18] == "SELL" and trade_info[19] is None:  
+                            print("Sell order")   
+                            #squareoff = client.squareoff_all()                                  
+                            #dt.range(f"t{idx +2 }").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
+
+                        if trade_info[18] == "SELL" and trade_info[19] == "BUY":   
+                            print("Buy order")                                   
+                            #dt.range(f"u{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"B")
+
+                idx +=1
+            print(symbols)
 
             print("Data Analysis Complete for Ashwin")
         
