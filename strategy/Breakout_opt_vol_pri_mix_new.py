@@ -94,6 +94,8 @@ price_limit = 300
 Available_Cash = 12000
 Exposer = 2
 
+order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
+
 # def bhavcopy(lastTradingDay):
 #     dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
 #     url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'

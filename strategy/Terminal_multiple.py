@@ -343,7 +343,7 @@ while True:
             ash.range("ad40").options(index=False).value = buy_order_liii
             
 
-            posit = pd.DataFrame(client.positions()) 
+            
             buy_order_liiist = buy_order_liii[buy_order_liii['BuySell'] == 'B']
             buy_order_list = np.unique([int(i) for i in buy_order_liiist['ScripCode']])
 
@@ -401,52 +401,58 @@ while True:
             #ash.range("a20").options(index=False).value = buy_ord_new
             #ash.range("a10").options(index=False).value = five_df
             #print(five_df.head(1))
-            final_df = pd.merge(posit,buy_ord_new, on=['ScripCode'], how='inner')
-            final_df['TimeNow'] = datetime.now()
-            final_df['Minutes'] = pd.to_datetime(final_df['TimeNow'])-pd.to_datetime(final_df["Datetimeee"])
-            final_df['Minutes'] = round((final_df['Minutes']/np.timedelta64(1,'m')),2)
+            posit = pd.DataFrame(client.positions()) 
+            if posit.empty:
+                print("Position is Empty")
+                pass
+            else:
+                final_df = pd.merge(posit,buy_ord_new, on=['ScripCode'], how='inner')
+                print(final_df)
+                final_df['TimeNow'] = datetime.now()
+                final_df['Minutes'] = pd.to_datetime(final_df['TimeNow'])-pd.to_datetime(final_df["Datetimeee"])
+                final_df['Minutes'] = round((final_df['Minutes']/np.timedelta64(1,'m')),2)
 
-            final_df1 = pd.merge(final_df,five_df, on=['ScripCode'], how='inner')
+                final_df1 = pd.merge(final_df,five_df, on=['ScripCode'], how='inner')
 
-            final_df1['Entry'] = np.where((final_df1['MTOM'] != 0) & (final_df1['BuyQty'] != 0) & (final_df1['MTOM'] != "") & (final_df1['BuyQty'] != ""),"BUY","")
-            final_df1['Exit'] = np.where(((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TGT")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TSL")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "SL")),"SELL","")
-            
+                final_df1['Entry'] = np.where((final_df1['MTOM'] != 0) & (final_df1['BuyQty'] != 0) & (final_df1['MTOM'] != "") & (final_df1['BuyQty'] != ""),"BUY","")
+                final_df1['Exit'] = np.where(((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TGT")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TSL")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "SL")),"SELL","")
+                
 
-            final_df1 = final_df1[['ScripName_x','Exch_x','ExchType_x','ScripCode','Datetimeee','Datetime','Minutes','BuyAvgRate','LTP','StopLoss','Target','Benchmark','TStopLoss','Status','BookedPL','MTOM','BuyQty','LTP','Entry','Exit']]	
-            #final_df1 = final_df1[['ScripName_x','ScripCode','Datetimeee','Minutes','BuyAvgRate','LTP','BookedPL','MTOM','BuyQty','LTP']]	
-            ash.range("a1").options(index=False).value = final_df1
-            trading_info = ash.range(f"a{2}:t{19}").value
-            sym = ash.range(f"a{2}:a{19}").value
-            symbols = list(filter(lambda item: item is not None, sym))
-            idx = 0
-            for i in symbols:
-                if i:
-                    trade_info = trading_info[idx]
-                    #place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
-                    print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
+                final_df1 = final_df1[['ScripName_x','Exch_x','ExchType_x','ScripCode','Datetimeee','Datetime','Minutes','BuyAvgRate','LTP','StopLoss','Target','Benchmark','TStopLoss','Status','BookedPL','MTOM','BuyQty','LTP','Entry','Exit']]	
+                #final_df1 = final_df1[['ScripName_x','ScripCode','Datetimeee','Minutes','BuyAvgRate','LTP','BookedPL','MTOM','BuyQty','LTP']]	
+                ash.range("a1").options(index=False).value = final_df1
+                trading_info = ash.range(f"a{2}:t{19}").value
+                sym = ash.range(f"a{2}:a{19}").value
+                symbols = list(filter(lambda item: item is not None, sym))
+                idx = 0
+                for i in symbols:
+                    if i:
+                        trade_info = trading_info[idx]
+                        #place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
+                        print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
 
-                    if trade_info[16] is not None and trade_info[18] is not None:
+                        if trade_info[16] is not None and trade_info[18] is not None:
 
-                        if trade_info[18] == "BUY" and trade_info[19] is None:  
-                            print("Buy order")   
-                            #dt.range(f"t{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"B")
+                            if trade_info[18] == "BUY" and trade_info[19] is None:  
+                                print("Buy order")   
+                                #dt.range(f"t{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"B")
 
-                        if trade_info[18] == "BUY" and trade_info[19] == "SELL":
-                            print("Sell order") 
-                            #squareoff = client.squareoff_all() 
-                            dt.range(f"u{idx +2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
+                            if trade_info[18] == "BUY" and trade_info[19] == "SELL":
+                                print("Sell order") 
+                                #squareoff = client.squareoff_all() 
+                                dt.range(f"u{idx +2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
 
-                        if trade_info[18] == "SELL" and trade_info[19] is None:  
-                            print("Sell order")   
-                            #squareoff = client.squareoff_all()                                  
-                            #dt.range(f"t{idx +2 }").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
+                            if trade_info[18] == "SELL" and trade_info[19] is None:  
+                                print("Sell order")   
+                                #squareoff = client.squareoff_all()                                  
+                                #dt.range(f"t{idx +2 }").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
 
-                        if trade_info[18] == "SELL" and trade_info[19] == "BUY":   
-                            print("Buy order")                                   
-                            #dt.range(f"u{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"B")
+                            if trade_info[18] == "SELL" and trade_info[19] == "BUY":   
+                                print("Buy order")                                   
+                                #dt.range(f"u{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"B")
 
-                idx +=1
-            print(symbols)
+                    idx +=1
+                print(symbols)
 
             print("Data Analysis Complete for Ashwin")
         
