@@ -308,7 +308,7 @@ stop_thread = False
 stk_list = np.unique(exc_fut['Root'])
 print("Total Stock : "+str(len(stk_list)))
 
-order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
+#order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
 
 def ordef_func():
     try:
