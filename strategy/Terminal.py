@@ -360,7 +360,11 @@ def ordef_func():
                 print(e)
     return ordbook1
 
-buy_order_li = ordef_func()
+posit = pd.DataFrame(client.positions()) 
+if posit.empty:
+    print("Position is Empty")
+else:
+    buy_order_li = ordef_func()
 
 #print(buy_order_li['AveragePrice'].dtypes())
 

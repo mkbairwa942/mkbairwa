@@ -94,8 +94,6 @@ price_limit = 300
 Available_Cash = 12000
 Exposer = 2
 
-order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
-
 # def bhavcopy(lastTradingDay):
 #     dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
 #     url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
@@ -341,10 +339,13 @@ def ordef_func():
                 print(e)
     return ordbook1
 
-buy_order_li = ordef_func()
-#print(buy_order_li.tail(1))
-buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
-print(buy_order_list)
+posit = pd.DataFrame(client.positions()) 
+if posit.empty:
+    print("Position is Empty")
+else:
+    buy_order_li = ordef_func()
+    buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+    print(buy_order_list)
 
 
 while True:
