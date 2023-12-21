@@ -363,8 +363,10 @@ while True:
 
                 for ord in buy_order_list:
                     new_df = buy_order_liii[(buy_order_liii['ScripCode'] == ord) & (buy_order_liii['BuySell'] == 'B')]
+                    
                     new_df.sort_values(['Datetimeee','Rate'], ascending=[True,True], inplace=True)
                     new_df1 = new_df.iloc[[0]]
+                    
                     buy_ord_new = pd.concat([new_df1, buy_ord_new]) 
                     #Buy_Scriptcodee = int(new_df1['ScripCode'])
                     Buy_Name = list(new_df1['ScripName'])[0]
@@ -376,13 +378,13 @@ while True:
                     Buy_Qty = int(new_df1['Qty'])                
                     Buy_timee = list(new_df1['Datetimeee'])[0]
                     Buy_timee1 = str(Buy_timee).replace(' ','T')
-
+  
                     dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
                     dfg1['ScripCode'] = ord
                     dfg1['ScripName'] = Buy_Name
                     dfg1['Entry_Date'] = Buy_timee1
                     dfg1['Entry_Price'] = Buy_price
-                    
+            
                     dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
                     st.range("a1").options(index=False).value = dfg1
                     dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
@@ -392,9 +394,11 @@ while True:
                     dfg2['Benchmark'] = dfg2['High'].cummax()
                     dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98 
                     five_dff = pd.concat([dfg2, five_dff])
+
                     dfg3 = dfg2.iloc[[-1]] 
+
                     five_df = pd.concat([dfg3, five_df])
-                st.range("a1").options(index=False).value = five_dff 
+                #st.range("a1").options(index=False).value = five_dff 
 
                 posit = pd.DataFrame(client.positions()) 
                 if posit.empty:
@@ -416,10 +420,11 @@ while True:
     
                     final_df1['Entry'] = np.where((final_df1['MTOM'] != 0) & (final_df1['BuyQty'] != 0) & (final_df1['MTOM'] != "") & (final_df1['BuyQty'] != ""),"BUY","")
                     final_df1['Exit'] = np.where(((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TGT")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TSL")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "SL")),"SELL","")
-
+                    
                     final_df1 = final_df1[['ScripName_x','Exch_x','ExchType_x','ScripCode','Datetimeee','Datetime','Minutes','BuyAvgRate','LTP','StopLoss','Target','Benchmark','TStopLoss','Status','BookedPL','MTOM','BuyQty','Entry','Exit']]	
 
                     ash.range("a1").options(index=False).value = final_df1
+                    ash.range("t1").options(index=False).value = "Exit1"
                     
                     trading_info = ash.range(f"a{2}:t{19}").value
                     sym = ash.range(f"a{2}:a{19}").value
@@ -429,7 +434,7 @@ while True:
                         if i:
                             trade_info = trading_info[idx]
                             #place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
-                            #print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
+                            print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
 
                             if trade_info[16] is not None and trade_info[17] is not None:
 

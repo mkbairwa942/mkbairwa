@@ -23,6 +23,7 @@ import requests
 import itertools
 import math 
 from telethon.sync import TelegramClient
+import inspect
 
 telegram_first_name = "mkbairwa"
 telegram_username = "mkbairwa_bot"
@@ -344,12 +345,12 @@ def ordef_func():
 posit = pd.DataFrame(client.positions()) 
 if posit.empty:
     print("Position is Empty")
+    buy_order_list_dummy = []
 else:
     buy_order_li = ordef_func()
-    buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
-    print(buy_order_list)
+    buy_order_list_dummy = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+    print(buy_order_list_dummy)
 
-buy_order_list_dummy = []
 while True:
     #time.sleep(60)
     print("buy_order_list_dummy")
@@ -661,19 +662,21 @@ while True:
 
                         
 
-                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 60 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
-                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 40 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 60 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 40 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
 
                         #dfgg1 = dfgg1.iloc[[1]]
                         #dfgg1 = dfgg1.iloc[1:2]
                         if len(dfgg_up_11) == 0:
-                            print("1111")
+                            print("5 Minute Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(dfgg_up_scpt5)+")")                            
                         else:
-                            print("11111")
+                            print("5 Minute Option Data Scan and Selected "+str(stk_name2)+" ("+str(dfgg_up_scpt5)+")")
                             dfgg_up_1 = dfgg_up_11.iloc[[0]]
+                            Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
                             five_df5 = pd.concat([dfgg_up_1, five_df5])        
 
                             if dfgg_up_1.empty:
+                                
                                 if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
                                     parameters = {"chat_id" : "6143172607","text" : "Stock Selected but more than '5 MINUTE' ago : "+str(stk_name1)}
                                     resp = requests.get(telegram_basr_url, data=parameters)
@@ -682,55 +685,61 @@ while True:
                                 else:
                                     print("Telegram Message are OFF")
 
-                            else:
-                                buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
-                                #print(aa,buy_order_list)
-                                Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
-                                if Buy_Scriptcodee in buy_order_list:                                     
+                            else:    
+                                # buy_order_li = ordef_func()                            
+                                # buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+                                # print(aa,buy_order_list,Buy_Scriptcodee)
+                                # Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
+                                # if Buy_Scriptcodee in buy_order_list:                                     
+                                #     print(str(Buy_Scriptcodee)+" is Already Buy")
+                                # else:
+                                if Buy_Scriptcodee in buy_order_list_dummy: 
                                     print(str(Buy_Scriptcodee)+" is Already Buy")
                                 else:
-                                    if Buy_Scriptcodee in buy_order_list_dummy: 
-                                        print(str(Buy_Scriptcodee)+" is Already Buy")
+                                    Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
+                                    Buy_price_of_stock = float(dfgg_up_1['Buy_At'])  
+                                    Buy_Add_Till = float(dfgg_up_1['Add_Till'])                       
+                                    Buy_Stop_Loss = float(dfgg_up_1['Stop_Loss'])    
+                                    Buy_Target = float(dfgg_up_1['Target']) 
+                                    Buy_timee = str((dfgg_up_1['Datetime'].values)[0])[0:19] 
+                                    Buy_timee1= Buy_timee.replace("T", " " )
+                                    Buy_Lotsize = int(dfgg_up_1['LotSize'])
+                                    buy_order_list_dummy.append(Buy_Scriptcodee)
+                                    # print(Buy_timee1)
+
+                                    # if Buy_price_of_stock < 100:
+                                    #     Buy_quantity_of_stock = 200
+                                    # if Buy_price_of_stock > 100 and Buy_price_of_stock < 200:
+                                    #     Buy_quantity_of_stock = 100                        
+                                    # if Buy_price_of_stock > 200 and Buy_price_of_stock < 300:
+                                    #     Buy_quantity_of_stock = 80
+                                    # if Buy_price_of_stock > 300:
+                                    #     Buy_quantity_of_stock = 50
+                                    # Req_Amount = Buy_quantity_of_stock*Buy_price_of_stock   
+
+                                    Buy_quantity_of_stock = Buy_Lotsize
+                                    if orders.upper() == "YES" or orders.upper() == "":
+                                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                        # order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee,
+                                        #                          Qty=Buy_quantity_of_stock,LimitPriceInitialOrder=Buy_price_of_stock,
+                                        #                           IsIntraday=True, IsStopLossOrder=True, StopLoss=Buy_Stop_Loss,
+                                        #                           LimitPriceProfitOrder=Buy_Target,LimitPriceForSL=Buy_Stop_Loss,
+                                        #                           TriggerPriceForSL=Buy_Stop_Loss)
+                                        #print("orders")
                                     else:
-                                        Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
-                                        Buy_price_of_stock = float(dfgg_up_1['Buy_At'])  
-                                        Buy_Add_Till = float(dfgg_up_1['Add_Till'])                       
-                                        Buy_Stop_Loss = float(dfgg_up_1['Stop_Loss'])    
-                                        Buy_Target = float(dfgg_up_1['Target']) 
-                                        Buy_timee = str((dfgg_up_1['Datetime'].values)[0])[0:19] 
-                                        Buy_timee1= Buy_timee.replace("T", " " )
-                                        Buy_Lotsize = int(dfgg_up_1['LotSize'])
-                                        # print(Buy_timee1)
+                                        pass
+                                    print("5 Minute Data Selected "+str(stk_name2)+" ("+str(Buy_Scriptcodee)+")")
+                                    print("Buy Order of "+str(stk_name2)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on"+str(Buy_timee1))
+                                
+                                    print("SYMBOL : "+str(stk_name2)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1))
+                                    if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
+                                        parameters1 = {"chat_id" : "6143172607","text" : "STOCK : "+str(stk_name2)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
+                                        resp = requests.get(telegram_basr_url, data=parameters1)
+                                    else:
+                                        print("Telegram Message are OFF")
+                                    # print(resp.text)
 
-                                        # if Buy_price_of_stock < 100:
-                                        #     Buy_quantity_of_stock = 200
-                                        # if Buy_price_of_stock > 100 and Buy_price_of_stock < 200:
-                                        #     Buy_quantity_of_stock = 100                        
-                                        # if Buy_price_of_stock > 200 and Buy_price_of_stock < 300:
-                                        #     Buy_quantity_of_stock = 80
-                                        # if Buy_price_of_stock > 300:
-                                        #     Buy_quantity_of_stock = 50
-                                        # Req_Amount = Buy_quantity_of_stock*Buy_price_of_stock   
-
-                                        Buy_quantity_of_stock = Buy_Lotsize
-                                        if orders.upper() == "YES" or orders.upper() == "":
-                                            order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                                            buy_order_list_dummy.append(Buy_Scriptcodee)
-                                            #print("orders")
-                                        else:
-                                            pass
-                                        print("5 Minute Data Selected "+str(stk_name2)+" ("+str(Buy_Scriptcodee)+")")
-                                        print("Buy Order of "+str(stk_name2)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on"+str(Buy_timee1))
-                                    
-                                        print("SYMBOL : "+str(stk_name2)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1))
-                                        if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
-                                            parameters1 = {"chat_id" : "6143172607","text" : "STOCK : "+str(stk_name2)+"\n BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
-                                            resp = requests.get(telegram_basr_url, data=parameters1)
-                                        else:
-                                            print("Telegram Message are OFF")
-                                        # print(resp.text)
-
-                                    # buy_order_list.append(aa)
+                                # buy_order_list.append(aa)
 
                         if len(dfgg_dn_11) == 0:
                             print("222")
