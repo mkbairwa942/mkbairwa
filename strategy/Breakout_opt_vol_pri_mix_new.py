@@ -321,7 +321,7 @@ def ordef_func():
 
     try:
         if ordbook is not None:
-            print("Order Book not Empty")        
+            #print("Order Book not Empty")        
             ordbook1 = ordbook[ordbook['OrderStatus'] != "Rejected By 5P"]   
             ordbook1 = ordbook           
             Datetimeee = []
@@ -454,8 +454,8 @@ while True:
             curr_day = (dfg['Datetime'].apply(pd.to_datetime)).iloc[0]
 
 
-            dfgg_up11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 60 ) & (dfg['Date'] == curr_day) ]# & (dfg['Close'] > 300)]# & (dfg["Del_Vol_Pri_break"] != "") ]
-            dfgg_dn11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 40 ) & (dfg['Date'] == curr_day) ]# & (dfg["Del_Vol_Pri_break"] != "")]
+            dfgg_up11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 55 ) & (dfg['Date'] == curr_day) ]# & (dfg['Close'] > 300)]# & (dfg["Del_Vol_Pri_break"] != "") ]
+            dfgg_dn11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 45 ) & (dfg['Date'] == curr_day) ]# & (dfg["Del_Vol_Pri_break"] != "")]
             
             # five_df22 = pd.concat([dfgg_up11, five_df2])            
             # five_df32 = pd.concat([dfgg_dn11, five_df3])
@@ -556,8 +556,8 @@ while True:
 
                     five_df1 = pd.concat([dfg1, five_df1])
 
-                    dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] > 60 ) & (dfg1["Date"] == current_trading_day.date())]
-                    dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] < 40 ) & (dfg1["Date"] == current_trading_day.date())]
+                    dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] > 55 ) & (dfg1["Date"] == current_trading_day.date())]
+                    dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] < 45 ) & (dfg1["Date"] == current_trading_day.date())]
 
 
                     dfgg_up1 = dfgg_up.iloc[:2]
@@ -662,8 +662,8 @@ while True:
 
                         
 
-                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 60 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
-                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 40 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                         #dfgg1 = dfgg1.iloc[[1]]
                         #dfgg1 = dfgg1.iloc[1:2]
@@ -719,7 +719,10 @@ while True:
 
                                     Buy_quantity_of_stock = Buy_Lotsize
                                     if orders.upper() == "YES" or orders.upper() == "":
-                                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                        #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                        order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,TrailingSL=1)
+                                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
+
                                         # order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee,
                                         #                          Qty=Buy_quantity_of_stock,LimitPriceInitialOrder=Buy_price_of_stock,
                                         #                           IsIntraday=True, IsStopLossOrder=True, StopLoss=Buy_Stop_Loss,
@@ -880,8 +883,8 @@ while True:
         five_df4 = five_df4[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','Date','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         
-        not_selected_up = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Buy_new") & (five_df4["RSI_14"] > 60 ) & (five_df4["Date"] == current_trading_day.date())]
-        not_selected_dn = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Sell_new") & (five_df4["RSI_14"] < 40 ) & (five_df4["Date"] == current_trading_day.date())]
+        not_selected_up = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Buy_new") & (five_df4["RSI_14"] > 55 ) & (five_df4["Date"] == current_trading_day.date())]
+        not_selected_dn = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Sell_new") & (five_df4["RSI_14"] < 45 ) & (five_df4["Date"] == current_trading_day.date())]
         
         # fl_data.range("a:az").value = None
         # #First Two Row
