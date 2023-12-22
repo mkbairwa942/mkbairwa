@@ -701,6 +701,7 @@ while True:
                                     Buy_Add_Till = float(dfgg_up_1['Add_Till'])                       
                                     Buy_Stop_Loss = float(dfgg_up_1['Stop_Loss'])    
                                     Buy_Target = float(dfgg_up_1['Target']) 
+                                    Buy_Target1 = round((((dfgg_up_1['Buy_At']*4)/100) + dfgg_up_1['Buy_At']),2)                                    
                                     Buy_timee = str((dfgg_up_1['Datetime'].values)[0])[0:19] 
                                     Buy_timee1= Buy_timee.replace("T", " " )
                                     Buy_Lotsize = int(dfgg_up_1['LotSize'])
@@ -720,8 +721,8 @@ while True:
                                     Buy_quantity_of_stock = Buy_Lotsize
                                     if orders.upper() == "YES" or orders.upper() == "":
                                         #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                                        order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,TrailingSL=1)
-                                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
+                                        order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,TrailingSL=0.5)
+                                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
 
                                         # order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee,
                                         #                          Qty=Buy_quantity_of_stock,LimitPriceInitialOrder=Buy_price_of_stock,
