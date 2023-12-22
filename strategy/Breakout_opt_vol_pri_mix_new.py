@@ -369,7 +369,7 @@ while True:
             scpt0 = exc_fut[exc_fut['Root'] == sc]
             scpt1 = scpt0[(scpt0['Expiry'].apply(pd.to_datetime) >= current_trading_day) ]
             scpt1.sort_values(['Expiry'], ascending=[False], inplace=True)
-            scpt2 = (np.unique(scpt1['Expiry']).tolist())[0]
+            scpt2 = (np.unique(scpt1['Expiry']).tolist())[1]
             scpt3 = scpt1[scpt1['Expiry'] == scpt2]
             aaa = int(scpt3['Scripcode'])
             dfg = client.historical_data('N', 'D', aaa, '1d',days_365,current_trading_day) 
@@ -580,7 +580,9 @@ while True:
                         dfgg_up_scpt2 = dfgg_up_scpt1[dfgg_up_scpt1['Root'] == stk_name1[0]]
                         dfgg_up_scpt3 = dfgg_up_scpt2[(dfgg_up_scpt2['StrikeRate'] > dfgg_up_scpt)]
                         dfgg_up_scpt3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-                        dfgg_up_scpt4 = dfgg_up_scpt3.iloc[:1]
+                        print(dfgg_up_scpt3)
+                        dfgg_up_scpt4 = dfgg_up_scpt3.iloc[1:2]
+                        print(dfgg_up_scpt4)
                         dfgg_up_scpt5 = int(np.unique(dfgg_up_scpt4['Scripcode']))
                         dfg2 = client.historical_data('N', 'D', dfgg_up_scpt5, '5m',last_trading_day,current_trading_day) 
                         dfg2['Scripcode'] = dfgg_up_scpt5
@@ -662,8 +664,8 @@ while True:
 
                         
 
-                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
-                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
 
                         #dfgg1 = dfgg1.iloc[[1]]
                         #dfgg1 = dfgg1.iloc[1:2]
@@ -706,6 +708,8 @@ while True:
                                     Buy_timee1= Buy_timee.replace("T", " " )
                                     Buy_Lotsize = int(dfgg_up_1['LotSize'])
                                     buy_order_list_dummy.append(Buy_Scriptcodee)
+                                    Buy_traling = round(((dfgg_up_1['Buy_At']*2)/100),2)
+                                    print(Buy_price_of_stock,Buy_traling)
                                     # print(Buy_timee1)
 
                                     # if Buy_price_of_stock < 100:
