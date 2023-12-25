@@ -97,98 +97,6 @@ price_limit = 300
 Available_Cash = 12000
 Exposer = 2
 
-# def bhavcopy(lastTradingDay):
-#     dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
-#     url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
-#     bhav_eq1 = pd.read_csv(url)
-#     bhav_eq1 = pd.DataFrame(bhav_eq1)
-#     bhav_eq1.columns = bhav_eq1.columns.str.strip()
-#     bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-#     bhav_eq1['DATE1'] = pd.to_datetime(bhav_eq1['DATE1'])
-#     bhav_eq = bhav_eq1[bhav_eq1['SERIES'] == 'EQ']
-#     bhav_eq['LAST_PRICE'] = bhav_eq['LAST_PRICE'].replace(' -', 0).astype(float)
-#     bhav_eq['DELIV_QTY'] = bhav_eq['DELIV_QTY'].replace(' -', 0).astype(float)
-#     bhav_eq['DELIV_PER'] = bhav_eq['DELIV_PER'].replace(' -', 0).astype(float)
-#     return bhav_eq
-
-# # print(bhavcopy(lastTradingDay))
-
-# def bhavcopy_fno(lastTradingDay):
-#     dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
-#     MMM = datetime.strftime(lastTradingDay, '%b').upper()
-#     yyyy = datetime.strftime(lastTradingDay, '%Y')
-#     url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
-#     content = requests.get(url1)
-#     zf = ZipFile(BytesIO(content.content))
-#     match = [s for s in zf.namelist() if ".csv" in s][0]
-#     bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
-#     bhav_fo.columns = bhav_fo.columns.str.strip()
-#     bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-#     bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
-#     bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
-#     bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
-#     return bhav_fo
-
-# live_market_keys = ['NIFTY 50','NIFTY BANK',]#,'Securities in F&O', ]
-
-# class NseIndia:
-
-#     def __init__(self):
-#         self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple'
-#                                       'WebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
-#         self.session = requests.Session()
-#         self.session.get("https://nseindia.com", headers=self.headers)
-  
-#     def get_stock_info(self, symbol, trade_info=False):
-#         if trade_info:
-#             url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol + "&section=trade_info"
-#         else:
-#             url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol
-#         data = self.session.get(url, headers=self.headers).json()
-#         return data
-
-#     def get_stock_fno_info(self, symbol, trade_info=False):
-#         if trade_info:
-#             url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol + "&section=trade_info"
-#         else:
-#             url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + symbol
-#         data = self.session.get(url, headers=self.headers).json()
-#         return data
-    
-#     def week52(self):
-#         url = 'https://www.nseindia.com/market-data/new-52-week-high-low-equity-market'
-#         data = self.session.get(url, headers=self.headers)
-#         return data
-
-#     def live_market_data(self, key, symbol_list=False):
-#         data = self.session.get(
-#             f"https://www.nseindia.com/api/equity-stockIndices?index="
-#             f"{key.upper().replace(' ', '%20').replace('&', '%26')}",
-#             headers=self.headers).json()["data"]
-#         df = pd.DataFrame(data)
-#         df = df.drop(["meta"], axis=1)
-#         df = df.set_index("symbol", drop=True)
-#         df =  df[['identifier','open','dayHigh','dayLow',
-#             'lastPrice','previousClose','change','pChange',
-#             'totalTradedVolume','totalTradedValue','lastUpdateTime']]            
-#         if symbol_list:
-#             return list(df.index)
-#         else:
-#             return df
-# nse = NseIndia()
-
-# tre = nse.week52()
-# print
-
-# pdf = nse.get_stock_info("RELIANCE", trade_info=True)["securityWiseDP"]
-# print(pdf)
-print("hii")
-# stk_li = np.unique(bhavcopy(last_trading_day)['SYMBOL'])
-
-# opt_li = pd.unique(bhavcopy_fno(last_trading_day)['SYMBOL'])
-
-# stk_list = stk_li
-
 print("---- Data Process Started ----")
 
 if not os.path.exists("Breakout_opt_vol_pri_mix_new.xlsx"):
@@ -580,9 +488,7 @@ while True:
                         dfgg_up_scpt2 = dfgg_up_scpt1[dfgg_up_scpt1['Root'] == stk_name1[0]]
                         dfgg_up_scpt3 = dfgg_up_scpt2[(dfgg_up_scpt2['StrikeRate'] > dfgg_up_scpt)]
                         dfgg_up_scpt3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-                        print(dfgg_up_scpt3)
                         dfgg_up_scpt4 = dfgg_up_scpt3.iloc[1:2]
-                        print(dfgg_up_scpt4)
                         dfgg_up_scpt5 = int(np.unique(dfgg_up_scpt4['Scripcode']))
                         dfg2 = client.historical_data('N', 'D', dfgg_up_scpt5, '5m',last_trading_day,current_trading_day) 
                         dfg2['Scripcode'] = dfgg_up_scpt5
@@ -664,8 +570,8 @@ while True:
 
                         
 
-                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
-                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                         #dfgg1 = dfgg1.iloc[[1]]
                         #dfgg1 = dfgg1.iloc[1:2]
@@ -674,6 +580,7 @@ while True:
                         else:
                             print("5 Minute Option Data Scan and Selected "+str(stk_name2)+" ("+str(dfgg_up_scpt5)+")")
                             dfgg_up_1 = dfgg_up_11.iloc[[0]]
+                            print(dfgg_up_1)
                             Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
                             five_df5 = pd.concat([dfgg_up_1, five_df5])        
 
@@ -709,31 +616,14 @@ while True:
                                     Buy_Lotsize = int(dfgg_up_1['LotSize'])
                                     buy_order_list_dummy.append(Buy_Scriptcodee)
                                     Buy_traling = round(((dfgg_up_1['Buy_At']*2)/100),2)
+
                                     print(Buy_price_of_stock,Buy_traling)
-                                    # print(Buy_timee1)
-
-                                    # if Buy_price_of_stock < 100:
-                                    #     Buy_quantity_of_stock = 200
-                                    # if Buy_price_of_stock > 100 and Buy_price_of_stock < 200:
-                                    #     Buy_quantity_of_stock = 100                        
-                                    # if Buy_price_of_stock > 200 and Buy_price_of_stock < 300:
-                                    #     Buy_quantity_of_stock = 80
-                                    # if Buy_price_of_stock > 300:
-                                    #     Buy_quantity_of_stock = 50
-                                    # Req_Amount = Buy_quantity_of_stock*Buy_price_of_stock   
-
+                    
                                     Buy_quantity_of_stock = Buy_Lotsize
                                     if orders.upper() == "YES" or orders.upper() == "":
                                         #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                         order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,TrailingSL=0.5)
                                         #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
-
-                                        # order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee,
-                                        #                          Qty=Buy_quantity_of_stock,LimitPriceInitialOrder=Buy_price_of_stock,
-                                        #                           IsIntraday=True, IsStopLossOrder=True, StopLoss=Buy_Stop_Loss,
-                                        #                           LimitPriceProfitOrder=Buy_Target,LimitPriceForSL=Buy_Stop_Loss,
-                                        #                           TriggerPriceForSL=Buy_Stop_Loss)
-                                        #print("orders")
                                     else:
                                         pass
                                     print("5 Minute Data Selected "+str(stk_name2)+" ("+str(Buy_Scriptcodee)+")")
@@ -765,13 +655,13 @@ while True:
                                 print("Stock Selected for Sell but more than '5 MINUTE' ago : "+str(stk_name2))
 
                             else:
-                                buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+                                buy_order_list = buy_order_list_dummy
                                 Sell_Scriptcodee = int(dfgg_dn_1['Scripcode'])
                                 if Sell_Scriptcodee in buy_order_list: 
                                     print(str(Sell_Scriptcodee)+" is Already Buy")
                                 else:
-                                    if Buy_Scriptcodee in buy_order_list_dummy: 
-                                        print(str(Buy_Scriptcodee)+" is Already Buy")
+                                    if Sell_Scriptcodee in buy_order_list_dummy: 
+                                        print(str(Sell_Scriptcodee)+" is Already Buy")
                                     else:
                                         Sell_Scriptcodee = int(dfgg_dn_1['Scripcode'])
                                         Sell_price_of_stock = float(dfgg_dn_1['Buy_At'])  
@@ -781,19 +671,8 @@ while True:
                                         Sell_timee = str((dfgg_dn_1['Datetime'].values)[0])[0:19] 
                                         Sell_timee1= Sell_timee.replace("T", " " )
                                         Sell_Lotsize = int(dfgg_dn_1['LotSize'])
-                                        # print(Buy_timee1)
-
-                                        # if Sell_price_of_stock < 100:
-                                        #     Sell_quantity_of_stock = 200
-                                        # if Sell_price_of_stock > 100 and Sell_price_of_stock < 200:
-                                        #     Sell_quantity_of_stock = 100                        
-                                        # if Sell_price_of_stock > 200 and Sell_price_of_stock < 300:
-                                        #     Sell_quantity_of_stock = 80
-                                        # if Sell_price_of_stock > 300:
-                                        #     Sell_quantity_of_stock = 50
-                                        # Req_Amount = Sell_quantity_of_stock*Sell_price_of_stock   
-
                                         Sell_quantity_of_stock = Sell_Lotsize
+
                                         if orders.upper() == "YES" or orders.upper() == "":
                                             buy_order_list_dummy.append(Sell_Scriptcodee)
                                             #order = client.place_order(OrderType='S',Exchange='N',ExchangeType='D', ScripCode = Sell_Scriptcodee, Qty=Sell_quantity_of_stock,Price=Sell_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Sell_Stop_Loss)
@@ -809,15 +688,6 @@ while True:
                                         else:
                                             print("Telegram Message are OFF")
 
-                                    
-
-
-                        
-
-
-
-
-        
         except Exception as e:
                     print(e) 
 
@@ -890,33 +760,6 @@ while True:
         
         not_selected_up = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Buy_new") & (five_df4["RSI_14"] > 55 ) & (five_df4["Date"] == current_trading_day.date())]
         not_selected_dn = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Sell_new") & (five_df4["RSI_14"] < 45 ) & (five_df4["Date"] == current_trading_day.date())]
-        
-        # fl_data.range("a:az").value = None
-        # #First Two Row
-        # up1 = np.unique([int(i) for i in not_selected_up['Scripcode']]).tolist()
-        # up4 = pd.DataFrame()
-        # for j in up1:
-        #     up2 = not_selected_up[(not_selected_up["Scripcode"] == j)]
-        #     up3 = up2.iloc[:2]
-        #     up4 = pd.concat([up3, up4])
-        #     up4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        #     fl_data.range("a10").options(index=False).value = up4
-
-        # dn1 = np.unique([int(i) for i in not_selected_dn['Scripcode']]).tolist()
-        # dn4 = pd.DataFrame()
-        # for k in dn1:
-        #     dn2 = not_selected_dn[(not_selected_dn["Scripcode"] == k)]
-        #     dn3 = dn2.iloc[:2]
-        #     dn4 = pd.concat([dn3, dn4])
-        #     dn4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        #     fl_data.range("a50").options(index=False).value = dn4
-
-        # # Last Two Row
-        # not_selected_up1 = not_selected_up.iloc[-2:] 
-        # not_selected_dn1 = not_selected_dn.iloc[-2:] 
-
-    # script_list = np.unique(exc_fut['Scripcode'])
-    # stk_list = np.unique(exc_fut["Root"])
 
     end = time.time() - start_time
  
