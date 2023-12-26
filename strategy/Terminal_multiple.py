@@ -144,7 +144,7 @@ def place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction):
                         ExchangeType=ExchTypee,
                         ScripCode = scripte,
                         Qty=int(quantity),
-                        Price=0.0,
+                        Price=price,
                         IsIntraday=True,)
                         #IsStopLossOrder=True
                         #StopLossPrice=StopLossPrice)
@@ -219,9 +219,23 @@ oc.range("a:b").value = oc.range("d8:e30").value = oc.range("g1:v4000").value = 
 
 # script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 # script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
+# exch = script_code_5paisa[(script_code_5paisa["Exch"] == "N") & (script_code_5paisa["ExchType"] == "D")]
 
-# exc.range("a1").value = script_code_5paisa
-# # exc.range("a1").value = exchange
+# exch.sort_values(['Root'], ascending=[True], inplace=True)
+# root_list = np.unique(exch['Root']).tolist()
+
+# unwanted_num = {"BANKNIFTY","FINNIFTY","MIDCPNIFTY","NIFTY"}
+# root_list = [ele for ele in root_list if ele not in unwanted_num]
+
+# exc_new = exch['Root'].isin(root_list)
+# exc_new1 = exch[exc_new]
+# exc_new1.sort_values(['Expiry'], ascending=[False], inplace=True)
+# Expiryy = (np.unique(exc_new1['Expiry']).tolist())[0]
+
+# exc_new2 = exc_new1[exc_new1['Expiry'] == Expiryy]
+# exc_new2.sort_values(['Root'], ascending=[True], inplace=True)
+# exc.range("a1").value = exc_new2
+# exc.range("a1").value = exchange
 
 # exchange = None
 # while True:
@@ -408,6 +422,7 @@ while True:
                         final_df1['Status'] = np.where(final_df1['LTP'] < final_df1['TStopLoss'],"TSL",np.where(final_df1['LTP'] < final_df1['StopLoss'],"SL",""))
     
                     final_df1['New_LTP'] = final_df1['LTP']-0.10
+
                     final_df1['Entry'] = np.where((final_df1['MTOM'] != 0) & (final_df1['BuyQty'] != 0) & (final_df1['MTOM'] != "") & (final_df1['BuyQty'] != ""),"BUY","")
                     final_df1['Exit'] = np.where(((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TGT")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TSL")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "SL")),"SELL","")
                     
@@ -445,6 +460,7 @@ while True:
                                     print("Sell order") 
                                     #squareoff = client.squareoff_all() 
                                     dt.range(f"u{idx +2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
+                                    #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
 
                                 if trade_info[18] == "SELL" and trade_info[19] is None:  
                                     print("Sell order")   

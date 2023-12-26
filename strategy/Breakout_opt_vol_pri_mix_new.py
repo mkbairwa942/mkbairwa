@@ -177,30 +177,53 @@ def round_up(n, decimals = 0):
 while True:    
     if exchange is None: 
         try:
-            exc_fut = pd.DataFrame(script_code_5paisa)
-            exc_fut = exc_fut[(exc_fut["Exch"] == "N") & (exc_fut["ExchType"] == "D")]
-            exc_fut = exc_fut[exc_fut["CpType"] == "XX"]
-            exc_fut = exc_fut[exc_fut["LotSize"] < 5000]
-            exc_fut["Watchlist"] = exc_fut["Exch"] + ":" + exc_fut["ExchType"] + ":" + exc_fut["Name"]
-            exc_fut.sort_values(['Name'], ascending=[True], inplace=True)
+            exch = script_code_5paisa[(script_code_5paisa["Exch"] == "N") & (script_code_5paisa["ExchType"] == "D")]
+            exch.sort_values(['Root'], ascending=[True], inplace=True)
+            
+            root_list = np.unique(exch['Root']).tolist()
+
+            unwanted_num = {"BANKNIFTY","FINNIFTY","MIDCPNIFTY","NIFTY"}
+            root_list = [ele for ele in root_list if ele not in unwanted_num]
+
+            exc_new = exch['Root'].isin(root_list)
+            exc_new1 = exch[exc_new]
+            exc_new1.sort_values(['Expiry'], ascending=[False], inplace=True)
+            print()
+            exc_new1 = exc_new1[exc_new1["LotSize"] < 5000]
+            Expiryy = (np.unique(exc_new1['Expiry']).tolist())[1]            
+
+            exc_new2 = exc_new1[exc_new1['Expiry'] == Expiryy]            
+            exc_new2.sort_values(['Root'], ascending=[True], inplace=True)
+            exc_new2["Watchlist"] = exc_new2["Exch"] + ":" + exc_new2["ExchType"] + ":" + exc_new2["Name"]
+            #exc.range("a1").value = exc_new2
+
+            # exc_fut = pd.DataFrame(script_code_5paisa)
+            # exc_fut = exc_fut[(exc_fut["Exch"] == "N") & (exc_fut["ExchType"] == "D")]
+            # exc_fut = exc_fut[exc_fut["CpType"] == "XX"]
+            # exc_fut = exc_fut[exc_fut["LotSize"] < 5000]
+            # exc_fut["Watchlist"] = exc_fut["Exch"] + ":" + exc_fut["ExchType"] + ":" + exc_fut["Name"]
+            # exc_fut.sort_values(['Name'], ascending=[True], inplace=True)
  
-            exc_opt = pd.DataFrame(script_code_5paisa)
-            exc_opt = exc_opt[(exc_opt["Exch"] == "N") & (exc_opt["ExchType"] == "D")]
-            exc_opt = exc_opt[exc_opt["CpType"] != "XX"]
-            exc_opt["Watchlist"] = exc_opt["Exch"] + ":" + exc_opt["ExchType"] + ":" + exc_opt["Name"]
-            exc_opt.sort_values(['Name'], ascending=[True], inplace=True)
+            # exc_opt = pd.DataFrame(script_code_5paisa)
+            # exc_opt = exc_opt[(exc_opt["Exch"] == "N") & (exc_opt["ExchType"] == "D")]
+            # exc_opt = exc_opt[exc_opt["CpType"] != "XX"]
+            # exc_opt["Watchlist"] = exc_opt["Exch"] + ":" + exc_opt["ExchType"] + ":" + exc_opt["Name"]
+            # exc_opt.sort_values(['Name'], ascending=[True], inplace=True)
             break
         except:
             print("Exchange Download Error....")
             time.sleep(10)
 
-
+exc_fut = exc_new2
+exc_fut = exc_fut[exc_fut["CpType"] == "XX"]
 exc_fut.sort_values(['Name'], ascending=[True], inplace=True)
 exc_fut = exc_fut[['ExchType','Name', 'ISIN', 'FullName','Root','StrikeRate', 'CO BO Allowed','CpType','Scripcode','Expiry','LotSize','Watchlist']]
 
 flt_exc.range("a:az").value = None
 flt_exc.range("a1").options(index=False).value = exc_fut
 
+exc_opt = exc_new2
+exc_opt = exc_opt[exc_opt["CpType"] != "XX"]
 exc_opt.sort_values(['Name'], ascending=[True], inplace=True)
 exc_opt = exc_opt[['ExchType','Name', 'ISIN', 'FullName','Root','StrikeRate', 'CO BO Allowed','CpType','Scripcode','Expiry','LotSize','Watchlist']]
 flt_exc.range("o1").options(index=False).value = exc_opt
@@ -275,11 +298,11 @@ while True:
     for sc in stk_list:
         try:
             scpt0 = exc_fut[exc_fut['Root'] == sc]
-            scpt1 = scpt0[(scpt0['Expiry'].apply(pd.to_datetime) >= current_trading_day) ]
-            scpt1.sort_values(['Expiry'], ascending=[False], inplace=True)
-            scpt2 = (np.unique(scpt1['Expiry']).tolist())[1]
-            scpt3 = scpt1[scpt1['Expiry'] == scpt2]
-            aaa = int(scpt3['Scripcode'])
+            scpt1 = scpt0[(scpt0['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
+            # scpt1.sort_values(['Expiry'], ascending=[False], inplace=True)
+            # scpt2 = (np.unique(scpt1['Expiry']).tolist())[1]
+            # scpt3 = scpt1[scpt1['Expiry'] == scpt2]
+            aaa = int(scpt1['Scripcode'])
             dfg = client.historical_data('N', 'D', aaa, '1d',days_365,current_trading_day) 
             dfg['Scripcode'] = aaa
             
@@ -483,15 +506,17 @@ while True:
                     else:
                         stk_name1 = np.unique(dfgg_up['Root'])
                         dfgg_up_sc = dfgg_up.iloc[:1]
-                        dfgg_up_scpt = int(dfgg_up_sc['Close'])
-                        dfgg_up_scpt1 = exc_opt[(exc_opt["CpType"] == 'CE')]
-                        dfgg_up_scpt2 = dfgg_up_scpt1[dfgg_up_scpt1['Root'] == stk_name1[0]]
-                        dfgg_up_scpt3 = dfgg_up_scpt2[(dfgg_up_scpt2['StrikeRate'] > dfgg_up_scpt)]
-                        dfgg_up_scpt3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-                        dfgg_up_scpt4 = dfgg_up_scpt3.iloc[1:2]
-                        dfgg_up_scpt5 = int(np.unique(dfgg_up_scpt4['Scripcode']))
-                        dfg2 = client.historical_data('N', 'D', dfgg_up_scpt5, '5m',last_trading_day,current_trading_day) 
-                        dfg2['Scripcode'] = dfgg_up_scpt5
+                        Closee = int(dfgg_up_sc['Close'])
+                        # print(Closee)
+                        #Excchh = exc_opt[(exc_opt["CpType"] == 'CE')]
+                        Excchh = exc_opt[exc_opt['Root'] == stk_name1[0]]
+                        Excchh2 = Excchh[(Excchh['StrikeRate'] > Closee)]
+                        Excchh3 = Excchh2.iloc[0:1]
+                        # Excchh2.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+                        #dfgg_up_scpt4 = Excchh2.iloc[1:2]
+                        Scripc = int(np.unique(Excchh3['Scripcode']))
+                        dfg2 = client.historical_data('N', 'D', Scripc, '5m',last_trading_day,current_trading_day) 
+                        dfg2['Scripcode'] = Scripc
                         dfg2 = pd.merge(exc_opt, dfg2, on=['Scripcode'], how='inner') 
                         # print(dfg2.head(1))
                         dfg2 = dfg2[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume','LotSize']]
@@ -566,7 +591,7 @@ while True:
                         five_df4 = pd.concat([dfg2, five_df4])
 
                         stk_name2 = dfg2['Name'][0]
-                        print("5 Minute Option Data Download and Scan "+str(stk_name2)+" ("+str(dfgg_up_scpt5)+")")               
+                        print("5 Minute Option Data Download and Scan "+str(stk_name2)+" ("+str(Scripc)+")")               
 
                         
 
@@ -576,9 +601,9 @@ while True:
                         #dfgg1 = dfgg1.iloc[[1]]
                         #dfgg1 = dfgg1.iloc[1:2]
                         if len(dfgg_up_11) == 0:
-                            print("5 Minute Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(dfgg_up_scpt5)+")")                            
+                            print("5 Minute Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")")                            
                         else:
-                            print("5 Minute Option Data Scan and Selected "+str(stk_name2)+" ("+str(dfgg_up_scpt5)+")")
+                            print("5 Minute Option Data Scan and Selected "+str(stk_name2)+" ("+str(Scripc)+")")
                             dfgg_up_1 = dfgg_up_11.iloc[[0]]
                             print(dfgg_up_1)
                             Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
@@ -621,8 +646,10 @@ while True:
                     
                                     Buy_quantity_of_stock = Buy_Lotsize
                                     if orders.upper() == "YES" or orders.upper() == "":
-                                        #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                                        order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,TrailingSL=0.5)
+                                        #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
+                                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 1660, Qty=1, LimitPrice=330,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
+                                        #order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-0.5,TrailingSL=0.5)
                                         #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
                                     else:
                                         pass
