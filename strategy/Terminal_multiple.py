@@ -50,7 +50,7 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 #     from five_paisa import *
 #     # from five_paisa1 import *
     
-TGTT_SLL = "TSL"    
+TGTT_SLL = "FSL"    
 client = credentials("ASHWIN")
 
 from_d = (date.today() - timedelta(days=15))
@@ -344,135 +344,205 @@ while True:
     for sh_na in users:
         if sh_na == "ashwin":
             posit = pd.DataFrame(client.positions()) 
+            #print(posit.head(1))
             if posit.empty:
-                print("Position is Empty")
+                #print("Position is Empty")
                 pass
             else:
-                #client = credentials(sh_na)
-                ash.range("ad1").value = pd.DataFrame(client.margin())
-                ash.range("ad10").value = pd.DataFrame(client.holdings())
-                ash.range("ad20").value = pd.DataFrame(client.positions()) 
-
                 buy_order_li = ordef_func()
-                buy_order_liii = buy_order_li[(buy_order_li['AveragePrice'] != 0)]
-                ash.range("ad40").options(index=False).value = buy_order_liii                   
-        
-                buy_order_liiist = buy_order_liii[buy_order_liii['BuySell'] == 'B']
-                buy_order_list = np.unique([int(i) for i in buy_order_liiist['ScripCode']])
-
-                buy_ord_new = pd.DataFrame()
-                five_df = pd.DataFrame()
-                five_dff = pd.DataFrame()
-
-                for ord in buy_order_list:
-                    new_df = buy_order_liii[(buy_order_liii['ScripCode'] == ord) & (buy_order_liii['BuySell'] == 'B')]
-                    
-                    new_df.sort_values(['Datetimeee','Rate'], ascending=[True,True], inplace=True)
-                    new_df1 = new_df.iloc[[0]]
-                    
-                    buy_ord_new = pd.concat([new_df1, buy_ord_new]) 
-                    #Buy_Scriptcodee = int(new_df1['ScripCode'])
-                    Buy_Name = list(new_df1['ScripName'])[0]
-                    Buy_price = float(new_df1['Rate'])                 
-                    Buy_Stop_Loss = float(round((new_df1['Rate'] - (new_df1['Rate']*stoploss)/100),1))
-                    Buy_Target = float(round((((new_df1['Rate']*stoploss)/100) + new_df1['Rate']),1))
-                    Buy_Exc = list(new_df1['Exch'])[0]
-                    Buy_Exc_Type = list(new_df1['ExchType'])[0]
-                    Buy_Qty = int(new_df1['Qty'])                
-                    Buy_timee = list(new_df1['Datetimeee'])[0]
-                    Buy_timee1 = str(Buy_timee).replace(' ','T')
-  
-                    dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
-                    dfg1['ScripCode'] = ord
-                    dfg1['ScripName'] = Buy_Name
-                    dfg1['Entry_Date'] = Buy_timee1
-                    dfg1['Entry_Price'] = Buy_price
-            
-                    dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
-                    #st.range("a1").options(index=False).value = dfg1
-                    dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
-                    dfg1['StopLoss'] = Buy_Stop_Loss
-                    dfg1['Target'] = Buy_Target
-                    dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
-                    dfg2['Benchmark'] = dfg2['High'].cummax()
-                    dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98 
-                    five_dff = pd.concat([dfg2, five_dff])
-
-                    dfg3 = dfg2.iloc[[-1]] 
-
-                    five_df = pd.concat([dfg3, five_df])
-                #st.range("a1").options(index=False).value = five_dff 
-
-                posit = pd.DataFrame(client.positions()) 
-                if posit.empty:
-                    print("Position is Empty")
-                    pass
+                #print(buy_order_li.head(1))
+                if buy_order_li.empty:
+                    print("Order Book is Empty")
                 else:
-                    final_df = pd.merge(posit,buy_ord_new, on=['ScripCode'], how='inner')
-                    final_df['TimeNow'] = datetime.now()
-                    final_df['Minutes'] = pd.to_datetime(final_df['TimeNow'])-pd.to_datetime(final_df["Datetimeee"])
-                    final_df['Minutes'] = round((final_df['Minutes']/np.timedelta64(1,'m')),2)
+                    ash.range("ad1").value = pd.DataFrame(client.margin())
+                    ash.range("ad10").value = pd.DataFrame(client.holdings())
+                    ash.range("ad20").value = pd.DataFrame(client.positions()) 
 
-                    final_df1 = pd.merge(final_df,five_df, on=['ScripCode'], how='inner')
-
-                    if TGTT_SLL.upper() == "FSL":                    
-                        final_df1['Status'] = np.where(final_df1['LTP'] > final_df1['BuyAvgRate'],"TGT",np.where(final_df1['LTP'] < final_df1['StopLoss'],"SL",""))  
-
-                    if TGTT_SLL.upper() == "TSL" or TGTT_SLL.upper() == "": 
-                        final_df1['Status'] = np.where(final_df1['LTP'] < final_df1['TStopLoss'],"TSL",np.where(final_df1['LTP'] < final_df1['StopLoss'],"SL",""))
-    
-                    final_df1['New_LTP'] = final_df1['LTP']-0.10
-
-                    final_df1['Entry'] = np.where((final_df1['MTOM'] != 0) & (final_df1['BuyQty'] != 0) & (final_df1['MTOM'] != "") & (final_df1['BuyQty'] != ""),"BUY","")
-                    final_df1['Exit'] = np.where(((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TGT")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TSL")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "SL")),"SELL","")
-                    
-                    final_df1 = final_df1[['ScripName_x','Exch_x','ExchType_x','ScripCode','Datetimeee','Datetime','Minutes','BuyAvgRate','LTP','StopLoss','Target','Benchmark','TStopLoss','Status','BookedPL','MTOM','BuyQty','New_LTP','Entry','Exit']]	
-
-                    ash.range("a1").options(index=False).value = final_df1
-                    ash.range("t2").options(index=False).value = '=IF(AND(S2="BUY",N2="TSL"),"SELL",IF(AND(S2="BUY",N2="SL"),"SELL",""))'
-                    ash.range("t3").options(index=False).value = '=IF(AND(S3="BUY",N3="TSL"),"SELL",IF(AND(S3="BUY",N3="SL"),"SELL",""))'
-                    ash.range("t4").options(index=False).value = '=IF(AND(S4="BUY",N4="TSL"),"SELL",IF(AND(S4="BUY",N4="SL"),"SELL",""))'
-                    ash.range("t5").options(index=False).value = '=IF(AND(S5="BUY",N5="TSL"),"SELL",IF(AND(S5="BUY",N5="SL"),"SELL",""))'
-                    ash.range("t6").options(index=False).value = '=IF(AND(S6="BUY",N6="TSL"),"SELL",IF(AND(S6="BUY",N6="SL"),"SELL",""))'
-                    ash.range("t7").options(index=False).value = '=IF(AND(S7="BUY",N7="TSL"),"SELL",IF(AND(S7="BUY",N7="SL"),"SELL",""))'
-                    ash.range("t8").options(index=False).value = '=IF(AND(S8="BUY",N8="TSL"),"SELL",IF(AND(S8="BUY",N8="SL"),"SELL",""))'
-                    ash.range("t9").options(index=False).value = '=IF(AND(S9="BUY",N9="TSL"),"SELL",IF(AND(S9="BUY",N9="SL"),"SELL",""))'
-                    ash.range("t10").options(index=False).value = '=IF(AND(S10="BUY",N10="TSL"),"SELL",IF(AND(S10="BUY",N10="SL"),"SELL",""))'
-                    ash.range("t11").options(index=False).value = '=IF(AND(S11="BUY",N11="TSL"),"SELL",IF(AND(S11="BUY",N11="SL"),"SELL",""))'
-                    
-                    trading_info = ash.range(f"a{2}:t{19}").value
-                    sym = ash.range(f"a{2}:a{19}").value
-                    symbols = list(filter(lambda item: item is not None, sym))
-                    idx = 0
-                    for i in symbols:
-                        if i:
-                            trade_info = trading_info[idx]
-                            #place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
-                            print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
-
-                            if trade_info[16] is not None and trade_info[18] is not None:
-
-                                if trade_info[18] == "BUY" and trade_info[19] is None:  
-                                    print("Buy order")   
-                                    #dt.range(f"t{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"B")
-
-                                if trade_info[18] == "BUY" and trade_info[19] == "SELL":
-                                    print("Sell order") 
-                                    #squareoff = client.squareoff_all() 
-                                    dt.range(f"u{idx +2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
-                                    #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
-
-                                if trade_info[18] == "SELL" and trade_info[19] is None:  
-                                    print("Sell order")   
-                                    #squareoff = client.squareoff_all()                                  
-                                    #dt.range(f"t{idx +2 }").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"S")
-
-                                if trade_info[18] == "SELL" and trade_info[19] == "BUY":   
-                                    print("Buy order")                                   
-                                    #dt.range(f"u{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[17]),"B")
-
-                        idx +=1
+                    # buy_order_liii = buy_order_li[(buy_order_li['AveragePrice'] != 0)]
+                    # ash.range("ad40").options(index=False).value = buy_order_liii                   
             
+                    # buy_order_liiist = buy_order_liii[buy_order_liii['BuySell'] == 'B']
+                    # buy_order_list = np.unique([int(i) for i in buy_order_liiist['ScripCode']])
 
-            print("Data Analysis Complete for Ashwin")
+                    buy_ord_new = pd.DataFrame()
+                    five_df = pd.DataFrame()
+                    five_dff = pd.DataFrame()
+
+
+                    posit = pd.DataFrame(client.positions()) 
+                    #print(posit)
+                    posit1 = posit #posit[(posit['MTOM'] != 0)]
+                    if posit1.empty:
+                        print("No Current Position is running")
+                    else:
+                        #print(posit1)
+                        buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
+                        buy_order_liiist = buy_order_liiist[['Datetimeee','ScripCode']]
+                        #print(buy_order_liiist)
+                        #print(buy_order_liiist['Datetimeee'],buy_order_liiist['ScripCode'])
+                        posit2 = pd.merge(posit1,buy_order_liiist, on=['ScripCode'], how='inner')    
+                        #print(posit2)                    
+                        posit3 = np.unique([int(i) for i in posit2['ScripCode']])
+                        #print(posit3)
+
+                        five_df1 = pd.DataFrame()
+                        five_df2 = pd.DataFrame()
+                        five_df3 = pd.DataFrame()
+                        five_df4 = pd.DataFrame()
+
+                        for ord in posit3:
+                            new_df1 = posit2[(posit2['ScripCode'] == ord)]
+                            
+                            # new_df.sort_values(['Datetimeee','Rate'], ascending=[True,True], inplace=True)
+                            # new_df1 = new_df.iloc[[0]]
+
+                            #buy_ord_new = pd.concat([new_df1, buy_ord_new]) 
+                            #Buy_Scriptcodee = int(new_df1['ScripCode'])
+                            Buy_Name = list(new_df1['ScripName'])[0]
+                            Buy_price = float(new_df1['BuyAvgRate'])                 
+                            Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*stoploss)/100),1))
+                            Buy_Target = float(round((((new_df1['BuyAvgRate']*stoploss)/100) + new_df1['BuyAvgRate']),1))
+                            Buy_Exc = list(new_df1['Exch'])[0]
+                            Buy_Exc_Type = list(new_df1['ExchType'])[0]
+                            Buy_Qty = int(new_df1['BuyQty'])                
+                            Buy_timee = list(new_df1['Datetimeee'])[0]
+                            Buy_timee1 = str(Buy_timee).replace(' ','T')
+                            print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty)#,Buy_timee,Buy_timee1)
         
+                            dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
+                            #print(dfg1.head(2))
+                            dfg1['ScripCode'] = ord
+                            dfg1['ScripName'] = Buy_Name
+                            dfg1['Entry_Date'] = Buy_timee1
+                            dfg1['Entry_Price'] = Buy_price
+                            
+                            dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
+                            dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
+                            dfg1['TimeNow'] = datetime.now()
+                            dfg1['Minutes'] = pd.to_datetime(dfg1['TimeNow'])-Buy_timee
+                            dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)
+
+                            if TGTT_SLL.upper() == "FSL": 
+                                dfg1['StopLoss'] = Buy_Stop_Loss
+                                dfg1['Target'] = Buy_Target
+                                dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
+                                dfg2['BValue'] = dfg2['Entry_Price']*Buy_Qty                           
+                                dfg2['Status'] = np.where(dfg2['High'] > Buy_Target,"TGT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
+                                dfg2['SValue'] = np.where(dfg2['Status'] == "SL",Buy_Stop_Loss*Buy_Qty,np.where(dfg2['Status'] == "TGT",Buy_Target*Buy_Qty,""))  
+                                dfg2['P&L_SL'] = pd.to_numeric(dfg2['SValue']) - dfg2['BValue']
+                                dfg2['Qty'] = Buy_Qty
+                                
+                                five_df2 = pd.concat([dfg2, five_df2])
+                                dfg3 = dfg2[(dfg2['Status'] != '')]  
+                                
+                                if dfg3.empty:
+                                    dfg4 = dfg2.iloc[[-1]]
+                                else:  
+                                    dfg4 = dfg3.iloc[0:1]
+                                five_df1 = pd.concat([dfg4, five_df1])
+                            
+                            if TGTT_SLL.upper() == "TSL" or TGTT_SLL.upper() == "":
+                                dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
+                                dfg2['Benchmark'] = dfg2['High'].cummax()
+                                dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98
+                                dfgg2 = dfg2.copy()                              
+                                dfgg2['TGT_TSL'] = np.where(dfgg2['Close'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Low'] < Buy_Stop_Loss,"SL",""))
+                                five_df4 = pd.concat([dfgg2, five_df4])
+                                dfgg3 = dfgg2[(dfgg2['TGT_TSL'] != '')] 
+                                dfgg4 = dfgg3.iloc[0:1]
+                                dfgg4['P&L_TSL'] = np.where(dfgg4['TGT_TSL'] == "SL",(dfgg4['StopLoss'] - dfgg4['Entry_Price'])*Buy_Qty,np.where(dfgg4['TGT_TSL'] == "TSL",(dfgg4['TStopLoss'] - dfgg4['Entry_Price'])*Buy_Qty,"" ))
+                                five_df3 = pd.concat([dfgg4, five_df3])
+                                final_df1['Status'] = np.where(final_df1['LTP'] < final_df1['TStopLoss'],"TSL",np.where(final_df1['LTP'] < final_df1['StopLoss'],"SL",""))
+                        
+                        if TGTT_SLL.upper() == "FSL": 
+                            final_df = pd.merge(posit2,five_df1, on=['ScripCode'], how='inner')  
+                            final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
+                            final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
+                            
+                            st1.range("a1").options(index=False).value = final_df  
+                            final_df = final_df[['ScripName_x','Exch','ExchType','ScripCode','Datetimeee','Datetime','Minutes','BuyAvgRate','LTP','StopLoss','Target','Status','BookedPL','MTOM','BuyQty','Entry','Exit']]	  
+                            st1.range("a12").options(index=False).value = final_df
+                            st2.range("a1").options(index=False).value = five_df2
+                            
+
+
+                        # st3.range("a1").options(index=False).value = five_df3
+                        # st4.range("a1").options(index=False).value = five_df4
+                        
+
+                        # posit = pd.DataFrame(client.positions()) 
+                        # print(posit)
+                        # print(buy_ord_new)
+                        # if posit.empty:
+                        #     print("Position is Empty")
+                        #     pass
+                        # else:
+                        # final_df = pd.merge(posit,buy_ord_new, on=['ScripCode'], how='inner')
+                        # final_df['TimeNow'] = datetime.now()
+                        # final_df['Minutes'] = pd.to_datetime(final_df['TimeNow'])-pd.to_datetime(final_df["Datetimeee"])
+                        # final_df['Minutes'] = round((final_df['Minutes']/np.timedelta64(1,'m')),2)
+
+                        # final_df1 = pd.merge(final_df,five_df, on=['ScripCode'], how='inner')
+
+                        # if TGTT_SLL.upper() == "FSL":                    
+                        #     final_df1['Status'] = np.where(final_df1['LTP'] > final_df1['BuyAvgRate'],"TGT",np.where(final_df1['LTP'] < final_df1['StopLoss'],"SL",""))  
+
+                        # if TGTT_SLL.upper() == "TSL" or TGTT_SLL.upper() == "": 
+                        #     final_df1['Status'] = np.where(final_df1['LTP'] < final_df1['TStopLoss'],"TSL",np.where(final_df1['LTP'] < final_df1['StopLoss'],"SL",""))
+        
+                        #final_df1['New_LTP'] = final_df1['LTP']-0.05
+
+                        final_df1['Entry'] = np.where((final_df1['MTOM'] != 0) & (final_df1['BuyQty'] != 0) & (final_df1['MTOM'] != "") & (final_df1['BuyQty'] != ""),"BUY","")
+                        final_df1['Exit'] = np.where(((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TGT")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "TSL")) | ((final_df1['Entry'] == "BUY") & (final_df1['Status'] == "SL")),"SELL","")
+                        
+                        final_df1 = final_df1[['ScripName_x','Exch_x','ExchType_x','ScripCode','Datetimeee','Datetime','Minutes','BuyAvgRate','LTP','StopLoss','Target','Benchmark','TStopLoss','Status','BookedPL','MTOM','BuyQty','Entry','Exit']]	
+
+                        st.range("a1").options(index=False).value = five_dff
+                        ash.range("a1").options(index=False).value = final_df1
+                        ash.range("s2").options(index=False).value = '=IF(AND(S2="BUY",N2="TSL"),"SELL",IF(AND(S2="BUY",N2="SL"),"SELL",""))'
+                        ash.range("s3").options(index=False).value = '=IF(AND(S3="BUY",N3="TSL"),"SELL",IF(AND(S3="BUY",N3="SL"),"SELL",""))'
+                        ash.range("s4").options(index=False).value = '=IF(AND(S4="BUY",N4="TSL"),"SELL",IF(AND(S4="BUY",N4="SL"),"SELL",""))'
+                        ash.range("s5").options(index=False).value = '=IF(AND(S5="BUY",N5="TSL"),"SELL",IF(AND(S5="BUY",N5="SL"),"SELL",""))'
+                        ash.range("s6").options(index=False).value = '=IF(AND(S6="BUY",N6="TSL"),"SELL",IF(AND(S6="BUY",N6="SL"),"SELL",""))'
+                        ash.range("s7").options(index=False).value = '=IF(AND(S7="BUY",N7="TSL"),"SELL",IF(AND(S7="BUY",N7="SL"),"SELL",""))'
+                        ash.range("s8").options(index=False).value = '=IF(AND(S8="BUY",N8="TSL"),"SELL",IF(AND(S8="BUY",N8="SL"),"SELL",""))'
+                        ash.range("s9").options(index=False).value = '=IF(AND(S9="BUY",N9="TSL"),"SELL",IF(AND(S9="BUY",N9="SL"),"SELL",""))'
+                        ash.range("s10").options(index=False).value = '=IF(AND(S10="BUY",N10="TSL"),"SELL",IF(AND(S10="BUY",N10="SL"),"SELL",""))'
+                        ash.range("s11").options(index=False).value = '=IF(AND(S11="BUY",N11="TSL"),"SELL",IF(AND(S11="BUY",N11="SL"),"SELL",""))'
+                        
+                        trading_info = ash.range(f"a{2}:t{19}").value
+                        sym = ash.range(f"a{2}:a{19}").value
+                        symbols = list(filter(lambda item: item is not None, sym))
+                        idx = 0
+                        for i in symbols:
+                            if i:
+                                trade_info = trading_info[idx]
+                                #place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
+                                print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
+
+                                if trade_info[16] is not None and trade_info[17] is not None:
+
+                                    if trade_info[17] == "BUY" and trade_info[18] is None:  
+                                        print("Buy order")   
+                                        #dt.range(f"t{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[8]),"B")
+
+                                    if trade_info[17] == "BUY" and trade_info[18] == "SELL":
+                                        print("Sell order") 
+                                        #squareoff = client.squareoff_all() 
+                                        dt.range(f"u{idx +2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[8]),"S")
+                                        #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
+
+                                    if trade_info[17] == "SELL" and trade_info[18] is None:  
+                                        print("Sell order")   
+                                        #squareoff = client.squareoff_all()                                  
+                                        #dt.range(f"t{idx +2 }").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[8]),"S")
+
+                                    if trade_info[17] == "SELL" and trade_info[18] == "BUY":   
+                                        print("Buy order")                                   
+                                        #dt.range(f"u{idx + 2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[0]),int(trade_info[3]),int(trade_info[16]),float(trade_info[8]),"B")
+
+                            idx +=1
+                
+
+                            print("Data Analysis Complete for Ashwin")
+            

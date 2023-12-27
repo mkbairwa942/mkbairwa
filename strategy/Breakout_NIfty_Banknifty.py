@@ -32,28 +32,28 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-# operate = input("Do you want to go with TOTP (yes/no): ")
-# telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
-# orders = input("Do you want to Place Real Orders (yes/no): ")
+operate = input("Do you want to go with TOTP (yes/no): ")
+telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
+orders = input("Do you want to Place Real Orders (yes/no): ")
 
-operate = 'YES'
-telegram_msg = 'NO'
-orders = 'YES'
-client = credentials("ASHWIN")
+# operate = 'YES'
+# telegram_msg = 'NO'
+# orders = 'YES'
+# client = credentials("ASHWIN")
 
-# if operate.upper() == "YES":
-#     from five_paisa1 import *
-#     # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
-#     # print(p)
-#     username = input("Enter Username : ")
-#     username1 = str(username)
-#     print("Hii "+str(username1)+" have a Good Day")
-#     # username_totp = input("Enter TOTP : ")
-#     # username_totp1 = str(username_totp)
-#     # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
-#     client = credentials(username1)
-# else:
-#     from five_paisa import *
+if operate.upper() == "YES":
+    from five_paisa1 import *
+    # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
+    # print(p)
+    username = input("Enter Username : ")
+    username1 = str(username)
+    print("Hii "+str(username1)+" have a Good Day")
+    # username_totp = input("Enter TOTP : ")
+    # username_totp1 = str(username_totp)
+    # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+    client = credentials(username1)
+else:
+    from five_paisa import *
 
 from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
@@ -291,7 +291,7 @@ while True:
         try:
             scpt1 = exc_fut[exc_fut['Root'] == k]
             scpt1.sort_values(['Expiry'], ascending=[False], inplace=True)
-            scpt2 = (np.unique(scpt1['Expiry']).tolist())[0]
+            scpt2 = (np.unique(scpt1['Expiry']).tolist())[1]
             scpt3 = scpt1[scpt1['Expiry'] == scpt2]
             aa = int(scpt3['Scripcode'])
             dfg1 = client.historical_data('N', 'D', aa, '5m',last_trading_day,current_trading_day) 
@@ -381,11 +381,9 @@ while True:
                 stk_name1 = k
                 dfgg_up_sc = dfgg_up.iloc[:1]
                 dfgg_up_scpt = int(dfgg_up_sc['Close'])
-                print(dfgg_up_scpt)
                 dfgg_up_scpt1 = exc_opt[(exc_opt["CpType"] == 'CE')]
                 dfgg_up_scpt2 = dfgg_up_scpt1[dfgg_up_scpt1['Root'] == stk_name1]
                 dfgg_up_scpt3 = dfgg_up_scpt2[(dfgg_up_scpt2['StrikeRate'] > dfgg_up_scpt)]
-                print(dfgg_up_scpt3.head(10))
                 dfgg_up_scpt3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
                 
                 dfgg_up_scpt4 = dfgg_up_scpt3.iloc[2:3]
@@ -469,8 +467,8 @@ while True:
 
                 
 
-                dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
-                dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                 #dfgg1 = dfgg1.iloc[[1]]
                 #dfgg1 = dfgg1.iloc[1:2]
