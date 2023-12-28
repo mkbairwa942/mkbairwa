@@ -406,7 +406,7 @@ while True:
                             Buy_Qty = int(new_df1['BuyQty'])                
                             Buy_timee = list(new_df1['Datetimeee'])[0]
                             Buy_timee1 = str(Buy_timee).replace(' ','T')
-                            #print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty,Buy_timee,Buy_timee1)
+                            print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty,Buy_timee,Buy_timee1)
         
                             dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
                             #print(dfg1.head(2))
@@ -448,7 +448,7 @@ while True:
                                 dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
                                 dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
                                 dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
-                                print(dfg2.iloc[[-1]])
+                                #print(dfg2.iloc[[-1]])
                                 five_df4 = pd.concat([dfg2, five_df4])
 
                                 # dfg3 = dfg2[(dfg2['Status'] != '')]
