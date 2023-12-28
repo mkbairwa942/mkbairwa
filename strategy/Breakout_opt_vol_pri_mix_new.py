@@ -188,10 +188,11 @@ while True:
             exc_new = exch['Root'].isin(root_list)
             exc_new1 = exch[exc_new]
             exc_new1.sort_values(['Expiry'], ascending=[False], inplace=True)
-            print()
+ 
             exc_new1 = exc_new1[exc_new1["LotSize"] < 5000]
-            Expiryy = (np.unique(exc_new1['Expiry']).tolist())[1]            
-
+            
+            Expiryy = (np.unique(exc_new1['Expiry']).tolist())[2]            
+            print(Expiryy)
             exc_new2 = exc_new1[exc_new1['Expiry'] == Expiryy]            
             exc_new2.sort_values(['Root'], ascending=[True], inplace=True)
             exc_new2["Watchlist"] = exc_new2["Exch"] + ":" + exc_new2["ExchType"] + ":" + exc_new2["Name"]

@@ -344,7 +344,8 @@ while True:
             posit = pd.DataFrame(client.positions()) 
             #print(posit.head(1))
             if posit.empty:
-                #print("Position is Empty")
+                print("Position is Empty")
+                print("------------------")
                 pass
             else:
                 buy_order_li = ordef_func()
