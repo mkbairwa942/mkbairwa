@@ -406,7 +406,7 @@ while True:
                             Buy_Qty = int(new_df1['BuyQty'])                
                             Buy_timee = list(new_df1['Datetimeee'])[0]
                             Buy_timee1 = str(Buy_timee).replace(' ','T')
-                            print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty,Buy_timee,Buy_timee1)
+                            #print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty,Buy_timee,Buy_timee1)
         
                             dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
                             #print(dfg1.head(2))
@@ -431,10 +431,11 @@ while True:
                                 dfg2['P&L_SL'] = pd.to_numeric(dfg2['SValue']) - dfg2['BValue']
                                 dfg2['Qty'] = Buy_Qty
                                 
+                                
                                 five_df2 = pd.concat([dfg2, five_df2])
                                 dfg3 = dfg2[(dfg2['Status'] != '')]  
                                 
-                                if dfg3.empty:
+                                if dfg3.empty:                                    
                                     dfg4 = dfg2.iloc[[-1]]
                                 else:  
                                     dfg4 = dfg3.iloc[0:1]
@@ -447,14 +448,16 @@ while True:
                                 dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
                                 dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
                                 dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
-                                
+                                print(dfg2.iloc[[-1]])
                                 five_df4 = pd.concat([dfg2, five_df4])
-                                dfg3 = dfg2[(dfg2['Status'] != '')] 
 
-                                if dfg3.empty:
-                                    dfg4 = dfg2.iloc[[-1]]
-                                else:  
-                                    dfg4 = dfg3.iloc[0:1]
+                                # dfg3 = dfg2[(dfg2['Status'] != '')]
+                                # if dfg3.empty:
+                                #     dfg4 = dfg2.iloc[[-1]]
+                                # else:  
+                                #     dfg4 = dfg3.iloc[0:1]
+
+                                dfg4 = dfg2.iloc[[-1]]  
                                 five_df3 = pd.concat([dfg4, five_df3])
 
                         if TGTT_SLL.upper() == "FSL": 
@@ -471,6 +474,7 @@ while True:
                             ash.range("a1").options(index=False).value = final_df
 
                         if TGTT_SLL.upper() == "TSL": 
+                            #print(five_df3)
                             final_df = pd.merge(posit2,five_df3, on=['ScripCode'], how='inner')  
                             final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
                             final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
@@ -537,7 +541,7 @@ while True:
                             if i:
                                 trade_info = trading_info[idx]
                                 #place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
-                                print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
+                                #print(trade_info[1],trade_info[2],trade_info[0],trade_info[3],trade_info[16],trade_info[17],trade_info[18],trade_info[19])
 
                                 if trade_info[16] is not None and trade_info[17] is not None:
 
@@ -563,5 +567,5 @@ while True:
                             idx +=1
                 
 
-                            print("Data Analysis Complete for Ashwin")
+                        print("Data Analysis Complete for Ashwin")
             

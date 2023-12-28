@@ -33,8 +33,8 @@ now = datetime.now()
 intr_time1 = now.replace(hour=9, minute=15, second=0, microsecond=0)
 intr_time2 = now.replace(hour=15, minute=35, second=0, microsecond=0)
 
-print(lastTradingDay)
-print(intraday)
+# print(lastTradingDay)
+# print(intraday)
 
 engine = sqlalchemy.create_engine('mysql+pymysql://mkbairwa942:vaa2829m@5.183.11.143:3306/capitalsscope')
 
