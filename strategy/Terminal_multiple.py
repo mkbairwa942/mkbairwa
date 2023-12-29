@@ -353,8 +353,8 @@ while True:
                 if buy_order_li.empty:
                     print("Order Book is Empty")
                 else:
-                    ash.range("ad1").value = pd.DataFrame(client.margin())
-                    ash.range("ad10").value = pd.DataFrame(client.holdings())
+                    # ash.range("ad1").value = pd.DataFrame(client.margin())
+                    # ash.range("ad10").value = pd.DataFrame(client.holdings())
                     ash.range("ad20").value = pd.DataFrame(client.positions()) 
 
                     # buy_order_liii = buy_order_li[(buy_order_li['AveragePrice'] != 0)]

@@ -190,10 +190,11 @@ while True:
             exc_new1.sort_values(['Expiry'], ascending=[False], inplace=True)
  
             exc_new1 = exc_new1[exc_new1["LotSize"] < 5000]
-            
-            Expiryy = (np.unique(exc_new1['Expiry']).tolist())[2]            
+            Expiry = (np.unique(exc_new1['Expiry']).tolist())
+            print(Expiry)
+            Expiryy = (np.unique(exc_new1['Expiry']).tolist())[1]            
             print(Expiryy)
-            exc_new2 = exc_new1[exc_new1['Expiry'] == Expiryy]            
+            exc_new2 = exc_new1[exc_new1['Expiry'] == Expiryy]     
             exc_new2.sort_values(['Root'], ascending=[True], inplace=True)
             exc_new2["Watchlist"] = exc_new2["Exch"] + ":" + exc_new2["ExchType"] + ":" + exc_new2["Name"]
             #exc.range("a1").value = exc_new2
@@ -213,7 +214,7 @@ while True:
             break
         except:
             print("Exchange Download Error....")
-            time.sleep(10)
+            time.sleep(5)
 
 exc_fut = exc_new2
 exc_fut = exc_fut[exc_fut["CpType"] == "XX"]
