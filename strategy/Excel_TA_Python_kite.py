@@ -181,7 +181,7 @@ def quote(instruments):
     if instruments:
         try:
             data = kite.quote(instruments)
-            print(data.tail(50))
+            #print(data.tail(50))
             for symbol, values in data.items():
                 try:
                     option_data[symbol[4:]]
@@ -214,7 +214,7 @@ def quote(instruments):
     return option_data
 
 gfg = quote('NSE:NIFTY 50')
-print(gfg)
+#print(gfg)
 
 def start_excel():
     global kite, live_data
@@ -255,7 +255,7 @@ def start_excel():
             df = df[df["Segment"] == "NFO-OPT"]
             nfo_dict = {}
             for i in df.index:
-                print(i)
+                #print(i)
                 nfo_dict[f'NFO:{df["Tradingsymbol"][i]}'] = [df["Expiry"][i],df["Strike"][i],df["Name"][i]]
             new_dict = pd.DataFrame.from_dict(nfo_dict)
             ext.range("a1").value = new_dict
