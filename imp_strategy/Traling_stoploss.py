@@ -296,17 +296,10 @@ while True:
                 ash.range("ad10").value = pd.DataFrame(client.holdings())
                 ash.range("ad20").value = pd.DataFrame(client.positions()) 
 
-                buy_ord_new = pd.DataFrame()
-                five_df = pd.DataFrame()
-                five_dff = pd.DataFrame()
-
                 posit = pd.DataFrame(client.positions()) 
-
                 posit1 = posit #posit[(posit['MTOM'] != 0)]             
                 posit3 = np.unique([int(i) for i in posit1['ScripCode']])
 
-                five_df1 = pd.DataFrame()
-                five_df2 = pd.DataFrame()
                 five_df3 = pd.DataFrame()
                 five_df4 = pd.DataFrame()
 
@@ -327,16 +320,16 @@ while True:
 
                     Buy_timee = Buy_timee - timedelta(minutes=1)
                     
-                    if Buy_Name == 'TATACONSUM 25 Jan 2024 CE 1080.00':                            
-                        Buy_timee = '2023-12-29 10:34:12'
-                    if Buy_Name == 'TATACONSUM 25 Jan 2024 CE 1090.00':                            
-                        Buy_timee = '2023-12-29 14:31:18'
-                    if Buy_Name == 'GUJGASLTD 25 Jan 2024 CE 470.00':                            
-                        Buy_timee = '2023-12-29 15:04:30'
-                    if Buy_Name == 'GMRINFRA':                            
-                        Buy_timee = '2023-12-29 15:28:08'
-                    if Buy_Name == 'NATURALGAS 23 Jan 2024 CE 210.00':                            
-                        Buy_timee = '2023-12-29 16:48:08'
+                    # if Buy_Name == 'TATACONSUM 25 Jan 2024 CE 1080.00':                            
+                    #     Buy_timee = '2023-12-29 10:34:12'
+                    # if Buy_Name == 'TATACONSUM 25 Jan 2024 CE 1090.00':                            
+                    #     Buy_timee = '2023-12-29 14:31:18'
+                    # if Buy_Name == 'GUJGASLTD 25 Jan 2024 CE 470.00':                            
+                    #     Buy_timee = '2023-12-29 15:04:30'
+                    # if Buy_Name == 'GMRINFRA':                            
+                    #     Buy_timee = '2023-12-29 15:28:08'
+                    # if Buy_Name == 'NATURALGAS 23 Jan 2024 CE 210.00':                            
+                    #     Buy_timee = '2023-12-29 16:48:08'
                     Buy_timee1 = str(Buy_timee).replace(' ','T')
                     #print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty,Buy_timee,Buy_timee1)
 
@@ -432,6 +425,7 @@ while True:
                 for i in symbols:
                     if i:
                         trade_info = trading_info[idx]
+                        
                         #place_trade(Exche,ExchTypee,OrderFor,symbol,scripte,quantity,price,direction)
                         print(trade_info[1],trade_info[2],trade_info[3],trade_info[0],trade_info[4],trade_info[17],trade_info[14],trade_info[18],trade_info[19])
 
@@ -444,10 +438,10 @@ while True:
                             if trade_info[18] == "BUY" and trade_info[19] == "SELL":
                                 print("Sell order") 
                                 #squareoff = client.squareoff_all() place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction)
-                                dt.range(f"u{idx +2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[3]),int(trade_info[0]),int(trade_info[4]),int(trade_info[17]),int(trade_info[14]),"S")
-                                                               #place_trade       Exche,           ExchTypee,         OrderFor,         symbol,             scripte,         quantity,    price,       direction)
-                                #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D',OrderFor='I' ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
-
+                                dt.range(f"u{idx +2}").value = place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[3]),str(trade_info[0]),int(trade_info[4]),int(trade_info[17]),int(trade_info[14]),"S")
+                                                               #place_trade(     Exche,              ExchTypee,       OrderFor,          symbol,            scripte,            quantity,       price,         direction)
+                                
+                                
                             if trade_info[18] == "SELL" and trade_info[19] is None:  
                                 print("Sell order")   
                                 #squareoff = client.squareoff_all()                                  

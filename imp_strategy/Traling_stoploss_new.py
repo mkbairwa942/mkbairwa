@@ -136,7 +136,7 @@ har.range("a1:t1").color = (54,226,0)
 har.range("a1:t1").font.bold = True
 har.range("a1:t1").api.WrapText = True
 
-users = ["ashwin","haresh","alpesh"]
+users = ["ashwin"]#,"haresh","alpesh"]
 stoploss = 2
 
 TGTT_SLL = "TSL"    
@@ -211,6 +211,7 @@ while True:
                 posit = pd.DataFrame(credi_ash.positions()) 
                 posit1 = posit #posit[(posit['MTOM'] != 0)]             
                 posit3 = np.unique([int(i) for i in posit1['ScripCode']])
+                print(posit3)
 
                 five_df3 = pd.DataFrame()
                 five_df4 = pd.DataFrame()
@@ -230,15 +231,22 @@ while True:
                     Buy_timee = datetime.now()     
 
                     Buy_timee = Buy_timee - timedelta(minutes=1)
+                    # if Buy_Name == 'DELTACORP 25 Jan 2024 CE 155.00':                            
+                    #     Buy_timee = '2024-01-01 14:03:12'
+                    # if Buy_Name == 'GUJGASLTD 25 Jan 2024 CE 485.00':                            
+                    #     Buy_timee = '2024-01-01 14:15:18'
+                    # if Buy_Name == 'GUJGASLTD 25 Jan 2024 CE 500.00':                            
+                    #     Buy_timee = '2024-01-01 14:33:30'
+
                     Buy_timee1 = str(Buy_timee).replace(' ','T')
                     
                     dfg1 = credi_ash.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
-
+               
                     dfg1['ScripCode'] = ord
                     dfg1['ScripName'] = Buy_Name
                     dfg1['Entry_Date'] = Buy_timee1
                     dfg1['Entry_Price'] = Buy_price
-
+             
                     dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
                     dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
                     dfg1['TimeNow'] = datetime.now()
@@ -249,11 +257,14 @@ while True:
                     dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
                     dfg2['Status'] = np.where(dfg2['Low'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
                     dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
-                    final_df = pd.merge(posit1,dfg2, on=['ScripCode'], how='inner')  
+
+                    final_df = pd.merge(posit1,dfg2, on=['ScripCode'], how='inner') 
+
                     final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
                     final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
                     final_df = final_df[['ScripName_x','Exch','ExchType','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','TStopLoss','Status','Benchmark','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]
                     five_df4 = pd.concat([final_df, five_df4])
+  
                     dfg22 = dfg2.tail(1)
                     dataframe_empty = pd.concat([dfg22, dataframe_empty])
 
@@ -271,7 +282,7 @@ while True:
                 final_df = pd.merge(posit1,five_df3, on=['ScripCode'], how='inner')  
                 final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
                 final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
-                                                             
+                                         
                 final_df = final_df[['ScripName_x','Exch','ExchType','OrderFor','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','TStopLoss','Status','Benchmark','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	   
                 final_df.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
                 final_df.sort_values(['Entry_Date', 'Exit_Date',], ascending=[True, True], inplace=True)
@@ -279,53 +290,17 @@ while True:
                 st4.range("a1").options(index=False).value = dataframe_empty
                 ash.range("a1").options(index=False).value = final_df
 
+
                 order_dff = final_df[(final_df['Exit'] == 'SELL')]
+                #order_dff = final_df
                 if order_dff.empty:
                     print("No Current Running Position")
                 else:
-                    order_df = order_dff.tail(1)
-                    print(order_df)
-                    #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                    order = credi_ash.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']), IsIntraday=list(order_df['OrderFor'])[0])#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                    print("Sell order Executed") 
-
-                # ash.range("t2").options(index=False).value = '=IF(AND(S2="BUY",M2="TSL"),"SELL",IF(AND(S2="BUY",M2="SL"),"SELL",""))'
-                # ash.range("t3").options(index=False).value = '=IF(AND(S3="BUY",M3="TSL"),"SELL",IF(AND(S3="BUY",M3="SL"),"SELL",""))'
-                # ash.range("t4").options(index=False).value = '=IF(AND(S4="BUY",M4="TSL"),"SELL",IF(AND(S4="BUY",M4="SL"),"SELL",""))'
-                # ash.range("t5").options(index=False).value = '=IF(AND(S5="BUY",M5="TSL"),"SELL",IF(AND(S5="BUY",M5="SL"),"SELL",""))'
-                # ash.range("t6").options(index=False).value = '=IF(AND(S6="BUY",M6="TSL"),"SELL",IF(AND(S6="BUY",M6="SL"),"SELL",""))'
-                # ash.range("t7").options(index=False).value = '=IF(AND(S7="BUY",M7="TSL"),"SELL",IF(AND(S7="BUY",M7="SL"),"SELL",""))'
-                # ash.range("t8").options(index=False).value = '=IF(AND(S8="BUY",M8="TSL"),"SELL",IF(AND(S8="BUY",M8="SL"),"SELL",""))'
-                # ash.range("t9").options(index=False).value = '=IF(AND(S9="BUY",M9="TSL"),"SELL",IF(AND(S9="BUY",M9="SL"),"SELL",""))'
-                # ash.range("t10").options(index=False).value = '=IF(AND(S10="BUY",M10="TSL"),"SELL",IF(AND(S10="BUY",M10="SL"),"SELL",""))'
-                # ash.range("t11").options(index=False).value = '=IF(AND(S11="BUY",M11="TSL"),"SELL",IF(AND(S11="BUY",M11="SL"),"SELL",""))'
-                
-                # trading_info = ash.range(f"a{2}:t{19}").value
-                # sym = ash.range(f"a{2}:a{19}").value
-                # symbols = list(filter(lambda item: item is not None, sym))
-                # idx = 0
-                # for i in symbols:
-                #     if i:
-                #         trade_info = trading_info[idx]
-                #         #place_trade(Exche,ExchTypee,OrderFor,symbol,scripte,quantity,price,direction)
-                #         print(trade_info[1],trade_info[2],trade_info[3],trade_info[0],trade_info[4],trade_info[17],trade_info[14],trade_info[18],trade_info[19])
-
-                #         if trade_info[17] is not None and trade_info[18] is not None:
-
-                #             if trade_info[18] == "BUY" and trade_info[19] is None:  
-                #                 print("Buy order")   
-                                
-                #             if trade_info[18] == "BUY" and trade_info[19] == "SELL":
-                #                 print("Sell order")                                 
-                #                 dt.range(f"u{idx +2}").value = credi_ash.place_trade(str(trade_info[1]),str(trade_info[2]),str(trade_info[3]),int(trade_info[0]),int(trade_info[4]),int(trade_info[17]),int(trade_info[14]),"S")
-
-                #             if trade_info[18] == "SELL" and trade_info[19] is None:  
-                #                 print("Sell order")   
-                                
-                #             if trade_info[18] == "SELL" and trade_info[19] == "BUY":   
-                #                 print("Buy order")                                
-                           
-                #     idx +=1       
-
+                    order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
+                    for ordd in order_dff_Scpt:
+                        order_df = order_dff[(order_dff['ScripCode'] == ordd)]
+                        order = credi_ash.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        print("Sell order Executed") 
+                        
                 print("Data Analysis Complete for Ashwin")
     

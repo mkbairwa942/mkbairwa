@@ -503,11 +503,11 @@ while True:
                     print("5 Min Future Data Download and Scan "+str(stk_name)+" ("+str(aa)+")")
                                     
 
-                    if len(dfggg) == 0:
+                    if len(dfgg_up) == 0:
                         print("111")
                     else:
-                        stk_name1 = np.unique(dfggg['Root'])
-                        dfgg_up_sc = dfggg.iloc[:1]
+                        stk_name1 = np.unique(dfgg_up['Root'])
+                        dfgg_up_sc = dfgg_up.iloc[:1]
                         Closee = int(dfgg_up_sc['Close'])
                         # print(Closee)
                         #Excchh = exc_opt[(exc_opt["CpType"] == 'CE')]
@@ -604,7 +604,7 @@ while True:
                         #dfgg1 = dfgg1.iloc[[1]]
                         #dfgg1 = dfgg1.iloc[1:2]
                         if len(dfgg_up_11) == 0:
-                            print("5 Minute Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")")                            
+                            print("5 Minute Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")")
                         else:
                             print("5 Minute Option Data Scan and Selected "+str(stk_name2)+" ("+str(Scripc)+")")
                             dfgg_up_1 = dfgg_up_11.iloc[[0]]
@@ -645,7 +645,7 @@ while True:
                                     Buy_quantity_of_stock = Buy_Lotsize
                                     if orders.upper() == "YES" or orders.upper() == "":
                                         #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
-                                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                         #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 1660, Qty=1, LimitPrice=330,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
                                         #order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-0.5,TrailingSL=0.5)
                                         #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
