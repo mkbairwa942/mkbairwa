@@ -355,17 +355,17 @@ while True:
                     
                     dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
                     #print(dfg2.head(1))
-                    dfg2['StopLoss'] = Buy_Stop_Loss
-                    dfg2['Benchmark'] = dfg2['High'].cummax()
-                    dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
-                    dfg2['Status'] = np.where(dfg2['Low'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
-                    dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
-                    #print(dfg2)
-                    final_df = pd.merge(posit1,dfg2, on=['ScripCode'], how='inner')  
-                    final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
-                    final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
-                    final_df = final_df[['ScripName_x','Exch','ExchType','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','TStopLoss','Status','Benchmark','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]
-                    five_df4 = pd.concat([final_df, five_df4])
+                    # dfg2['StopLoss'] = Buy_Stop_Loss
+                    # dfg2['Benchmark'] = dfg2['High'].cummax()
+                    # dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
+                    # dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < Buy_Stop_Loss,"SL",""))
+                    # dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
+                    # #print(dfg2)
+                    # final_df = pd.merge(posit1,dfg2, on=['ScripCode'], how='inner')  
+                    # final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
+                    # final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
+                    # final_df = final_df[['ScripName_x','Exch','ExchType','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]
+                    # five_df4 = pd.concat([final_df, five_df4])
                     dfg22 = dfg2.tail(1)
                     #print(dfg22)
                     dataframe_empty = pd.concat([dfg22, dataframe_empty])
@@ -388,6 +388,11 @@ while True:
                 dataframe_Scpt = np.unique([int(i) for i in dataframe_empty['ScripCode']])
                 for ord in posit3:
                     dataframe_new = dataframe_empty[(dataframe_empty['ScripCode'] == ord)]
+                    dataframe_new['StopLoss'] = round((dataframe_new['Entry_Price'] - (dataframe_new['Entry_Price']*stoploss)/100),1)
+                    dataframe_new['Benchmark'] = dataframe_new['High'].cummax()
+                    dataframe_new['TStopLoss'] = dataframe_new['Benchmark'] * 0.98                             
+                    dataframe_new['Status'] = np.where(dataframe_new['Close'] < dataframe_new['TStopLoss'],"TSL",np.where(dataframe_new['Close'] < Buy_Stop_Loss,"SL",""))
+                    dataframe_new['P&L_TSL'] = np.where(dataframe_new['Status'] == "SL",(dataframe_new['StopLoss'] - dataframe_new['Entry_Price'])*Buy_Qty,np.where(dataframe_new['Status'] == "TSL",(dataframe_new['TStopLoss'] - dataframe_new['Entry_Price'])*Buy_Qty,"" ))
                     first_row = dataframe_new.head(1)                    
 
                     last_row = dataframe_new.tail(1)
@@ -400,7 +405,7 @@ while True:
                 final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
                                                              
                 #final_df = final_df[['ScripName_x','Exch','ExchType','ScripCode','Entry_Date','Datetime','Minutes','BuyAvgRate','SellAvgRate','StopLoss','TStopLoss','Status','Benchmark','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	 
-                final_df = final_df[['ScripName_x','Exch','ExchType','OrderFor','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','TStopLoss','Status','Benchmark','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	   
+                final_df = final_df[['ScripName_x','Exch','ExchType','OrderFor','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	   
                 final_df.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
                 final_df.sort_values(['Entry_Date', 'Exit_Date',], ascending=[True, True], inplace=True)
                 st3.range("a1").options(index=False).value = five_df4

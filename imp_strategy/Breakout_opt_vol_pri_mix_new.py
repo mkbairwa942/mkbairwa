@@ -491,7 +491,7 @@ while True:
 
                     dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] > 55 ) & (dfg1["Date"] == current_trading_day.date())]
                     dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] < 45 ) & (dfg1["Date"] == current_trading_day.date())]
-                    dfggg = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["Date"] == current_trading_day.date())]
+                    #dfggg = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["Date"] == current_trading_day.date())]
 
                     dfgg_up1 = dfgg_up.iloc[:2]
                     dfgg_dn1 = dfgg_dn.iloc[:2]
@@ -598,8 +598,8 @@ while True:
 
                         
 
-                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
-                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
 
                         #dfgg1 = dfgg1.iloc[[1]]
                         #dfgg1 = dfgg1.iloc[1:2]
@@ -667,6 +667,7 @@ while True:
                         else:
                             print("5 Minute Option Data Scan and Selected "+str(stk_name2)+" ("+str(Scripc)+")")
                             dfgg_dn_1 = dfgg_dn_11.iloc[[0]]
+                            Sell_Scriptcodee = int(dfgg_dn_1['Scripcode'])
                             five_df6 = pd.concat([dfgg_dn_1, five_df6])
 
                             if dfgg_dn_1.empty:

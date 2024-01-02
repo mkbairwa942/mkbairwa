@@ -316,7 +316,7 @@ for a in buy_order_list:
     dfg4 = dfg3.iloc[0:1]
     five_df1 = pd.concat([dfg4, five_df1])
 
-    dfgg2['TGT_TSL'] = np.where(dfgg2['Close'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Low'] < Buy_Stop_Loss,"SL",""))
+    dfgg2['TGT_TSL'] = np.where(dfgg2['Low'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Low'] < Buy_Stop_Loss,"SL",""))
     
     five_df4 = pd.concat([dfgg2, five_df4])
     dfgg3 = dfgg2[(dfgg2['TGT_TSL'] != '')] 
