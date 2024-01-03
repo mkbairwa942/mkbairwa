@@ -402,13 +402,13 @@ while True:
 
                 final_df = pd.merge(posit1,five_df3, on=['ScripCode'], how='inner')  
                 final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
-                final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
+                final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TSL")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
                                                              
                 #final_df = final_df[['ScripName_x','Exch','ExchType','ScripCode','Entry_Date','Datetime','Minutes','BuyAvgRate','SellAvgRate','StopLoss','TStopLoss','Status','Benchmark','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	 
                 final_df = final_df[['ScripName_x','Exch','ExchType','OrderFor','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	   
                 final_df.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
                 final_df.sort_values(['Entry_Date', 'Exit_Date',], ascending=[True, True], inplace=True)
-                st3.range("a1").options(index=False).value = five_df4
+                #st3.range("a1").options(index=False).value = five_df4
                 st4.range("a1").options(index=False).value = dataframe_empty
                 ash.range("a1").options(index=False).value = final_df
 

@@ -288,15 +288,30 @@ while True:
 
                 final_df = pd.merge(posit1,five_df3, on=['ScripCode'], how='inner')  
                 final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
-                final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
+                final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TSL")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
                 #print(final_df)                         
                 final_df = final_df[['ScripName_x','Exch','ExchType','OrderFor','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	   
                 final_df.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
                 final_df.sort_values(['Entry_Date', 'Exit_Date',], ascending=[True, True], inplace=True)
 
+                if df_empty_ash.empty:
+                    pass
+                else:
+                    #fo_bhav = fo_bhav[['Name','Scripcode','Datetime','Date','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+                    #df_empty_ash.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+                    #st2.range("a:az").value = None
+                    st4.range("a1").options(index=False).value = df_empty_ash
+
+                if final_df.empty:
+                    pass
+                else:
+                    #fo_bhav = fo_bhav[['Name','Scripcode','Datetime','Date','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+                    #final_df.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+                    #har.range("a:az").value = None
+                    ash.range("a1").options(index=False).value = final_df
                 #st3.range("a1").options(index=False).value = final_df
-                st4.range("a1").options(index=False).value = df_empty_ash
-                ash.range("a1").options(index=False).value = final_df
+                # st4.range("a1").options(index=False).value = df_empty_ash
+                # ash.range("a1").options(index=False).value = final_df
 
 
                 order_dff = final_df[(final_df['Exit'] == 'SELL')]
@@ -403,21 +418,36 @@ while True:
 
                 final_df = pd.merge(posit1,five_df3, on=['ScripCode'], how='inner')  
                 final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
-                final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
+                final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TSL")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
                 #print(final_df)                         
                 final_df = final_df[['ScripName_x','Exch','ExchType','OrderFor','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	   
                 final_df.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
                 final_df.sort_values(['Entry_Date', 'Exit_Date',], ascending=[True, True], inplace=True)
 
-                #st3.range("a1").options(index=False).value = final_df
-                st4.range("a1").options(index=False).value = df_empty_har
-                har.range("a1").options(index=False).value = final_df
+                #st1.range("a1").options(index=False).value = final_df
+                if df_empty_har.empty:
+                    pass
+                else:
+                    #fo_bhav = fo_bhav[['Name','Scripcode','Datetime','Date','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+                    #df_empty_har.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+                    #st2.range("a:az").value = None
+                    st2.range("a1").options(index=False).value = df_empty_har
+
+                if final_df.empty:
+                    pass
+                else:
+                    #fo_bhav = fo_bhav[['Name','Scripcode','Datetime','Date','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+                    #final_df.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
+                    #har.range("a:az").value = None
+                    har.range("a1").options(index=False).value = final_df
+                #st2.range("a1").options(index=False).value = df_empty_har
+                #har.range("a1").options(index=False).value = final_df
 
 
                 order_dff = final_df[(final_df['Exit'] == 'SELL')]
                 #order_dff = final_df
                 if order_dff.empty:
-                    print("No Open Position of Ashwin")
+                    print("No Open Position of Haresh")
                 else:
                     order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
                     for ordd in order_dff_Scpt:
@@ -425,5 +455,5 @@ while True:
                         order = credi_har.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         print("Sell order Executed") 
                         
-            print("Data Analysis Complete for Ashwin")
+            print("Data Analysis Complete for Haresh")
             print("---------------------------------")
