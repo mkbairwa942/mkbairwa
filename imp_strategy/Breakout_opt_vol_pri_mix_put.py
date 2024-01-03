@@ -549,7 +549,7 @@ while True:
                         stk_name2 = dfg2['Name'][0]
                         print("5 Minute Call Option Data Download and Scan "+str(stk_name2)+" ("+str(Scripc)+")")               
 
-                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
  
                         if len(dfgg_up_11) == 0:
                             print("5 Minute CALL Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")")
@@ -706,7 +706,7 @@ while True:
                         stk_name2 = dfg2['Name'][0]
                         print("5 Minute Put Option Data Download and Scan "+str(stk_name2)+" ("+str(Scripc)+")")             
 
-                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                         if len(dfgg_dn_11) == 0:
                             print("5 Minute Put Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")") 
