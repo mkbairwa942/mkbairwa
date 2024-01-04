@@ -354,7 +354,7 @@ while True:
                     new_df1 = posit1[(posit1['ScripCode'] == ord)]
                     Buy_Name = list(new_df1['ScripName'])[0]
                     Buy_price = float(new_df1['BuyAvgRate'])                 
-                    Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*stoploss)/100),1))
+                    Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*2)/100),1))
                     Buy_Target = float(round((((new_df1['BuyAvgRate']*stoploss)/100) + new_df1['BuyAvgRate']),1))
                     Buy_Exc = list(new_df1['Exch'])[0]
                     Buy_Exc_Type = list(new_df1['ExchType'])[0]
@@ -405,9 +405,9 @@ while True:
                 for ord in posit3:
                     #print(ord)
                     dataframe_new = df_empty_har[(df_empty_har['ScripCode'] == ord)]                                      
-                    dataframe_new['StopLoss'] = round((dataframe_new['Entry_Price'] - (dataframe_new['Entry_Price']*stoploss)/100),1)
+                    dataframe_new['StopLoss'] = round((dataframe_new['Entry_Price'] - (dataframe_new['Entry_Price']*10)/100),1)
                     dataframe_new['Benchmark'] = dataframe_new['High'].cummax()
-                    dataframe_new['TStopLoss'] = dataframe_new['Benchmark'] * 0.98                             
+                    dataframe_new['TStopLoss'] = dataframe_new['Benchmark'] * 0.90                            
                     dataframe_new['Status'] = np.where(dataframe_new['Close'] < dataframe_new['TStopLoss'],"TSL",np.where(dataframe_new['Close'] < Buy_Stop_Loss,"SL",""))
                     dataframe_new['P&L_TSL'] = np.where(dataframe_new['Status'] == "SL",(dataframe_new['StopLoss'] - dataframe_new['Entry_Price'])*Buy_Qty,np.where(dataframe_new['Status'] == "TSL",(dataframe_new['TStopLoss'] - dataframe_new['Entry_Price'])*Buy_Qty,"" ))
                     
