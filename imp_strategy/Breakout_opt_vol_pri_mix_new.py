@@ -584,7 +584,7 @@ while True:
 
                         dfg2['Minutes'] = dfg2['TimeNow']-dfg2["Datetime"]
                         dfg2['Minutes'] = round((dfg2['Minutes']/np.timedelta64(1,'m')),2)
-                        dfg2['Buy/Sell1'] = np.where(dfg2['Close'] > (dfg2['High']).shift(-1),"Buy_new",np.where(dfg2['Close'] < (dfg2['Low']).shift(-1),"Sell_new",""))
+                        dfg2['Buy/Sell1'] = np.where((dfg2['Close'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))
                         dfg2['Buy_At'] = round((dfg2['Close']),1)
                         dfg2['Stop_Loss'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),1),""))
                         dfg2['Add_Till'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*0.5)/100) + dfg2['Buy_At']),1),""))
