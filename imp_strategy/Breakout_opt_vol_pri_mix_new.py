@@ -660,6 +660,14 @@ while True:
                                         resp = requests.get(telegram_basr_url, data=parameters1)
                                     else:
                                         print("Telegram Message are OFF")
+
+                                    if notifi.upper() == "YES" or notifi.upper() == "":
+                                        notification = Notify()
+                                        notification.title = "Put Buy Notification"
+                                        notification.message = ("Symbol : "+str(stk_name2)+", Call BUY AT : "+str(Buy_price_of_stock)+", ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+", TARGET : "+str(Buy_Target)+", QUANTITY : "+str(Buy_quantity_of_stock)+", TIME : "+str(Buy_timee1))
+                                        notification.send()
+                                    else:
+                                        print("Desktop Notification are OFF")
            
 
                         if len(dfgg_dn_11) == 0:
@@ -715,6 +723,14 @@ while True:
                                         resp = requests.get(telegram_basr_url, data=parameters1)
                                     else:
                                         print("Telegram Message are OFF")
+
+                                    if notifi.upper() == "YES" or notifi.upper() == "":
+                                        notification = Notify()
+                                        notification.title = "Put Buy Notification"
+                                        notification.message = ("Symbol : "+str(stk_name2)+", Call BUY AT : "+str(Buy_price_of_stock)+", ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+", TARGET : "+str(Buy_Target)+", QUANTITY : "+str(Buy_quantity_of_stock)+", TIME : "+str(Buy_timee1))
+                                        notification.send()
+                                    else:
+                                        print("Desktop Notification are OFF")
 
         except Exception as e:
                     print(e) 

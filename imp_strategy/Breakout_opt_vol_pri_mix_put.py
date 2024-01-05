@@ -23,7 +23,10 @@ import requests
 import itertools
 import math 
 from telethon.sync import TelegramClient
+from notifypy import Notify
+#from plyer import notification
 import inspect
+import time
 
 telegram_first_name = "mkbairwa"
 telegram_username = "mkbairwa_bot"
@@ -32,6 +35,7 @@ telegram_id = ":758543600"
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
 operate = input("Do you want to go with TOTP (yes/no): ")
+notifi = input("Do you want to send Notification on Desktop (yes/no): ")
 telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
 orders = input("Do you want to Place Real Orders (yes/no): ")
 if operate.upper() == "YES":
@@ -604,7 +608,14 @@ while True:
                                         resp = requests.get(telegram_basr_url, data=parameters1)
                                     else:
                                         print("Telegram Message are OFF")
-           
+
+                                    if notifi.upper() == "YES" or notifi.upper() == "":
+                                        notification = Notify()
+                                        notification.title = "Call Buy Notification"
+                                        notification.message = ("Symbol : "+str(stk_name2)+", Call BUY AT : "+str(Buy_price_of_stock)+", ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+", TARGET : "+str(Buy_Target)+", QUANTITY : "+str(Buy_quantity_of_stock)+", TIME : "+str(Buy_timee1))
+                                        notification.send()
+                                    else:
+                                        print("Desktop Notification are OFF")
                     
                     
                     dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] < 45 ) & (dfg1["Date"] == current_trading_day.date())]
@@ -761,6 +772,14 @@ while True:
                                         resp = requests.get(telegram_basr_url, data=parameters1)
                                     else:
                                         print("Telegram Message are OFF")
+
+                                    if notifi.upper() == "YES" or notifi.upper() == "":
+                                        notification = Notify()
+                                        notification.title = "Put Buy Notification"
+                                        notification.message = ("Symbol : "+str(stk_name2)+", Call BUY AT : "+str(Buy_price_of_stock)+", ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+", TARGET : "+str(Buy_Target)+", QUANTITY : "+str(Buy_quantity_of_stock)+", TIME : "+str(Buy_timee1))
+                                        notification.send()
+                                    else:
+                                        print("Desktop Notification are OFF")
 
         except Exception as e:
                     print(e) 

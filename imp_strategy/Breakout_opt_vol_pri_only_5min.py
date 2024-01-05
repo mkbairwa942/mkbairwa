@@ -23,7 +23,10 @@ import requests
 import itertools
 import math 
 from telethon.sync import TelegramClient
+from notifypy import Notify
+#from plyer import notification
 import inspect
+import time
 
 telegram_first_name = "mkbairwa"
 telegram_username = "mkbairwa_bot"
@@ -32,6 +35,7 @@ telegram_id = ":758543600"
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
 operate = input("Do you want to go with TOTP (yes/no): ")
+notifi = input("Do you want to send Notification on Desktop (yes/no): ")
 telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
 orders = input("Do you want to Place Real Orders (yes/no): ")
 if operate.upper() == "YES":
@@ -262,6 +266,13 @@ else:
     print(buy_order_list_dummy)
 
 while True:
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    start_time = '09:15:00'
+    end_time = '15:15:20'
+    if current_time > start_time and current_time < end_time:
+        market_status = client.get_market_status()
+        print(market_status)
     #time.sleep(60)
     print("buy_order_list_dummy")
     print(buy_order_list_dummy)
@@ -567,7 +578,7 @@ while True:
                 pdhb_opt1 = pdhb_opt['High'].cummax()[0]
                 #print(pdhb_opt1)
 
-                dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Open"] > pdhb_opt1 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Open"] > pdhb_opt1 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
 
                 if len(dfgg_up_11) == 0:
                     print("5 Minute CALL Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")")
@@ -619,7 +630,15 @@ while True:
                                 resp = requests.get(telegram_basr_url, data=parameters1)
                             else:
                                 print("Telegram Message are OFF")
-    
+
+                            if notifi.upper() == "YES" or notifi.upper() == "":
+                                notification = Notify()
+                                notification.title = "Call Buy Notification"
+                                notification.message = ("Symbol : "+str(stk_name2)+", Call BUY AT : "+str(Buy_price_of_stock)+", ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+", TARGET : "+str(Buy_Target)+", QUANTITY : "+str(Buy_quantity_of_stock)+", TIME : "+str(Buy_timee1))
+                                notification.send()
+                            else:
+                                print("Desktop Notification are OFF")
+
             pdlb = dfg1[(dfg1["Date"] == last_trading_day.date())]
             pdlb1 = pdlb['Low'].cummin()[0]
             #print(pdlb1)
@@ -731,7 +750,7 @@ while True:
                 pdlb_opt1 = pdlb_opt['Low'].cummin()[0]
                 #print(pdlb_opt1)
 
-                dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Open"] > pdlb_opt1 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Open"] > pdlb_opt1 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
 
                 if len(dfgg_dn_11) == 0:
                     print("5 Minute Put Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")") 
@@ -782,6 +801,14 @@ while True:
                             else:
                                 print("Telegram Message are OFF")
 
+                            if notifi.upper() == "YES" or notifi.upper() == "":
+                                notification = Notify()
+                                notification.title = "Put Buy Notification"
+                                notification.message = ("Symbol : "+str(stk_name2)+", Call BUY AT : "+str(Buy_price_of_stock)+", ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+", TARGET : "+str(Buy_Target)+", QUANTITY : "+str(Buy_quantity_of_stock)+", TIME : "+str(Buy_timee1))
+                                notification.send()
+                            else:
+                                print("Desktop Notification are OFF")
+
         except Exception as e:
                     print(e) 
 
@@ -817,7 +844,7 @@ while True:
     else:
         five_df3 = five_df3[['Name','Scripcode','Datetime','Date','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df3.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
-        delv_dt.range("a50").options(index=False).value = five_df3
+        delv_dt.range("a500").options(index=False).value = five_df3
 
     if five_df4.empty:
         pass
@@ -843,7 +870,7 @@ while True:
         five_df6 = five_df6[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','LotSize','Date','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14',	'Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df6.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         #fl_data.range("a:az").value = None
-        fl_data.range("a50").options(index=False).value = five_df6
+        fl_data.range("a500").options(index=False).value = five_df6
 
     if five_df4.empty:
         pass
