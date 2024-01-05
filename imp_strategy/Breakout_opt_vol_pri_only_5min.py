@@ -374,8 +374,8 @@ while True:
                     # curr_day = (dfg['Datetime'].apply(pd.to_datetime)).iloc[0]
 
 
-                    # dfgg_up11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 55 ) & (dfg['Date'] == curr_day) ]# & (dfg['Close'] > 300)]# & (dfg["Del_Vol_Pri_break"] != "") ]
-                    # dfgg_dn11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 45 ) & (dfg['Date'] == curr_day) ]# & (dfg["Del_Vol_Pri_break"] != "")]
+                    # dfgg_up11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 70 ) & (dfg['Date'] == curr_day) ]# & (dfg['Close'] > 300)]# & (dfg["Del_Vol_Pri_break"] != "") ]
+                    # dfgg_dn11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 30 ) & (dfg['Date'] == curr_day) ]# & (dfg["Del_Vol_Pri_break"] != "")]
         
                     # up = np.unique([int(i) for i in dfgg_up11['Scripcode']]).tolist()
                     # dn = np.unique([int(i) for i in dfgg_dn11['Scripcode']]).tolist()
@@ -476,7 +476,7 @@ while True:
                     pdhb1 = pdhb['High'].cummax()[0]
                     #print(pdhb1)
 
-                    dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] > 55 ) & (dfg1["Open"] > pdhb1 ) & (dfg1["Date"] == current_trading_day.date())]
+                    dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] > 70 ) & (dfg1["Open"] > pdhb1 ) & (dfg1["Date"] == current_trading_day.date())]
                     
                     dfgg_up1 = dfgg_up.iloc[:2]
 
@@ -576,14 +576,14 @@ while True:
                         stk_name2 = dfg2['Name'][0]
                         print("5 Minute Call Option Data Download and Scan "+str(stk_name2)+" ("+str(Scripc)+")")               
                         
-                        dfgg_up_111 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Date"] == current_trading_day.date())]
+                        dfgg_up_111 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 70 ) & (dfg2["Date"] == current_trading_day.date())]
                         five_df5 = pd.concat([dfgg_up_111, five_df5])  
 
                         pdhb_opt = dfg2[(dfg2["Date"] == last_trading_day.date())]
                         pdhb_opt1 = pdhb_opt['High'].cummax()[0]
                         #print(pdhb_opt1)
 
-                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 55 ) & (dfg2["Open"] > pdhb_opt1 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 70 ) & (dfg2["Open"] > pdhb_opt1 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                         if len(dfgg_up_11) == 0:
                             print("5 Minute CALL Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")")
@@ -648,7 +648,7 @@ while True:
                     pdlb1 = pdlb['Low'].cummin()[0]
                     #print(pdlb1)
                     
-                    dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] < 45 ) & (dfg1["Open"] > pdlb1 ) & (dfg1["Date"] == current_trading_day.date())]
+                    dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] < 30 ) & (dfg1["Open"] > pdlb1 ) & (dfg1["Date"] == current_trading_day.date())]
 
                     dfgg_dn1 = dfgg_dn.iloc[:2]
 
@@ -748,14 +748,14 @@ while True:
                         stk_name2 = dfg2['Name'][0]
                         print("5 Minute Put Option Data Download and Scan "+str(stk_name2)+" ("+str(Scripc)+")")             
 
-                        dfgg_dn_111 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Date"] == current_trading_day.date())]
+                        dfgg_dn_111 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 30 ) & (dfg2["Date"] == current_trading_day.date())]
                         five_df6 = pd.concat([dfgg_dn_111, five_df6])
 
                         pdlb_opt = dfg2[(dfg2["Date"] == last_trading_day.date())]
                         pdlb_opt1 = pdlb_opt['Low'].cummin()[0]
                         #print(pdlb_opt1)
 
-                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 45 ) & (dfg2["Open"] > pdlb_opt1 ) & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 30 ) & (dfg2["Open"] > pdlb_opt1 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                         if len(dfgg_dn_11) == 0:
                             print("5 Minute Put Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")") 
@@ -884,8 +884,8 @@ while True:
                 five_df4 = five_df4[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','Date','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
                 five_df4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
                 
-                not_selected_up = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Buy_new") & (five_df4["RSI_14"] > 55 ) & (five_df4["Date"] == current_trading_day.date())]
-                not_selected_dn = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Sell_new") & (five_df4["RSI_14"] < 45 ) & (five_df4["Date"] == current_trading_day.date())]
+                not_selected_up = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Buy_new") & (five_df4["RSI_14"] > 70 ) & (five_df4["Date"] == current_trading_day.date())]
+                not_selected_dn = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Sell_new") & (five_df4["RSI_14"] < 30 ) & (five_df4["Date"] == current_trading_day.date())]
 
             end = time.time() - start_time
         
