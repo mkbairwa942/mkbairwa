@@ -132,11 +132,11 @@ index = 'SBIN'
 # lotsize =((script_code[script_code['text_new'] == index])['LotSize']).values[-1]
 # print(lotsize)
 
-# Market Status
-market_status = pd.DataFrame(client.get_market_status())#[1]['MarketStatus']
-market_status1 = market_status[market_status['ExchDescription'] == 'Nse Derivative']
-market_status2 = list(market_status1['MarketStatus'])[0]
-print(market_status2)
+# # Market Status
+# market_status = pd.DataFrame(client.get_market_status())#[1]['MarketStatus']
+# market_status1 = market_status[market_status['ExchDescription'] == 'Nse Derivative']
+# market_status2 = list(market_status1['MarketStatus'])[0]
+# print(market_status2)
 
 # Fetches holdings
 # client.holdings()
