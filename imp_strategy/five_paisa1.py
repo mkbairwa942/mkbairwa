@@ -165,7 +165,7 @@ index = 'SBIN'
 # print(lotsize)
 
 # Market Status
-# client.get_market_status()
+# market_status = client.get_market_status()
 
 # Fetches holdings
 # client.holdings()
