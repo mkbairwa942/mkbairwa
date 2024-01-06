@@ -71,9 +71,9 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
 
-# current_trading_day = trading_dayss[1]
-# last_trading_day = trading_dayss[2]
-# second_last_trading_day = trading_days[3]
+current_trading_day = trading_dayss[1]
+last_trading_day = trading_dayss[2]
+second_last_trading_day = trading_days[3]
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
 print("Trading Days is :- "+str(trading_dayss))
@@ -269,12 +269,14 @@ while True:
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
     start_time = '09:15:00'
-    end_time = '15:15:20'
+    end_time = '15:15:00'
     if current_time > start_time and current_time < end_time:
         print("Market Hours Open")
         market_status = pd.DataFrame(client.get_market_status())#[1]['MarketStatus']
         market_status1 = market_status[market_status['ExchDescription'] == 'Nse Derivative']
         market_status2 = list(market_status1['MarketStatus'])[0]
+        if market_status2 == "Closed":
+            print(f"Market {market_status2}")
         if market_status2 == "Open":
             print(f"Market {market_status2}")
 
@@ -314,7 +316,7 @@ while True:
 
                     # dfg['Price_break'] = np.where((dfg['Close'] > (dfg.High.rolling(5).max()).shift(-5)),
                     #                                     'Pri_Up_brk',
-                    #                                     (np.where((dfg['Close'] < (dfg.Low.rolling(5).min()).shift(-5)),
+                    #                                     (np.where((dfg['Open'] < (dfg.Low.rolling(5).min()).shift(-5)),
                     #                                                 'Pri_Dwn_brk', "")))
                     # dfg['Vol_break'] = np.where(dfg['Volume'] > (dfg.Volume.rolling(5).mean() * 1.5).shift(-5),
                     #                                     "Vol_brk","")       
@@ -374,8 +376,8 @@ while True:
                     # curr_day = (dfg['Datetime'].apply(pd.to_datetime)).iloc[0]
 
 
-                    # dfgg_up11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 70 ) & (dfg['Date'] == curr_day) ]# & (dfg['Close'] > 300)]# & (dfg["Del_Vol_Pri_break"] != "") ]
-                    # dfgg_dn11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 30 ) & (dfg['Date'] == curr_day) ]# & (dfg["Del_Vol_Pri_break"] != "")]
+                    # dfgg_up11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDHB") &(dfg["RSI_14"] > 60 ) & (dfg['Date'] == curr_day) ]# & (dfg['Close'] > 300)]# & (dfg["Del_Vol_Pri_break"] != "") ]
+                    # dfgg_dn11 = dfg[(dfg["Vol_Price_break"] == "Vol_Pri_break") & (dfg["Buy/Sell"] != "") & (dfg["P_D_H_B"] == "PDLB") &(dfg["RSI_14"] < 40 ) & (dfg['Date'] == curr_day) ]# & (dfg["Del_Vol_Pri_break"] != "")]
         
                     # up = np.unique([int(i) for i in dfgg_up11['Scripcode']]).tolist()
                     # dn = np.unique([int(i) for i in dfgg_dn11['Scripcode']]).tolist()
@@ -414,13 +416,13 @@ while True:
 
                     dfg1.sort_values(['Datetime'], ascending=[False], inplace=True)
                     dfg1['TimeNow'] = datetime.now()
-                    dfg1['Price_Chg'] = round(((dfg1['Close'] * 100) / (dfg1['Close'].shift(-1)) - 100), 2).fillna(0)      
+                    dfg1['Price_Chg'] = round(((dfg1['Open'] * 100) / (dfg1['Open'].shift(-1)) - 100), 2).fillna(0)      
 
                     dfg1['Vol_Chg'] = round(((dfg1['Volume'] * 100) / (dfg1['Volume'].shift(-1)) - 100), 2).fillna(0)
 
-                    dfg1['Price_break'] = np.where((dfg1['Close'] > (dfg1.High.rolling(5).max()).shift(-5)),
+                    dfg1['Price_break'] = np.where((dfg1['Open'] > (dfg1.High.rolling(5).max()).shift(-5)),
                                                         'Pri_Up_brk',
-                                                        (np.where((dfg1['Close'] < (dfg1.Low.rolling(5).min()).shift(-5)),
+                                                        (np.where((dfg1['Open'] < (dfg1.Low.rolling(5).min()).shift(-5)),
                                                                     'Pri_Dwn_brk', "")))
                     dfg1['Vol_break'] = np.where(dfg1['Volume'] > (dfg1.Volume.rolling(5).mean() * 2.5).shift(-5),
                                                         "Vol_brk","")       
@@ -433,14 +435,14 @@ while True:
                     dfg1['Pattern'] = np.where((dfg1['High'] < dfg1['High'].shift(-1)) &
                                                     (dfg1['Low'] > dfg1['Low'].shift(-1)), 'Inside_Bar',
                                                     (np.where((dfg1['Low'] < dfg1['Low'].shift(-1)) &
-                                                                (dfg1['Close'] > dfg1['High'].shift(-1)), 'Bullish',
+                                                                (dfg1['Open'] > dfg1['High'].shift(-1)), 'Bullish',
                                                                 (np.where((dfg1['High'] > dfg1['High'].shift(-1)) &
-                                                                        (dfg1['Close'] < dfg1['Low'].shift(-1)), 'Bearish',
+                                                                        (dfg1['Open'] < dfg1['Low'].shift(-1)), 'Bearish',
                                                                         "")))))
                     dfg1["Buy/Sell"] = np.where((dfg1['Vol_break'] == "Vol_brk") & (dfg1['Price_break'] == "Pri_Up_brk"),
                                                     "BUY", np.where((dfg1['Vol_break'] == "Vol_brk")
                                                         & (dfg1['Price_break'] == "Pri_Dwn_brk") , "SELL", ""))
-                    #dfg1['P_D_H_B'] = np.where(dfg['Close'] > dfg['High'].shift(-1),"PDHB",np.where(dfg['Close'] < dfg['Low'].shift(-1),"PDLB",""))                            
+                    #dfg1['P_D_H_B'] = np.where(dfg['Open'] > dfg['High'].shift(-1),"PDHB",np.where(dfg['Open'] < dfg['Low'].shift(-1),"PDLB",""))                            
                     
                     dfg1['R3'] = round(dfg1['High'] + (
                             2 * (((dfg1['High'] + dfg1['Low'] + dfg1['Close']) / 3) - dfg1['Low'])), 2).fillna(0)
@@ -476,7 +478,7 @@ while True:
                     pdhb1 = pdhb['High'].cummax()[0]
                     #print(pdhb1)
 
-                    dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] > 70 ) & (dfg1["Open"] > pdhb1 ) & (dfg1["Date"] == current_trading_day.date())]
+                    dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] > 60 ) & (dfg1["Open"] > pdhb1 ) & (dfg1["Date"] == current_trading_day.date())]
                     
                     dfgg_up1 = dfgg_up.iloc[:2]
 
@@ -490,7 +492,7 @@ while True:
                         print("5 Min Call Future Data Download and Scan "+str(stk_name)+" ("+str(aaa)+")")
                         stk_name1 = np.unique(dfgg_up['Root'])
                         dfgg_up_sc = dfgg_up.iloc[:1]
-                        Closee = int(dfgg_up_sc['Close'])
+                        Closee = int(dfgg_up_sc['Open'])
                         Excchh = exc_opt[(exc_opt["CpType"] == 'CE')]
                         Excchh1 = Excchh[Excchh['Root'] == stk_name1[0]]
                         Excchh1.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
@@ -508,13 +510,13 @@ while True:
 
                         dfg2.sort_values(['Datetime'], ascending=[False], inplace=True)
                         dfg2['TimeNow'] = datetime.now()
-                        dfg2['Price_Chg'] = round(((dfg2['Close'] * 100) / (dfg2['Close'].shift(-1)) - 100), 2).fillna(0)      
+                        dfg2['Price_Chg'] = round(((dfg2['Open'] * 100) / (dfg2['Open'].shift(-1)) - 100), 2).fillna(0)      
                         
                         dfg2['Vol_Chg'] = round(((dfg2['Volume'] * 100) / (dfg2['Volume'].shift(-1)) - 100), 2).fillna(0)
 
-                        dfg2['Price_break'] = np.where((dfg2['Close'] > (dfg2.High.rolling(5).max()).shift(-5)),
+                        dfg2['Price_break'] = np.where((dfg2['Open'] > (dfg2.High.rolling(5).max()).shift(-5)),
                                                             'Pri_Up_brk',
-                                                            (np.where((dfg2['Close'] < (dfg2.Low.rolling(5).min()).shift(-5)),
+                                                            (np.where((dfg2['Open'] < (dfg2.Low.rolling(5).min()).shift(-5)),
                                                                         'Pri_Dwn_brk', "")))
                         dfg2['Vol_break'] = np.where(dfg2['Volume'] > (dfg2.Volume.rolling(5).mean() * 2.5).shift(-5),
                                                             "Vol_brk","")       
@@ -565,8 +567,8 @@ while True:
 
                         dfg2['Minutes'] = dfg2['TimeNow']-dfg2["Datetime"]
                         dfg2['Minutes'] = round((dfg2['Minutes']/np.timedelta64(1,'m')),2)
-                        dfg2['Buy/Sell1'] = np.where((dfg2['Close'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))
-                        dfg2['Buy_At'] = round((dfg2['Close']),1)
+                        dfg2['Buy/Sell1'] = np.where((dfg2['Open'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Open'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Open'] < dfg2['Low'].shift(-1)),"Sell_new",""))
+                        dfg2['Buy_At'] = round((dfg2['Open']),1)
                         dfg2['Stop_Loss'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),1),""))
                         dfg2['Add_Till'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*0.5)/100) + dfg2['Buy_At']),1),""))   
                         dfg2['Target'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),""))
@@ -576,14 +578,14 @@ while True:
                         stk_name2 = dfg2['Name'][0]
                         print("5 Minute Call Option Data Download and Scan "+str(stk_name2)+" ("+str(Scripc)+")")               
                         
-                        dfgg_up_111 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 70 ) & (dfg2["Date"] == current_trading_day.date())]
+                        dfgg_up_111 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 60 ) & (dfg2["Date"] == current_trading_day.date())]
                         five_df5 = pd.concat([dfgg_up_111, five_df5])  
 
                         pdhb_opt = dfg2[(dfg2["Date"] == last_trading_day.date())]
                         pdhb_opt1 = pdhb_opt['High'].cummax()[0]
                         #print(pdhb_opt1)
 
-                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 70 ) & (dfg2["Open"] > pdhb_opt1 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                        dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 60 ) & (dfg2["Open"] > pdhb_opt1 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                         if len(dfgg_up_11) == 0:
                             print("5 Minute CALL Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")")
@@ -648,7 +650,7 @@ while True:
                     pdlb1 = pdlb['Low'].cummin()[0]
                     #print(pdlb1)
                     
-                    dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] < 30 ) & (dfg1["Open"] > pdlb1 ) & (dfg1["Date"] == current_trading_day.date())]
+                    dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_break") & (dfg1["Buy/Sell"] != "") & (dfg1["RSI_14"] < 40 ) & (dfg1["Open"] > pdlb1 ) & (dfg1["Date"] == current_trading_day.date())]
 
                     dfgg_dn1 = dfgg_dn.iloc[:2]
 
@@ -662,7 +664,7 @@ while True:
                         print("5 Min Put Future Data Download and Scan "+str(stk_name)+" ("+str(aaa)+")")
                         stk_name1 = np.unique(dfgg_dn['Root'])
                         dfgg_up_sc = dfgg_dn.iloc[:1]
-                        Closee = int(dfgg_up_sc['Close'])    
+                        Closee = int(dfgg_up_sc['Open'])    
                         Excchh = exc_opt[(exc_opt["CpType"] == 'PE')]
                         Excchh1 = Excchh[Excchh['Root'] == stk_name1[0]]
                         Excchh1.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
@@ -680,13 +682,13 @@ while True:
 
                         dfg2.sort_values(['Datetime'], ascending=[False], inplace=True)
                         dfg2['TimeNow'] = datetime.now()
-                        dfg2['Price_Chg'] = round(((dfg2['Close'] * 100) / (dfg2['Close'].shift(-1)) - 100), 2).fillna(0)      
+                        dfg2['Price_Chg'] = round(((dfg2['Open'] * 100) / (dfg2['Open'].shift(-1)) - 100), 2).fillna(0)      
                         
                         dfg2['Vol_Chg'] = round(((dfg2['Volume'] * 100) / (dfg2['Volume'].shift(-1)) - 100), 2).fillna(0)
 
-                        dfg2['Price_break'] = np.where((dfg2['Close'] > (dfg2.High.rolling(5).max()).shift(-5)),
+                        dfg2['Price_break'] = np.where((dfg2['Open'] > (dfg2.High.rolling(5).max()).shift(-5)),
                                                             'Pri_Up_brk',
-                                                            (np.where((dfg2['Close'] < (dfg2.Low.rolling(5).min()).shift(-5)),
+                                                            (np.where((dfg2['Open'] < (dfg2.Low.rolling(5).min()).shift(-5)),
                                                                         'Pri_Dwn_brk', "")))
                         dfg2['Vol_break'] = np.where(dfg2['Volume'] > (dfg2.Volume.rolling(5).mean() * 2.5).shift(-5),
                                                             "Vol_brk","")       
@@ -737,8 +739,8 @@ while True:
 
                         dfg2['Minutes'] = dfg2['TimeNow']-dfg2["Datetime"]
                         dfg2['Minutes'] = round((dfg2['Minutes']/np.timedelta64(1,'m')),2)
-                        dfg2['Buy/Sell1'] = np.where((dfg2['Close'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))
-                        dfg2['Buy_At'] = round((dfg2['Close']),1)
+                        dfg2['Buy/Sell1'] = np.where((dfg2['Open'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Open'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Open'] < dfg2['Low'].shift(-1)),"Sell_new",""))
+                        dfg2['Buy_At'] = round((dfg2['Open']),1)
                         dfg2['Stop_Loss'] = np.where(dfg2['Buy/Sell1'] == "Sell_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),np.where(dfg2['Buy/Sell1'] == "Buy_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),1),""))
                         dfg2['Add_Till'] = np.where(dfg2['Buy/Sell1'] == "Sell_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1),np.where(dfg2['Buy/Sell1'] == "Buy_new",round((((dfg2['Buy_At']*0.5)/100) + dfg2['Buy_At']),1),""))
                         dfg2['Target'] = np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2),np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),""))
@@ -748,14 +750,14 @@ while True:
                         stk_name2 = dfg2['Name'][0]
                         print("5 Minute Put Option Data Download and Scan "+str(stk_name2)+" ("+str(Scripc)+")")             
 
-                        dfgg_dn_111 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 30 ) & (dfg2["Date"] == current_trading_day.date())]
+                        dfgg_dn_111 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 40 ) & (dfg2["Date"] == current_trading_day.date())]
                         five_df6 = pd.concat([dfgg_dn_111, five_df6])
 
                         pdlb_opt = dfg2[(dfg2["Date"] == last_trading_day.date())]
                         pdlb_opt1 = pdlb_opt['Low'].cummin()[0]
                         #print(pdlb_opt1)
 
-                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 30 ) & (dfg2["Open"] > pdlb_opt1 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
+                        dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 40 ) & (dfg2["Open"] > pdlb_opt1 ) & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                         if len(dfgg_dn_11) == 0:
                             print("5 Minute Put Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")") 
@@ -884,8 +886,8 @@ while True:
                 five_df4 = five_df4[['Name','Scripcode','Stop_Loss','Add_Till','Buy_At','Target','Term','Datetime','Date','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
                 five_df4.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
                 
-                not_selected_up = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Buy_new") & (five_df4["RSI_14"] > 70 ) & (five_df4["Date"] == current_trading_day.date())]
-                not_selected_dn = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Sell_new") & (five_df4["RSI_14"] < 30 ) & (five_df4["Date"] == current_trading_day.date())]
+                not_selected_up = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Buy_new") & (five_df4["RSI_14"] > 60 ) & (five_df4["Date"] == current_trading_day.date())]
+                not_selected_dn = five_df4[(five_df4["Vol_Price_break"] == "Vol_Pri_break") & (five_df4["Buy/Sell1"] == "Sell_new") & (five_df4["RSI_14"] < 40 ) & (five_df4["Date"] == current_trading_day.date())]
 
             end = time.time() - start_time
         
@@ -900,10 +902,11 @@ while True:
 
             wb.save("Breakout_opt_vol_pri_only_5min.xlsx")
 
+        #market_status = pd.DataFrame(client.get_market_status())#[1]['MarketStatus']
+        #market_status1 = market_status[market_status['ExchDescription'] == 'Nse Derivative']
+        #market_status2 = list(market_status1['MarketStatus'])[0]
+
+
     else:
         print("Market Hours Closed")
-        market_status = pd.DataFrame(client.get_market_status())#[1]['MarketStatus']
-        market_status1 = market_status[market_status['ExchDescription'] == 'Nse Derivative']
-        market_status2 = list(market_status1['MarketStatus'])[0]
-        if market_status2 == "Closed":
-            print(f"Market {market_status2}")
+        
