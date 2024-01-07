@@ -15,11 +15,11 @@ from pandas import DataFrame, Series
 from pandas_ta.overlap import ema, hl2
 from pandas_ta.utils import get_offset, high_low_range, verify_series, zero
 
-from_d = (date.today() - timedelta(days=31))
-# from_d = date(2022, 12, 29)
+from_d = (date.today() - timedelta(days=4))
+from_d = date(2024, 1, 1)
 
 to_d = (date.today())
-#to_d = date(2023, 2, 3)
+to_d = date(2024, 1, 5)
 
 to_days = (date.today()-timedelta(days=1))
 # to_d = date(2023, 1, 20)
@@ -34,7 +34,7 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 
-symbol1 = '35002'
+symbol1 = '55317'
 
 df = client.historical_data('N', 'D', symbol1, '5m', from_d, to_d)
 df['Datetime'] = pd.to_datetime(df['Datetime'])

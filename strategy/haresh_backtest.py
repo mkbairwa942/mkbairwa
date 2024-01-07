@@ -23,10 +23,10 @@ from pandas_ta.overlap import ema
 from pandas_ta.utils import get_offset, verify_series, signals
 
 from_d = (date.today() - timedelta(days=4))
-# from_d = date(2022, 12, 29)
+from_d = date(2023, 12, 1)
 
 to_d = (date.today())
-#to_d = date(2023, 2, 3)
+to_d = date(2024, 1, 5)
 
 to_days = (date.today()-timedelta(days=1))
 # to_d = date(2023, 1, 20)
@@ -35,304 +35,126 @@ symbol = 'MOTHERSUMI'
 # print(from_d)
 # print(to_d)
 
-
 pd.set_option("display.max_rows", None)
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 
-symbol1 = '35002'
-
+symbol1 = '50481'
 
 df = client.historical_data('N', 'D', symbol1, '5m', from_d, to_d)
-df['Datetime'] = pd.to_datetime(df['Datetime'])
-df['Date'] = pd.to_datetime(df['Datetime']).dt.date
-df['Date'] = df['Date'].apply(lambda x: str(x)).apply(lambda x: pd.to_datetime(x))
-df['Time'] = pd.to_datetime(df['Datetime']).dt.time
-df['Time'] = df['Time'].apply(lambda x: str(x)).apply(lambda x: pd.Timestamp(x))
-df = df[['Date', 'Time','Open','High', 'Low', 'Close', 'Volume','Datetime']]
-df.set_index('Datetime',inplace=True)
+
+# df['Datetime'] = pd.to_datetime(df['Datetime'])
+# df['Date'] = pd.to_datetime(df['Datetime']).dt.date
+# df['Date'] = df['Date'].apply(lambda x: str(x)).apply(lambda x: pd.to_datetime(x))
+# df['Time'] = pd.to_datetime(df['Datetime']).dt.time
+# df['Time'] = df['Time'].apply(lambda x: str(x)).apply(lambda x: pd.Timestamp(x))
+df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
+#df.set_index('Datetime',inplace=True)
+df.ta.fisher(append=True)
+
+a = pta.adx(df['High'], df['Low'], df['Close'], length = 14)
+df = df.join(a)
+b = pta.macd(df["Close"],12,26)
+df = df.join(b)
+df.rename(columns={'FISHERT_9_1': 'Fis_GRN','FISHERTs_9_1':'Fis_RED','MACD_12_26_9':'Macd_GRN','MACDs_12_26_9':'Macd_RED'}, inplace=True)
+df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
+df["EMA_9"] = np.round((pta.ema(df["Close"], length=9)),2)
+df['Adx_curve'] = np.where(df['ADX_14'] > df['ADX_14'].shift(1),"YES","")
+df['Pri_up_Ema'] = np.where(df['Close'] > df['EMA_9'],"YES","")
+df['Fish_cross'] = np.where(df['Fis_GRN'] > df['Fis_RED'],"YES","")
+df['Final'] = np.where((df['Adx_curve'] == "YES") & (df['Pri_up_Ema'] == "YES") & (df['Adx_curve'] == "YES"),"YES","")
 df3 = df         
+df = df[['Datetime','Open','High','Low','Close','Volume','Fis_GRN','Fis_RED','ADX_14','EMA_9','Final','Macd_GRN','Macd_RED','RSI_14']]
 
-def fisher1(high, low, length=None, signal=None, offset=None, **kwargs):
-    """Indicator: Fisher Transform (FISHT)"""
-    # Validate Arguments
-    high = verify_series(high)
-    low = verify_series(low)
-    length = int(length) if length and length > 0 else 9
-    signal = int(signal) if signal and signal > 0 else 1
-    offset = get_offset(offset)
+df['Buy'] = np.where((df['Final'].shift(1)=="") & (df['Final'] == "YES"),"Buy","")
+df['Benchmark'] = df['High'].cummax()
+df['TStopLoss'] = df['Benchmark'] * 0.98
 
-    # Calculate Result
-    hl2_ = hl2(high, low)
-    highest_hl2 = hl2_.rolling(length).max()
-    lowest_hl2 = hl2_.rolling(length).min()
+df_buy = df[df['Buy'] == 'Buy']
 
-    #hlr = high_low_range(highest_hl2, lowest_hl2)
-    hlr  = highest_hl2-lowest_hl2
-    hlr[hlr < 0.001] = 0.001
+buy_order_list = df_buy['Datetime'].tolist()
 
-    position = ((hl2_ - lowest_hl2) / hlr) - 0.5
-    v = 0
-    m = high.size
-    result = [npNaN for _ in range(0, length - 1)] + [0]
-    for i in range(length, m):
-        v = 0.66 * position[i] + 0.67 * v
-        if v < -0.99: v = -0.999
-        if v >  0.99: v =  0.999
-        result.append(0.5 * (nplog((1 + v) / (1 - v)) + result[i - 1]))
-    fisher = Series(result, index=high.index)
-    signalma = fisher.shift(signal)
+print(buy_order_list)
 
+five_df1 = pd.DataFrame()
+five_df2 = pd.DataFrame()
+five_df3 = pd.DataFrame()
+five_df4 = pd.DataFrame()
+five_df5 = pd.DataFrame()
+five_df6 = pd.DataFrame()
+bhv_fo1 = pd.DataFrame()
+one_day = pd.DataFrame()
 
-    # Offset
-    if offset != 0:
-        fisher = fisher.shift(offset)
-        signalma = signalma.shift(offset)
+SLL = 10
+TGT = 20
 
-    # Handle fills
-    if "fillna" in kwargs:
-        fisher.fillna(kwargs["fillna"], inplace=True)
-        signalma.fillna(kwargs["fillna"], inplace=True)
-    if "fill_method" in kwargs:
-        fisher.fillna(method=kwargs["fill_method"], inplace=True)
-        signalma.fillna(method=kwargs["fill_method"], inplace=True)
+for a in buy_order_list:
+    orderboo = df[(df['Datetime'] == a)]
+    orderboo.sort_values(['Datetime'], ascending=[True], inplace=True)
+    #print(orderboo.head(1))
+    dfgg_up_1 = orderboo.iloc[[0]]
+    #print(dfgg_up_1)
+    #Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
+    #Buy_Name = list(dfgg_up_1['Name'])[0]
+    Buy_price = float(dfgg_up_1['Close'])                 
+    Buy_Stop_Loss = float(round((dfgg_up_1['Close'] - (dfgg_up_1['Close']*SLL)/100),1))  
+    Buy_Target = float(round((((dfgg_up_1['Close']*TGT)/100) + dfgg_up_1['Close']),1))
+    # Buy_Exc = 'N' #list(dfgg_up_1['Exch'])[0]
+    # Buy_Exc_Type = 'D' #list(dfgg_up_1['ExchType'])[0]
+    # Buy_Qty = int(dfgg_up_1['LotSize'])
+    
+    Buy_timee = list(dfgg_up_1['Datetime'])[0]
+    # print(Buy_timee)
+    # print(Buy_timee)
+    #Buy_timee1 = str(Buy_timee).replace(' ','T')
 
-    # Name and Categorize it
-    props = f"{length}_{signal}"
-    fisher.name = f"FISHERT{props}"
-    signalma.name = f"FISHERTs{props}"
-    fisher.category = signalma.category = "momentum"
+    dfg1 = client.historical_data('N', 'D', symbol1, '1m',from_d, to_d) 
+    print(dfg1.head(1))
+    # print(dfg1.tail(2))
+    #dfg1['Scripcode'] = a
+    #dfg1['ScripName'] = Buy_Name
+    dfg1['Entry_Date'] = Buy_timee
+    dfg1['Entry_Price'] = Buy_price
+    # print(dfg1.head(2))
+    dfg1.sort_values(['Datetime'], ascending=[True], inplace=True)
+    dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] < dfg1['Datetime'],"OK","")
+    dfg1['StopLoss'] = Buy_Stop_Loss
+    dfg1['Target'] = Buy_Target
 
-    # Prepare DataFrame to return
-    data = {fisher.name: fisher, signalma.name: signalma}
-    df = DataFrame(data)
-    df.name = f"FISHERT{props}"
-    df.category = fisher.category
-    return df
+    dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
+    dfg2['Benchmark'] = dfg2['High'].cummax()
+    dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.95
+    dfg2['BValue'] = dfg2['Entry_Price']*15
+    
+    dfg2['TGT_SL'] = np.where(dfg2['High'] > Buy_Target,"TGT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
+    dfg2['SValue'] = np.where(dfg2['TGT_SL'] == "SL",Buy_Stop_Loss*15,np.where(dfg2['TGT_SL'] == "TGT",Buy_Target*15,""))  
+    
+    dfg2['P&L_SL'] = pd.to_numeric(dfg2['SValue']) - dfg2['BValue']
+    dfg2['Qty'] = 15
+    dfgg2 = dfg2.copy()
+    five_df2 = pd.concat([dfg2, five_df2])
+    dfg3 = dfg2[(dfg2['TGT_SL'] != '')]    
+    dfg4 = dfg3.iloc[0:1]
+    five_df1 = pd.concat([dfg4, five_df1])
 
-def macd(close, fast=None, slow=None, signal=None, talib=None, offset=None, **kwargs):
-    """Indicator: Moving Average, Convergence/Divergence (MACD)"""
-    # Validate arguments
-    fast = int(fast) if fast and fast > 0 else 12
-    slow = int(slow) if slow and slow > 0 else 26
-    signal = int(signal) if signal and signal > 0 else 9
-    if slow < fast:
-        fast, slow = slow, fast
-    close = verify_series(close, max(fast, slow, signal))
-    offset = get_offset(offset)
-    mode_tal = bool(talib) if isinstance(talib, bool) else True
+    dfgg2['TGT_TSL'] = np.where(dfgg2['Low'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Low'] < Buy_Stop_Loss,"SL",""))
+    
+    five_df4 = pd.concat([dfgg2, five_df4])
+    dfgg3 = dfgg2[(dfgg2['TGT_TSL'] != '')] 
+    dfgg4 = dfgg3.iloc[0:1]
+    #dfgg4['P&L'] = (dfgg4['TStopLoss'] - dfgg4['Entry_Price'])*Buy_Qty
+    dfgg4['P&L_TSL'] = np.where(dfgg4['TGT_TSL'] == "SL",(dfgg4['StopLoss'] - dfgg4['Entry_Price'])*15,np.where(dfgg4['TGT_TSL'] == "TSL",(dfgg4['TStopLoss'] - dfgg4['Entry_Price'])*15,"" ))
+    five_df3 = pd.concat([dfgg4, five_df3])
 
-    if close is None: return
+# SLL = 20
+# TGG = 70
+# # BuySl = SL*-1
+# # SellSl = SL*1
+# # print(BuySl,SellSl)
+# df['TP'] = df.Close + TGG
+# df['SL'] = df.Close - SLL
 
-    as_mode = kwargs.setdefault("asmode", False)
-
-    # Calculate Result
-    if Imports["talib"] and mode_tal:
-        from talib import MACD
-        macd, signalma, histogram = MACD(close, fast, slow, signal)
-    else:
-        fastma = ema(close, length=fast)
-        slowma = ema(close, length=slow)
-
-        macd = fastma - slowma
-        signalma = ema(close=macd.loc[macd.first_valid_index():,], length=signal)
-        histogram = macd - signalma
-
-    if as_mode:
-        macd = macd - signalma
-        signalma = ema(close=macd.loc[macd.first_valid_index():,], length=signal)
-        histogram = macd - signalma
-
-    # Offset
-    if offset != 0:
-        macd = macd.shift(offset)
-        histogram = histogram.shift(offset)
-        signalma = signalma.shift(offset)
-
-    # Handle fills
-    if "fillna" in kwargs:
-        macd.fillna(kwargs["fillna"], inplace=True)
-        histogram.fillna(kwargs["fillna"], inplace=True)
-        signalma.fillna(kwargs["fillna"], inplace=True)
-    if "fill_method" in kwargs:
-        macd.fillna(method=kwargs["fill_method"], inplace=True)
-        histogram.fillna(method=kwargs["fill_method"], inplace=True)
-        signalma.fillna(method=kwargs["fill_method"], inplace=True)
-
-    # Name and Categorize it
-    _asmode = "AS" if as_mode else ""
-    _props = f"_{fast}_{slow}_{signal}"
-    macd.name = f"MACD{_asmode}{_props}"
-    histogram.name = f"MACD{_asmode}h{_props}"
-    signalma.name = f"MACD{_asmode}s{_props}"
-    macd.category = histogram.category = signalma.category = "momentum"
-
-    # Prepare DataFrame to return
-    data = {macd.name: macd, histogram.name: histogram, signalma.name: signalma}
-    df = DataFrame(data)
-    df.name = f"MACD{_asmode}{_props}"
-    df.category = macd.category
-
-    signal_indicators = kwargs.pop("signal_indicators", False)
-    if signal_indicators:
-        signalsdf = concat(
-            [
-                df,
-                signals(
-                    indicator=histogram,
-                    xa=kwargs.pop("xa", 0),
-                    xb=kwargs.pop("xb", None),
-                    xserie=kwargs.pop("xserie", None),
-                    xserie_a=kwargs.pop("xserie_a", None),
-                    xserie_b=kwargs.pop("xserie_b", None),
-                    cross_values=kwargs.pop("cross_values", True),
-                    cross_series=kwargs.pop("cross_series", True),
-                    offset=offset,
-                ),
-                signals(
-                    indicator=macd,
-                    xa=kwargs.pop("xa", 0),
-                    xb=kwargs.pop("xb", None),
-                    xserie=kwargs.pop("xserie", None),
-                    xserie_a=kwargs.pop("xserie_a", None),
-                    xserie_b=kwargs.pop("xserie_b", None),
-                    cross_values=kwargs.pop("cross_values", False),
-                    cross_series=kwargs.pop("cross_series", True),
-                    offset=offset,
-                ),
-            ],
-            axis=1,
-        )
-
-        return signalsdf
-    else:
-        return df
-
-macdd = (macd(df["Close"],fast=12, slow=26, signal=9, talib=None, offset=None))
-
-fisher_transform = (fisher1(high=df['High'],low=df['Low'],length=20))
-# fisher_transform1 = fisher_transform
-# FISHERT9_1 = fisher_transform1.columns[0]
-# FISHERT9_11 = FISHERT9_1
-# FISHERTs9_1 = fisher_transform1.columns[1]
-# FISHERTs9_11 = FISHERTs9_1
-
-df["MA_5"] = np.round((pta.ema(df["Close"], length=5)),2)
-#df["MA_20"] = np.round((pta.ema(df["Close"], length=20)),2)
-df['MACD_WH'] = np.round((macdd[macdd.columns[0]]),2)
-df['MACD_RED'] = np.round((macdd[macdd.columns[2]]),2)
-df['MACD_HIST'] = np.round((macdd[macdd.columns[1]]),2)
-
-# df['FISHERT_WH'] = np.round((fisher_transform[fisher_transform.columns[0]]),2)
-# df['FISHERTs_RED'] = np.round((fisher_transform[fisher_transform.columns[1]]),2)
-print(df.tail(5))
-# for i in (10,13):
-#     df['EMA_'+str(i)] = np.round((ta.trend.ema_indicator(df.Close, window=i)),2)
-# df['atr'] = np.round((ta.volatility.average_true_range(df.High,df.Low,df.Close)),2)
-
-
-SLL = 20
-TGG = 70
-# BuySl = SL*-1
-# SellSl = SL*1
-# print(BuySl,SellSl)
-df['TP'] = df.Close + TGG
-df['SL'] = df.Close - SLL
-
-# df['TP'] = df.Close + (df.atr * 2)
-# df['SL'] = df.Close - (df.atr * 3)
-
-
-
-
-
-
-df['Entry'] = np.where(((np.where((df['High'].shift(1))<(df['MA_5'].shift(1)),"B_E",""))=="B_E") & ((np.where(df['Close']>df['MA_5'],"B_E",""))=="B_E"),"B_E",
-                  np.where(((np.where((df['Low'].shift(1))>(df['MA_5'].shift(1)),"S_E",""))=="S_E") & ((np.where(df['Close']<df['MA_5'],"S_E",""))=="S_E"),"S_E",""))
-#df['Entry'] = np.where((df.FISHERT_WH > df.FISHERTs_RED),"B_E",np.where((df.FISHERT_WH < df.FISHERTs_RED),"S_E",npNaN))
-df['Entry'] = df['Entry'].ffill()
-df['Entry1'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(1) != "B_E"),"B_E",np.where((df['Entry'] == "S_E") & (df['Entry'].shift(1) != "S_E"),"S_E",""))
-df['Ent_A'] = (np.where(df['Entry1'] == "B_E",df['Close'],(np.where(df['Entry1'] == "S_E",df['Close'],npNaN))))
-df['Ent_A'] = df['Ent_A'].ffill()
-df['Ent_B'] = df['Close']-df['Ent_A']
-df['Ent_B'] = np.where(df['Entry'] == "B_E",(df['Close']-df['Ent_A']),np.where(df['Entry'] == "S_E", (df['Ent_A'] - df['Close']),0))
-df['Ent_C'] = np.where(((df['Entry'] == "B_E") & (df['Ent_B'] <= - SLL)),"B_SL",np.where(((df['Entry'] == "B_E") & (df['Ent_B'] >= TGG)),"B_TP",
-              np.where(((df['Entry'] == "S_E") & (df['Ent_B'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_B'] >= TGG)),"S_TP",""))))
-
-# df['Entry'] = np.where((df.FISHERT_WH < df.FISHERTs_RED),"S_E","")
-# df['Entry1'] = np.where((df['Entry'] == "S_E") & (df['Entry'].shift(1) != "S_E"),"S_E","")
-# df['Ent_A'] = (np.where(df['Entry1'] == "S_E",df['Close'],npNaN))
-# df['Ent_A'] = df['Ent_A'].ffill()
-# df['Ent_Bb'] = np.where(df['Entry'] == "S_E", (df['Ent_A'] - df['Close']),0)
-# df['Ent_Cb'] = np.where(((df['Entry'] == "S_E") & (df['Ent_Bb'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_Bb'] >= TGG)),"S_TP",""))
-
-df.dropna(inplace=True)
-
-length = len(df)-1
-
-Buying = pd.DataFrame()
-Selling = pd.DataFrame()
-new_df1 = pd.DataFrame()    
-
-for i in range(len(df)):
-    if [i+1][0] <= length:
-        if df['Entry1'].iloc[i + 1] == "B_E":
-            bay = (df['Ent_A'].iloc[i + 1])
-            buyy = df[i+1:i+2]
-            Buying = pd.concat([buyy, Buying])
-            sal = df[df['Ent_A'] == bay]
-            sal1 = (sal[(sal['Ent_C'] == "B_SL") | (sal['Ent_C'] == "B_TP")])
-            sal1['Sell_Date'] = (df.Date.iloc[i + 1])
-            sal1['Sell_Time'] = (df.Time.iloc[i + 1])
-            Selling = pd.concat([sal1[:1], Selling])
-
-        if df['Entry1'].iloc[i + 1] == "S_E":
-            bay1 = (df['Ent_A'].iloc[i + 1])
-            buyy1 = df[i+1:i+2]
-            Buying = pd.concat([buyy1, Buying])
-            sal1 = df[df['Ent_A'] == bay1]
-            sal11 = (sal1[(sal1['Ent_C'] == "S_SL") | (sal1['Ent_C'] == "S_TP")])
-            sal11['Sell_Date'] = (df.Date.iloc[i + 1])
-            sal11['Sell_Time'] = (df.Time.iloc[i + 1])
-            Selling = pd.concat([sal11[:1], Selling])
-
-Buying.sort_values(['Date', 'Time'], ascending=[True, True], inplace=True) 
-Buying.rename(columns={'Date': 'Datee', 'Time': 'Timee'}, inplace=True)
-Selling.sort_values(['Date', 'Time'], ascending=[True, True], inplace=True)  
-Selling.rename(columns={'Sell_Date': 'Datee', 'Sell_Time': 'Timee'}, inplace=True)
-new_df1 = pd.merge(Buying, Selling,on=["Datee", "Timee"])
-
-# selldates = []
-# outcome = []
-
-# for i in range(length):
-#     if df.Buysignal.iloc[i]:
-#         k = 1
-#         SL = df.SL.iloc[i]     
-#         TP = df.TP.iloc[i]
-#         in_position = True
-#         while in_position:
-#             if [i+k][0] <= length:
-#                 looping_close = df.Close.iloc[i + k]
-#                 if looping_close >= TP:
-#                     selldates.append(df.iloc[i+k].name)
-#                     outcome.append('TP')
-#                     in_position = False
-#                 elif looping_close <= SL:
-#                     selldates.append(df.iloc[i+k].name)
-#                     outcome.append('SL')                         
-#                 k += 1
-#                 in_position = False           
-
-# df.loc[selldates, "Sellsignal"] = 1
-# df.Sellsignal = df.Sellsignal.fillna(0).astype(int)
-# df['Sellsignal1'] = np.where((df['Sellsignal'] == 1) & (df['Sellsignal'].shift(1) == 0),1,0)
-# df.loc[selldates, "outcome"] = outcome
-# buyyy = df[(df.Buysignal1 == 1)]
-# mask2 = df[(df.Sellsignal1 == 1)]
-# print(mask2.outcome.value_counts().sum())
-# print(mask2.outcome.value_counts())
 
 print("Excel Starting....")
 if not os.path.exists("haresh_backtest.xlsx"):
@@ -344,25 +166,52 @@ if not os.path.exists("haresh_backtest.xlsx"):
         print(f"Error : {e}")
         sys.exit()
 wb = xw.Book('haresh_backtest.xlsx')
-for i in ["Data","Buy","Sale","Final"]:
+for i in ["Data","Buy","Sale","Final","DF1","DF2","DF3","DF4","DF5","DF6"]:
     try:
         wb.sheets(i)
     except:
         wb.sheets.add(i)
 dt = wb.sheets("Data")
+fl = wb.sheets("Final")
 by = wb.sheets("Buy")
 sl = wb.sheets("Sale")
-fl = wb.sheets("Final")
+df1 = wb.sheets("DF1")
+df2 = wb.sheets("DF2")
+df3 = wb.sheets("DF3")
+df4 = wb.sheets("DF4")
+df5 = wb.sheets("DF5")
+df6 = wb.sheets("DF6")
+
+
 dt.range("a:z").value = None
 by.range("a:z").value = None
 sl.range("a:ab").value = None
 fl.range("a:az").value = None
+df1.range("a:az").value = None
+df2.range("a:az").value = None
+df3.range("a:az").value = None
+df4.range("a:az").value = None
+df5.range("a:az").value = None
+df6.range("a:az").value = None
+
 
 try:
     time.sleep(0.5)
     dt.range("a1").value = df
-    by.range("a1").value = Buying
-    sl.range("a1").value = Selling
-    fl.range("a1").value = new_df1
+    by.range("a1").value = df_buy
+    five_df1.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+    df1.range("a1").value = five_df1
+    five_df2.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+    df2.range("a1").value = five_df2
+    five_df3.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+    df3.range("a1").value = five_df3
+    five_df4.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+    df4.range("a1").value = five_df4
+    five_df5.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+    df5.range("a1").value = five_df5
+    five_df6.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+    df6.range("a1").value = five_df6
+    # sl.range("a1").value = Selling
+    # fl.range("a1").value = new_df1
 except Exception as e:
     print(e)

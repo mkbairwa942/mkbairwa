@@ -23,7 +23,7 @@ import requests
 import itertools
 import math 
 from telethon.sync import TelegramClient
-from notifypy import Notify
+#from notifypy import Notify
 #from plyer import notification
 import inspect
 import time
