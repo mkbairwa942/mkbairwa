@@ -591,7 +591,7 @@ while True:
 
 
 
-                dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 70 ) & (dfg2["Pdhb_Opt"] == "PDHB") & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                dfgg_up_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Buy_new") & (dfg2["RSI_14"] > 70 ) & (dfg2["Pdhb_Opt"] == "PDHB") & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                 if len(dfgg_up_11) == 0:
                     print("5 Minute CALL Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")")
@@ -763,7 +763,7 @@ while True:
                 five_df6 = pd.concat([dfgg_dn_111, five_df6])
 
 
-                dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 30 ) & (dfg2["Pdlb_Opt"] == "PDLB") & (dfg2["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+                dfgg_dn_11 = dfg2[(dfg2["Vol_Price_break"] == "Vol_Pri_break") & (dfg2["Buy/Sell1"] == "Sell_new") & (dfg2["RSI_14"] < 30 ) & (dfg2["Pdlb_Opt"] == "PDLB") & (dfg2["Date"] == current_trading_day.date()) & (dfg2["Minutes"] < 5 )]
 
                 if len(dfgg_dn_11) == 0:
                     print("5 Minute Put Option Data Scan But Not Selected "+str(stk_name2)+" ("+str(Scripc)+")") 

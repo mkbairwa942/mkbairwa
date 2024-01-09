@@ -307,95 +307,100 @@ while True:
                     ash.range("ad1").value = pd.DataFrame(client.margin())
                     ash.range("ad10").value = pd.DataFrame(client.holdings())
                     ash.range("ad20").value = pd.DataFrame(client.positions()) 
+
+
+                    posit = pd.DataFrame(client.positions()) 
+                    posit1 = posit #posit[(posit['MTOM'] != 0)]             
+                    posit3 = np.unique([int(i) for i in posit1['ScripCode']])
+
                 except Exception as e:
                     print(e)
-
-                posit = pd.DataFrame(client.positions()) 
-                posit1 = posit #posit[(posit['MTOM'] != 0)]             
-                posit3 = np.unique([int(i) for i in posit1['ScripCode']])
 
                 five_df3 = pd.DataFrame()
                 five_df4 = pd.DataFrame()
 
                 for ord in posit3:
-                    #print(ord)
-                    #time.sleep(0.5)
-                    timee = datetime.now()
-                    #print(timee)
-                    new_df1 = posit1[(posit1['ScripCode'] == ord)]
-                    Buy_Name = list(new_df1['ScripName'])[0]
-                    Buy_price = float(new_df1['BuyAvgRate'])                 
-                    Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*stoploss)/100),1))
-                    Buy_Target = float(round((((new_df1['BuyAvgRate']*stoploss)/100) + new_df1['BuyAvgRate']),1))
-                    Buy_Exc = list(new_df1['Exch'])[0]
-                    Buy_Exc_Type = list(new_df1['ExchType'])[0]
-                    Buy_Qty = int(new_df1['BuyQty'])    
-                    Buy_timee = datetime.now()     
+                    try:
+                        #print(ord)
+                        #time.sleep(0.5)
+                        timee = datetime.now()
+                        #print(timee)
+                        new_df1 = posit1[(posit1['ScripCode'] == ord)]
+                        Buy_Name = list(new_df1['ScripName'])[0]
+                        Buy_price = float(new_df1['BuyAvgRate'])                 
+                        Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*stoploss)/100),1))
+                        Buy_Target = float(round((((new_df1['BuyAvgRate']*stoploss)/100) + new_df1['BuyAvgRate']),1))
+                        Buy_Exc = list(new_df1['Exch'])[0]
+                        Buy_Exc_Type = list(new_df1['ExchType'])[0]
+                        Buy_Qty = int(new_df1['BuyQty'])    
+                        Buy_timee = datetime.now()     
 
-                    Buy_timee = Buy_timee - timedelta(minutes=1)
-                    
-                    # if Buy_Name == 'TATACONSUM 25 Jan 2024 CE 1080.00':                            
-                    #     Buy_timee = '2023-12-29 10:34:12'
-                    # if Buy_Name == 'TATACONSUM 25 Jan 2024 CE 1090.00':                            
-                    #     Buy_timee = '2023-12-29 14:31:18'
-                    # if Buy_Name == 'GUJGASLTD 25 Jan 2024 CE 470.00':                            
-                    #     Buy_timee = '2023-12-29 15:04:30'
-                    # if Buy_Name == 'GMRINFRA':                            
-                    #     Buy_timee = '2023-12-29 15:28:08'
-                    # if Buy_Name == 'NATURALGAS 23 Jan 2024 CE 210.00':                            
-                    #     Buy_timee = '2023-12-29 16:48:08'
-                    Buy_timee1 = str(Buy_timee).replace(' ','T')
-                    #print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty,Buy_timee,Buy_timee1)
+                        Buy_timee = Buy_timee - timedelta(minutes=1)
+                        
+                        # if Buy_Name == 'TATACONSUM 25 Jan 2024 CE 1080.00':                            
+                        #     Buy_timee = '2023-12-29 10:34:12'
+                        # if Buy_Name == 'TATACONSUM 25 Jan 2024 CE 1090.00':                            
+                        #     Buy_timee = '2023-12-29 14:31:18'
+                        # if Buy_Name == 'GUJGASLTD 25 Jan 2024 CE 470.00':                            
+                        #     Buy_timee = '2023-12-29 15:04:30'
+                        # if Buy_Name == 'GMRINFRA':                            
+                        #     Buy_timee = '2023-12-29 15:28:08'
+                        # if Buy_Name == 'NATURALGAS 23 Jan 2024 CE 210.00':                            
+                        #     Buy_timee = '2023-12-29 16:48:08'
+                        Buy_timee1 = str(Buy_timee).replace(' ','T')
+                        #print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty,Buy_timee,Buy_timee1)
 
-                    dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
-                    #print(dfg1.head(2))
-                    
-                    # dataframe_empty['Buy_timee'] = Buy_timee1
-                    # dataframe_empty['Close'] = dfg1.iloc['Close'][-1]
-                    # print(dataframe_empty)
-                    # dataframe_empty = pd.concat([dataframe_empty, dataframe_empty])
-                    # print(dataframe_empty)
-                    dfg1['ScripCode'] = ord
-                    dfg1['ScripName'] = Buy_Name
-                    dfg1['Entry_Date'] = Buy_timee1
-                    dfg1['Entry_Price'] = Buy_price
-                    #print(dfg1.head(2))
-                    dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
-                    dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
-                    dfg1['TimeNow'] = datetime.now()
-                    #print(dfg1.head(1))
-                    # dfg1['Minutes'] = pd.to_datetime(dfg1['TimeNow'])-Buy_timee1
-                    # dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)
-                    
-                    dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
-                    #print(dfg2.head(1))
-                    # dfg2['StopLoss'] = Buy_Stop_Loss
-                    # dfg2['Benchmark'] = dfg2['High'].cummax()
-                    # dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
-                    # dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < Buy_Stop_Loss,"SL",""))
-                    # dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
-                    # #print(dfg2)
-                    # final_df = pd.merge(posit1,dfg2, on=['ScripCode'], how='inner')  
-                    # final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
-                    # final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
-                    # final_df = final_df[['ScripName_x','Exch','ExchType','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]
-                    # five_df4 = pd.concat([final_df, five_df4])
-                    dfg22 = dfg2.tail(1)
-                    #print(dfg22)
-                    dataframe_empty = pd.concat([dfg22, dataframe_empty])
+                        dfg1 = client.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
+                        #print(dfg1.head(2))
+                        
+                        # dataframe_empty['Buy_timee'] = Buy_timee1
+                        # dataframe_empty['Close'] = dfg1.iloc['Close'][-1]
+                        # print(dataframe_empty)
+                        # dataframe_empty = pd.concat([dataframe_empty, dataframe_empty])
+                        # print(dataframe_empty)
+                        dfg1['ScripCode'] = ord
+                        dfg1['ScripName'] = Buy_Name
+                        dfg1['Entry_Date'] = Buy_timee1
+                        dfg1['Entry_Price'] = Buy_price
+                        #print(dfg1.head(2))
+                        dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
+                        dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
+                        dfg1['TimeNow'] = datetime.now()
+                        #print(dfg1.head(1))
+                        # dfg1['Minutes'] = pd.to_datetime(dfg1['TimeNow'])-Buy_timee1
+                        # dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)
+                        
+                        dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
+                        #print(dfg2.head(1))
+                        # dfg2['StopLoss'] = Buy_Stop_Loss
+                        # dfg2['Benchmark'] = dfg2['High'].cummax()
+                        # dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
+                        # dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < Buy_Stop_Loss,"SL",""))
+                        # dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
+                        # #print(dfg2)
+                        # final_df = pd.merge(posit1,dfg2, on=['ScripCode'], how='inner')  
+                        # final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
+                        # final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TGT")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
+                        # final_df = final_df[['ScripName_x','Exch','ExchType','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]
+                        # five_df4 = pd.concat([final_df, five_df4])
+                        dfg22 = dfg2.tail(1)
+                        #print(dfg22)
+                        dataframe_empty = pd.concat([dfg22, dataframe_empty])
 
-                    # st4.range("a:q").value = None
-                    # st4.range("a1").options(index=False).value = dfg22
-                    # #print(dfg2.head(2))
-                    # #print(dfg2.iloc[[-1]])
-                    # #five_df4 = pd.concat([dfg2, five_df4])
-                    # dfg3 = dfg2[(dfg2['Status'] != '')] 
+                        # st4.range("a:q").value = None
+                        # st4.range("a1").options(index=False).value = dfg22
+                        # #print(dfg2.head(2))
+                        # #print(dfg2.iloc[[-1]])
+                        # #five_df4 = pd.concat([dfg2, five_df4])
+                        # dfg3 = dfg2[(dfg2['Status'] != '')] 
 
-                    # if dfg3.empty:
-                    #     dfg4 = dfg2.iloc[[-1]]
-                    # else:  
-                    #     dfg4 = dfg3.iloc[0:1]
-                    # five_df3 = pd.concat([dfg4, five_df3])
+                        # if dfg3.empty:
+                        #     dfg4 = dfg2.iloc[[-1]]
+                        # else:  
+                        #     dfg4 = dfg3.iloc[0:1]
+                        # five_df3 = pd.concat([dfg4, five_df3])
+                    except Exception as e:
+                        print(e)
 
                 #print(five_df3)
                 dataframe_empty.sort_values(['ScripName','Entry_Date',], ascending=[True,True], inplace=True)   
@@ -427,16 +432,17 @@ while True:
                     st4.range("a1").options(index=False).value = dataframe_empty
                     ash.range("a1").options(index=False).value = final_df
 
-                    ash.range("t2").options(index=False).value = '=IF(AND(S2="BUY",M2="TSL"),"SELL",IF(AND(S2="BUY",M2="SL"),"SELL",""))'
-                    ash.range("t3").options(index=False).value = '=IF(AND(S3="BUY",M3="TSL"),"SELL",IF(AND(S3="BUY",M3="SL"),"SELL",""))'
-                    ash.range("t4").options(index=False).value = '=IF(AND(S4="BUY",M4="TSL"),"SELL",IF(AND(S4="BUY",M4="SL"),"SELL",""))'
-                    ash.range("t5").options(index=False).value = '=IF(AND(S5="BUY",M5="TSL"),"SELL",IF(AND(S5="BUY",M5="SL"),"SELL",""))'
-                    ash.range("t6").options(index=False).value = '=IF(AND(S6="BUY",M6="TSL"),"SELL",IF(AND(S6="BUY",M6="SL"),"SELL",""))'
-                    ash.range("t7").options(index=False).value = '=IF(AND(S7="BUY",M7="TSL"),"SELL",IF(AND(S7="BUY",M7="SL"),"SELL",""))'
-                    ash.range("t8").options(index=False).value = '=IF(AND(S8="BUY",M8="TSL"),"SELL",IF(AND(S8="BUY",M8="SL"),"SELL",""))'
-                    ash.range("t9").options(index=False).value = '=IF(AND(S9="BUY",M9="TSL"),"SELL",IF(AND(S9="BUY",M9="SL"),"SELL",""))'
-                    ash.range("t10").options(index=False).value = '=IF(AND(S10="BUY",M10="TSL"),"SELL",IF(AND(S10="BUY",M10="SL"),"SELL",""))'
-                    ash.range("t11").options(index=False).value = '=IF(AND(S11="BUY",M11="TSL"),"SELL",IF(AND(S11="BUY",M11="SL"),"SELL",""))'
+                    # ash.range("t2").options(index=False).value = '=IF(AND(S2="BUY",M2="TSL"),"SELL",IF(AND(S2="BUY",M2="SL"),"SELL",""))'
+                    # ash.range("t3").options(index=False).value = '=IF(AND(S3="BUY",M3="TSL"),"SELL",IF(AND(S3="BUY",M3="SL"),"SELL",""))'
+                    # ash.range("t4").options(index=False).value = '=IF(AND(S4="BUY",M4="TSL"),"SELL",IF(AND(S4="BUY",M4="SL"),"SELL",""))'
+                    # ash.range("t5").options(index=False).value = '=IF(AND(S5="BUY",M5="TSL"),"SELL",IF(AND(S5="BUY",M5="SL"),"SELL",""))'
+                    # ash.range("t6").options(index=False).value = '=IF(AND(S6="BUY",M6="TSL"),"SELL",IF(AND(S6="BUY",M6="SL"),"SELL",""))'
+                    # ash.range("t7").options(index=False).value = '=IF(AND(S7="BUY",M7="TSL"),"SELL",IF(AND(S7="BUY",M7="SL"),"SELL",""))'
+                    # ash.range("t8").options(index=False).value = '=IF(AND(S8="BUY",M8="TSL"),"SELL",IF(AND(S8="BUY",M8="SL"),"SELL",""))'
+                    # ash.range("t9").options(index=False).value = '=IF(AND(S9="BUY",M9="TSL"),"SELL",IF(AND(S9="BUY",M9="SL"),"SELL",""))'
+                    # ash.range("t10").options(index=False).value = '=IF(AND(S10="BUY",M10="TSL"),"SELL",IF(AND(S10="BUY",M10="SL"),"SELL",""))'
+                    # ash.range("t11").options(index=False).value = '=IF(AND(S11="BUY",M11="TSL"),"SELL",IF(AND(S11="BUY",M11="SL"),"SELL",""))'
+                
                 except Exception as e:
                     print(e)
                     
