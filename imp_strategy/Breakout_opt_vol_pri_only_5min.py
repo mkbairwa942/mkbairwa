@@ -473,9 +473,6 @@ while True:
 
             pdb = dfg1[(dfg1["Date"] == last_trading_day.date())]
             pdhb1 = pdb['High'].cummax()[0]
-            #dfg1['PDB'] = np.where(dfg1['Open'] > pdhb1,"PDHB","")
-
-            #pdlb = dfg1[(dfg1["Date"] == last_trading_day.date())]
             pdlb1 = pdb['Low'].cummin()[0]
             #dfg1['PDB'] = np.where(dfg1['Open'] < pdlb1,"PDLB","")
             dfg1['PDB'] = np.where(dfg1['Open'] > pdhb1,"PDHB",np.where(dfg1['Open'] < pdlb1,"PDLB",""))                            
