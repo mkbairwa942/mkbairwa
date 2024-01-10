@@ -293,7 +293,11 @@ while True:
                         dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
                         five_df3 = pd.concat([dfg2, five_df3])
                         #print(dfg2.head(1))
-                        dfg3 = dfg2[(dfg2["Status"] == "TSL") | (dfg2["Status"] == "SL")]
+                        dfg3 = dfg2[(dfg2["Status"] == "TSL") | (dfg2["Status"] == "SL")]                       
+
+                        if dfg3.empty:
+                            dfg3 = dfg2.tail(1)
+                            
                         dfg22 = dfg3.head(1)
                         final_df = pd.merge(posit1,dfg22, on=['ScripCode'], how='inner')  
                         final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
