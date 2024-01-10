@@ -35,29 +35,29 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-operate = input("Do you want to go with TOTP (yes/no): ")
-telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
-orders = input("Do you want to Place Real Orders (yes/no): ")
-if operate.upper() == "YES":
-    from five_paisa1 import *
-    # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
-    # print(p)
-    username = input("Enter Username : ")
-    username1 = str(username)
-    print("Hii "+str(username1)+" have a Good Day")
-    # username_totp = input("Enter TOTP : ")
-    # username_totp1 = str(username_totp)
-    # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
-    client = credentials(username1)
-else:
-    from five_paisa import *
+# operate = input("Do you want to go with TOTP (yes/no): ")
+# telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
+# orders = input("Do you want to Place Real Orders (yes/no): ")
+# if operate.upper() == "YES":
+#     from five_paisa1 import *
+#     # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
+#     # print(p)
+#     username = input("Enter Username : ")
+#     username1 = str(username)
+#     print("Hii "+str(username1)+" have a Good Day")
+#     # username_totp = input("Enter TOTP : ")
+#     # username_totp1 = str(username_totp)
+#     # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+#     client = credentials(username1)
+# else:
+#     from five_paisa import *
 
-# operate = "YES"
-# telegram_msg = "yes"
-# orders = "yes"
-# username = "ASHWIN"
-# username1 = str(username)
-# client = credentials(username1)
+operate = "YES"
+telegram_msg = "no"
+orders = "no"
+username = "ASHWIN"
+username1 = str(username)
+client = credentials(username1)
 
 from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
@@ -245,7 +245,7 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-# stk_list = ['BAJAJ-AUTO',	'BPCL',	'BSOFT',	'CANFINHOME',	'DLF',	'FEDERALBNK',	'GODREJPROP',	'GRANULES',	'HEROMOTOCO',	'HINDALCO',	'HINDPETRO',	'IDEA',	'IGL',	'INDHOTEL',	'INDUSTOWER',	'IOC',	'LT',	'MARICO',	'MCX',	'MPHASIS',	'NAUKRI',	'NAVINFLUOR',	'OBEROIRLTY',	'OFSS',	'ONGC',	'PFC',	'PNB',	'RECLTD',	'AARTIIND',	'ABCAPITAL',	'ACC',	'ADANIENT',	'ADANIPORTS',	'ASHOKLEY',	'ASIANPAINT',	'ASTRAL',	'ATUL',	'AUROPHARMA',	'BAJAJFINSV',	'BALRAMCHIN',	'BANKNIFTY',	'BATAINDIA',	'BERGEPAINT',	'BHARTIARTL',	'CANBK',	'CHAMBLFERT',	'COALINDIA',	'CONCOR',	'CROMPTON',	'DABUR',	'DEEPAKNTR',	'DIVISLAB',	'DRREDDY',	'EICHERMOT',	'ESCORTS',	'GMRINFRA',	'GNFC',	'HAVELLS',	'HCLTECH',	'HINDCOPPER',	'ICICIGI',	'IDFC',	'IDFCFIRSTB',	'IEX',	'INDIACEM',	'INDIAMART',	'INDUSINDBK',	'INFY',	'IPCALAB',	'JINDALSTEL',	'JSWSTEEL',	'LTIM',	'LTTS',	'MARUTI',	'MFSL',	'MGL',	'NESTLEIND',	'NIFTY',	'NMDC',	'PETRONET',	'RAMCOCEM',	'RELIANCE',	'SBILIFE',	'SYNGENE',	'TATAPOWER',	'TATASTEEL',	'TCS',	'TECHM',	'TVSMOTOR',	'UBL',	'WIPRO',]
+#stk_list = ['CIPLA',	'HCLTECH',	'BSOFT',	'CANFINHOME',	'DLF',	'FEDERALBNK',	'GODREJPROP',	'GRANULES',	'HEROMOTOCO',	'HINDALCO',	'HINDPETRO',	'IDEA',	'IGL',	'INDHOTEL',	'INDUSTOWER',	'IOC',	'LT',	'MARICO',	'MCX',	'MPHASIS',	'NAUKRI',	'NAVINFLUOR',	'OBEROIRLTY',	'OFSS',	'ONGC',	'PFC',	'PNB',	'RECLTD',	'AARTIIND',	'ABCAPITAL',	'ACC',	'ADANIENT',	'ADANIPORTS',	'ASHOKLEY',	'ASIANPAINT',	'ASTRAL',	'ATUL',	'AUROPHARMA',	'BAJAJFINSV',	'BALRAMCHIN',	'BANKNIFTY',	'BATAINDIA',	'BERGEPAINT',	'BHARTIARTL',	'CANBK',	'CHAMBLFERT',	'COALINDIA',	'CONCOR',	'CROMPTON',	'DABUR',	'DEEPAKNTR',	'DIVISLAB',	'DRREDDY',	'EICHERMOT',	'ESCORTS',	'GMRINFRA',	'GNFC',	'HAVELLS',	'HCLTECH',	'HINDCOPPER',	'ICICIGI',	'IDFC',	'IDFCFIRSTB',	'IEX',	'INDIACEM',	'INDIAMART',	'INDUSINDBK',	'INFY',	'IPCALAB',	'JINDALSTEL',	'JSWSTEEL',	'LTIM',	'LTTS',	'MARUTI',	'MFSL',	'MGL',	'NESTLEIND',	'NIFTY',	'NMDC',	'PETRONET',	'RAMCOCEM',	'RELIANCE',	'SBILIFE',	'SYNGENE',	'TATAPOWER',	'TATASTEEL',	'TCS',	'TECHM',	'TVSMOTOR',	'UBL',	'WIPRO',]
 
 # dfg1 = client.historical_data('N', 'D', 57923, '5m',last_trading_day,current_trading_day) 
 # print(dfg1)
@@ -456,17 +456,17 @@ while True:
                     dfg1 = client.historical_data('N', 'D', aa, '5m',last_trading_day,current_trading_day) 
                     dfg1['Scripcode'] = aa
 
-                    exp.range("a1").options(index=False).value = dfg1
+                    #exp.range("a1").options(index=False).value = dfg1
                     dfg1 = pd.merge(exc_fut, dfg1, on=['Scripcode'], how='inner') 
                     dfg1 = dfg1[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume']]
-                    dfg.sort_values(['Datetime'], ascending=[True], inplace=True)
-                    #exp.range("a1").options(index=False).value = dfg
+                    dfg1.sort_values(['Datetime'], ascending=[True], inplace=True)
+                    #exp.range("a1").options(index=False).value = dfg1
                     dfg1['Date'] = current_trading_day 
                     dfg1["RSI_14"] = np.round((pta.rsi(dfg1["Close"], length=14)),2) 
-                    #exp.range("a1").options(index=False).value = dfg
+                    #exp.range("a1").options(index=False).value = dfg1
                     dfg1.sort_values(['Datetime'], ascending=[False], inplace=True)
                     dfg1['TimeNow'] = datetime.now()
-                    #exp.range("a1").options(index=False).value = dfg
+                    #exp.range("a1").options(index=False).value = dfg1
                     dfg1['Price_Chg'] = round(((dfg1['Close'] * 100) / (dfg1['Close'].shift(-1)) - 100), 2).fillna(0)      
 
                     dfg1['Vol_Chg'] = round(((dfg1['Volume'] * 100) / (dfg1['Volume'].shift(-1)) - 100), 2).fillna(0)
@@ -551,31 +551,37 @@ while True:
                         Excchh = Excchhh[Excchhh['Root'] == stk_name1[0]]
                         Excchh2 = Excchh[(Excchh['StrikeRate'] > Closee)]
                         Excchh3 = Excchh2.head(1)
-                        print(Excchh3)
+                        #print(Excchh3)
                     
                     if not dfgg_dn.empty:
                         print("dn")
                         stk_name1 = np.unique(dfgg_dn['Root'])
                         dfgg_dn_sc = dfgg_dn.iloc[:1]
                         Closee = int(dfgg_dn_sc['Close'])
-                        # print(Closee)
+                        print(Closee)
                         Excchhh = exc_opt[(exc_opt["CpType"] == 'PE')]
                         Excchh = Excchhh[Excchhh['Root'] == stk_name1[0]]
                         Excchh2 = Excchh[(Excchh['StrikeRate'] < Closee)]
                         Excchh3 = Excchh2.tail(1)
-                        print(Excchh3)
+                        #print(Excchh3)
                         # Excchh2.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
                         #dfgg_up_scpt4 = Excchh2.iloc[1:2]
                     Scripc = int(np.unique(Excchh3['Scripcode']))
+                    print(Scripc)
                     dfg2 = client.historical_data('N', 'D', Scripc, '5m',last_trading_day,current_trading_day) 
                     dfg2['Scripcode'] = Scripc
                     dfg2 = pd.merge(exc_opt, dfg2, on=['Scripcode'], how='inner') 
+                    #exp.range("a1").options(index=False).value = dfg2
+                    print("0")
+                    print(dfg2.tail(1))
                     dfg2.sort_values(['Datetime'], ascending=[True], inplace=True)
                     dfg2 = dfg2[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume','LotSize']]
+                    print("1")
                     dfg2['Date'] = current_trading_day 
                     dfg2["RSI_14"] = np.round((pta.rsi(dfg2["Close"], length=14)),2) 
-
+                    #exp.range("a1").options(index=False).value = dfg2
                     dfg2.sort_values(['Datetime'], ascending=[False], inplace=True)
+                    print("2")
                     dfg2['TimeNow'] = datetime.now()
                     dfg2['Price_Chg'] = round(((dfg2['Close'] * 100) / (dfg2['Close'].shift(-1)) - 100), 2).fillna(0)      
                     
@@ -589,7 +595,7 @@ while True:
                                                         "Vol_brk","")       
                                                                                                                         
                     dfg2['Vol_Price_break'] = np.where((dfg2['Vol_break'] == "Vol_brk") & (dfg2['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((dfg2['Vol_break'] == "Vol_brk") & (dfg2['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
-                    
+                    #exp.range("a1").options(index=False).value = dfg2
                     dfg2['O=H=L'] = np.where((dfg2['Open'] == dfg2['High']), 'Open_High',
                                                     (np.where((dfg2['Open'] == dfg2['Low']), 'Open_Low', "")))
                     dfg2['Pattern'] = np.where((dfg2['High'] < dfg2['High'].shift(-1)) &
@@ -671,13 +677,6 @@ while True:
                                 print("Telegram Message are OFF")
 
                         else:    
-                            # buy_order_li = ordef_func()                            
-                            # buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
-                            # print(aa,buy_order_list,Buy_Scriptcodee)
-                            # Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
-                            # if Buy_Scriptcodee in buy_order_list:                                     
-                            #     print(str(Buy_Scriptcodee)+" is Already Buy")
-                            # else:
                             if Buy_Scriptcodee in buy_order_list_dummy: 
                                 print(str(Buy_Scriptcodee)+" is Already Buy")
                             else:

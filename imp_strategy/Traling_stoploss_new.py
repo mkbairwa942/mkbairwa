@@ -386,23 +386,23 @@ while True:
                 #     print(buy_order_liiist1['ExchOrderID'],buy_order_liiist1['ScripCode'],buy_order_liiist1['ScripName'])
                 
                 
-                order_dff = final_df[(final_df['Exit'] == 'SELL')]
-                #order_dff = final_df
-                if order_dff.empty:
-                    print("No Open Position of Ashwin")
-                else:
-                    try: 
-                        order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
-                        buy_order_liiist1 = buy_order_li[(buy_order_li['AveragePrice'] != 0) & (buy_order_li['BuySell'] == 'S')]
-                        for ordd1 in order_dff_Scpt:
-                            order_df1 = buy_order_liiist1[(buy_order_liiist1['ScripCode'] == ordd1)]                            
-                            order = credi_ash.cancel_order(exch_order_id=int(order_df1['ScripCode']))
-                        for ordd in order_dff_Scpt:
-                            order_df = order_dff[(order_dff['ScripCode'] == ordd)]
-                            order = credi_ash.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                            print("Sell order Executed") 
-                    except Exception as e:
-                        print(e)
+                # order_dff = final_df[(final_df['Exit'] == 'SELL')]
+                # #order_dff = final_df
+                # if order_dff.empty:
+                #     print("No Open Position of Ashwin")
+                # else:
+                #     try: 
+                #         order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
+                #         buy_order_liiist1 = buy_order_li[(buy_order_li['AveragePrice'] != 0) & (buy_order_li['BuySell'] == 'S')]
+                #         for ordd1 in order_dff_Scpt:
+                #             order_df1 = buy_order_liiist1[(buy_order_liiist1['ScripCode'] == ordd1)]                            
+                #             order = credi_ash.cancel_order(exch_order_id=int(order_df1['ScripCode']))
+                #         for ordd in order_dff_Scpt:
+                #             order_df = order_dff[(order_dff['ScripCode'] == ordd)]
+                #             order = credi_ash.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                #             print("Sell order Executed") 
+                #     except Exception as e:
+                #         print(e)
                         
             print("Data Analysis Complete for Ashwin")
             print("---------------------------------")
