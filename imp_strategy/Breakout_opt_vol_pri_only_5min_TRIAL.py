@@ -35,25 +35,25 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-# operate = input("Do you want to go with TOTP (yes/no): ")
-# notifi = input("Do you want to send Notification on Desktop (yes/no): ")
-# telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
-# orders = input("Do you want to Place Real Orders (yes/no): ")
-# if operate.upper() == "YES":
-#     from five_paisa1 import *
-#     username = input("Enter Username : ")
-#     username1 = str(username)
-#     print("Hii "+str(username1)+" have a Good Day")
-#     client = credentials(username1)
-# else:
-#     from five_paisa import *
+operate = input("Do you want to go with TOTP (yes/no): ")
+notifi = input("Do you want to send Notification on Desktop (yes/no): ")
+telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
+orders = input("Do you want to Place Real Orders (yes/no): ")
+if operate.upper() == "YES":
+    from five_paisa1 import *
+    username = input("Enter Username : ")
+    username1 = str(username)
+    print("Hii "+str(username1)+" have a Good Day")
+    client = credentials(username1)
+else:
+    from five_paisa import *
 
-operate = "YES"
-telegram_msg = "no"
-orders = "no"
-username = "ASHWIN"
-username1 = str(username)
-client = credentials(username1)
+# operate = "YES"
+# telegram_msg = "no"
+# orders = "no"
+# username = "ASHWIN"
+# username1 = str(username)
+# client = credentials(username1)
 
 from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
@@ -392,8 +392,8 @@ while True:
 
             five_df1 = pd.concat([dfg1, five_df1])
 
-            dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1['PDB'] == "PDHB") &]# & (dfg1["Minutes"] < 5 )]
-            dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1['PDB'] == "PDLB")]# & (dfg1["Minutes"] < 5 )]
+            dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
+            dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDLB")]
 
             dfgg_up1 = dfgg_up.iloc[:2]
             dfgg_dn1 = dfgg_dn.iloc[:2]
@@ -407,69 +407,68 @@ while True:
             print("5 Min Future Data Download and Scan "+str(stk_name)+" ("+str(aaa)+")")                                   
 
 
-            # if not dfgg_up.empty:
-            #     print("up")
-            #     stk_name1 = np.unique(dfgg_up['Root'])
-            #     dfgg_up_sc = dfgg_up.iloc[:1]
-            #     Closee = int(dfgg_up_sc['Close'])
-            #     print(Closee)
-            #     Excchhh = exc_opt[(exc_opt["CpType"] == 'CE')]
-            #     Excchh = Excchhh[Excchhh['Root'] == stk_name1[0]]
-            #     Excchh2 = Excchh[(Excchh['StrikeRate'] > Closee)]
-            #     Excchh2.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-            #     Excchh3 = Excchh2.head(1)
+            if not dfgg_up.empty:
+                print("up")
+                stk_name1 = np.unique(dfgg_up['Root'])
+                dfgg_up_sc = dfgg_up.iloc[:1]
+                Closee = int(dfgg_up_sc['Close'])
+                print(Closee)
+                Excchhh = exc_opt[(exc_opt["CpType"] == 'CE')]
+                Excchh = Excchhh[Excchhh['Root'] == stk_name1[0]]
+                Excchh2 = Excchh[(Excchh['StrikeRate'] > Closee)]
+                Excchh2.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+                Excchh3 = Excchh2.head(1)
 
-            #     Buy_quantity_of_stock = int(np.unique(Excchh3['LotSize']))
-            #     Buy_Scriptcodee = int(np.unique(Excchh3['Scripcode']))
-            #     Buy_Root = str(np.unique(Excchh3['Root']))
-            #     print(Buy_quantity_of_stock,Buy_Scriptcodee)
+                Buy_quantity_of_stock = int(np.unique(Excchh3['LotSize']))
+                Buy_Scriptcodee = int(np.unique(Excchh3['Scripcode']))
+                Buy_Root = str(np.unique(Excchh3['Root']))
+                #print(Buy_quantity_of_stock,Buy_Scriptcodee)
 
-            #     dfg2 = client.historical_data('N', 'D', Buy_Scriptcodee, '5m',last_trading_day,current_trading_day)
+                dfg2 = client.historical_data('N', 'D', Buy_Scriptcodee, '5m',last_trading_day,current_trading_day)
                  
-            #     dfg2['Scripcode'] = Buy_Scriptcodee
-            #     dfg2 = pd.merge(exc_opt, dfg2, on=['Scripcode'], how='inner')
-            #     dfg2 = dfg2[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume','LotSize']]
-            #     dfg2['Buy_At'] = round((dfg2['Close']),1)
-            #     dfg2['Buy/Sell1'] = np.where((dfg2['Close'] > dfg2['High'].shift(1)),"Buy_new",np.where((dfg2['Close'] < dfg2['Low'].shift(1)),"Sell_new",""))#np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))
-            #     dfg2['Stop_Loss'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),1),""))
-            #     dfg2['Add_Till'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*0.5)/100) + dfg2['Buy_At']),1),""))     
-            #     dfg2['Target'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),""))
-            #     five_df4 = pd.concat([dfg2, five_df4])
-            #     dfg3 = dfg2.tail(1)
-            #     print(dfg3)
-            #     stk_name2 = dfg3['Name']
-            #     print(dfg3)
-
-            #     if Buy_Scriptcodee in buy_order_list_dummy and Buy_Root in buy_root_list_dummy: 
-            #         print(str(Buy_Scriptcodee)+" is Already Buy")
-            #     else:
-            #         Buy_Root = str(dfg3['Root'])
-            #         Buy_Scriptcodee = int(dfg3['Scripcode'])
-            #         Buy_price_of_stock = float(dfg3['Buy_At'])  
-            #         Buy_Add_Till = float(dfg3['Add_Till'])                
-            #         Buy_Stop_Loss = float(dfg3['Stop_Loss'])    
-            #         Buy_Target = float(dfg3['Target'])                                  
-            #         Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
-            #         Buy_timee1= Buy_timee.replace("T", " " )
-            #         buy_order_list_dummy.append(Buy_Scriptcodee)
-                    
-            #         if orders.upper() == "YES" or orders.upper() == "":
-            #             #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
-            #             order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-            #             #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 1660, Qty=1, LimitPrice=330,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
-            #             #order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-0.5,TrailingSL=0.5)
-            #             #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
-            #         else:
-            #             print("Real Call Order are OFF")
-            #         print("5 Minute Data Call Selected "+str(stk_name2)+" ("+str(Buy_Scriptcodee)+")")
-            #         print("Call Buy Order of "+str(stk_name2)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on"+str(Buy_timee1))
+                dfg2['Scripcode'] = Buy_Scriptcodee
+                dfg2 = pd.merge(exc_opt, dfg2, on=['Scripcode'], how='inner')
+                dfg2 = dfg2[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume','LotSize']]
+                dfg2['Buy_At'] = round((dfg2['Close']),1)
+                dfg2['Buy/Sell1'] = np.where((dfg2['Close'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))
+                dfg2['Stop_Loss'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1)                
+                dfg2['Add_Till'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1)                
+                dfg2['Target'] = round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2)
                 
-            #         print("SYMBOL : "+str(stk_name2)+"\n Call BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1))
-            #         if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
-            #             parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(stk_name2)+"\n Call BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
-            #             resp = requests.get(telegram_basr_url, data=parameters1)
-            #         else:
-            #             print("Telegram Message are OFF")
+                five_df5 = pd.concat([dfg2, five_df5])
+                dfg3 = dfg2.tail(1)
+                stk_name2 = dfg3['Name']
+
+                if Buy_Scriptcodee in buy_order_list_dummy and Buy_Root in buy_root_list_dummy: 
+                    print(str(Buy_Scriptcodee)+" is Already Buy")
+                else:
+                    Buy_Root = str(dfg3['Root'])
+                    Buy_Scriptcodee = int(dfg3['Scripcode'])
+                    Buy_price_of_stock = float(dfg3['Buy_At'])  
+                    Buy_Add_Till = float(dfg3['Add_Till'])                
+                    Buy_Stop_Loss = float(dfg3['Stop_Loss'])    
+                    Buy_Target = float(dfg3['Target'])                                  
+                    Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
+                    Buy_timee1= Buy_timee.replace("T", " " )
+                    buy_order_list_dummy.append(Buy_Scriptcodee)
+                    
+                    if orders.upper() == "YES" or orders.upper() == "":
+                        #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
+                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 1660, Qty=1, LimitPrice=330,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
+                        #order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-0.5,TrailingSL=0.5)
+                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
+                    else:
+                        print("Real Call Order are OFF")
+                    print("5 Minute Data Call Selected "+str(stk_name2)+" ("+str(Buy_Scriptcodee)+")")
+                    print("Call Buy Order of "+str(stk_name2)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on"+str(Buy_timee1))
+                
+                    print("SYMBOL : "+str(stk_name2)+"\n Call BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1))
+                    if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
+                        parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(stk_name2)+"\n Call BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
+                        resp = requests.get(telegram_basr_url, data=parameters1)
+                    else:
+                        print("Telegram Message are OFF")
 
 
             if not dfgg_dn.empty:
@@ -487,7 +486,7 @@ while True:
                 Sell_quantity_of_stock = int(np.unique(Excchh3['LotSize']))
                 Sell_Scriptcodee = int(np.unique(Excchh3['Scripcode']))
                 Sell_Root = str(np.unique(Excchh3['Root']))
-                print(Sell_quantity_of_stock,Sell_Scriptcodee)
+                #print(Sell_quantity_of_stock,Sell_Scriptcodee)
 
                 dfg2 = client.historical_data('N', 'D', Sell_Scriptcodee, '5m',last_trading_day,current_trading_day)
                 
@@ -496,13 +495,13 @@ while True:
                 dfg2 = dfg2[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume','LotSize']]
                 dfg2['Buy_At'] = round((dfg2['Close']),1)
                 dfg2['Buy/Sell1'] = np.where((dfg2['Close'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))
-                dfg2['Stop_Loss'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),1),""))
-                dfg2['Add_Till'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((((dfg2['Buy_At']*0.5)/100) + dfg2['Buy_At']),1),""))     
-                dfg2['Target'] = np.where(dfg2['Buy/Sell1'] == "Buy_new",round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2),np.where(dfg2['Buy/Sell1'] == "Sell_new",round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1),""))
-                five_df5 = pd.concat([dfg2, five_df5])
+                dfg2['Stop_Loss'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1)                
+                dfg2['Add_Till'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1)                
+                dfg2['Target'] = round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2)
+                
+                five_df6 = pd.concat([dfg2, five_df6])
                 dfg3 = dfg2.tail(1)
                 stk_name2 = dfg3['Name']
-                print(dfg3)
 
                 if Sell_Scriptcodee in buy_order_list_dummy and Sell_Root in buy_root_list_dummy: 
                     print(str(Sell_Scriptcodee)+" is Already Buy")
@@ -510,8 +509,8 @@ while True:
                     Sell_Root = str(dfg3['Root'])
                     Sell_Scriptcodee = int(dfg3['Scripcode'])
                     Sell_price_of_stock = float(dfg3['Buy_At'])  
-                    Sell_Add_Till = float(dfg3['Add_Till'])                       
-                    Sell_Stop_Loss = float(dfg3['Stop_Loss'])    
+                    Sell_Add_Till = float(dfg3['Add_Till'])                   
+                    Sell_Stop_Loss = float(dfg3['Stop_Loss'])   
                     Sell_Target = float(dfg3['Target']) 
                     Sell_timee = str((dfg3['Datetime'].values)[0])[0:19] 
                     Sell_timee1= Sell_timee.replace("T", " " )
