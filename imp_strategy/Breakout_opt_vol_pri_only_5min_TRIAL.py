@@ -451,6 +451,7 @@ while True:
                     Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
                     Buy_timee1= Buy_timee.replace("T", " " )
                     buy_order_list_dummy.append(Buy_Scriptcodee)
+                    buy_root_list_dummy.append(Buy_Root)
                     
                     if orders.upper() == "YES" or orders.upper() == "":
                         #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
@@ -515,6 +516,7 @@ while True:
                     Sell_timee = str((dfg3['Datetime'].values)[0])[0:19] 
                     Sell_timee1= Sell_timee.replace("T", " " )
                     buy_order_list_dummy.append(Sell_Scriptcodee)
+                    buy_root_list_dummy.append(Sell_Root)
 
                     if orders.upper() == "YES" or orders.upper() == "":
                         print("Put Buy order Executed")
