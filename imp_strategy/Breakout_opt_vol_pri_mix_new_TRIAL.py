@@ -538,7 +538,7 @@ while True:
                     five_df2 = pd.concat([dfgg_up1, five_df2])            
                     five_df3 = pd.concat([dfgg_dn1, five_df3])
 
-                    stk_name = dfg1['Name'][0]
+                    stk_name = np.unique([int(i) for i in dfg1['Name']]).tolist()
                     print("5 Min Future Data Download and Scan "+str(stk_name)+" ("+str(aa)+")")                                   
 
 
