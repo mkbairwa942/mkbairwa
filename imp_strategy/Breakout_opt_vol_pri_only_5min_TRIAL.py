@@ -405,8 +405,8 @@ while True:
             five_df2 = pd.concat([dfgg_up11, five_df2])            
             five_df3 = pd.concat([dfgg_dn11, five_df3])
 
-            dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
-            dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDLB")]
+            dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
+            dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDLB")]
 
             stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0]
             print("5 Min Future Data Download and Scan "+str(stk_name)+" ("+str(aaa)+")")                                  
