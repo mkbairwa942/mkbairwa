@@ -95,7 +95,12 @@ pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 
 users = ["ashwin","haresh"]
-stoploss = 2
+SLL = 1
+TSL = 1
+
+
+tsl1 = 1-(TSL/100)
+print(tsl1)
 # for usew in users:
 #     usew = credentials(str(usew))
 
@@ -401,8 +406,8 @@ while True:
                                     #Buy_Scriptcodee = int(new_df1['ScripCode'])
                                     Buy_Name = list(new_df1['ScripName'])[0]
                                     Buy_price = float(new_df1['BuyAvgRate'])                 
-                                    Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*stoploss)/100),1))
-                                    Buy_Target = float(round((((new_df1['BuyAvgRate']*stoploss)/100) + new_df1['BuyAvgRate']),1))
+                                    Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*SLL)/100),1))
+                                    Buy_Target = float(round((((new_df1['BuyAvgRate']*SLL)/100) + new_df1['BuyAvgRate']),1))
                                     Buy_Exc = list(new_df1['Exch'])[0]
                                     Buy_Exc_Type = list(new_df1['ExchType'])[0]
                                     Buy_Qty = int(new_df1['BuyQty'])                
@@ -447,7 +452,7 @@ while True:
                                         dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
                                         dfg2['StopLoss'] = Buy_Stop_Loss
                                         dfg2['Benchmark'] = dfg2['High'].cummax()
-                                        dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
+                                        dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1                             
                                         dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
                                         dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
                                         #print(dfg2.iloc[[-1]])

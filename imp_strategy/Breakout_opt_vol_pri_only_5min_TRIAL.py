@@ -224,9 +224,9 @@ print("Exchange Data Download")
 
 stop_thread = False
 
-# stk_list = ['BAJAJ-AUTO',	'BPCL',	'BSOFT',	'CANFINHOME',	'DLF',	'FEDERALBNK',	'GODREJPROP',	'GRANULES',	'HEROMOTOCO',	'HINDALCO',	'HINDPETRO',	'IDEA',	'IGL',	'INDHOTEL',	'INDUSTOWER',	'IOC',	'LT',	'MARICO',	'MCX',	'MPHASIS',	'NAUKRI',	'NAVINFLUOR',	'OBEROIRLTY',	'OFSS',	'ONGC',	'PFC',	'PNB',	'RECLTD',	'AARTIIND',	'ABCAPITAL',	'ACC',	'ADANIENT',	'ADANIPORTS',	'ASHOKLEY',	'ASIANPAINT',	'ASTRAL',	'ATUL',	'AUROPHARMA',	'BAJAJFINSV',	'BALRAMCHIN',	'BANKNIFTY',	'BATAINDIA',	'BERGEPAINT',	'BHARTIARTL',	'CANBK',	'CHAMBLFERT',	'COALINDIA',	'CONCOR',	'CROMPTON',	'DABUR',	'DEEPAKNTR',	'DIVISLAB',	'DRREDDY',	'EICHERMOT',	'ESCORTS',	'GMRINFRA',	'GNFC',	'HAVELLS',	'HCLTECH',	'HINDCOPPER',	'ICICIGI',	'IDFC',	'IDFCFIRSTB',	'IEX',	'INDIACEM',	'INDIAMART',	'INDUSINDBK',	'INFY',	'IPCALAB',	'JINDALSTEL',	'JSWSTEEL',	'LTIM',	'LTTS',	'MARUTI',	'MFSL',	'MGL',	'NESTLEIND',	'NIFTY',	'NMDC',	'PETRONET',	'RAMCOCEM',	'RELIANCE',	'SBILIFE',	'SYNGENE',	'TATAPOWER',	'TATASTEEL',	'TCS',	'TECHM',	'TVSMOTOR',	'UBL',	'WIPRO',]
+stk_list = ['BANKNIFTY','NIFTY']#,'BAJAJ-AUTO',	'BPCL',	'BSOFT',	'CANFINHOME',	'DLF',	'FEDERALBNK',	'GODREJPROP',	'GRANULES',	'HEROMOTOCO',	'HINDALCO',	'HINDPETRO',	'IDEA',	'IGL',	'INDHOTEL',	'INDUSTOWER',	'IOC',	'LT',	'MARICO',	'MCX',	'MPHASIS',	'NAUKRI',	'NAVINFLUOR',	'OBEROIRLTY',	'OFSS',	'ONGC',	'PFC',	'PNB',	'RECLTD',	'AARTIIND',	'ABCAPITAL',	'ACC',	'ADANIENT',	'ADANIPORTS',	'ASHOKLEY',	'ASIANPAINT',	'ASTRAL',	'ATUL',	'AUROPHARMA',	'BAJAJFINSV',	'BALRAMCHIN',	'BANKNIFTY',	'BATAINDIA',	'BERGEPAINT',	'BHARTIARTL',	'CANBK',	'CHAMBLFERT',	'COALINDIA',	'CONCOR',	'CROMPTON',	'DABUR',	'DEEPAKNTR',	'DIVISLAB',	'DRREDDY',	'EICHERMOT',	'ESCORTS',	'GMRINFRA',	'GNFC',	'HAVELLS',	'HCLTECH',	'HINDCOPPER',	'ICICIGI',	'IDFC',	'IDFCFIRSTB',	'IEX',	'INDIACEM',	'INDIAMART',	'INDUSINDBK',	'INFY',	'IPCALAB',	'JINDALSTEL',	'JSWSTEEL',	'LTIM',	'LTTS',	'MARUTI',	'MFSL',	'MGL',	'NESTLEIND',	'NIFTY',	'NMDC',	'PETRONET',	'RAMCOCEM',	'RELIANCE',	'SBILIFE',	'SYNGENE',	'TATAPOWER',	'TATASTEEL',	'TCS',	'TECHM',	'TVSMOTOR',	'UBL',	'WIPRO',]
 
-stk_list = np.unique(exc_fut['Root'])
+# stk_list = np.unique(exc_fut['Root'])
 print("Total Stock : "+str(len(stk_list)))
 
 #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
@@ -440,20 +440,24 @@ while True:
 
                 dfg2 = dfg22[(dfg22["OK_DF"] == "OK")]
                 dfg4 = dfg2.head(1)
+                
                 Buy_price_of_stock1 = float(dfg4['Close']) 
 
-                dfg2['Entry_Price'] = Buy_price_of_stock1
-                dfg2['Add_Till'] = round((dfg2['Entry_Price'] - (dfg2['Entry_Price']*0.5)/100),1)
-                dfg2['StopLoss'] = round((dfg2['Entry_Price'] - (dfg2['Entry_Price']*2)/100),1)               
-                dfg2['Target'] = round((((dfg2['Entry_Price']*2)/100) + dfg2['Entry_Price']),2)                
+                dfg2['Buy_At'] = Buy_price_of_stock1
+                dfg2['Add_Till'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1)
+                dfg2['StopLoss'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1)               
+                dfg2['Target'] = round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2)                
                 dfg2['Benchmark'] = dfg2['High'].cummax()
                 dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
                 dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < dfg2['StopLoss'],"SL",""))
-                dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*dfg2['LotSize'],np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*dfg2['LotSize'],"" ))
+                dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Buy_At'])*dfg2['LotSize'],np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Buy_At'])*dfg2['LotSize'],"" ))
                 dfg2['Buy/Sell1'] = np.where((dfg2['Close'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))
 
                 five_df4 = pd.concat([dfg2, five_df4])
-                dfg3 = dfg2.head(1)
+                dfg3 = dfg2.tail(1)
+                dfg5 = dfg2.head(1)
+                five_df6 = pd.concat([dfg5, five_df6])
+                
                 stk_name2 = (np.unique([str(i) for i in dfg2['Name']])).tolist()[0]
                 print(stk_name2)
 
@@ -461,7 +465,7 @@ while True:
                     print(str(Buy_Scriptcodee)+" is Already Buy")
                 else:
                     Buy_Scriptcodee = int(dfg3['Scripcode'])
-                    Buy_price_of_stock = float(dfg3['Entry_Price'])  
+                    Buy_price_of_stock = float(dfg3['Buy_At'])  
                     Buy_Add_Till = float(dfg3['Add_Till'])                
                     Buy_Stop_Loss = float(dfg3['StopLoss'])    
                     Buy_Target = float(dfg3['Target'])                                  
@@ -518,20 +522,24 @@ while True:
 
                 dfg2 = dfg22[(dfg22["OK_DF"] == "OK")]
                 dfg4 = dfg2.head(1)
+                
                 Sell_price_of_stock1 = float(dfg4['Close']) 
 
-                dfg2['Entry_Price'] = Sell_price_of_stock1
-                dfg2['Add_Till'] = round((dfg2['Entry_Price'] - (dfg2['Entry_Price']*0.5)/100),1)
-                dfg2['StopLoss'] = round((dfg2['Entry_Price'] - (dfg2['Entry_Price']*2)/100),1)               
-                dfg2['Target'] = round((((dfg2['Entry_Price']*2)/100) + dfg2['Entry_Price']),2)                
+                dfg2['Buy_At'] = Sell_price_of_stock1
+                dfg2['Add_Till'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1)
+                dfg2['StopLoss'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*2)/100),1)               
+                dfg2['Target'] = round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2)                
                 dfg2['Benchmark'] = dfg2['High'].cummax()
                 dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98                             
                 dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < dfg2['StopLoss'],"SL",""))
-                dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*dfg2['LotSize'],np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*dfg2['LotSize'],"" ))
+                dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Buy_At'])*dfg2['LotSize'],np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Buy_At'])*dfg2['LotSize'],"" ))
                 dfg2['Buy/Sell1'] = np.where((dfg2['Close'] > dfg2['High'].shift(-1)),"Buy_new",np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))#np.where((dfg2['Close'] < dfg2['Low'].shift(-1)),"Sell_new",""))
                 
                 five_df5 = pd.concat([dfg2, five_df5])
                 dfg3 = dfg2.tail(1)
+                dfg5 = dfg2.head(1)
+                five_df7 = pd.concat([dfg5, five_df7])
+                
                 stk_name2 = (np.unique([str(i) for i in dfg2['Name']])).tolist()[0]
                 print(stk_name2)
 
@@ -539,7 +547,7 @@ while True:
                     print(str(Sell_Scriptcodee)+" is Already Buy")
                 else:
                     Sell_Scriptcodee = int(dfg3['Scripcode'])
-                    Sell_price_of_stock = float(dfg3['Entry_Price'])  
+                    Sell_price_of_stock = float(dfg3['Buy_At'])  
                     Sell_Add_Till = float(dfg3['Add_Till'])                   
                     Sell_Stop_Loss = float(dfg3['StopLoss'])   
                     Sell_Target = float(dfg3['Target']) 
@@ -610,7 +618,7 @@ while True:
     if five_df4.empty:
         pass
     else:
-        #five_df4 = five_df4[['Name','Scripcode','StopLoss','Add_Till','Entry_Price','Target','Term','Datetime','LotSize','Date','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+        #five_df4 = five_df4[['Name','Scripcode','StopLoss','Add_Till','Buy_At','Target','Term','Datetime','LotSize','Date','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df4.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
         five_delv.range("a:az").value = None
         five_delv.range("a1").options(index=False).value = five_df4
@@ -618,7 +626,7 @@ while True:
     if five_df5.empty:
         pass
     else:
-        #five_df5 = five_df5[['Name','Scripcode','StopLoss','Add_Till','Entry_Price','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+        #five_df5 = five_df5[['Name','Scripcode','StopLoss','Add_Till','Buy_At','Target','Term','Datetime','TimeNow','Minutes','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell1','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df5.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
         fl_data.range("a:az").value = None
         fl_data.range("a1").options(index=False).value = five_df5
@@ -628,8 +636,16 @@ while True:
     else:
         #five_df6 = five_df6[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
         five_df6.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
-        #fl_data.range("a:az").value = None
-        #fl_data.range("a30").options(index=False).value = five_df6
+        bhv_fo.range("a:az").value = None
+        bhv_fo.range("a1").options(index=False).value = five_df6
+
+    if five_df7.empty:
+        pass
+    else:
+        #five_df7 = five_df7[['Name','Scripcode','Datetime','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
+        five_df7.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
+        #bhv_fo.range("a:az").value = None
+        bhv_fo.range("a50").options(index=False).value = five_df7
 
     end = time.time() - start_time
 

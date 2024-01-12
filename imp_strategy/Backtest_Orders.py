@@ -179,29 +179,29 @@ def round_up(n, decimals = 0):
     multiplier = 10 ** decimals 
     return math.ceil(n * multiplier) / multiplier
 
-while True:    
-    if exchange is None: 
-        try:
-            exc_equity = pd.DataFrame(script_code_5paisa)
-            # exc_equity = exc_equity[(exc_equity["Exch"] == "N") & (exc_equity["ExchType"] == "C")]
-            # exc_equity = exc_equity[exc_equity["Series"] == "EQ"]
-            # exc_equity = exc_equity[exc_equity["CpType"] == "XX"]
-            exc_equity["Watchlist"] = exc_equity["Exch"] + ":" + exc_equity["ExchType"] + ":" + exc_equity["Name"]
-            exc_equity.sort_values(['Name'], ascending=[True], inplace=True)
-            break
-        except:
-            print("Exchange Download Error....")
-            time.sleep(10)
+# while True:    
+    # if exchange is None: 
+    #     try:
+    #         exc_equity = pd.DataFrame(script_code_5paisa)
+    #         # exc_equity = exc_equity[(exc_equity["Exch"] == "N") & (exc_equity["ExchType"] == "C")]
+    #         # exc_equity = exc_equity[exc_equity["Series"] == "EQ"]
+    #         # exc_equity = exc_equity[exc_equity["CpType"] == "XX"]
+    #         exc_equity["Watchlist"] = exc_equity["Exch"] + ":" + exc_equity["ExchType"] + ":" + exc_equity["Name"]
+    #         exc_equity.sort_values(['Name'], ascending=[True], inplace=True)
+    #         break
+    #     except:
+    #         print("Exchange Download Error....")
+    #         time.sleep(10)
 
-symb = pd.DataFrame({"Name": list(exc_equity["Root"].unique())})
-symb = symb.set_index("Name",drop=True)
+# symb = pd.DataFrame({"Name": list(exc_equity["Root"].unique())})
+# symb = symb.set_index("Name",drop=True)
 
-flt_exc_eq = pd.merge(symb, exc_equity, on=['Name'], how='inner')
-flt_exc_eq.sort_values(['Name'], ascending=[True], inplace=True)
-flt_exc_eq = flt_exc_eq[['ExchType','Name', 'ISIN', 'FullName', 'CO BO Allowed','Scripcode','Watchlist']]
+# flt_exc_eq = pd.merge(symb, exc_equity, on=['Name'], how='inner')
+# flt_exc_eq.sort_values(['Name'], ascending=[True], inplace=True)
+# flt_exc_eq = flt_exc_eq[['ExchType','Name', 'ISIN', 'FullName', 'CO BO Allowed','Scripcode','Watchlist']]
 
-flt_exc.range("a:az").value = None
-flt_exc.range("a1").options(index=False).value = exc_equity
+# flt_exc.range("a:az").value = None
+# flt_exc.range("a1").options(index=False).value = exc_equity
 
 print("Exchange Data Download")
 
@@ -221,6 +221,13 @@ stop_thread = False
 #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 3045, Qty=10,Price=25)
 
 start_time = time.time()
+
+SLL = 1
+TSL = 1
+
+
+tsl1 = 1-(TSL/100)
+print(tsl1)
 
 def ordef_func():
     try:
@@ -279,8 +286,8 @@ for a in buy_order_list:
     Buy_Scriptcodee = int(dfgg_up_1['ScripCode'])
     Buy_Name = list(dfgg_up_1['ScripName'])[0]
     Buy_price = float(dfgg_up_1['Rate'])                 
-    Buy_Stop_Loss = float(round((dfgg_up_1['Rate'] - (dfgg_up_1['Rate']*2)/100),1))  
-    Buy_Target = float(round((((dfgg_up_1['Rate']*2)/100) + dfgg_up_1['Rate']),1))
+    Buy_Stop_Loss = float(round((dfgg_up_1['Rate'] - (dfgg_up_1['Rate']*SLL)/100),1))  
+    Buy_Target = float(round((((dfgg_up_1['Rate']*SLL)/100) + dfgg_up_1['Rate']),1))
     Buy_Exc = list(dfgg_up_1['Exch'])[0]
     Buy_Exc_Type = list(dfgg_up_1['ExchType'])[0]
     Buy_Qty = int(dfgg_up_1['Qty'])
@@ -302,7 +309,7 @@ for a in buy_order_list:
 
     dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
     dfg2['Benchmark'] = dfg2['High'].cummax()
-    dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98
+    dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1
     dfg2['BValue'] = dfg2['Entry_Price']*Buy_Qty
     
     dfg2['TGT_SL'] = np.where(dfg2['High'] > Buy_Target,"TGT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))

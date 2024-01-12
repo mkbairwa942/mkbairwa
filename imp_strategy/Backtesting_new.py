@@ -23,6 +23,7 @@ import requests
 import itertools
 import math 
 from telethon.sync import TelegramClient
+from five_paisa1 import *
 
 telegram_first_name = "mkbairwa"
 telegram_username = "mkbairwa_bot"
@@ -30,20 +31,25 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-operate = input("Do you want to go with TOTP (yes/no): ")
-if operate.upper() == "YES":
-    from five_paisa1 import *
-    # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
-    # print(p)
-    username = input("Enter Username : ")
-    username1 = str(username)
-    print("Hii "+str(username1)+" have a Good Day")
-    # username_totp = input("Enter TOTP : ")
-    # username_totp1 = str(username_totp)
-    # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
-    client = credentials(username1)
-else:
-    from five_paisa import *
+# operate = input("Do you want to go with TOTP (yes/no): ")
+# if operate.upper() == "YES":
+#     from five_paisa1 import *
+#     # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
+#     # print(p)
+#     username = input("Enter Username : ")
+#     username1 = str(username)
+#     print("Hii "+str(username1)+" have a Good Day")
+#     # username_totp = input("Enter TOTP : ")
+#     # username_totp1 = str(username_totp)
+#     # print("Hii "+str(username1)+" you enter TOTP is "+str(username_totp1))
+#     client = credentials(username1)
+# else:
+#     from five_paisa import *
+
+operate = "YES"
+username = "ASHWIN"
+username1 = str(username)
+client = credentials(username1)
 
 from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
@@ -223,17 +229,24 @@ buy_order_li = pd.read_excel('D:\STOCK\Capital_vercel_new\Backtesting_new.xlsx',
 #print(buy_order_li.head(2))
 buy_order_list = (np.unique([int(i) for i in buy_order_li['Scripcode']])).tolist()
 
+SLL = 1
+TSL = 1
+
+
+tsl1 = 1-(TSL/100)
+print(tsl1)
+
 for a in buy_order_list:
     orderboo = buy_order_li[(buy_order_li['Scripcode'] == a)]# & (buy_order_li['BuySell'] == "B")]
     orderboo.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
-    print(orderboo.head(2))
+    print(orderboo['Name'].head(2))
     dfgg_up_1 = orderboo.iloc[[0]]
 
     Buy_Scriptcodee = int(dfgg_up_1['Scripcode'])
     Buy_Name = list(dfgg_up_1['Name'])[0]
     Buy_price = float(dfgg_up_1['Buy_At'])                 
-    Buy_Stop_Loss = float(round((dfgg_up_1['Buy_At'] - (dfgg_up_1['Buy_At']*2)/100),1))  
-    Buy_Target = float(round((((dfgg_up_1['Buy_At']*2)/100) + dfgg_up_1['Buy_At']),1))
+    Buy_Stop_Loss = float(round((dfgg_up_1['Buy_At'] - (dfgg_up_1['Buy_At']*SLL)/100),1))  
+    Buy_Target = float(round((((dfgg_up_1['Buy_At']*SLL)/100) + dfgg_up_1['Buy_At']),1))
     Buy_Exc = 'N' #list(dfgg_up_1['Exch'])[0]
     Buy_Exc_Type = 'D' #list(dfgg_up_1['ExchType'])[0]
     Buy_Qty = int(dfgg_up_1['LotSize'])
@@ -250,13 +263,13 @@ for a in buy_order_list:
     dfg1['Entry_Price'] = Buy_price
     # print(dfg1.head(2))
     dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
-    dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] < dfg1['Datetime'],"OK","")
+    dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
     dfg1['StopLoss'] = Buy_Stop_Loss
     dfg1['Target'] = Buy_Target
 
     dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
     dfg2['Benchmark'] = dfg2['High'].cummax()
-    dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.98
+    dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1
     dfg2['BValue'] = dfg2['Entry_Price']*Buy_Qty
     
     dfg2['TGT_SL'] = np.where(dfg2['High'] > Buy_Target,"TGT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))

@@ -95,7 +95,7 @@ pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 
 users = ["ashwin","haresh"]
-stoploss = 2
+
 # for usew in users:
 #     usew = credentials(str(usew))
 
@@ -282,6 +282,13 @@ har.range("a1:t1").api.WrapText = True
 
 dataframe_empty = pd.DataFrame()
 
+SLL = 1
+TSL = 1
+
+
+tsl1 = 1-(TSL/100)
+print(tsl1)
+
 while True: 
     # now = datetime.now()
     # current_time = now.strftime("%H:%M:%S")
@@ -328,8 +335,8 @@ while True:
                         new_df1 = posit1[(posit1['ScripCode'] == ord)]
                         Buy_Name = list(new_df1['ScripName'])[0]
                         Buy_price = float(new_df1['BuyAvgRate'])                 
-                        Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*stoploss)/100),1))
-                        Buy_Target = float(round((((new_df1['BuyAvgRate']*stoploss)/100) + new_df1['BuyAvgRate']),1))
+                        Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*SLL)/100),1))
+                        Buy_Target = float(round((((new_df1['BuyAvgRate']*SLL)/100) + new_df1['BuyAvgRate']),1))
                         Buy_Exc = list(new_df1['Exch'])[0]
                         Buy_Exc_Type = list(new_df1['ExchType'])[0]
                         Buy_Qty = int(new_df1['BuyQty'])    
@@ -408,9 +415,9 @@ while True:
                     dataframe_Scpt = np.unique([int(i) for i in dataframe_empty['ScripCode']])
                     for ord in posit3:
                         dataframe_new = dataframe_empty[(dataframe_empty['ScripCode'] == ord)]
-                        dataframe_new['StopLoss'] = round((dataframe_new['Entry_Price'] - (dataframe_new['Entry_Price']*stoploss)/100),1)
+                        dataframe_new['StopLoss'] = round((dataframe_new['Entry_Price'] - (dataframe_new['Entry_Price']*SLL)/100),1)
                         dataframe_new['Benchmark'] = dataframe_new['High'].cummax()
-                        dataframe_new['TStopLoss'] = dataframe_new['Benchmark'] * 0.98                             
+                        dataframe_new['TStopLoss'] = dataframe_new['Benchmark'] * tsl1                            
                         dataframe_new['Status'] = np.where(dataframe_new['Close'] < dataframe_new['TStopLoss'],"TSL",np.where(dataframe_new['Close'] < Buy_Stop_Loss,"SL",""))
                         dataframe_new['P&L_TSL'] = np.where(dataframe_new['Status'] == "SL",(dataframe_new['StopLoss'] - dataframe_new['Entry_Price'])*Buy_Qty,np.where(dataframe_new['Status'] == "TSL",(dataframe_new['TStopLoss'] - dataframe_new['Entry_Price'])*Buy_Qty,"" ))
                         first_row = dataframe_new.head(1)                    
