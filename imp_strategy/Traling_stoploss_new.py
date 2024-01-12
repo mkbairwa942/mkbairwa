@@ -241,8 +241,8 @@ while True:
                 five_df3 = pd.DataFrame()
                 five_df4 = pd.DataFrame()
 
-                for ord in posit3:
-                    try: 
+                try:
+                    for ord in posit3:                     
                         #time.sleep(0.5)
                         #timee = datetime.now()
                         buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
@@ -323,8 +323,8 @@ while True:
                             except Exception as e:
                                 print(e)
 
-                    except Exception as e:
-                        print(e)
+                except Exception as e:
+                    print(e)
 
                 # #df_empty_ash.sort_values(['ScripName','Entry_Date',], ascending=[True,True], inplace=True)   
 

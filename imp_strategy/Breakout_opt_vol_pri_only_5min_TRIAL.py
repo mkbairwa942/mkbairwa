@@ -451,7 +451,7 @@ while True:
 
 
                 dfg2['Scripcode'] = Buy_Scriptcodee
-                dfg2["Date"] = dfg2["Datetime"].dt.date
+                #dfg2["Date"] = dfg2["Datetime"].dt.date
                 dfg2 = pd.merge(exc_opt, dfg2, on=['Scripcode'], how='inner')
                 dfg2 = dfg2[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume','LotSize']]
                 dfg2['Buy_At'] = round((dfg2['Close']),1)
@@ -460,8 +460,8 @@ while True:
                 dfg2['Add_Till'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1)                
                 dfg2['Target'] = round((((dfg2['Buy_At']*2)/100) + dfg2['Buy_At']),2)
                 
-                Buy_timee = list(dfg2['Datetime'])[0]
-                Buy_timee1 = str(Buy_timee).replace(' ','T') 
+                # Buy_timee = list(dfg2['Datetime'])[0]
+                # Buy_timee1 = str(Buy_timee).replace(' ','T') 
                 
                 five_df4 = pd.concat([dfg2, five_df4])
                 dfg3 = dfg2.tail(1)
@@ -521,7 +521,7 @@ while True:
                 dfg2 = client.historical_data('N', 'D', Sell_Scriptcodee, '5m',last_trading_day,current_trading_day)
                 
                 dfg2['Scripcode'] = Sell_Scriptcodee
-                dfg2["Date"] = dfg2["Datetime"].dt.date
+                #dfg2["Date"] = dfg2["Datetime"].dt.date
                 dfg2 = pd.merge(exc_opt, dfg2, on=['Scripcode'], how='inner')
                 dfg2 = dfg2[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume','LotSize']]
                 dfg2['Buy_At'] = round((dfg2['Close']),1)
