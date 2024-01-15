@@ -104,16 +104,16 @@ Exposer = 2
 
 print("---- Data Process Started ----")
 
-if not os.path.exists("Breakout_opt_vol_pri_only_5min_TRIAL.xlsx"):
+if not os.path.exists("Breakout_opt_vol_pri_only_1min_TRIAL.xlsx"):
     try:
         wb = xw.Book()
         wb.sheets.add("optionchain")
-        wb.save("Breakout_opt_vol_pri_only_5min_TRIAL.xlsx")
+        wb.save("Breakout_opt_vol_pri_only_1min_TRIAL.xlsx")
         wb.close()
     except Exception as e:
         print(f"Error : {e}")
         sys.exit()
-wb = xw.Book('Breakout_opt_vol_pri_only_5min_TRIAL.xlsx')
+wb = xw.Book('Breakout_opt_vol_pri_only_1min_TRIAL.xlsx')
 for i in ["Exchange","Filt_Exc","Bhavcopy","FO_Bhavcopy","Five_data","Delv_data","Five_Delv","Final_Data","Position","Strategy1","Strategy2","Strategy3","Buy","Sale",
            "Expiry","stats","Stat","Stat1","Stat2","Stat3","Stat4"]:
     try:
@@ -310,9 +310,11 @@ while True:
     five_df7 = pd.DataFrame()
     fo_bhav = pd.DataFrame()
 
-    Vol_per = 20
+    Vol_per = 15
     UP_Rsi_lvl = 60
     DN_Rsi_lvl = 40
+
+
 
 
     for sc in stk_list:
@@ -405,8 +407,8 @@ while True:
             five_df2 = pd.concat([dfgg_up11, five_df2])            
             five_df3 = pd.concat([dfgg_dn11, five_df3])
 
-            dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
-            dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDLB")]
+            dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
+            dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDLB")]
 
             stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0]
             print("5 Min Future Data Download and Scan "+str(stk_name)+" ("+str(aaa)+")")                                  
@@ -442,10 +444,6 @@ while True:
                 dfg4 = dfg2.head(1)
                 
                 Buy_price_of_stock1 = float(dfg4['Close']) 
-                print("Price")
-                print(Buy_price_of_stock1)
-                Buy_price_of_stock1 = float(dfg4['Close']) +.10
-                print(Buy_price_of_stock1)
 
                 dfg2['Buy_At'] = Buy_price_of_stock1
                 dfg2['Add_Till'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1)
@@ -528,10 +526,6 @@ while True:
                 dfg4 = dfg2.head(1)
                 
                 Sell_price_of_stock1 = float(dfg4['Close']) 
-                print("Price")
-                print(Sell_price_of_stock1)
-                Sell_price_of_stock1 = float(dfg4['Close']) +.10
-                print(Sell_price_of_stock1)
 
                 dfg2['Buy_At'] = Sell_price_of_stock1
                 dfg2['Add_Till'] = round((dfg2['Buy_At'] - (dfg2['Buy_At']*0.5)/100),1)

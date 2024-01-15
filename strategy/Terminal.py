@@ -466,7 +466,7 @@ while True:
                     instrument_dict[f'NFO:{df["FullName"][i]}'] = {"strikePrice":float(df["StrikeRate"][i]),
                                                                         "instrumentType":df["CpType"][i],
                                                                         "token":df["Scripcode"][i]}
-                    #print(instrument_dict)
+                    #print(instrument_dict[0])
                 stop_thread = False
                 thread = threading.Thread(target=get_oi,args=(instrument_dict,))
                 thread.start()

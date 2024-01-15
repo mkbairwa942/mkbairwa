@@ -167,8 +167,8 @@ strategy2.range("a1:l1").api.WrapText = True
 # st.range("a:z").value = None
 # exp.range("a:z").value = None
 
-script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
-script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
+# script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
+# script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 
 # exc.range("a:s").value = None
 # exc.range("a1").options(index=False).value = script_code_5paisa
