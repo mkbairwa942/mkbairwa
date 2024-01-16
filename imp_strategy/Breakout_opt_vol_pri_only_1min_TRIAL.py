@@ -200,7 +200,7 @@ while True:
             Expiry = (np.unique(Expiry1['Expiry']).tolist())
             
             print(Expiry)
-            Expiryy = (np.unique(exc_new1['Expiry']).tolist())[1]            
+            Expiryy = (np.unique(Expiry1['Expiry']).tolist())[0]            
             print(Expiryy)
             exc_new2 = exc_new1[exc_new1['Expiry'] == Expiryy]     
             exc_new2.sort_values(['Root'], ascending=[True], inplace=True)
