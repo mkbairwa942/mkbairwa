@@ -586,7 +586,7 @@ while True:
                 if Buy_Root in buy_root_list_dummy: 
                     print(str(Buy_Scriptcodee)+" is Already Buy")
                 else:
-                    dfg3
+                    dfg3 = dfgg_up.head(1)
                     Buy_price_of_stock = float(dfg3['Buy_At'])  
                     Buy_Add_Till = float(dfg3['Add_Till'])                
                     Buy_Stop_Loss = float(dfg3['StopLoss'])    
