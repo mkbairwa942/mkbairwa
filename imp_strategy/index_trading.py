@@ -37,25 +37,25 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-# operate = input("Do you want to go with TOTP (yes/no): ")
-# #notifi = input("Do you want to send Notification on Desktop (yes/no): ")
-# telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
-# orders = input("Do you want to Place Real Orders (yes/no): ")
-# if operate.upper() == "YES":
-#     from five_paisa1 import *
-#     username = input("Enter Username : ")
-#     username1 = str(username)
-#     print("Hii "+str(username1)+" have a Good Day")
-#     client = credentials(username1)
-# else:
-#     from five_paisa import *
+operate = input("Do you want to go with TOTP (yes/no): ")
+#notifi = input("Do you want to send Notification on Desktop (yes/no): ")
+telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
+orders = input("Do you want to Place Real Orders (yes/no): ")
+if operate.upper() == "YES":
+    from five_paisa1 import *
+    username = input("Enter Username : ")
+    username1 = str(username)
+    print("Hii "+str(username1)+" have a Good Day")
+    client = credentials(username1)
+else:
+    from five_paisa import *
 
-operate = "YES"
-telegram_msg = "no"
-orders = "no"
-username = "ASHWIN"
-username1 = str(username)
-client = credentials(username1)
+# operate = "YES"
+# telegram_msg = "no"
+# orders = "no"
+# username = "ASHWIN"
+# username1 = str(username)
+# client = credentials(username1)
 
 from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
@@ -414,7 +414,7 @@ while True:
             dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date())]# & ((dfgg_up11['Date_Dif'].shift(1)) > 10)]
             five_df2 = pd.concat([dfgg_up11, five_df2])
 
-            dfgg_up = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
+            dfgg_up = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date()) & (dfgg_up11["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
 
             print("5 Min Option Call Data Download and Scan "+str(stk_name1_up)+" ("+str(Buy_Scriptcodee)+")")                                  
 
@@ -471,7 +471,7 @@ while True:
             dfgg_dn11 = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date()) & ((dfgg_dn11['Date_Dif'].shift(1)) > 10)]
             five_df4 = pd.concat([dfgg_dn11, five_df4])
 
-            dfgg_dn = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date())]# & (dfgg_dn11["Minutes"] < 5 )]
+            dfgg_dn = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date()) & (dfgg_dn11["Minutes"] < 5 )]
            
             print("5 Min Option Data Put Download and Scan "+str(stk_name1_dn)+" ("+str(Sell_Scriptcodee)+")")                                  
 
