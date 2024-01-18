@@ -232,6 +232,7 @@ print(tsl1)
 def ordef_func():
     try:
         ordbook = pd.DataFrame(client.order_book())
+        ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
         #print(ordbook.tail(2))
         ob.range("a1").options(index=False).value = ordbook
     except Exception as e:
@@ -239,6 +240,7 @@ def ordef_func():
 
     try:
         if ordbook is not None:
+            ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
             print("Order Book not Empty")        
             #ordbook1 = ordbook[ordbook['OrderStatus'] != "Rejected By 5P"]   
             ordbook1 = ordbook           
@@ -251,7 +253,7 @@ def ordef_func():
                 d2 = d1 + timedelta(hours = 5.5)
                 Datetimeee.append(d2)
             ordbook1['Datetimeee'] = Datetimeee
-            ordbook1 = ordbook1[['Datetimeee', 'ScripName','BuySell', 'DelvIntra','PendingQty','AveragePrice','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason','Exch', 'ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
+            ordbook1 = ordbook1[['Datetimeee', 'ScripName','Root','BuySell', 'DelvIntra','PendingQty','AveragePrice','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason','Exch', 'ExchType', 'MarketLot', 'OrderValidUpto','AtMarket']]
             ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
             ob1.range("a1").options(index=False).value = ordbook1
         else:
@@ -261,11 +263,11 @@ def ordef_func():
     return ordbook1
 
 buy_order_liii = ordef_func()
-buy_order_li = buy_order_liii[(buy_order_liii['AveragePrice'] != 0) & (buy_order_liii['BuySell'] == "B")]
+buy_order_li = buy_order_liii[(buy_order_liii['BuySell'] == "B")]# & (buy_order_liii['AveragePrice'] != 0)]
 #buy_order_li = buy_order_liii
 ob1.range("a1").options(index=False).value = buy_order_li
 
-buy_order_list = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+buy_order_list = ([int(i) for i in buy_order_li['ScripCode']])
 print(buy_order_list)
 
 five_df1 = pd.DataFrame()
@@ -285,9 +287,8 @@ for a in buy_order_list:
 
     Buy_Scriptcodee = int(dfgg_up_1['ScripCode'])
     Buy_Name = list(dfgg_up_1['ScripName'])[0]
+    Buy_Root = list(dfgg_up_1['Root'])[0]
     Buy_price = float(dfgg_up_1['Rate'])                 
-    Buy_Stop_Loss = float(round((dfgg_up_1['Rate'] - (dfgg_up_1['Rate']*SLL)/100),1))  
-    Buy_Target = float(round((((dfgg_up_1['Rate']*SLL)/100) + dfgg_up_1['Rate']),1))
     Buy_Exc = list(dfgg_up_1['Exch'])[0]
     Buy_Exc_Type = list(dfgg_up_1['ExchType'])[0]
     Buy_Qty = int(dfgg_up_1['Qty'])
@@ -299,21 +300,31 @@ for a in buy_order_list:
     print(dfg1.head(2))
     dfg1['Scripcode'] = a
     dfg1['ScripName'] = Buy_Name
+    dfg1['Root'] = Buy_Root
     dfg1['Entry_Date'] = Buy_timee1
     dfg1['Entry_Price'] = Buy_price
     print(dfg1.head(2))
     dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
     dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
-    dfg1['StopLoss'] = Buy_Stop_Loss
-    dfg1['Target'] = Buy_Target
+
 
     dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
-    dfg2['Benchmark'] = dfg2['High'].cummax()
-    dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1
-    dfg2['BValue'] = dfg2['Entry_Price']*Buy_Qty
-    
-    dfg2['TGT_SL'] = np.where(dfg2['High'] > Buy_Target,"TGT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
-    dfg2['SValue'] = np.where(dfg2['TGT_SL'] == "SL",Buy_Stop_Loss*Buy_Qty,np.where(dfg2['TGT_SL'] == "TGT",Buy_Target*Buy_Qty,""))  
+
+    if Buy_Root == "BANKNIFTY":
+        dfg2['StopLoss'] = round((dfgg_up_1['Rate']-20),1)
+        dfg2['Target'] = round((dfgg_up_1['Rate']+20),2) 
+        dfg2['Benchmark'] = dfg2['High'].cummax()
+        dfg2['TStopLoss'] = dfg2['Benchmark'] - 20
+        
+    else:
+        dfg2['StopLoss'] = float(round((dfgg_up_1['Rate'] - (dfgg_up_1['Rate']*SLL)/100),1)) 
+        dfg2['Target'] = float(round((((dfgg_up_1['Rate']*SLL)/100) + dfgg_up_1['Rate']),1))
+        dfg2['Benchmark'] = dfg2['High'].cummax()
+        dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1
+
+    dfg2['BValue'] = dfg2['Entry_Price']*Buy_Qty    
+    dfg2['TGT_SL'] = np.where(dfg2['High'] > dfg2['Target'],"TGT",np.where(dfg2['Low'] < dfg2['StopLoss'],"SL",""))
+    dfg2['SValue'] = np.where(dfg2['TGT_SL'] == "SL",dfg2['StopLoss']*Buy_Qty,np.where(dfg2['TGT_SL'] == "TGT",dfg2['Target']*Buy_Qty,""))  
     
     dfg2['P&L_SL'] = pd.to_numeric(dfg2['SValue']) - dfg2['BValue']
     dfg2['Qty'] = Buy_Qty
@@ -323,7 +334,7 @@ for a in buy_order_list:
     dfg4 = dfg3.iloc[0:1]
     five_df1 = pd.concat([dfg4, five_df1])
 
-    dfgg2['TGT_TSL'] = np.where(dfgg2['Low'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Low'] < Buy_Stop_Loss,"SL",""))
+    dfgg2['TGT_TSL'] = np.where(dfgg2['Low'] < dfgg2['TStopLoss'],"TSL",np.where(dfgg2['Low'] < dfg2['StopLoss'],"SL",""))
     
     five_df4 = pd.concat([dfgg2, five_df4])
     dfgg3 = dfgg2[(dfgg2['TGT_TSL'] != '')] 
