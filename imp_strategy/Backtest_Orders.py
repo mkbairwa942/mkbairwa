@@ -349,8 +349,8 @@ if five_df1.empty:
     pass
 else:
     five_df1.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
-    five_df1 = five_df1[['Scripcode','Entry_Date','Exit_Date','ScripName','Entry_Price','Close',
-                         'StopLoss','Target','Qty','TGT_SL','P&L_SL','BValue']]
+    # five_df1 = five_df1[['Scripcode','Entry_Date','Exit_Date','ScripName','Entry_Price','Close',
+    #                      'StopLoss','Target','Qty','TGT_SL','P&L_SL','BValue']]
     five_df1.sort_values(['Entry_Date', 'Exit_Date',], ascending=[True, True], inplace=True) 
                 
     strategy1.range("a:az").value = None

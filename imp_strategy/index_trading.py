@@ -376,8 +376,8 @@ while True:
     fo_bhav = pd.DataFrame()
 
     Vol_per = 15
-    UP_Rsi_lvl = 55
-    DN_Rsi_lvl = 45
+    UP_Rsi_lvl = 60
+    DN_Rsi_lvl = 40
 
     #stk_list = (np.unique([str(i) for i in dfg1['Scripcode']])).tolist()
 
@@ -503,7 +503,7 @@ while True:
                 
                     print("SYMBOL : "+str(stk_name1_dn)+"\n Put BUY AT : "+str(Sell_price_of_stock)+"\n ADD TILL : "+str(Sell_Add_Till)+"\n STOP LOSS : "+str(Sell_Stop_Loss)+"\n TARGET : "+str(Sell_Target)+"\n QUANTITY : "+str(Sell_quantity_of_stock)+"\n TIME : "+str(Sell_timee1))
                     if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
-                        parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(stk_name1_dn)+"\n Call BUY AT : "+str(Sell_price_of_stock)+"\n ADD TILL : "+str(Sell_Add_Till)+"\n STOP LOSS : "+str(Sell_Stop_Loss)+"\n TARGET : "+str(Sell_Target)+"\n QUANTITY : "+str(Sell_quantity_of_stock)+"\n TIME : "+str(Sell_timee1)}
+                        parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(stk_name1_dn)+"\n Put BUY AT : "+str(Sell_price_of_stock)+"\n ADD TILL : "+str(Sell_Add_Till)+"\n STOP LOSS : "+str(Sell_Stop_Loss)+"\n TARGET : "+str(Sell_Target)+"\n QUANTITY : "+str(Sell_quantity_of_stock)+"\n TIME : "+str(Sell_timee1)}
                         resp = requests.get(telegram_basr_url, data=parameters1)
                     else:
                         print("Telegram Message are OFF")
