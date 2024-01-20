@@ -195,11 +195,12 @@ while True:
             exc_new = exch['Root'].isin(root_list)
             
             exc_new1 = exch[exc_new]
-            
-            Expiry = exc_new1[(exc_new1['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
+            #print(exc_new1.head(1))
+            #Expiry = exc_new1[(exc_new1['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
             #Expiry = (np.unique(Expiry1['Expiry']).tolist())
+            Expiry = exc_new1
             Expiry.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
- 
+            #print(Expiry)
             # exc_new1 = exc_new1[exc_new1["LotSize"] < 5000]
             # Expiry = (np.unique(exc_new1['Expiry']).tolist())
             # print(Expiry)
@@ -207,6 +208,7 @@ while True:
             # print(Expiryy)
             #exc_new2 = exc_new1[exc_new1['Expiry'] == Expiryy]     
             exc_new2 = Expiry
+            #print(exc_new2)
             #exc_new2.sort_values(['Root'], ascending=[True], inplace=True)
             exc_new2["Watchlist"] = exc_new2["Exch"] + ":" + exc_new2["ExchType"] + ":" + exc_new2["Name"]
 
@@ -220,7 +222,7 @@ exc_fut1 = exc_fut[exc_fut["CpType"] == "XX"]
 Expiry = (np.unique(exc_fut1['Expiry']).tolist())
 # print(Expiry)
 exc_fut1_Expiryy = (np.unique(exc_fut1['Expiry']).tolist())[0]            
-# print(exc_fut1_Expiryy)
+print(exc_fut1_Expiryy)
 exc_fut = exc_fut1[exc_fut1['Expiry'] == exc_fut1_Expiryy] 
 #exc_fut.sort_values(['Name'], ascending=[True], inplace=True)
 exc_fut = exc_fut[['ExchType','Name', 'ISIN', 'FullName','Root','StrikeRate', 'CO BO Allowed','CpType','Scripcode','Expiry','LotSize','Watchlist']]
@@ -233,7 +235,7 @@ exc_opt1 = exc_opt[exc_opt["CpType"] != "XX"]
 Expiry = (np.unique(exc_opt1['Expiry']).tolist())
 # print(Expiry)
 exc_opt1_Expiryy = (np.unique(exc_opt1['Expiry']).tolist())[0]            
-# print(exc_opt1_Expiryy)
+print(exc_opt1_Expiryy)
 exc_opt = exc_opt1[exc_opt1['Expiry'] == exc_opt1_Expiryy] 
 #exc_opt.sort_values(['Name'], ascending=[True], inplace=True)
 exc_opt = exc_opt[['ExchType','Name', 'ISIN', 'FullName','Root','StrikeRate', 'CO BO Allowed','CpType','Scripcode','Expiry','LotSize','Watchlist']]
@@ -346,13 +348,13 @@ def data_download(stk_nm,Qty,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll):
         dfg1['Add_Till'] = round((dfg1['Buy_At']-10),1)
         dfg1['StopLoss'] = round((dfg1['Buy_At']-20),1)               
         dfg1['Target'] = round((dfg1['Buy_At']+20),2) 
-            
+        #print(dfg1.head(1))   
         dfg1['Benchmark'] = dfg1['High'].cummax()
         dfg1['TStopLoss'] = dfg1['Benchmark'] - 20                         
         dfg1['Status'] = np.where(dfg1['Close'] < dfg1['TStopLoss'],"TSL",np.where(dfg1['Close'] < dfg1['StopLoss'],"SL",""))
         dfg1['P&L_TSL'] = np.where(dfg1['Status'] == "SL",(dfg1['StopLoss'] - dfg1['Buy_At'])*dfg1['LotSize'],np.where(dfg1['Status'] == "TSL",(dfg1['TStopLoss'] - dfg1['Buy_At'])*dfg1['LotSize'],"" ))
         dfg1['Buy/Sell1'] = np.where((dfg1['Close'] > dfg1['High'].shift(-1)),"Buy_new",np.where((dfg1['Close'] < dfg1['Low'].shift(-1)),"Sell_new",""))#np.where((dfg1['Close'] < dfg1['Low'].shift(-1)),"Sell_new",""))       
-    
+        #print(dfg1.head(1))  
        
         # pdb = dfg1[(dfg1["Date"] == last_trading_day.date())]
         # pdhb1 = pdb['High'].cummax()[0]
@@ -413,10 +415,10 @@ while True:
 
             dfgg_up11 = dfg1_up[(dfg1_up["RSI_14"] > UP_Rsi_lvl ) & (dfg1_up["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1_up["Price_OK"] == "Price_Up_OK" ) & (dfg1_up["Cand_Col"] == "Green" )]
             dfgg_up11['Date_Dif'] = (dfgg_up11["Datetime"].shift(-1) -dfgg_up11["Datetime"]).astype('timedelta64[m]') 
-            dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date())]# & ((dfgg_up11['Date_Dif'].shift(1)) > 10)]
+            dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day)]# & ((dfgg_up11['Date_Dif'].shift(1)) > 10)]
             five_df2 = pd.concat([dfgg_up11, five_df2])
 
-            dfgg_up = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date()) & (dfgg_up11["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
+            dfgg_up = dfgg_up11[(dfgg_up11["Date"] == current_trading_day) & (dfgg_up11["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
 
             print("5 Min Option Call Data Download and Scan "+str(stk_name1_up)+" ("+str(Buy_Scriptcodee)+")")                                  
 
@@ -470,10 +472,10 @@ while True:
 
             dfgg_dn11 = dfg1_dn[(dfg1_dn["RSI_14"] > UP_Rsi_lvl ) & (dfg1_dn["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1_dn["Price_OK"] == "Price_Up_OK" ) & (dfg1_dn["Cand_Col"] == "Green" )]
             dfgg_dn11['Date_Dif'] = (dfgg_dn11["Datetime"].shift(-1) -dfgg_dn11["Datetime"]).astype('timedelta64[m]') 
-            dfgg_dn11 = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date()) & ((dfgg_dn11['Date_Dif'].shift(1)) > 10)]
+            dfgg_dn11 = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day) & ((dfgg_dn11['Date_Dif'].shift(1)) > 10)]
             five_df4 = pd.concat([dfgg_dn11, five_df4])
 
-            dfgg_dn = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date()) & (dfgg_dn11["Minutes"] < 5 )]
+            dfgg_dn = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day) & (dfgg_dn11["Minutes"] < 5 )]
            
             print("5 Min Option Data Put Download and Scan "+str(stk_name1_dn)+" ("+str(Sell_Scriptcodee)+")")                                  
 
