@@ -82,6 +82,7 @@ last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
 
 current_trading_day = date(2024, 1, 20)
+last_trading_day = date(2024, 1, 19)
 # current_trading_day = trading_dayss[1]
 # last_trading_day = trading_dayss[2]
 # second_last_trading_day = trading_days[3]
