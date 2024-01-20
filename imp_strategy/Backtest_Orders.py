@@ -23,6 +23,7 @@ import requests
 import itertools
 import math 
 from telethon.sync import TelegramClient
+from dateutil.parser import parse
 
 telegram_first_name = "mkbairwa"
 telegram_username = "mkbairwa_bot"
@@ -63,8 +64,11 @@ holida1 = np.unique(holida['Date'])
 
 trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holida1)
 trading_dayss = trading_days_reverse[::-1]
+
+# trading_dayss1 = ['2024-01-20', '2024-01-19','2024-01-18']
+# trading_dayss = [parse(x) for x in trading_dayss1]
+
 trading_days = trading_dayss[1:]
-# trading_days = trading_dayss[2:]
 current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]

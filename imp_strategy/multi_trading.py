@@ -29,6 +29,7 @@ import inspect
 import time
 from five_paisa1 import *
 import threading
+from dateutil.parser import parse
 
 
 telegram_first_name = "mkbairwa"
@@ -50,9 +51,9 @@ orders = input("Do you want to Place Real Orders (yes/no): ")
 # else:
 #     from five_paisa import *
 
-operate = "YES"
-telegram_msg = "no"
-orders = "no"
+# operate = "YES"
+# telegram_msg = "yes"
+# orders = "yes"
 # username = "ASHWIN"
 # username1 = str(username)
 # client = credentials(username1)
@@ -78,9 +79,10 @@ holida1 = np.unique(holida['Date'])
 
 trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holida1)
 trading_dayss = trading_days_reverse[::-1]
-trading_dayss = ['2024-01-20', '2024-01-19','2024-01-18']
-trading_days = trading_dayss[1:]
+# trading_dayss1 = ['2024-01-20', '2024-01-19','2024-01-18']
+# trading_dayss = [parse(x) for x in trading_dayss1]
 
+trading_days = trading_dayss[1:]
 current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
@@ -198,9 +200,9 @@ while True:
             
             exc_new1 = exch[exc_new]
             #print(exc_new1.head(1))
-            #Expiry = exc_new1[(exc_new1['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
+            Expiry = exc_new1[(exc_new1['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
             #Expiry = (np.unique(Expiry1['Expiry']).tolist())
-            Expiry = exc_new1
+            #Expiry = exc_new1
             Expiry.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
             #print(Expiry)
             # exc_new1 = exc_new1[exc_new1["LotSize"] < 5000]
@@ -300,7 +302,7 @@ if ash_posit.empty:
     ash_buy_root_list_dummy = []
 else:
     buy_order_li = ordef_func()
-    ash_buy_order_list_dummy = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+    ash_buy_order_list_dummy = (np.unique([str(i) for i in buy_order_li['ScripName']])).tolist()
     ash_buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
     #print(buy_order_list_dummy)
 
@@ -311,8 +313,10 @@ if har_posit.empty:
     har_buy_root_list_dummy = []
 else:
     buy_order_li = ordef_func()
-    har_buy_order_list_dummy = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+    har_buy_order_list_dummy = (np.unique([str(i) for i in buy_order_li['ScripName']])).tolist()
     har_buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
+
+append_buy_order_list_dummy = ash_buy_order_list_dummy + har_buy_order_list_dummy
 
 def data_download(cli,stk_nm,Qty,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll):
         #print(stk_nm)
@@ -376,47 +380,16 @@ def data_download(cli,stk_nm,Qty,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll)
         
         return dfg1
 
-def Buy_check(df,list_dummy,cli):
-     if not df.empty:
-        print("up")
-        if Buy_Scriptcodee in list_dummy: 
-             print(str(Buy_Scriptcodee)+" is Already Buy")
-        else:
-             dfg3 = dfgg_up.tail(1)
-             Buy_price_of_stock = float(dfg3['Buy_At'])  
-             Buy_Add_Till = float(dfg3['Add_Till'])                
-             Buy_Stop_Loss = float(dfg3['StopLoss'])    
-             Buy_Target = float(dfg3['Target'])                                  
-             Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
-             Buy_timee1= Buy_timee.replace("T", " " )
-             list_dummy.append(Buy_Scriptcodee)
-        
-             if orders.upper() == "YES" or orders.upper() == "":
-                #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
-                order = cli.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 1660, Qty=1, LimitPrice=330,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
-                #order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-0.5,TrailingSL=0.5)
-                #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
-             else:
-                print("Real Call Order are OFF")
-             print("5 Minute Data Call Selected "+str(stk_name1_up)+" ("+str(Buy_Scriptcodee)+")")
-             print("Call Buy Order of "+str(stk_name1_up)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on "+str(Buy_timee1))
-
-             print("SYMBOL : "+str(stk_name1_up)+"\n Call BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1))
-             if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
-                parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(stk_name1_up)+"\n Call BUY AT : "+str(Buy_price_of_stock)+"\n ADD TILL : "+str(Buy_Add_Till)+"\n STOP LOSS : "+str(Buy_Stop_Loss)+"\n TARGET : "+str(Buy_Target)+"\n QUANTITY : "+str(Buy_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
-                resp = requests.get(telegram_basr_url, data=parameters1)
-             else:
-                print("Telegram Message are OFF")
-
 
 while True:
 
     print("buy_order_list_dummy")
     print(ash_buy_order_list_dummy)
-    print(ash_buy_root_list_dummy)
     print(har_buy_order_list_dummy)
-    print(har_buy_root_list_dummy)
+
+    append_buy_order_list_dummy = ash_buy_order_list_dummy + har_buy_order_list_dummy
+    print("append_buy_order_list_dummy")
+    print(append_buy_order_list_dummy)
     start_time = time.time()
     five_df1 = pd.DataFrame()
     five_df2 = pd.DataFrame()
@@ -445,7 +418,7 @@ while True:
             fut_cls['Name'] = stk_name
             fut_cls1 = fut_cls.tail(1)
             Fut_Closee = int(float(fut_cls1['Close']))           
-            print(Fut_Closee)
+            print("Future Close Price is "+str(Fut_Closee))
             Excchhh_up = exc_opt[(exc_opt["CpType"] == 'CE')]
             Excchh_up = Excchhh_up[Excchhh_up['Root'] == Root]
             Excchh2_up = Excchh_up[(Excchh_up['StrikeRate'] > Fut_Closee)]
@@ -455,45 +428,58 @@ while True:
             Buy_quantity_of_stock = int(np.unique(Excchh3_up['LotSize']))
             Buy_Scriptcodee = int(np.unique(Excchh3_up['Scripcode'])[0])
             stk_name1_up = (np.unique([str(i) for i in Excchh3_up['Name']])).tolist()[0]
-
+                            #data_download(cli,     stk_nm,     Qty,                 start_dt,        end_dt,            vol_pr,rsi_up_lvll,rsi_dn_lvll)
             dfg1_up = data_download(credi_ash,Buy_Scriptcodee,Buy_quantity_of_stock,last_trading_day,current_trading_day,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)   
-            dfg1_up = dfg1_up.tail(397)
+            dfg1_up1 = dfg1_up.tail(397)
            
-            five_df1 = pd.concat([dfg1_up, five_df1])
+            five_df1 = pd.concat([dfg1_up1, five_df1])
 
             dfgg_up11 = dfg1_up[(dfg1_up["RSI_14"] > UP_Rsi_lvl ) & (dfg1_up["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1_up["Price_OK"] == "Price_Up_OK" ) & (dfg1_up["Cand_Col"] == "Green" )]
-            dfgg_up11['Date_Dif'] = (dfgg_up11["Datetime"].shift(-1) -dfgg_up11["Datetime"]).astype('timedelta64[m]') 
-            dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day)]# & ((dfgg_up11['Date_Dif'].shift(1)) > 10)]
+            dfgg_up11['Date_Dif'] = abs((dfgg_up11["Datetime"].shift(1) -dfgg_up11["Datetime"]).astype('timedelta64[m]')) 
+
+            dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date())]
             five_df2 = pd.concat([dfgg_up11, five_df2])
 
-            dfgg_up = dfgg_up11[(dfgg_up11["Date"] == current_trading_day) & (dfgg_up11["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
+            dfgg_up = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date()) & (dfgg_up11['Date_Dif'] > 10) & (dfgg_up11["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
 
-            print("5 Min Option Call Data Download and Scan "+str(stk_name1_up)+" ("+str(Buy_Scriptcodee)+")")                                  
-
-            
+            print("5 Min Option Call Data Download and Scan "+str(stk_name1_up)+" ("+str(Buy_Scriptcodee)+")")                                 
+           
             if not dfgg_up.empty:
                 print("up")
-                if Buy_Scriptcodee in buy_order_list_dummy: 
-                    print(str(Buy_Scriptcodee)+" is Already Buy")
+                dfg3 = dfgg_up.tail(1)
+                Buy_price_of_stock = float(dfg3['Buy_At'])  
+                Buy_Add_Till = float(dfg3['Add_Till'])                
+                Buy_Stop_Loss = float(dfg3['StopLoss'])    
+                Buy_Target = float(dfg3['Target'])                                  
+                Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
+                Buy_timee1= Buy_timee.replace("T", " " )
+
+                if stk_name1_up in ash_buy_order_list_dummy: 
+                    print(str(stk_name1_up)+" is Already Buy in Ashwin")
                 else:
-                    dfg3 = dfgg_up.tail(1)
-                    Buy_price_of_stock = float(dfg3['Buy_At'])  
-                    Buy_Add_Till = float(dfg3['Add_Till'])                
-                    Buy_Stop_Loss = float(dfg3['StopLoss'])    
-                    Buy_Target = float(dfg3['Target'])                                  
-                    Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
-                    Buy_timee1= Buy_timee.replace("T", " " )
-                    buy_order_list_dummy.append(Buy_Scriptcodee)
-                    buy_root_list_dummy.append(Root)
-                    
+                    ash_buy_order_list_dummy.append(stk_name1_up)
+                    print("ASHWIN CALL")
+
                     if orders.upper() == "YES" or orders.upper() == "":
-                        #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
-                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 1660, Qty=1, LimitPrice=330,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
-                        #order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-0.5,TrailingSL=0.5)
-                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
+                        order = credi_ash.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                     else:
                         print("Real Call Order are OFF")
+
+                if stk_name1_up in har_buy_order_list_dummy: 
+                    print(str(stk_name1_up)+" is Already Buy in Haresh")
+                else:
+                    har_buy_order_list_dummy.append(stk_name1_up)
+                    print("HARESH CALL")
+
+                    if orders.upper() == "YES" or orders.upper() == "":
+                        order = credi_har.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                    else:
+                        print("Real Call Order are OFF")
+                
+                if stk_name1_up in append_buy_order_list_dummy:
+                    pass
+                    #print(str(Buy_Scriptcodee)+" is Already Buy")
+                else:
                     print("5 Minute Data Call Selected "+str(stk_name1_up)+" ("+str(Buy_Scriptcodee)+")")
                     print("Call Buy Order of "+str(stk_name1_up)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_quantity_of_stock)+" on "+str(Buy_timee1))
                 
@@ -514,43 +500,59 @@ while True:
             Sell_Scriptcodee = int(np.unique(Excchh3_dn['Scripcode'])[0])
             stk_name1_dn = (np.unique([str(i) for i in Excchh3_dn['Name']])).tolist()[0]
 
-            dfg1_dn = data_download(Sell_Scriptcodee,Sell_quantity_of_stock,last_trading_day,current_trading_day,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)   
-            dfg1_dn = dfg1_dn.tail(397)
+            dfg1_dn = data_download(credi_ash,Sell_Scriptcodee,Sell_quantity_of_stock,last_trading_day,current_trading_day,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)   
+            dfg1_dn1 = dfg1_dn.tail(397)
 
-            five_df3 = pd.concat([dfg1_dn, five_df3])
+            five_df3 = pd.concat([dfg1_dn1, five_df3])
 
             dfgg_dn11 = dfg1_dn[(dfg1_dn["RSI_14"] > UP_Rsi_lvl ) & (dfg1_dn["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1_dn["Price_OK"] == "Price_Up_OK" ) & (dfg1_dn["Cand_Col"] == "Green" )]
-            dfgg_dn11['Date_Dif'] = (dfgg_dn11["Datetime"].shift(-1) -dfgg_dn11["Datetime"]).astype('timedelta64[m]') 
-            dfgg_dn11 = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day) & ((dfgg_dn11['Date_Dif'].shift(1)) > 10)]
+            dfgg_dn11['Date_Dif'] = abs((dfgg_dn11["Datetime"].shift(1) -dfgg_dn11["Datetime"]).astype('timedelta64[m]')) 
+
+            dfgg_dn11 = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date())]
             five_df4 = pd.concat([dfgg_dn11, five_df4])
 
-            dfgg_dn = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day) & (dfgg_dn11["Minutes"] < 5 )]
+            dfgg_dn = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date()) & (dfgg_dn11['Date_Dif'] > 10) & (dfgg_dn11["Minutes"] < 5 )]
            
             print("5 Min Option Data Put Download and Scan "+str(stk_name1_dn)+" ("+str(Sell_Scriptcodee)+")")                                  
 
             if not dfgg_dn.empty:
                 print("dn")
-                if Sell_Scriptcodee in buy_order_list_dummy: 
+                dfg3_dn = dfgg_dn.tail(1)
+                Sell_price_of_stock = float(dfg3_dn['Buy_At'])  
+                Sell_Add_Till = float(dfg3_dn['Add_Till'])                
+                Sell_Stop_Loss = float(dfg3_dn['StopLoss'])    
+                Sell_Target = float(dfg3_dn['Target'])                                  
+                Sell_timee = str((dfg3_dn['Datetime'].values)[0])[0:19] 
+                Sell_timee1= Sell_timee.replace("T", " " )
+
+                if stk_name1_dn in ash_buy_order_list_dummy: 
                     print(str(stk_name1_dn)+" is Already Buy")
                 else:
-                    dfg3_dn = dfgg_dn.tail(1)
-                    Sell_price_of_stock = float(dfg3_dn['Buy_At'])  
-                    Sell_Add_Till = float(dfg3_dn['Add_Till'])                
-                    Sell_Stop_Loss = float(dfg3_dn['StopLoss'])    
-                    Sell_Target = float(dfg3_dn['Target'])                                  
-                    Sell_timee = str((dfg3_dn['Datetime'].values)[0])[0:19] 
-                    Sell_timee1= Sell_timee.replace("T", " " )
-                    buy_order_list_dummy.append(Sell_Scriptcodee)
-                    buy_root_list_dummy.append(Root)
+
+                    ash_buy_order_list_dummy.append(stk_name1_dn)
+                    print("ASHWIN PUT")
                     
                     if orders.upper() == "YES" or orders.upper() == "":
-                        #order =  client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, Price=Buy_price_of_stock)
-                        order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Sell_Scriptcodee, Qty=Sell_quantity_of_stock,Price=Sell_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='C', ScripCode = 1660, Qty=1, LimitPrice=330,TargetPrice=345,StopLossPrice=320,LimitPriceForSL=319,TrailingSL=1.5)
-                        #order = client.cover_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-0.5,TrailingSL=0.5)
-                        #order = client.bo_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock, LimitPrice=Buy_price_of_stock,TargetPrice=Buy_Target1,StopLossPrice=Buy_Stop_Loss,LimitPriceForSL=Buy_Stop_Loss-1,TrailingSL=0.5)
+                        order = credi_ash.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Sell_Scriptcodee, Qty=Sell_quantity_of_stock,Price=Sell_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                     else:
                         print("Real Put Order are OFF")
+
+                if stk_name1_dn in har_buy_order_list_dummy: 
+                    print(str(stk_name1_dn)+" is Already Buy")
+                else:
+
+                    har_buy_order_list_dummy.append(stk_name1_dn)
+                    print("HARESH PUT")
+
+                    if orders.upper() == "YES" or orders.upper() == "":                        
+                        order = credi_har.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Sell_Scriptcodee, Qty=Sell_quantity_of_stock,Price=Sell_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                    else:
+                        print("Real Put Order are OFF")   
+
+                if stk_name1_dn in append_buy_order_list_dummy:
+                    pass
+                    #print(str(Buy_Scriptcodee)+" is Already Buy")
+                else:             
                     print("5 Minute Data Put Selected "+str(stk_name1_dn)+" ("+str(Sell_Scriptcodee)+")")
                     print("Put Buy Order of "+str(stk_name1_dn)+" at : Rs "+str(Sell_price_of_stock)+" and Quantity is "+str(Sell_quantity_of_stock)+" on "+str(Sell_timee1))
                 

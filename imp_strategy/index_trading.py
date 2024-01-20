@@ -29,6 +29,7 @@ import inspect
 import time
 from five_paisa1 import *
 import threading
+from dateutil.parser import parse
 
 
 telegram_first_name = "mkbairwa"
@@ -75,9 +76,10 @@ holida1 = np.unique(holida['Date'])
 
 trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holida1)
 trading_dayss = trading_days_reverse[::-1]
-trading_dayss = ['2024-01-20', '2024-01-19','2024-01-18']
-trading_days = trading_dayss[1:]
+# trading_dayss1 = ['2024-01-20', '2024-01-19','2024-01-18']
+# trading_dayss = [parse(x) for x in trading_dayss1]
 
+trading_days = trading_dayss[1:]
 current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
@@ -195,9 +197,9 @@ while True:
             
             exc_new1 = exch[exc_new]
             #print(exc_new1.head(1))
-            #Expiry = exc_new1[(exc_new1['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
+            Expiry = exc_new1[(exc_new1['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
             #Expiry = (np.unique(Expiry1['Expiry']).tolist())
-            Expiry = exc_new1
+            #Expiry = exc_new1
             Expiry.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
             #print(Expiry)
             # exc_new1 = exc_new1[exc_new1["LotSize"] < 5000]
@@ -297,7 +299,7 @@ if posit.empty:
     buy_root_list_dummy = []
 else:
     buy_order_li = ordef_func()
-    buy_order_list_dummy = (np.unique([int(i) for i in buy_order_li['ScripCode']])).tolist()
+    buy_order_list_dummy = (np.unique([str(i) for i in buy_order_li['ScripName']])).tolist()
     buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
     #print(buy_order_list_dummy)
 
@@ -408,22 +410,22 @@ while True:
             stk_name1_up = (np.unique([str(i) for i in Excchh3_up['Name']])).tolist()[0]
 
             dfg1_up = data_download(Buy_Scriptcodee,Buy_quantity_of_stock,last_trading_day,current_trading_day,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)   
-            dfg1_up = dfg1_up.tail(397)
+            dfg1_up1 = dfg1_up.tail(397)
            
-            five_df1 = pd.concat([dfg1_up, five_df1])
+            five_df1 = pd.concat([dfg1_up1, five_df1])
 
             dfgg_up11 = dfg1_up[(dfg1_up["RSI_14"] > UP_Rsi_lvl ) & (dfg1_up["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1_up["Price_OK"] == "Price_Up_OK" ) & (dfg1_up["Cand_Col"] == "Green" )]
-            dfgg_up11['Date_Dif'] = (dfgg_up11["Datetime"].shift(-1) -dfgg_up11["Datetime"]).astype('timedelta64[m]') 
-            dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day)]# & ((dfgg_up11['Date_Dif'].shift(1)) > 10)]
+            dfgg_up11['Date_Dif'] = abs((dfgg_up11["Datetime"].shift(1) -dfgg_up11["Datetime"]).astype('timedelta64[m]')) 
+            dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date())]
             five_df2 = pd.concat([dfgg_up11, five_df2])
 
-            dfgg_up = dfgg_up11[(dfgg_up11["Date"] == current_trading_day) & (dfgg_up11["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
+            dfgg_up = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date()) & (dfgg_up11['Date_Dif'] > 10) & (dfgg_up11["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
 
             print("5 Min Option Call Data Download and Scan "+str(stk_name1_up)+" ("+str(Buy_Scriptcodee)+")")                                  
 
             if not dfgg_up.empty:
                 print("up")
-                if Buy_Scriptcodee in buy_order_list_dummy: 
+                if stk_name1_up in buy_order_list_dummy: 
                     print(str(Buy_Scriptcodee)+" is Already Buy")
                 else:
                     dfg3 = dfgg_up.tail(1)
@@ -433,7 +435,7 @@ while True:
                     Buy_Target = float(dfg3['Target'])                                  
                     Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
                     Buy_timee1= Buy_timee.replace("T", " " )
-                    buy_order_list_dummy.append(Buy_Scriptcodee)
+                    buy_order_list_dummy.append(stk_name1_up)
                     buy_root_list_dummy.append(Root)
                     
                     if orders.upper() == "YES" or orders.upper() == "":
@@ -465,22 +467,22 @@ while True:
             stk_name1_dn = (np.unique([str(i) for i in Excchh3_dn['Name']])).tolist()[0]
 
             dfg1_dn = data_download(Sell_Scriptcodee,Sell_quantity_of_stock,last_trading_day,current_trading_day,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)   
-            dfg1_dn = dfg1_dn.tail(397)
+            dfg1_dn1 = dfg1_dn.tail(397)
 
-            five_df3 = pd.concat([dfg1_dn, five_df3])
+            five_df3 = pd.concat([dfg1_dn1, five_df3])
 
             dfgg_dn11 = dfg1_dn[(dfg1_dn["RSI_14"] > UP_Rsi_lvl ) & (dfg1_dn["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1_dn["Price_OK"] == "Price_Up_OK" ) & (dfg1_dn["Cand_Col"] == "Green" )]
-            dfgg_dn11['Date_Dif'] = (dfgg_dn11["Datetime"].shift(-1) -dfgg_dn11["Datetime"]).astype('timedelta64[m]') 
-            dfgg_dn11 = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day) & ((dfgg_dn11['Date_Dif'].shift(1)) > 10)]
+            dfgg_dn11['Date_Dif'] = abs((dfgg_dn11["Datetime"].shift(1) -dfgg_dn11["Datetime"]).astype('timedelta64[m]')) 
+            dfgg_dn11 = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date())]
             five_df4 = pd.concat([dfgg_dn11, five_df4])
 
-            dfgg_dn = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day) & (dfgg_dn11["Minutes"] < 5 )]
+            dfgg_dn = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date()) & (dfgg_dn11['Date_Dif'] > 10) & (dfgg_dn11["Minutes"] < 5 )]
            
             print("5 Min Option Data Put Download and Scan "+str(stk_name1_dn)+" ("+str(Sell_Scriptcodee)+")")                                  
 
             if not dfgg_dn.empty:
                 print("dn")
-                if Sell_Scriptcodee in buy_order_list_dummy: 
+                if stk_name1_dn in buy_order_list_dummy: 
                     print(str(stk_name1_dn)+" is Already Buy")
                 else:
                     dfg3_dn = dfgg_dn.tail(1)
@@ -490,7 +492,7 @@ while True:
                     Sell_Target = float(dfg3_dn['Target'])                                  
                     Sell_timee = str((dfg3_dn['Datetime'].values)[0])[0:19] 
                     Sell_timee1= Sell_timee.replace("T", " " )
-                    buy_order_list_dummy.append(Sell_Scriptcodee)
+                    buy_order_list_dummy.append(stk_name1_dn)
                     buy_root_list_dummy.append(Root)
                     
                     if orders.upper() == "YES" or orders.upper() == "":
