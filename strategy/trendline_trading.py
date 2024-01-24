@@ -82,8 +82,8 @@ holida1 = np.unique(holida['Date'])
 
 trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holida1)
 trading_dayss = trading_days_reverse[::-1]
-trading_dayss1 = ['2024-01-23', '2024-01-20','2024-01-19']
-trading_dayss = [parse(x) for x in trading_dayss1]
+# trading_dayss1 = ['2024-01-23', '2024-01-20','2024-01-19']
+# trading_dayss = [parse(x) for x in trading_dayss1]
 
 trading_days = trading_dayss[1:]
 current_trading_day = trading_dayss[0]
@@ -186,6 +186,7 @@ rsi_dn_lvll = 40
 
 dfpl = client.historical_data('N', 'D', 55790, '1m',last_trading_day,current_trading_day) 
 dfpl["RSI_14"] = np.round((pta.rsi(dfpl["Close"], length=14)),2)
+dfpl['Benchmark'] = dfpl['High'].cummax()
 dfpl.sort_values(['Datetime'], ascending=[False], inplace=True)
 dfpl['Rsi_OK'] = np.where((dfpl["RSI_14"].shift(-1)) > rsi_up_lvll-2,"Rsi_Up_OK",np.where((dfpl["RSI_14"].shift(-1)) < rsi_dn_lvll+2,"Rsi_Dn_OK",""))
 strategy1.range("a1").options(index=False).value = dfpl
@@ -292,7 +293,28 @@ df_merged = pd.concat([low_df, high_df])
 
 #strategy2.range("a20").options(index=False).value = df_merged
 
-dfg1 = pd.merge(df_merged, df, on=['Datetime'], how='outer').fillna(npNaN)
-dfg1.fillna(method='ffill')
+dfg11 = pd.merge(df_merged, df, on=['Datetime'], how='outer')
+print(dfg11.head(2))
+# dfg1['Benchmark1'] = dfg1['High_N'].combine_first(dfg1['High_N'])
+# buy_order_list_dummy = (np.unique([i for i in dfg1['Datetime']])).tolist()
+# #print(buy_order_list_dummy)
+# High_NN = []
+
+# for i in buy_order_list_dummy:
+#     scpt0 = dfg1[dfg1['Datetime'] == i] 
+#     High_N = np.unique(scpt0['High_N'])
+#     #print(High_N)
+#     if High_N[0] != 0:
+#         High_NN.append(High_N[0])
+#         #print(scpt0)
+#         print(High_NN[-1])
+# print(High_NN)
+
+
+#print(dfg2)
+dfg1 = dfg11.copy()
+# dfg1['High_N'] = dfg1['High_N'].astype(int,errors='ignore')
+#dfg1['High_N'] = dfg1['High_N'].ffill(downcast=1)
+#dfg1['c'] = df.groupby('Datetime')['High_N'].apply(lambda x: x.replace(to_replace=0, method='ffill')) #print df after this.
 dfg1.sort_values(['Datetime'], ascending=[True], inplace=True)
 strategy2.range("a1").options(index=False).value = dfg1
