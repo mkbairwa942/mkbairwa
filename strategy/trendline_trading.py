@@ -44,10 +44,10 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-operate = input("Do you want to go with TOTP (yes/no): ")
-#notifi = input("Do you want to send Notification on Desktop (yes/no): ")
-telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
-orders = input("Do you want to Place Real Orders (yes/no): ")
+# operate = input("Do you want to go with TOTP (yes/no): ")
+# #notifi = input("Do you want to send Notification on Desktop (yes/no): ")
+# telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
+# orders = input("Do you want to Place Real Orders (yes/no): ")
 # if operate.upper() == "YES":
 #     from five_paisa1 import *
 #     username = input("Enter Username : ")
@@ -57,9 +57,9 @@ orders = input("Do you want to Place Real Orders (yes/no): ")
 # else:
 #     from five_paisa import *
 
-# operate = "YES"
-# telegram_msg = "no"
-# orders = "no"
+operate = "YES"
+telegram_msg = "no"
+orders = "no"
 # username = "ASHWIN"
 # username1 = str(username)
 # client = credentials(username1)
@@ -90,7 +90,7 @@ trading_dayss = trading_days_reverse[::-1]
 
 trading_days = trading_dayss[1:]
 current_trading_day = trading_dayss[0]
-last_trading_day = trading_days[1]
+last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
 
 # current_trading_day = trading_dayss[1]
@@ -332,7 +332,7 @@ def resistance(df1, l, n1, n2): #n1 n2 before and after candle l
             return 0
     return 1
 
-def data_download(cli,stk_nm,Qty,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll):
+def data_download(cli,stk_nm,Qty,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll,rsi_buff):
     dfpl = cli.historical_data('N', 'D', stk_nm, '1m',start_dt,end_dt)
     dfpl['Scripcode'] = stk_nm 
     dfpl = pd.merge(exc_opt, dfpl, on=['Scripcode'], how='inner') 
@@ -340,7 +340,7 @@ def data_download(cli,stk_nm,Qty,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll)
     dfpl.sort_values(['Datetime'], ascending=[True], inplace=True)
     dfpl["RSI_14"] = np.round((pta.rsi(dfpl["Close"], length=14)),2)
     dfpl.sort_values(['Datetime'], ascending=[False], inplace=True)
-    dfpl['Rsi_OK'] = np.where((dfpl["RSI_14"].shift(-1)) > rsi_up_lvll-2,"Rsi_Up_OK",np.where((dfpl["RSI_14"].shift(-1)) < rsi_dn_lvll+2,"Rsi_Dn_OK",""))
+    dfpl['Rsi_OK'] = np.where((dfpl["RSI_14"].shift(-1)) > rsi_up_lvll-rsi_buff,"Rsi_Up_OK",np.where((dfpl["RSI_14"].shift(-1)) < rsi_dn_lvll+rsi_buff,"Rsi_Dn_OK",""))
     
     df_len = (dfpl.shape[0])
     df = dfpl#[0:df_len]
@@ -391,7 +391,7 @@ def data_download(cli,stk_nm,Qty,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll)
             five_df = pd.concat([scpt0, five_df])
 
     dfg1 = five_df.drop_duplicates( "Datetime" , keep='first')
-    dfg1 = dfg1.astype({"Datetime": "datetime64"})
+    
     dfg1['Price_Chg'] = round(((dfg1['Close'] * 100) / (dfg1['Close'].shift(-1)) - 100), 2).fillna(0)      
 
     dfg1['Vol_Chg'] = round(((dfg1['Volume'] * 100) / (dfg1['Volume'].shift(-1)) - 100), 2).fillna(0)
@@ -446,6 +446,7 @@ while True:
     Vol_per = 15
     UP_Rsi_lvl = 60
     DN_Rsi_lvl = 40
+    Rsi_Buffer = 3
 
     for sc in stk_list:
         try:
@@ -470,25 +471,27 @@ while True:
             Buy_Scriptcodee = int(np.unique(Excchh3_up['Scripcode'])[0])
             stk_name1_up = (np.unique([str(i) for i in Excchh3_up['Name']])).tolist()[0]
             #print(stk_name1_up)
-            dfg1_up = data_download(credi_ash,Buy_Scriptcodee,Buy_quantity_of_stock,last_trading_day,current_trading_day,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)
-            dfg1_up1 = dfg1_up.tail(397)
+            dfg1_up = data_download(credi_ash,Buy_Scriptcodee,Buy_quantity_of_stock,last_trading_day,current_trading_day,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl,Rsi_Buffer)
+            dfg1_up1 = dfg1_up.head(397)
            
             five_df1 = pd.concat([dfg1_up1, five_df1])
 
             dfgg_up11 = dfg1_up[(dfg1_up["Close"] > dfg1_up['High_N']) & (dfg1_up["Rsi_OK"] == "Rsi_Up_OK") & (dfg1_up["RSI_14"] > UP_Rsi_lvl )]# & (dfg1["Date"] == current_trading_day.date())]
             dfgg_up11['Date_Dif'] = abs((dfgg_up11["Datetime"].shift(-1) -dfgg_up11["Datetime"]).astype('timedelta64[m]'))
             
-            dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date())]
-            five_df2 = pd.concat([dfgg_up11, five_df2])
+            # dfgg_up11 = dfgg_up11[(dfgg_up11["Date"] == current_trading_day.date())]
+            # five_df2 = pd.concat([dfgg_up11, five_df2])
 
             dfgg_up = dfgg_up11[(dfgg_up11['Date_Dif'] > 10) & (dfgg_up11["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
             dfgg_up.sort_values(['Datetime'], ascending=[True], inplace=True)
+            five_df2 = pd.concat([dfgg_up, five_df2])
 
             print("5 Min Option Call Data Download and Scan "+str(stk_name1_up)+" ("+str(Buy_Scriptcodee)+")")
 
             if not dfgg_up.empty:
                 print("up")
                 dfg3 = dfgg_up.tail(1)
+                print(dfg3)
                 Buy_price_of_stock = float(dfg3['Buy_At'])  
                 Buy_Add_Till = float(dfg3['Add_Till'])                
                 Buy_Stop_Loss = float(dfg3['StopLoss'])    
@@ -532,6 +535,86 @@ while True:
                     else:
                         print("Telegram Message are OFF")
 
+            Excchhh_dn = exc_opt[(exc_opt["CpType"] == 'PE')]
+            Excchh_dn = Excchhh_dn[Excchhh_dn['Root'] == Root]
+            Excchh2_dn = Excchh_dn[(Excchh_dn['StrikeRate'] < Fut_Closee)]
+            Excchh2_dn.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+            
+            Excchh3_dn = Excchh2_dn.tail(1)
+            Sell_quantity_of_stock = int(np.unique(Excchh3_dn['LotSize']))
+            Sell_Scriptcodee = int(np.unique(Excchh3_dn['Scripcode'])[0])
+            stk_name1_dn = (np.unique([str(i) for i in Excchh3_dn['Name']])).tolist()[0]
+
+            dfg1_dn = data_download(credi_ash,Sell_Scriptcodee,Sell_quantity_of_stock,last_trading_day,current_trading_day,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl,Rsi_Buffer)   
+            dfg1_dn1 = dfg1_dn.head(397)
+            
+            five_df3 = pd.concat([dfg1_dn1, five_df3])
+
+            dfgg_dn11 = dfg1_dn[(dfg1_dn["Close"] > dfg1_dn['High_N'] ) & (dfg1_dn["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1_dn["RSI_14"] > UP_Rsi_lvl )]# & (dfg1["Date"] == current_trading_day.date())]
+            dfgg_dn11['Date_Dif'] = abs((dfgg_dn11["Datetime"].shift(-1) -dfgg_dn11["Datetime"]).astype('timedelta64[m]')) 
+
+            # dfgg_dn11 = dfgg_dn11[(dfgg_dn11["Date"] == current_trading_day.date())]
+            # five_df4 = pd.concat([dfgg_dn11, five_df4])
+
+            dfgg_dn = dfgg_dn11[(dfgg_dn11['Date_Dif'] > 10) & (dfgg_dn11["Date"] == current_trading_day.date())]# & (dfg2["Minutes"] < 5 )]
+            dfgg_dn.sort_values(['Datetime'], ascending=[True], inplace=True)
+            five_df4 = pd.concat([dfgg_dn, five_df4])
+
+            print("5 Min Option Data Put Download and Scan "+str(stk_name1_dn)+" ("+str(Sell_Scriptcodee)+")")                                  
+
+            if not dfgg_dn.empty:
+                print("dn")
+                dfg3_dn = dfgg_dn.tail(1)
+                Sell_price_of_stock = float(dfg3_dn['Buy_At'])  
+                Sell_Add_Till = float(dfg3_dn['Add_Till'])                
+                Sell_Stop_Loss = float(dfg3_dn['StopLoss'])    
+                Sell_Target = float(dfg3_dn['Target'])                                  
+                Sell_timee = str((dfg3_dn['Datetime'].values)[0])[0:19] 
+                Sell_timee1= Sell_timee.replace("T", " " )
+
+                if stk_name1_dn in ash_buy_order_list_dummy: 
+                    print(str(stk_name1_dn)+" is Already Buy")
+                else:
+
+                    ash_buy_order_list_dummy.append(stk_name1_dn)
+                    print("ASHWIN PUT")
+                    
+                    if orders.upper() == "YES" or orders.upper() == "":
+                        order = credi_ash.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Sell_Scriptcodee, Qty=Sell_quantity_of_stock,Price=Sell_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                    else:
+                        print("Real Put Order are OFF")
+
+                if stk_name1_dn in har_buy_order_list_dummy: 
+                    print(str(stk_name1_dn)+" is Already Buy")
+                else:
+
+                    har_buy_order_list_dummy.append(stk_name1_dn)
+                    print("HARESH PUT")
+
+                    if orders.upper() == "YES" or orders.upper() == "":                        
+                        order = credi_har.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Sell_Scriptcodee, Qty=Sell_quantity_of_stock,Price=Sell_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                    else:
+                        print("Real Put Order are OFF")   
+
+                if stk_name1_dn in append_buy_order_list_dummy:
+                    pass
+                    #print(str(Buy_Scriptcodee)+" is Already Buy")
+                else:             
+                    print("5 Minute Data Put Selected "+str(stk_name1_dn)+" ("+str(Sell_Scriptcodee)+")")
+                    print("Put Buy Order of "+str(stk_name1_dn)+" at : Rs "+str(Sell_price_of_stock)+" and Quantity is "+str(Sell_quantity_of_stock)+" on "+str(Sell_timee1))
+                
+                    print("SYMBOL : "+str(stk_name1_dn)+"\n Put BUY AT : "+str(Sell_price_of_stock)+"\n ADD TILL : "+str(Sell_Add_Till)+"\n STOP LOSS : "+str(Sell_Stop_Loss)+"\n TARGET : "+str(Sell_Target)+"\n QUANTITY : "+str(Sell_quantity_of_stock)+"\n TIME : "+str(Sell_timee1))
+                    if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
+                        parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(stk_name1_dn)+"\n Put BUY AT : "+str(Sell_price_of_stock)+"\n ADD TILL : "+str(Sell_Add_Till)+"\n STOP LOSS : "+str(Sell_Stop_Loss)+"\n TARGET : "+str(Sell_Target)+"\n QUANTITY : "+str(Sell_quantity_of_stock)+"\n TIME : "+str(Sell_timee1)}
+                        resp = requests.get(telegram_basr_url, data=parameters1)
+                    else:
+                        print("Telegram Message are OFF")
+                
+            else:
+                pass
+                
+                print("5 Minute Option Data Scan But Not Selected "+str(stk_name)+" ("+str(aaa)+")")
+
 
         except Exception as e:
                     print(e) 
@@ -541,7 +624,7 @@ while True:
     if five_df1.empty:
         pass
     else:
-        five_df1 = five_df1[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Rsi_OK','Price_OK','Cand_Col','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','Buy/Sell','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+        five_df1 = five_df1[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','High_N','Low_N','RSI_14','Rsi_OK','Price_OK','Cand_Col','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','Buy/Sell','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
         five_df1.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         Fiv_dt.range("a:az").value = None
         Fiv_dt.range("a1").options(index=False).value = five_df1
@@ -549,7 +632,7 @@ while True:
     if five_df3.empty:
         pass
     else:
-        five_df3 = five_df3[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Rsi_OK','Price_OK','Cand_Col','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','Buy/Sell','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+        five_df3 = five_df3[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','High_N','Low_N','RSI_14','Rsi_OK','Price_OK','Cand_Col','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','Buy/Sell','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
         five_df3.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         Fiv_dt.range("a400").options(index=False).value = five_df3
 
