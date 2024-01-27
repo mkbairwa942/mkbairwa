@@ -473,7 +473,7 @@ def data_download(stk_nm,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll):
 
         dfg1 = client.historical_data('N', 'D', stk_nm, '1m',start_dt,end_dt) 
         dfg1['Scripcode'] = stk_nm
-        #print(dfg1.head(1))
+        print(dfg1.head(1))
         dfg1 = pd.merge(exc_opt, dfg1, on=['Scripcode'], how='inner') 
         dfg1 = dfg1[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume']]
         dfg1.sort_values(['Datetime'], ascending=[True], inplace=True)
