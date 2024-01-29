@@ -393,12 +393,16 @@ while True:
             dfg1["Date"] = dfg1["Datetime"].dt.date
             dfg1['Minutes'] = dfg1['TimeNow']-dfg1["Datetime"]
             dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)
+            print(dfg1.head(1))
+            print(dfg1.tail(1))
 
             pdb = dfg1[(dfg1["Date"] == last_trading_day.date())]
+
             pdhb1 = pdb['High'].cummax()[0]
             pdlb1 = pdb['Low'].cummin()[0]
- 
+            print(pdhb1,pdlb1)
             dfg1['PDB'] = np.where(dfg1['Open'] > pdhb1,"PDHB",np.where(dfg1['Open'] < pdlb1,"PDLB",""))   
+            Fiv_dt.range("a1").options(index=False).value = dfg1
             five_df1 = pd.concat([dfg1, five_df1])
 
             dfgg_up11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]
@@ -407,16 +411,18 @@ while True:
             five_df2 = pd.concat([dfgg_up11, five_df2])            
             five_df3 = pd.concat([dfgg_dn11, five_df3])
 
-            dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
-            dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDLB")]
-
+            dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
+            dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDLB")]
+            print(dfgg_up.head(2))
+            print(dfgg_dn.head(2))
             stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0]
             print("5 Min Future Data Download and Scan "+str(stk_name)+" ("+str(aaa)+")")                                  
 
             if not dfgg_up.empty:
                 print("up")
                 stk_name1 = np.unique(dfgg_up['Root'])
-                dfgg_up_sc = dfgg_up.iloc[:1]
+                dfgg_up_sc = dfgg_up.iloc[:1]    
+                print(dfgg_up_sc)            
                 Closee = int(dfgg_up_sc['Close'])
                 Buy_timee = list(dfgg_up_sc['Datetime'])[0]
                 Buy_timee1 = str(Buy_timee).replace(' ','T')  

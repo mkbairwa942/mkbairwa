@@ -278,7 +278,7 @@ while True:
                         # if Buy_Name == 'GUJGASLTD 25 Jan 2024 CE 500.00':                            
                         #     Buy_timee = '2024-01-01 14:33:30'
 
-                        Buy_timee1 = str(Buy_timee).replace(' ','T')
+                        # Buy_timee1 = str(Buy_timee).replace(' ','T')
                         
                         dfg1 = credi_ash.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
                         #print(dfg1.head(1))

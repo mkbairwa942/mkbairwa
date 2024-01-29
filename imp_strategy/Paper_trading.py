@@ -89,7 +89,7 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
 
-current_trading_day = trading_dayss[1]
+current_trading_day = trading_dayss[0]
 last_trading_day = trading_dayss[2]
 second_last_trading_day = trading_days[3]
 
@@ -231,8 +231,8 @@ st.range("a:u").value = None
 dt.range(f"a1:d1").value = ["Name","Scripcode","Datetime","Qty","Buy_At"]#,"","","","","","","","","","","","","","Quantity","Entry","Exit","SL","Status"]
 oc.range("a:b").value = oc.range("d8:e30").value = oc.range("g1:v4000").value = None
 
-dfg1 = credi_ash.historical_data("M", "D", 253322, '1m',last_trading_day,current_trading_day)
-print(dfg1.head(2))
+# dfg1 = credi_ash.historical_data("M", "D", 253322, '1m',last_trading_day,current_trading_day)
+# print(dfg1.head(2))
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
@@ -251,7 +251,11 @@ while True:
             exchange1 = exchange[(exchange['Exch'].isin(['N'])) & (exchange['Series'].isin(['EQ', 'XX']))]
             exchange2 = exchange[(exchange['Exch'].isin(['M']))]
             exc_merged = pd.concat([exchange1, exchange2])
-            #exc_merged = exchange1.conacte(exchange2, ignore_index=True)
+            #exc_merged =  exc_merge.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+            exc_merged['Name'] = exc_merged['Name'].apply(lambda x: x.strip())
+
+            # exc_merged = exchange
+            # exc_merged = exchange1.conacte(exchange2, ignore_index=True)
             # exchange1 = exchange[(exchange['ExchType'].isin(['C', 'D']))]
             # exchange1 = exchange1[(exchange1['Series'].isin(['EQ', 'XX']))]
             # exchange2 = exchange[exchange["Series"] == "EQ"]
@@ -263,19 +267,19 @@ while True:
             print("Exchange Download Error....")
             time.sleep(10)
 
-# exc.range("a1").value = exc_merged
+exc.range("a1").value = exc_merged
 # exc.range("ar1").value = exchange2
-df = pd.DataFrame({"FNO Symbol": list(exchange1["Root"].unique())})
-df = df.set_index("FNO Symbol",drop=True)
-oc.range("a1").value = df
+# df = pd.DataFrame({"FNO Symbol": list(exchange1["Root"].unique())})
+# df = df.set_index("FNO Symbol",drop=True)
+# oc.range("a1").value = df
 
-oc.range("d2").value, oc.range("d3").value, oc.range("d4").value, oc.range("d5").value, oc.range("d6").value = "Symbol==>>", "Expiry==>>", "LotSize==>>", "Total CE Value==>>", "Total PE Value==>>",
+# oc.range("d2").value, oc.range("d3").value, oc.range("d4").value, oc.range("d5").value, oc.range("d6").value = "Symbol==>>", "Expiry==>>", "LotSize==>>", "Total CE Value==>>", "Total PE Value==>>",
 
-pre_oc_symbol = pre_oc_expiry = ""
-expiries_list = []
-instrument_dict = {}
-prev_day_oi = {}
-stop_thread = False
+# pre_oc_symbol = pre_oc_expiry = ""
+# expiries_list = []
+# instrument_dict = {}
+# prev_day_oi = {}
+# stop_thread = False
 
 def ordef_func():
     try:
@@ -319,15 +323,21 @@ else:
 
 print("Excel : Started")
 
-buy_order_list = []
-ord_buy_df_list = []
-ord_sell_df_list = []
+# buy_order_list = []
+# ord_buy_df_list = []
+# ord_sell_df_list = []
 
 #data = pd.read_table(filenames,skip_blank_lines=True, na_filter=True)
 
 by.range("a1:x1").color = (54,226,0)
 by.range("a1:x1").font.bold = True
 by.range("a1:x1").api.WrapText = True
+
+SLL = 2
+TSL = 2
+
+tsl1 = 1-(TSL/100)
+print(tsl1)
 
 while True:
     oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
@@ -338,47 +348,104 @@ while True:
     scpt = dt.range(f"a{1}:e{50}").value            
     sym = dt.range(f"a{2}:a{500}").value
     symbols = list(filter(lambda item: item is not None, sym))
-    #print(symbols)
+    print(symbols)
     scpts = pd.DataFrame(scpt[1:],columns=scpt[0])
     scpts['Name'] = scpts['Name'].apply(lambda x : str(x))
-    #scptd = scpts[(scpts['Name'] != "")] #& (scpts['Scripcode'] != 'NaN')]
-    #scptd = scptd.replace(to_replace='None', value=np.nan).dropna()
-    #print(scptd)
-    exc_new = exc_merged['Name'].isin(symbols)
+    scptd = scpts[(scpts['Name'] != "")] #& (scpts['Scripcode'] != 'NaN')]
+    scptd = scptd.replace(to_replace='None', value=np.nan).dropna()
+    # print(scptd)
+    #exc_new = exc_merged['Name'].isin(symbols)
+    #exc_new1 = exc_merged[exc_new]
+    exc_new1 = exc_merged[(exc_merged['Name'].isin(symbols))]
     
-    exc_new1 = exc_merged[exc_new]
-    #print(exc_new1)
-    dfg = pd.merge(scpts, exc_new1, on=['Name'], how='outer')
-    by.range("a20").options(index=False).value = dfg
-    exc_new1 = exc_new1[["Exch","ExchType","Scripcode_y","Datetime","Qty","Buy_At","Series","CpType","Name","LotSize"]]
-    exc_new1['Concate'] = exc_new1['Exch']+":"+exc_new1['ExchType']+":"+exc_new1['Name']+":"+exc_new1['Scripcode'].astype(str)+":"+exc_new1['LotSize'].astype(str)
+
+    #print(exc_new1['Scripcode'],exc_new1['Name'],exc_new1['Exch'],exc_new1['ExchType'])
+    dfg = pd.merge(scptd, exc_new1, on=['Name'], how='outer')
+    dfg = dfg.fillna(0)
+    #by.range("a20").options(index=False).value = dfg
+    dfg = dfg[["Exch","ExchType","Scripcode_y","Datetime","Qty","Buy_At","Series","CpType","Name","LotSize"]]
+    #dfg['Concate'] = dfg['Exch']+":"+dfg['ExchType']+":"+dfg['Name']+":"+dfg['Scripcode_y'].astype(str)+":"+dfg['LotSize'].astype(str)
     #print(exc_new1)
 
-    symbolss = list(exc_new1['Concate'])
-    symbolss.sort()
-    #print(symbolss)
+    #symbolss = list(dfg['Concate'])    
+    #symbolss.sort()
+
+    symbolss = np.unique(dfg['Name'])
+    print(symbolss)
 
     by_df = pd.DataFrame()
     five_df1 = pd.DataFrame()
+    five_df2 = pd.DataFrame()
+    five_df3 = pd.DataFrame()
+
 
     for i in symbolss:
-        Exche = i.split(":")[0]
-        ExchTypee = i.split(":")[1]
-        Namee = i.split(":")[2]
-        Scripcodee = i.split(":")[3]
-        Lotsize = i.split(":")[4]
-        print(Exche,ExchTypee,Namee,Scripcodee,Lotsize)
-        dfg1 = credi_ash.historical_data(Exche, ExchTypee, Scripcodee, '1m',last_trading_day,current_trading_day)
-        dfg1['Name'] = Namee
-        #print(dfg1.tail(1))
-        five_df1 = pd.concat([dfg1, five_df1])
-        dfg2 = dfg1.tail(1)        
-        by_df = pd.concat([dfg2, by_df])
+        try:
+            print(i)
+            scpt1 = dfg[dfg['Name'] == i]
+            dfg3 = scpt1.tail(1)
+            Exche = (np.unique([str(i) for i in dfg3['Exch']])).tolist()[0]
+            ExchTypee = (np.unique([str(i) for i in dfg3['ExchType']])).tolist()[0]          
+            Namee = (np.unique([str(i) for i in dfg3['Name']])).tolist()[0]
+            Scripcodee = int(float(dfg3['Scripcode_y'])) 
+            LotSizee = int(float(dfg3['LotSize']))
+            Qtyy = int(float(dfg3['Qty']))
+            Buy_At = float(dfg3['Buy_At'])
+            Buy_Stop_Loss = float(round((dfg3['Buy_At'] - (dfg3['Buy_At']*SLL)/100),1))
+            Buy_Target = float(round((((dfg3['Buy_At']*SLL)/100) + dfg3['Buy_At']),1))
+            # Df_time = (np.unique([str(i) for i in dfg3['Datetime']])).tolist()[0] 
+            # Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
+            # Buy_timee1= Buy_timee.replace("T", " " )
+
+            Buy_timee = list(dfg3['Datetime'])[0]
+            Buy_timee1 = str(Buy_timee).replace(' ','T')    
+
+            print(Exche,ExchTypee,Namee,Scripcodee,LotSizee,Qtyy,Buy_At,Buy_timee1)
+            dfg1 = credi_ash.historical_data(Exche, ExchTypee, Scripcodee, '1m',last_trading_day,current_trading_day)
+            
+            dfg1['Name'] = Namee
+            dfg1['Entry_Date'] = Buy_timee1
+            dfg1['Entry_Price'] = Buy_At
+            dfg1.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
+            dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
+            five_df1 = pd.concat([dfg1, five_df1])
+
+            dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
+            dfg2['StopLoss'] = round((dfg2['Entry_Price'] - (dfg2['Entry_Price']*SLL)/100),1)
+            dfg2['Benchmark'] = dfg2['High'].cummax()
+            dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1                            
+            dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < Buy_Stop_Loss,"SL",""))
+            by.range("a20").options(index=False).value = dfg2
+            dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Qtyy,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Qtyy,"" ))
+            print("1")
+            dfg2 = dfg1.tail(1)        
+            by_df = pd.concat([dfg2, by_df])
+            print("2")
+            
+            dfg3 = dfg2[(dfg2["Status"] == "TSL") | (dfg2["Status"] == "SL")]                       
+            five_df2 = pd.concat([dfg2, five_df2])
+            print("3")
+            if dfg3.empty:
+                dfg3 = dfg2.tail(1)
+            print("4")    
+            dfg4 = dfg3.head(1)
+            #final_df = pd.merge(posit1,dfg22, on=['ScripCode'], how='inner')  
+            dfg4['Entry'] = "BUY" #np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
+            dfg4['Exit'] = np.where(((dfg4['Entry'] == "BUY") & (dfg4['Status'] == "TSL")) | ((dfg4['Entry'] == "BUY") & (dfg4['Status'] == "SL")),"SELL","")
+            five_df3 = pd.concat([dfg2, five_df3])
+            print("5")
+            #print(dfg1.tail(1))
+            
 
 
+        except Exception as e:
+            print(e) 
 
-    dfg3 = pd.merge(by_df, dfg, on=['Name'], how='inner')
-    by.range("a1").options(index=False).value = dfg3
+
+    dfg4 = pd.merge(by_df, dfg, on=['Name'], how='inner')
+    dfg4 = dfg4[['Name','Scripcode_y','Datetime_y','Entry_Date','Qty','Buy_At','Close']]
+    #dfg4.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+    by.range("a1").options(index=False).value = dfg4
 
     if five_df1.empty:
         pass
@@ -388,8 +455,23 @@ while True:
         st1.range("a:az").value = None
         st1.range("a1").options(index=False).value = five_df1
 
+    if five_df2.empty:
+        pass
+    else:
+        #five_df2 = five_df2[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Rsi_OK','Price_OK','Cand_Col','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','Buy/Sell','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+        five_df2.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
+        st2.range("a:az").value = None
+        st2.range("a1").options(index=False).value = five_df2
 
-
+    if five_df3.empty:
+        pass
+    else:
+        #five_df3 = five_df3[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Rsi_OK','Price_OK','Cand_Col','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','Buy/Sell','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+        five_df3.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
+        by.range("a20").options(index=False).value = dfg4
+        # st2.range("a:az").value = None
+        # st2.range("a1").options(index=False).value = five_df3
+    
     # # pos.range("a12").value = pd.DataFrame(client.get_tradebook())
     
     # if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:
