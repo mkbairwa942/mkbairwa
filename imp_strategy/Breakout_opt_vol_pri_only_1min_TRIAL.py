@@ -508,7 +508,7 @@ def data_download(stk_nm,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll):
         dfg1['Add_Till'] = round((dfg1['Buy_At'] - (dfg1['Buy_At']*0.5)/100),1)
         dfg1['StopLoss'] = round((dfg1['Buy_At'] - (dfg1['Buy_At']*1)/100),1)               
         dfg1['Target'] = round((((dfg1['Buy_At']*1)/100) + dfg1['Buy_At']),2) 
-            
+        
         dfg1['Benchmark'] = dfg1['High'].cummax()
         dfg1['TStopLoss'] = dfg1['Benchmark'] * 0.99                          
         dfg1['Status'] = np.where(dfg1['Close'] < dfg1['TStopLoss'],"TSL",np.where(dfg1['Close'] < dfg1['StopLoss'],"SL",""))

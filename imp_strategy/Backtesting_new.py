@@ -229,8 +229,8 @@ buy_order_li = pd.read_excel('D:\STOCK\Capital_vercel_new\Backtesting_new.xlsx',
 #print(buy_order_li.head(2))
 buy_order_list = (np.unique([int(i) for i in buy_order_li['Scripcode']])).tolist()
 
-SLL = 1
-TSL = 1
+SLL = 2
+TSL = 2
 
 
 tsl1 = 1-(TSL/100)

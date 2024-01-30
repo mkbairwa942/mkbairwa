@@ -408,6 +408,7 @@ while True:
             dfg1['Entry_Price'] = Buy_At
             dfg1.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
             dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
+            dfg1['Qty'] = Qtyy
             five_df1 = pd.concat([dfg1, five_df1])
 
             dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
@@ -415,24 +416,27 @@ while True:
             dfg2['Benchmark'] = dfg2['High'].cummax()
             dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1                            
             dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < Buy_Stop_Loss,"SL",""))
-            by.range("a20").options(index=False).value = dfg2
+            #by.range("a20").options(index=False).value = dfg2
             dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Qtyy,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Qtyy,"" ))
-            print("1")
-            dfg2 = dfg1.tail(1)        
-            by_df = pd.concat([dfg2, by_df])
-            print("2")
+            #by.range("a20").options(index=False).value = dfg2
+            five_df2 = pd.concat([dfg2, five_df2])
+            # print("1")
+            # dfg2 = dfg1.tail(1)        
+            # by_df = pd.concat([dfg2, by_df])
+            # print("2")
             
             dfg3 = dfg2[(dfg2["Status"] == "TSL") | (dfg2["Status"] == "SL")]                       
-            five_df2 = pd.concat([dfg2, five_df2])
-            print("3")
+            five_df3 = pd.concat([dfg3, five_df3])
             if dfg3.empty:
                 dfg3 = dfg2.tail(1)
-            print("4")    
             dfg4 = dfg3.head(1)
             #final_df = pd.merge(posit1,dfg22, on=['ScripCode'], how='inner')  
             dfg4['Entry'] = "BUY" #np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
             dfg4['Exit'] = np.where(((dfg4['Entry'] == "BUY") & (dfg4['Status'] == "TSL")) | ((dfg4['Entry'] == "BUY") & (dfg4['Status'] == "SL")),"SELL","")
-            five_df3 = pd.concat([dfg2, five_df3])
+            dfg4.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
+            #dfg4.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+            #by.range("a20").options(index=False).value = dfg4
+            by_df = pd.concat([dfg4, by_df])
             print("5")
             #print(dfg1.tail(1))
             
@@ -441,11 +445,14 @@ while True:
         except Exception as e:
             print(e) 
 
-
-    dfg4 = pd.merge(by_df, dfg, on=['Name'], how='inner')
-    dfg4 = dfg4[['Name','Scripcode_y','Datetime_y','Entry_Date','Qty','Buy_At','Close']]
-    #dfg4.sort_values(['Entry_Date'], ascending=[True], inplace=True)
-    by.range("a1").options(index=False).value = dfg4
+    
+    if by_df.empty:
+        pass
+    else:
+        #dfg5 = pd.merge(by_df, dfg, on=['Name'], how='inner')
+        #dfg4 = dfg4[['Name','Scripcode_y','Datetime_y','Entry_Date','Qty','Buy_At','Close']]
+        by_df.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+        by.range("a1").options(index=False).value = by_df
 
     if five_df1.empty:
         pass
@@ -468,9 +475,9 @@ while True:
     else:
         #five_df3 = five_df3[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Rsi_OK','Price_OK','Cand_Col','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','Buy/Sell','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
         five_df3.sort_values(['Name', 'Datetime'], ascending=[True, True], inplace=True)
-        by.range("a20").options(index=False).value = dfg4
-        # st2.range("a:az").value = None
-        # st2.range("a1").options(index=False).value = five_df3
+        #by.range("a20").options(index=False).value = dfg4
+        st3.range("a:az").value = None
+        st3.range("a1").options(index=False).value = five_df3
     
     # # pos.range("a12").value = pd.DataFrame(client.get_tradebook())
     
