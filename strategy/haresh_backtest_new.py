@@ -106,7 +106,7 @@ pd.options.mode.copy_on_write = True
 
 symbol1 = '999920005'
 
-df = client.historical_data('N', 'C', symbol1, '1m', last_trading_day,current_trading_day)
+df = client.historical_data('N', 'C', symbol1, '5m', last_trading_day,current_trading_day)
 #print(df.head(1))
 # df = df.astype({"Datetime": "datetime64"})    
 # df["Date"] = df["Datetime"].dt.date
@@ -245,6 +245,11 @@ df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
 df['FISHERT_WH'] = np.round((fisher_transform[fisher_transform.columns[0]]),2)
 df['FISHERTs_RED'] = np.round((fisher_transform[fisher_transform.columns[1]]),2)
 df['El_Fis_diff'] = np.round(abs((df['FISHERT_WH']-df['FISHERTs_RED'])),2)
+df['stk_50'] = np.where(((df['stochrsi_k'] > 50) & (df['stochrsi_k'] < 80)),"ok","")
+df['sk_above'] = np.where((df['stochrsi_k'] > df['stochrsi_d']),"ok","")
+df['fis_above'] = np.where((df['FISHERT_WH'] > df['FISHERTs_RED']),"ok","")
+df['Adx_diff'] = df['ADX_14'].shift(-1) - df['ADX_14']
+df['Adx_ok'] = np.where(df['Adx_diff'] > 1,"ok","")
 #print(df.head(5))
 # for i in (5,10,13):
 #     df['EMA_'+str(i)] = np.round((ta.trend.ema_indicator(df.Close, window=i)),2)
