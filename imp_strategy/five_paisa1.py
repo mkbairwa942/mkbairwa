@@ -145,7 +145,10 @@ def credentials (name):
 
     return client
 
-    
+
+# con = urllib.parse.quote_plus(
+#     'DRIVER={SQL Server Native Client 11.0};SERVER=MUKESH\SQLEXPRESS;DATABASE=Stock_data;trusted_connection=yes')
+# engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(con))   
 
 # client = credentials('alpesh','431070')
 
@@ -262,7 +265,12 @@ index = 'SBIN'
 # print(client.fetch_market_depth_by_symbol(a))
 # print(client.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"D","Symbol":"BANKNIFTY 04 May 2023 PE 43200.00"}])['Data'][0])
 
-
+#     dfg1 = client.fetch_market_depth_by_symbol(a)
+#     dfg2 = dfg1['Data']
+#     dfg3 = pd.DataFrame(dfg2)
+#     dfg3['TimeNow'] = datetime.now()
+#     dfg3.to_sql(name="tick_data", con=engine, if_exists="append", index=False)
+#     #print(dfg3.tail(1))
            
 
 # print(Niftys())

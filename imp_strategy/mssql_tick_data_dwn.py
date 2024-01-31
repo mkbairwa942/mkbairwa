@@ -44,25 +44,25 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
-operate = input("Do you want to go with TOTP (yes/no): ")
-#notifi = input("Do you want to send Notification on Desktop (yes/no): ")
-telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
-orders = input("Do you want to Place Real Orders (yes/no): ")
-if operate.upper() == "YES":
-    from five_paisa1 import *
-    username = input("Enter Username : ")
-    username1 = str(username)
-    print("Hii "+str(username1)+" have a Good Day")
-    client = credentials(username1)
-else:
-    from five_paisa import *
+# operate = input("Do you want to go with TOTP (yes/no): ")
+# #notifi = input("Do you want to send Notification on Desktop (yes/no): ")
+# telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
+# orders = input("Do you want to Place Real Orders (yes/no): ")
+# if operate.upper() == "YES":
+#     from five_paisa1 import *
+#     username = input("Enter Username : ")
+#     username1 = str(username)
+#     print("Hii "+str(username1)+" have a Good Day")
+#     client = credentials(username1)
+# else:
+#     from five_paisa import *
 
-# operate = "YES"
-# telegram_msg = "no"
-# orders = "no"
-# username = "ASHWIN"
-# username1 = str(username)
-# client = credentials(username1)
+operate = "YES"
+telegram_msg = "no"
+orders = "no"
+username = "ASHWIN"
+username1 = str(username)
+client = credentials(username1)
 
 from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
@@ -113,6 +113,10 @@ Exposer = 2
 
 print("---- Data Process Started ----")
 
+con = urllib.parse.quote_plus(
+    'DRIVER={SQL Server Native Client 11.0};SERVER=MUKESH\SQLEXPRESS;DATABASE=Stock_data;trusted_connection=yes')
+engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(con))
+
 if not os.path.exists("mssql_tick_data_dwn.xlsx"):
     try:
         wb = xw.Book()
@@ -159,7 +163,7 @@ st.range("a:u").value = None
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 
-exc.range("a1").value = script_code_5paisa
+
 
 exchange = None
 while True:
@@ -167,11 +171,15 @@ while True:
         try:
             exchange = pd.DataFrame(script_code_5paisa)
             exchange['Expiry1'] = pd.to_datetime(exchange['Expiry']).dt.date
-            exchange1 = exchange[(exchange["Exch"] == "N") & (exchange['ExchType'].isin(['D'])) & (exchange['CpType'].isin(['EQ', 'XX']))]
+            exchange1 = exchange[(exchange["Exch"] == "N") & (exchange['ExchType'].isin(['C'])) & (exchange['Series'].isin(['EQ'])) ]
             break
         except:
             print("Exchange Download Error....")
             time.sleep(10)
+
+#exc.range("a1").value = script_code_5paisa
+exc.range("a1").value = exchange1
+
 stock_df = pd.DataFrame({"FNO Symbol": list(exchange1["Root"].unique())})
 stock_df = stock_df.set_index("FNO Symbol",drop=True)
 oc.range("a1").value = stock_df
@@ -235,10 +243,39 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
 
 
     sqlquery = f"select * from dbo.tick_data where ScripCode = {stk_nm}"
+    print(sqlquery)
     dff = pd.read_sql(sql=sqlquery, con=engine)
-    dff.sort_values(['ScripCode','TimeNow'], ascending=[False, False], inplace=True)
-    dff1 = pd.DataFrame(dff)
-    print(dff1.tail(1))
+    dff1 = pd.DataFrame(dff) 
+    dff1 = dff1.apply(pd.to_numeric, errors='ignore') 
+    dff1 = dff1.astype({"TimeNow": "datetime64[ns]"})      
+    dff1.sort_values(['ScripCode','TimeNow'], ascending=[False, True], inplace=True)  
+
+    dff1["RSI_14"] = np.round((pta.rsi(dff1["LastTradedPrice"], length=14)),2) 
+
+    dff1.sort_values(['ScripCode','TimeNow'], ascending=[False,False], inplace=True)
+    dff1.rename(columns={'ScripCode': 'Scripcode','LastTradedPrice': 'LTP','AverageTradePrice': 'ATP','LowerCircuitLimit': 'Lo_Cir','UpperCircuitLimit': 'Up_Cir','OpenInterest': 'OI' },inplace=True)
+    dfg1 = pd.merge(exchange1, dff1, on=['Scripcode'], how='inner') 
+
+    dfg1['Price_break'] = np.where((dfg1['Close'] > (dfg1.High.rolling(50).max()).shift(-50)),
+                                        'Pri_Up_brk',
+                                        (np.where((dfg1['Close'] < (dfg1.Low.rolling(50).min()).shift(-50)),
+                                                    'Pri_Dwn_brk', "")))
+    dfg1['Vol_break'] = np.where(dfg1['Volume'] > (dfg1.Volume.rolling(50).mean() * vol_pr).shift(-50),
+                                        "Vol_brk","")       
+                                                                                                        
+    dfg1['Vol_Price_break'] = np.where((dfg1['Vol_break'] == "Vol_brk") & (dfg1['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((dfg1['Vol_break'] == "Vol_brk") & (dfg1['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
+    dfg1["Buy/Sell"] = np.where((dfg1['Vol_break'] == "Vol_brk") & (dfg1['Price_break'] == "Pri_Up_brk"),
+                                        "BUY", np.where((dfg1['Vol_break'] == "Vol_brk")
+                                            & (dfg1['Price_break'] == "Pri_Dwn_brk") , "SELL", ""))
+    dfg1['Rsi_OK'] = np.where((dfg1["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((dfg1["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
+    dfg1['Cand_Col'] = np.where(dfg1['Close'] > dfg1['Open'],"Green",np.where(dfg1['Close'] < dfg1['Open'],"Red","") ) 
+    dfg1 = dfg1[['Scripcode','Name','TimeNow','Open','High','Low','Close','LTP','ATP','Volume','RSI_14','Price_break','Vol_break','Vol_Price_break','Buy/Sell','Rsi_OK','Cand_Col','Lo_Cir','Up_Cir','OI','NetChange']]    
+    #dfgg_up11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1["Cand_Col"] == "Green" )]# & (dfg1["Date"] == current_trading_day.date())]
+    print(dfg1.dtypes)
+    dt.range("a:az").value = None
+    dt.range("a1").options(index=False).value = dfg1
+    print(dfg1.shape[0])
+    # print(dff1.tail(1))
 
 start_time = time.time()
 
@@ -246,7 +283,7 @@ Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
 
-Buy_Scriptcodee = 999920043
+Buy_Scriptcodee = 371
 
 dfg1 = data_download(Buy_Scriptcodee,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)   
 
@@ -602,7 +639,7 @@ dfg1 = data_download(Buy_Scriptcodee,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)
 print("Five Paisa Data Download New")
 
 end4 = time.time() - start_time
-print(f"Five Paisa Data Download Time: {end:.2f}s")
+print(f"Five Paisa Data Download Time: {end4:.2f}s")
 # print(f"Live OI Data Download Time: {end1:.2f}s")
 # print(f"Live Delivery Data Download Time: {end2:.2f}s")
 # print(f"Data Analysis Completed Time: {end3:.2f}s")
