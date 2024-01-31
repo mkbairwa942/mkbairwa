@@ -1,27 +1,97 @@
-#import yfinance as yf
-import ta
+#i#import yfinance as yf
+#import ta
+#from ta import add_all_ta_features
+#from ta.utils import dropna
 import pandas_ta as pta
-from finta import TA
+#from finta import TA
 # import talib
 import pandas as pd
 import copy
 import numpy as np
 import xlwings as xw
-from five_paisa import *
 from datetime import datetime,timedelta
 from numpy import log as nplog
 from numpy import NaN as npNaN
 from pandas import DataFrame, Series
 from pandas_ta.overlap import ema, hl2
 from pandas_ta.utils import get_offset, high_low_range, verify_series, zero
+from io import BytesIO
+import os
+import sys
+from zipfile import ZipFile
+import requests
+import itertools
+import math 
+from telethon.sync import TelegramClient
+#from notifypy import Notify
+#from plyer import notification
+import inspect
+import time
+from five_paisa1 import *
+import threading
 
-from_d = (date.today() - timedelta(days=4))
-from_d = date(2024, 1, 1)
+
+telegram_first_name = "mkbairwa"
+telegram_username = "mkbairwa_bot"
+telegram_id = ":758543600"
+#telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
+telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
+
+# operate = input("Do you want to go with TOTP (yes/no): ")
+# #notifi = input("Do you want to send Notification on Desktop (yes/no): ")
+# telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
+# orders = input("Do you want to Place Real Orders (yes/no): ")
+# if operate.upper() == "YES":
+#     from five_paisa1 import *
+#     username = input("Enter Username : ")
+#     username1 = str(username)
+#     print("Hii "+str(username1)+" have a Good Day")
+#     client = credentials(username1)
+# else:
+#     from five_paisa import *
+
+operate = "YES"
+telegram_msg = "no"
+orders = "no"
+username = "HARESH"
+username1 = str(username)
+client = credentials(username1)
+
+from_d = (date.today() - timedelta(days=15))
+# from_d = date(2022, 12, 29)
 
 to_d = (date.today())
-to_d = date(2024, 1, 5)
+#to_d = date(2023, 2, 3)
 
 to_days = (date.today()-timedelta(days=1))
+# to_d = date(2023, 1, 20)
+
+days_365 = (date.today() - timedelta(days=365))
+print(days_365)
+
+holida = pd.read_excel('D:\STOCK\Capital_vercel_new\strategy\holida.xlsx')
+holida["Date"] = holida["Date1"].dt.date
+holida1 = np.unique(holida['Date'])
+
+trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holida1)
+trading_dayss = trading_days_reverse[::-1]
+trading_days = trading_dayss[1:]
+# trading_days = trading_dayss[2:]
+current_trading_day = trading_dayss[0]
+last_trading_day = trading_days[0]
+second_last_trading_day = trading_days[1]
+
+# current_trading_day = trading_dayss[0]
+# last_trading_day = trading_dayss[2]
+# second_last_trading_day = trading_days[3]
+
+print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
+print("Trading Days is :- "+str(trading_dayss))
+print("Last Trading Days Is :- "+str(trading_days))
+print("Current Trading Day is :- "+str(current_trading_day))
+print("Last Trading Day is :- "+str(last_trading_day))
+print("Second Last Trading Day is :- "+str(second_last_trading_day))
+print("Last 365 Day is :- "+str(days_365))
 # to_d = date(2023, 1, 20)
 
 symbol = 'MOTHERSUMI'
@@ -34,17 +104,15 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 
-symbol1 = '55317'
+symbol1 = '999920005'
 
-df = client.historical_data('N', 'D', symbol1, '5m', from_d, to_d)
-df['Datetime'] = pd.to_datetime(df['Datetime'])
-df['Date'] = pd.to_datetime(df['Datetime']).dt.date
-df['Date'] = df['Date'].apply(lambda x: str(x)).apply(lambda x: pd.to_datetime(x))
-df['Time'] = pd.to_datetime(df['Datetime']).dt.time
-df['Time'] = df['Time'].apply(lambda x: str(x)).apply(lambda x: pd.Timestamp(x))
-df = df[['Date', 'Time','Open','High', 'Low', 'Close', 'Volume','Datetime']]
+df = client.historical_data('N', 'C', symbol1, '1m', last_trading_day,current_trading_day)
+#print(df.head(1))
+# df = df.astype({"Datetime": "datetime64"})    
+# df["Date"] = df["Datetime"].dt.date
+df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
 df.set_index('Datetime',inplace=True)
-df3 = df         
+#df3 = df         
 
 def fisher(high, low, length=None, signal=None, offset=None, **kwargs):
     """Indicator: Fisher Transform (FISHT)"""
@@ -159,25 +227,35 @@ def fisher1(high, low, length=None, signal=None, offset=None, **kwargs):
     df.category = fisher.category
     return df
 
-fisher_transform = (fisher1(high=df['High'],low=df['Low'],length=20))
+fisher_transform = (fisher1(high=df['High'],low=df['Low'],length=10))
 
-df['stochrsi_k'] = np.round((ta.momentum.stochrsi_k(df.Close)),2)
-df['stochrsi_d'] = np.round((ta.momentum.stochrsi_d(df.Close)),2)
+# df['stochrsi_k'] = np.round((ta.momentum.stochrsi_k(df.Close)),2)
+# df['stochrsi_d'] = np.round((ta.momentum.stochrsi_d(df.Close)),2)
+stochrsi = pta.stochrsi(df['Close'])
+ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'])
+df['stochrsi_k'] = np.round((stochrsi[stochrsi.columns[0]]),2)
+df['stochrsi_d'] = np.round((stochrsi[stochrsi.columns[1]]),2)
+df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
+df['DMP_14'] = np.round((ADX[ADX.columns[1]]),2)
+df['DMN_14'] = np.round((ADX[ADX.columns[2]]),2)
+
+# print(stochrsi.head(5))
+#df['stochrsi_k'] = np.round((pta.stochrsi(df['Close'])),2)
 df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
 df['FISHERT_WH'] = np.round((fisher_transform[fisher_transform.columns[0]]),2)
 df['FISHERTs_RED'] = np.round((fisher_transform[fisher_transform.columns[1]]),2)
 df['El_Fis_diff'] = np.round(abs((df['FISHERT_WH']-df['FISHERTs_RED'])),2)
+#print(df.head(5))
+# for i in (5,10,13):
+#     df['EMA_'+str(i)] = np.round((ta.trend.ema_indicator(df.Close, window=i)),2)
+# df['atr'] = np.round((ta.volatility.average_true_range(df.High,df.Low,df.Close)),2)
 
-for i in (5,10,13):
-    df['EMA_'+str(i)] = np.round((ta.trend.ema_indicator(df.Close, window=i)),2)
-df['atr'] = np.round((ta.volatility.average_true_range(df.High,df.Low,df.Close)),2)
 
+# def checkcross(df):
+#     series = df['stochrsi_k'] > df['stochrsi_d']
+#     return series.diff()
 
-def checkcross(df):
-    series = df['stochrsi_k'] > df['stochrsi_d']
-    return series.diff()
-
-df['cross'] = checkcross(df).astype(bool)
+# df['cross'] = checkcross(df).astype(bool)
 
 SLL = 20
 TGG = 50
@@ -197,21 +275,21 @@ df['SL'] = df.Close - SLL
 
  #df['Entry'] = np.where((df.FISHERT_WH > df.FISHERTs_RED),"B_E",np.where((df.FISHERT_WH < df.FISHERTs_RED),"S_E",""))
 #df['Entry'] = np.where((df.FISHERT_WH > df.FISHERTs_RED ) & (df["RSI_14"] > 50),"B_E",np.where((df.FISHERT_WH < df.FISHERTs_RED) & (df["RSI_14"] < 50),"S_E",""))
-df['Entry'] = np.where((df.FISHERT_WH > df.FISHERTs_RED ) & (df["El_Fis_diff"] > 0.25),"B_E",np.where((df.FISHERT_WH < df.FISHERTs_RED) & (df["El_Fis_diff"] > 0.25),"S_E",""))            
-df['Entry1'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(1) != "B_E"),"B_E",np.where((df['Entry'] == "S_E") & (df['Entry'].shift(1) != "S_E"),"S_E",""))
-df['Ent_A'] = (np.where(df['Entry1'] == "B_E",df['Close'],(np.where(df['Entry1'] == "S_E",df['Close'],npNaN))))
-df['Ent_A'] = df['Ent_A'].ffill()
-df['Ent_B'] = df['Close']-df['Ent_A']
-df['Ent_B'] = np.where(df['Entry'] == "B_E",(df['Close']-df['Ent_A']),np.where(df['Entry'] == "S_E", (df['Ent_A'] - df['Close']),0))
+# df['Entry'] = np.where((df.FISHERT_WH > df.FISHERTs_RED ) & (df["El_Fis_diff"] > 0.25),"B_E",np.where((df.FISHERT_WH < df.FISHERTs_RED) & (df["El_Fis_diff"] > 0.25),"S_E",""))            
+# df['Entry1'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(1) != "B_E"),"B_E",np.where((df['Entry'] == "S_E") & (df['Entry'].shift(1) != "S_E"),"S_E",""))
+# df['Ent_A'] = (np.where(df['Entry1'] == "B_E",df['Close'],(np.where(df['Entry1'] == "S_E",df['Close'],npNaN))))
+# df['Ent_A'] = df['Ent_A'].ffill()
+# df['Ent_B'] = df['Close']-df['Ent_A']
+# df['Ent_B'] = np.where(df['Entry'] == "B_E",(df['Close']-df['Ent_A']),np.where(df['Entry'] == "S_E", (df['Ent_A'] - df['Close']),0))
 # df['Ent_C'] = np.where(((df['Entry'] == "B_E") & (df['Ent_B'] <= - SLL)),"B_SL",np.where(((df['Entry'] == "B_E") & (df['Ent_B'] >= TGG)),"B_TP",
 #               np.where(((df['Entry'] == "S_E") & (df['Ent_B'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_B'] >= TGG)),"S_TP",""))))
 # #df['Ent_D'] = np.where((df.FISHERT_WH < df.FISHERTs_RED),"B_Ex",np.where((df.FISHERT_WH > df.FISHERTs_RED),"S_Ex",""))
 # df['Ent_E'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(-1) != "B_E"),"B_Ex",
 #               np.where((df['Entry'] == "S_E") & (df['Entry'].shift(-1) != "S_E"),"S_Ex",""))
-df['Ent_C'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(-1) != "B_E"),"B_Ex",
-              np.where((df['Entry'] == "S_E") & (df['Entry'].shift(-1) != "S_E"),"S_Ex",
-              np.where(((df['Entry'] == "B_E") & (df['Ent_B'] <= - SLL)),"B_SL",np.where(((df['Entry'] == "B_E") & (df['Ent_B'] >= TGG)),"B_TP",
-              np.where(((df['Entry'] == "S_E") & (df['Ent_B'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_B'] >= TGG)),"S_TP",""))))))
+# df['Ent_C'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(-1) != "B_E"),"B_Ex",
+#               np.where((df['Entry'] == "S_E") & (df['Entry'].shift(-1) != "S_E"),"S_Ex",
+#               np.where(((df['Entry'] == "B_E") & (df['Ent_B'] <= - SLL)),"B_SL",np.where(((df['Entry'] == "B_E") & (df['Ent_B'] >= TGG)),"B_TP",
+#               np.where(((df['Entry'] == "S_E") & (df['Ent_B'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_B'] >= TGG)),"S_TP",""))))))
 
 
 # df['Entry'] = np.where((df.FISHERT_WH < df.FISHERTs_RED),"S_E","")
@@ -221,45 +299,45 @@ df['Ent_C'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(-1) != "B_E")
 # df['Ent_Bb'] = np.where(df['Entry'] == "S_E", (df['Ent_A'] - df['Close']),0)
 # df['Ent_Cb'] = np.where(((df['Entry'] == "S_E") & (df['Ent_Bb'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_Bb'] >= TGG)),"S_TP",""))
 
-df.dropna(inplace=True)
+# df.dropna(inplace=True)
 
-length = len(df)-1
+# length = len(df)-1
 
-Buying = pd.DataFrame()
-Selling = pd.DataFrame()
-new_df1 = pd.DataFrame()    
+# Buying = pd.DataFrame()
+# Selling = pd.DataFrame()
+# new_df1 = pd.DataFrame()    
 
-for i in range(len(df)):
-    if [i+1][0] <= length:
-        if df['Entry1'].iloc[i + 1] == "B_E":
-            bay = (df['Ent_A'].iloc[i + 1])
-            buyy = df[i+1:i+2]
-            Buying = pd.concat([buyy, Buying])
-            sal = df[df['Ent_A'] == bay]
-            sal1 = (sal[(sal['Ent_C'] == "B_SL") | (sal['Ent_C'] == "B_TP") | (sal['Ent_C'] == "B_Ex")])
-            sal1['Sell_Date'] = (df.Date.iloc[i + 1])
-            sal1['Sell_Time'] = (df.Time.iloc[i + 1])
-            Selling = pd.concat([sal1[:1], Selling])
+# for i in range(len(df)):
+#     if [i+1][0] <= length:
+#         if df['Entry1'].iloc[i + 1] == "B_E":
+#             bay = (df['Ent_A'].iloc[i + 1])
+#             buyy = df[i+1:i+2]
+#             Buying = pd.concat([buyy, Buying])
+#             sal = df[df['Ent_A'] == bay]
+#             sal1 = (sal[(sal['Ent_C'] == "B_SL") | (sal['Ent_C'] == "B_TP") | (sal['Ent_C'] == "B_Ex")])
+#             sal1['Sell_Date'] = (df.Date.iloc[i + 1])
+#             sal1['Sell_Time'] = (df.Time.iloc[i + 1])
+#             Selling = pd.concat([sal1[:1], Selling])
 
-        if df['Entry1'].iloc[i + 1] == "S_E":
-            bay1 = (df['Ent_A'].iloc[i + 1])
-            buyy1 = df[i+1:i+2]
-            Buying = pd.concat([buyy1, Buying])
-            sal1 = df[df['Ent_A'] == bay1]
-            sal11 = (sal1[(sal1['Ent_C'] == "S_SL") | (sal1['Ent_C'] == "S_TP") | (sal1['Ent_C'] == "S_Ex")])
-            sal11['Sell_Date'] = (df.Date.iloc[i + 1])
-            sal11['Sell_Time'] = (df.Time.iloc[i + 1])
-            Selling = pd.concat([sal11[:1], Selling])
+#         if df['Entry1'].iloc[i + 1] == "S_E":
+#             bay1 = (df['Ent_A'].iloc[i + 1])
+#             buyy1 = df[i+1:i+2]
+#             Buying = pd.concat([buyy1, Buying])
+#             sal1 = df[df['Ent_A'] == bay1]
+#             sal11 = (sal1[(sal1['Ent_C'] == "S_SL") | (sal1['Ent_C'] == "S_TP") | (sal1['Ent_C'] == "S_Ex")])
+#             sal11['Sell_Date'] = (df.Date.iloc[i + 1])
+#             sal11['Sell_Time'] = (df.Time.iloc[i + 1])
+#             Selling = pd.concat([sal11[:1], Selling])
 
-Buying.sort_values(['Date', 'Time'], ascending=[True, True], inplace=True) 
-Buying.rename(columns={'Date': 'Datee', 'Time': 'Timee'}, inplace=True)
-Selling.sort_values(['Date', 'Time'], ascending=[True, True], inplace=True)  
-Selling.rename(columns={'Sell_Date': 'Datee', 'Sell_Time': 'Timee'}, inplace=True)
-new_df1 = pd.merge(Buying, Selling,on=["Datee", "Timee"])
+# Buying.sort_values(['Date', 'Time'], ascending=[True, True], inplace=True) 
+# Buying.rename(columns={'Date': 'Datee', 'Time': 'Timee'}, inplace=True)
+# Selling.sort_values(['Date', 'Time'], ascending=[True, True], inplace=True)  
+# Selling.rename(columns={'Sell_Date': 'Datee', 'Sell_Time': 'Timee'}, inplace=True)
+# new_df1 = pd.merge(Buying, Selling,on=["Datee", "Timee"])
 
-new_df1['P&L'] = np.where((new_df1['Ent_C_y'] == "B_Ex") | (new_df1['Ent_C_y'] == "S_Ex"),Brokerage*-1,
-                  np.where((new_df1['Ent_C_y'] == "B_TP") | (new_df1['Ent_C_y'] == "S_TP"),(TGG*LOTSIZE)-Brokerage,
-                  np.where((new_df1['Ent_C_y'] == "B_SL") | (new_df1['Ent_C_y'] == "S_SL"),(SLL*LOTSIZE+Brokerage)*-1,0)))
+# new_df1['P&L'] = np.where((new_df1['Ent_C_y'] == "B_Ex") | (new_df1['Ent_C_y'] == "S_Ex"),Brokerage*-1,
+#                   np.where((new_df1['Ent_C_y'] == "B_TP") | (new_df1['Ent_C_y'] == "S_TP"),(TGG*LOTSIZE)-Brokerage,
+#                   np.where((new_df1['Ent_C_y'] == "B_SL") | (new_df1['Ent_C_y'] == "S_SL"),(SLL*LOTSIZE+Brokerage)*-1,0)))
 
 # selldates = []
 # outcome = []
@@ -321,9 +399,9 @@ ex.range("a:g").value = None
 try:
     time.sleep(0.5)
     dt.range("a1").value = df
-    by.range("a1").value = Buying
-    sl.range("a1").value = Selling
-    fl.range("a1").value = new_df1
-    ex.range("a1").value = dfg
+    # by.range("a1").value = Buying
+    # sl.range("a1").value = Selling
+    # fl.range("a1").value = new_df1
+    # ex.range("a1").value = dfg
 except Exception as e:
     print(e)

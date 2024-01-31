@@ -185,11 +185,14 @@ scpt_df = pd.DataFrame({"FNO Symbol": list(exchange1["Scripcode"].unique())})
 # print(name_df)
 # print(scpt_df)
 fo_stk_list = np.unique(exchange1['Root'])
-stk_list = np.unique(exchange2['Root'])
+
 print(len(fo_stk_list))
-print(len(stk_list))
 
-
+#exc_new = exchange2['Root'].isin(fo_stk_list)
+exc_new = exchange2[(exchange2['Root'].isin(fo_stk_list))]
+stk_list = np.unique(exc_new['Scripcode'])
+print(exc_new['Name'])
+print(exc_new.shape[0])
 stock_df = pd.DataFrame({"FNO Symbol": list(exchange1["Root"].unique())})
 stock_df = stock_df.set_index("FNO Symbol",drop=True)
 oc.range("a1").value = stock_df
@@ -200,8 +203,8 @@ oc.range("a1").value = stock_df
 start_time = time.time()
 for i in stk_list:    
     print(i)
-    df = credi_ash.historical_data('N', 'D', i, '1m',last_trading_day,current_trading_day)
-    print(df.head(1))
+    df = credi_ash.historical_data('N', 'C', i, '1m',last_trading_day,current_trading_day)
+    df1 = df.tail(1)
 end4 = time.time() - start_time
 
 print(f"Total Data Analysis Completed Time: {end4:.2f}s")
