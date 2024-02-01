@@ -106,12 +106,14 @@ pd.options.mode.copy_on_write = True
 
 symbol1 = '999920005'
 
-df = client.historical_data('N', 'C', symbol1, '5m', last_trading_day,current_trading_day)
+df = client.historical_data('N', 'C', symbol1, '1m', last_trading_day,current_trading_day)
 #print(df.head(1))
 # df = df.astype({"Datetime": "datetime64"})    
 # df["Date"] = df["Datetime"].dt.date
 df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
-df.set_index('Datetime',inplace=True)
+df = df.astype({"Datetime": "datetime64"})
+df["Date"] = df["Datetime"].dt.date
+#df.set_index('Datetime',inplace=True)
 #df3 = df         
 
 def fisher(high, low, length=None, signal=None, offset=None, **kwargs):
@@ -231,30 +233,58 @@ fisher_transform = (fisher1(high=df['High'],low=df['Low'],length=10))
 
 # df['stochrsi_k'] = np.round((ta.momentum.stochrsi_k(df.Close)),2)
 # df['stochrsi_d'] = np.round((ta.momentum.stochrsi_d(df.Close)),2)
-stochrsi = pta.stochrsi(df['Close'])
+
+df['SMA_14'] = np.round((pta.sma(df.Close, window=14)),2)
+df['SMA_29'] = np.round((pta.sma(df.Close, window=29)),2)
+df['SMA_60'] = np.round((pta.sma(df.Close, window=60)),2)
+# stochrsi = pta.stochrsi(df['Close'])
 ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'])
-df['stochrsi_k'] = np.round((stochrsi[stochrsi.columns[0]]),2)
-df['stochrsi_d'] = np.round((stochrsi[stochrsi.columns[1]]),2)
+# df['stochrsi_k'] = np.round((stochrsi[stochrsi.columns[0]]),2)
+# df['stochrsi_d'] = np.round((stochrsi[stochrsi.columns[1]]),2)
 df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
-df['DMP_14'] = np.round((ADX[ADX.columns[1]]),2)
-df['DMN_14'] = np.round((ADX[ADX.columns[2]]),2)
+# df['DMP_14'] = np.round((ADX[ADX.columns[1]]),2)
+# df['DMN_14'] = np.round((ADX[ADX.columns[2]]),2)
 
 # print(stochrsi.head(5))
 #df['stochrsi_k'] = np.round((pta.stochrsi(df['Close'])),2)
 df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
-df['FISHERT_WH'] = np.round((fisher_transform[fisher_transform.columns[0]]),2)
-df['FISHERTs_RED'] = np.round((fisher_transform[fisher_transform.columns[1]]),2)
-df['El_Fis_diff'] = np.round(abs((df['FISHERT_WH']-df['FISHERTs_RED'])),2)
-df['stk_50'] = np.where(((df['stochrsi_k'] > 50) & (df['stochrsi_k'] < 80)),"ok","")
-df['sk_above'] = np.where((df['stochrsi_k'] > df['stochrsi_d']),"ok","")
-df['fis_above'] = np.where((df['FISHERT_WH'] > df['FISHERTs_RED']),"ok","")
-df['Adx_diff'] = df['ADX_14'].shift(-1) - df['ADX_14']
+# df['FISHERT_WH'] = np.round((fisher_transform[fisher_transform.columns[0]]),2)
+# df['FISHERTs_RED'] = np.round((fisher_transform[fisher_transform.columns[1]]),2)
+# df['El_Fis_diff'] = np.round(abs((df['FISHERT_WH']-df['FISHERTs_RED'])),2)
+# df['stk_50'] = np.where(((df['stochrsi_k'] > 50) & (df['stochrsi_k'] < 80)),"ok","")
+# df['sk_above'] = np.where((df['stochrsi_k'] > df['stochrsi_d']),"ok","")
+# df['fis_above'] = np.where((df['FISHERT_WH'] > df['FISHERTs_RED']),"ok","")
+df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
 df['Adx_ok'] = np.where(df['Adx_diff'] > 1,"ok","")
-#print(df.head(5))
-# for i in (5,10,13):
-#     df['EMA_'+str(i)] = np.round((ta.trend.ema_indicator(df.Close, window=i)),2)
-# df['atr'] = np.round((ta.volatility.average_true_range(df.High,df.Low,df.Close)),2)
+df['Sma_cross'] = np.where((df['Close'] >= df['SMA_14']) & (df['SMA_14'] >= df['SMA_29']) & (df['SMA_29'] >= df['SMA_60']),"ok","")
+#df['Exit'] = np.where((df['Sma_cross'].shift(1) == "ok") & (df['Adx_diff'] < 0),"Buy_Exit","")
+#df.sort_values(['Datetime'], ascending=[False], inplace=True)
+df1 = df[(df["Adx_ok"] == "ok") & (df["Sma_cross"] == "ok")]
+df1['Date_Dif'] = abs((df1["Datetime"] -df1["Datetime"].shift(1)).astype('timedelta64[m]')) 
+buy_df = df1[df1['Date_Dif'] > 10]
+buy_df['Buy/Sell'] = np.where(buy_df["Date_Dif"] > 10,"Buy","")
 
+df['Buy/Sell'] = np.where((df['Sma_cross'].shift(1) == "ok") & (df['Adx_diff'] < 0),"Buy_Exit","")
+sf = df[df['Buy/Sell'] == 'Buy_Exit']
+sf['Date_Dif'] = abs((sf["Datetime"] -sf["Datetime"].shift(1)).astype('timedelta64[m]')) 
+sell_df = sf[sf['Date_Dif'] > 10]
+# df['atr'] = np.round((ta.volatility.average_true_range(df.High,df.Low,df.Close)),2)
+final = pd.concat([buy_df, sell_df])
+listo = np.unique(final['Datetime'])
+final_df = pd.DataFrame()
+position = 0
+for i in listo:
+    print(i)
+    f_df = final[final['Datetime'] == i]
+    post = f_df['Buy/Sell']
+    print(f_df)
+    print(post)
+    if post == 'Buy':
+        print("1")
+        final_df = pd.concat(f_df,final_df)
+        position = 1
+
+    
 
 # def checkcross(df):
 #     series = df['stochrsi_k'] > df['stochrsi_d']
@@ -270,8 +300,8 @@ Brokerage = 50
 # BuySl = SL*-1
 # SellSl = SL*1
 # print(BuySl,SellSl)
-df['TP'] = df.Close + TGG
-df['SL'] = df.Close - SLL
+# df['TP'] = df.Close + TGG
+# df['SL'] = df.Close - SLL
 
 # df['TP'] = df.Close + (df.atr * 2)
 # df['SL'] = df.Close - (df.atr * 3)
@@ -395,18 +425,19 @@ by = wb.sheets("Buy")
 sl = wb.sheets("Sale")
 fl = wb.sheets("Final")
 ex = wb.sheets("Extra")
-dt.range("a:z").value = None
-by.range("a:z").value = None
-sl.range("a:ab").value = None
+dt.range("a:az").value = None
+by.range("a:az").value = None
+sl.range("a:az").value = None
 fl.range("a:az").value = None
-ex.range("a:g").value = None
+ex.range("a:az").value = None
 
 try:
     time.sleep(0.5)
-    dt.range("a1").value = df
-    # by.range("a1").value = Buying
-    # sl.range("a1").value = Selling
-    # fl.range("a1").value = new_df1
+    dt.range("a1").options(index=False).value = df
+    by.range("a1").options(index=False).value = buy_df
+    sl.range("a1").options(index=False).value = sell_df
+    final_df.sort_values(['Datetime'], ascending=[True], inplace=True)
+    fl.range("a1").options(index=False).value = final_df
     # ex.range("a1").value = dfg
 except Exception as e:
     print(e)
