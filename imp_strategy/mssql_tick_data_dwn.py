@@ -201,6 +201,17 @@ oc.range("a1").value = stock_df
 # delete_table = "drop table dbo.Live_Data"
 # del_df = pd.read_sql(sql=delete_table, con=engine)
 
+# start_time = time.time()
+# for i in stk_list:    
+#     print(i)
+#     df = credi_ash.historical_data('N', 'C', i, '1m',last_trading_day,current_trading_day)
+#     df['Scripcode'] = i
+#     df.to_sql(name="Live_Data", con=engine, if_exists="append", index=False)
+# end4 = time.time() - start_time
+
+# print(f"Total Data Analysis Completed Time: {end4:.2f}s")
+
+
 while True:
     start_time = time.time()
     for i in stk_list:    

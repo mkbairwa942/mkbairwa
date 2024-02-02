@@ -104,17 +104,68 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.options.mode.copy_on_write = True
 
-symbol1 = '999920005'
+print("Excel Starting....")
 
-df = client.historical_data('N', 'C', symbol1, '1m', last_trading_day,current_trading_day)
-#print(df.head(1))
-# df = df.astype({"Datetime": "datetime64"})    
-# df["Date"] = df["Datetime"].dt.date
-df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
-df = df.astype({"Datetime": "datetime64"})
-df["Date"] = df["Datetime"].dt.date
-#df.set_index('Datetime',inplace=True)
-#df3 = df         
+if not os.path.exists("haresh_backtest_new.xlsx"):
+    try:
+        wb = xw.Book()
+        wb.sheets.add("optionchain")
+        wb.save("haresh_backtest_new.xlsx")
+        wb.close()
+    except Exception as e:
+        print(f"Error : {e}")
+        sys.exit()
+wb = xw.Book('haresh_backtest_new.xlsx')
+for i in ["Exchange","Filt_Exc","Bhavcopy","FO_Bhavcopy","Five_data","Delv_data","Five_Delv","Final_Data","Position","Strategy1","Strategy2","Strategy3","Buy","Sale",
+           "Expiry","stats","Stat","Stat1","Stat2","Stat3","Stat4"]:
+    try:
+        wb.sheets(i)
+    except:
+        wb.sheets.add(i)
+exc = wb.sheets("Exchange")
+flt_exc = wb.sheets("Filt_Exc")
+bhv = wb.sheets("Bhavcopy")
+bhv_fo = wb.sheets("FO_Bhavcopy")
+Fiv_dt = wb.sheets("Five_data")
+delv_dt = wb.sheets("Delv_data")
+five_delv = wb.sheets("Five_Delv")
+fl_data = wb.sheets("Final_Data")
+pos = wb.sheets("Position")
+strategy1 = wb.sheets("Strategy1")
+strategy2 = wb.sheets("Strategy2")
+strategy3 = wb.sheets("Strategy3")
+
+exc.range("a:u").value = None
+#flt_exc.range("a:u").value = None
+bhv.range("a:u").value = None
+#bhv_fo.range("a:u").value = None
+#Fiv_dt.range("a:u").value = None
+#delv_dt.range("a:u").value = None
+#five_delv.range("a:u").value = None
+#fl_data.range("a:u").value = None
+
+pos.range("a:u").value = None
+strategy1.range("a:u").value = None
+strategy2.range("a:u").value = None
+strategy3.range("a:u").value = None
+
+st = wb.sheets("Stat")
+st1 = wb.sheets("Stat1")
+st2 = wb.sheets("Stat2")
+st3 = wb.sheets("Stat3")
+st4 = wb.sheets("Stat4")
+st.range("a:u").value = None
+st1.range("a:u").value = None
+st2.range("a:u").value = None
+st3.range("a:u").value = None
+st4.range("a:i").value = None
+
+by = wb.sheets("Buy")
+sl = wb.sheets("Sale")
+st = wb.sheets("stats")
+exp = wb.sheets("Expiry")
+
+symbol1 = '999920005'
 
 def fisher(high, low, length=None, signal=None, offset=None, **kwargs):
     """Indicator: Fisher Transform (FISHT)"""
@@ -229,215 +280,332 @@ def fisher1(high, low, length=None, signal=None, offset=None, **kwargs):
     df.category = fisher.category
     return df
 
-fisher_transform = (fisher1(high=df['High'],low=df['Low'],length=10))
-
+# fisher_transform = (fisher1(high=df['High'],low=df['Low'],length=10))
 # df['stochrsi_k'] = np.round((ta.momentum.stochrsi_k(df.Close)),2)
 # df['stochrsi_d'] = np.round((ta.momentum.stochrsi_d(df.Close)),2)
-
-df['SMA_14'] = np.round((pta.sma(df.Close, window=14)),2)
-df['SMA_29'] = np.round((pta.sma(df.Close, window=29)),2)
-df['SMA_60'] = np.round((pta.sma(df.Close, window=60)),2)
 # stochrsi = pta.stochrsi(df['Close'])
-ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'])
 # df['stochrsi_k'] = np.round((stochrsi[stochrsi.columns[0]]),2)
 # df['stochrsi_d'] = np.round((stochrsi[stochrsi.columns[1]]),2)
-df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
 # df['DMP_14'] = np.round((ADX[ADX.columns[1]]),2)
 # df['DMN_14'] = np.round((ADX[ADX.columns[2]]),2)
-
-# print(stochrsi.head(5))
-#df['stochrsi_k'] = np.round((pta.stochrsi(df['Close'])),2)
-df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
+# df['stochrsi_k'] = np.round((pta.stochrsi(df['Close'])),2)
 # df['FISHERT_WH'] = np.round((fisher_transform[fisher_transform.columns[0]]),2)
 # df['FISHERTs_RED'] = np.round((fisher_transform[fisher_transform.columns[1]]),2)
 # df['El_Fis_diff'] = np.round(abs((df['FISHERT_WH']-df['FISHERTs_RED'])),2)
 # df['stk_50'] = np.where(((df['stochrsi_k'] > 50) & (df['stochrsi_k'] < 80)),"ok","")
 # df['sk_above'] = np.where((df['stochrsi_k'] > df['stochrsi_d']),"ok","")
 # df['fis_above'] = np.where((df['FISHERT_WH'] > df['FISHERTs_RED']),"ok","")
-df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
-df['Adx_ok'] = np.where(df['Adx_diff'] > 1,"ok","")
-df['Sma_cross'] = np.where((df['Close'] >= df['SMA_14']) & (df['SMA_14'] >= df['SMA_29']) & (df['SMA_29'] >= df['SMA_60']),"ok","")
-#df['Exit'] = np.where((df['Sma_cross'].shift(1) == "ok") & (df['Adx_diff'] < 0),"Buy_Exit","")
-#df.sort_values(['Datetime'], ascending=[False], inplace=True)
-df1 = df[(df["Adx_ok"] == "ok") & (df["Sma_cross"] == "ok")]
-df1['Date_Dif'] = abs((df1["Datetime"] -df1["Datetime"].shift(1)).astype('timedelta64[m]')) 
-buy_df = df1[df1['Date_Dif'] > 10]
-buy_df['Buy/Sell'] = np.where(buy_df["Date_Dif"] > 10,"Buy","")
 
-df['Buy/Sell'] = np.where((df['Sma_cross'].shift(1) == "ok") & (df['Adx_diff'] < 0),"Buy_Exit","")
-sf = df[df['Buy/Sell'] == 'Buy_Exit']
-sf['Date_Dif'] = abs((sf["Datetime"] -sf["Datetime"].shift(1)).astype('timedelta64[m]')) 
-sell_df = sf[sf['Date_Dif'] > 10]
-# df['atr'] = np.round((ta.volatility.average_true_range(df.High,df.Low,df.Close)),2)
-final = pd.concat([buy_df, sell_df])
-listo = np.unique(final['Datetime'])
-final_df = pd.DataFrame()
-position = 0
-for i in listo:
-    print(i)
-    f_df = final[final['Datetime'] == i]
-    post = f_df['Buy/Sell']
-    print(f_df)
-    print(post)
-    if post == 'Buy':
-        print("1")
-        final_df = pd.concat(f_df,final_df)
-        position = 1
+script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
+script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 
-    
+exchange = None
+while True:    
+    if exchange is None: 
+        try:
+            exch = script_code_5paisa[(script_code_5paisa["Exch"] == "N")]
+            exch.sort_values(['Root'], ascending=[True], inplace=True)
+            
+            root_list = np.unique(exch['Root']).tolist()
 
-# def checkcross(df):
-#     series = df['stochrsi_k'] > df['stochrsi_d']
-#     return series.diff()
+            
+            root_list = ["BANKNIFTY"]
 
-# df['cross'] = checkcross(df).astype(bool)
+            exc_new = exch['Root'].isin(root_list)
+            
+            exc_new1 = exch[exc_new]
+            eq_exc = exc_new1[(exc_new1["Exch"] == "N") & (exc_new1["ExchType"] == "C") & (exc_new1["CpType"] == "EQ")]
+            exc.range("a1").options(index=False).value = eq_exc
+            Expiry = exc_new1[(exc_new1['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
+            Expiry.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)   
+            exc_new2 = Expiry
+            exc_new2["Watchlist"] = exc_new2["Exch"] + ":" + exc_new2["ExchType"] + ":" + exc_new2["Name"]
 
-SLL = 20
-TGG = 50
-LOTSIZE = 25
-Brokerage = 50
+            break
+        except:
+            print("Exchange Download Error....")
+            time.sleep(5)
 
-# BuySl = SL*-1
-# SellSl = SL*1
-# print(BuySl,SellSl)
-# df['TP'] = df.Close + TGG
-# df['SL'] = df.Close - SLL
+exc_fut = exc_new2
+exc_fut1 = exc_fut[exc_fut["CpType"] == "XX"]
+Expiry = (np.unique(exc_fut1['Expiry']).tolist())
+# print(Expiry)
+exc_fut1_Expiryy = (np.unique(exc_fut1['Expiry']).tolist())[0]            
+print(exc_fut1_Expiryy)
+exc_fut = exc_fut1[exc_fut1['Expiry'] == exc_fut1_Expiryy] 
+#exc_fut.sort_values(['Name'], ascending=[True], inplace=True)
+exc_fut = exc_fut[['ExchType','Name', 'ISIN', 'FullName','Root','StrikeRate', 'CO BO Allowed','CpType','Scripcode','Expiry','LotSize','Watchlist']]
 
-# df['TP'] = df.Close + (df.atr * 2)
-# df['SL'] = df.Close - (df.atr * 3)
+flt_exc.range("a:az").value = None
+flt_exc.range("a1").options(index=False).value = exc_fut
 
-# df['Buysignal'] = np.where((df.cross) & (df.Close > df.EMA_10) & (df.EMA_10 > df.EMA_13) & (df.EMA_13 > df.EMA_200),1,0)
+exc_opt = exc_new2
+exc_opt1 = exc_opt[exc_opt["CpType"] != "XX"]
+Expiry = (np.unique(exc_opt1['Expiry']).tolist())
+# print(Expiry)
+exc_opt1_Expiryy = (np.unique(exc_opt1['Expiry']).tolist())[0]            
+print(exc_opt1_Expiryy)
+exc_opt = exc_opt1[exc_opt1['Expiry'] == exc_opt1_Expiryy] 
+#exc_opt.sort_values(['Name'], ascending=[True], inplace=True)
+exc_opt = exc_opt[['ExchType','Name', 'ISIN', 'FullName','Root','StrikeRate', 'CO BO Allowed','CpType','Scripcode','Expiry','LotSize','Watchlist']]
+flt_exc.range("o1").options(index=False).value = exc_opt
 
- #df['Entry'] = np.where((df.FISHERT_WH > df.FISHERTs_RED),"B_E",np.where((df.FISHERT_WH < df.FISHERTs_RED),"S_E",""))
-#df['Entry'] = np.where((df.FISHERT_WH > df.FISHERTs_RED ) & (df["RSI_14"] > 50),"B_E",np.where((df.FISHERT_WH < df.FISHERTs_RED) & (df["RSI_14"] < 50),"S_E",""))
-# df['Entry'] = np.where((df.FISHERT_WH > df.FISHERTs_RED ) & (df["El_Fis_diff"] > 0.25),"B_E",np.where((df.FISHERT_WH < df.FISHERTs_RED) & (df["El_Fis_diff"] > 0.25),"S_E",""))            
-# df['Entry1'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(1) != "B_E"),"B_E",np.where((df['Entry'] == "S_E") & (df['Entry'].shift(1) != "S_E"),"S_E",""))
-# df['Ent_A'] = (np.where(df['Entry1'] == "B_E",df['Close'],(np.where(df['Entry1'] == "S_E",df['Close'],npNaN))))
-# df['Ent_A'] = df['Ent_A'].ffill()
-# df['Ent_B'] = df['Close']-df['Ent_A']
-# df['Ent_B'] = np.where(df['Entry'] == "B_E",(df['Close']-df['Ent_A']),np.where(df['Entry'] == "S_E", (df['Ent_A'] - df['Close']),0))
-# df['Ent_C'] = np.where(((df['Entry'] == "B_E") & (df['Ent_B'] <= - SLL)),"B_SL",np.where(((df['Entry'] == "B_E") & (df['Ent_B'] >= TGG)),"B_TP",
-#               np.where(((df['Entry'] == "S_E") & (df['Ent_B'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_B'] >= TGG)),"S_TP",""))))
-# #df['Ent_D'] = np.where((df.FISHERT_WH < df.FISHERTs_RED),"B_Ex",np.where((df.FISHERT_WH > df.FISHERTs_RED),"S_Ex",""))
-# df['Ent_E'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(-1) != "B_E"),"B_Ex",
-#               np.where((df['Entry'] == "S_E") & (df['Entry'].shift(-1) != "S_E"),"S_Ex",""))
-# df['Ent_C'] = np.where((df['Entry'] == "B_E") & (df['Entry'].shift(-1) != "B_E"),"B_Ex",
-#               np.where((df['Entry'] == "S_E") & (df['Entry'].shift(-1) != "S_E"),"S_Ex",
-#               np.where(((df['Entry'] == "B_E") & (df['Ent_B'] <= - SLL)),"B_SL",np.where(((df['Entry'] == "B_E") & (df['Ent_B'] >= TGG)),"B_TP",
-#               np.where(((df['Entry'] == "S_E") & (df['Ent_B'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_B'] >= TGG)),"S_TP",""))))))
+telegram_msg = "no"
+orders = "no"
 
-
-# df['Entry'] = np.where((df.FISHERT_WH < df.FISHERTs_RED),"S_E","")
-# df['Entry1'] = np.where((df['Entry'] == "S_E") & (df['Entry'].shift(1) != "S_E"),"S_E","")
-# df['Ent_A'] = (np.where(df['Entry1'] == "S_E",df['Close'],npNaN))
-# df['Ent_A'] = df['Ent_A'].ffill()
-# df['Ent_Bb'] = np.where(df['Entry'] == "S_E", (df['Ent_A'] - df['Close']),0)
-# df['Ent_Cb'] = np.where(((df['Entry'] == "S_E") & (df['Ent_Bb'] <= - SLL)),"S_SL",np.where(((df['Entry'] == "S_E") & (df['Ent_Bb'] >= TGG)),"S_TP",""))
-
-# df.dropna(inplace=True)
-
-# length = len(df)-1
-
-# Buying = pd.DataFrame()
-# Selling = pd.DataFrame()
-# new_df1 = pd.DataFrame()    
-
-# for i in range(len(df)):
-#     if [i+1][0] <= length:
-#         if df['Entry1'].iloc[i + 1] == "B_E":
-#             bay = (df['Ent_A'].iloc[i + 1])
-#             buyy = df[i+1:i+2]
-#             Buying = pd.concat([buyy, Buying])
-#             sal = df[df['Ent_A'] == bay]
-#             sal1 = (sal[(sal['Ent_C'] == "B_SL") | (sal['Ent_C'] == "B_TP") | (sal['Ent_C'] == "B_Ex")])
-#             sal1['Sell_Date'] = (df.Date.iloc[i + 1])
-#             sal1['Sell_Time'] = (df.Time.iloc[i + 1])
-#             Selling = pd.concat([sal1[:1], Selling])
-
-#         if df['Entry1'].iloc[i + 1] == "S_E":
-#             bay1 = (df['Ent_A'].iloc[i + 1])
-#             buyy1 = df[i+1:i+2]
-#             Buying = pd.concat([buyy1, Buying])
-#             sal1 = df[df['Ent_A'] == bay1]
-#             sal11 = (sal1[(sal1['Ent_C'] == "S_SL") | (sal1['Ent_C'] == "S_TP") | (sal1['Ent_C'] == "S_Ex")])
-#             sal11['Sell_Date'] = (df.Date.iloc[i + 1])
-#             sal11['Sell_Time'] = (df.Time.iloc[i + 1])
-#             Selling = pd.concat([sal11[:1], Selling])
-
-# Buying.sort_values(['Date', 'Time'], ascending=[True, True], inplace=True) 
-# Buying.rename(columns={'Date': 'Datee', 'Time': 'Timee'}, inplace=True)
-# Selling.sort_values(['Date', 'Time'], ascending=[True, True], inplace=True)  
-# Selling.rename(columns={'Sell_Date': 'Datee', 'Sell_Time': 'Timee'}, inplace=True)
-# new_df1 = pd.merge(Buying, Selling,on=["Datee", "Timee"])
-
-# new_df1['P&L'] = np.where((new_df1['Ent_C_y'] == "B_Ex") | (new_df1['Ent_C_y'] == "S_Ex"),Brokerage*-1,
-#                   np.where((new_df1['Ent_C_y'] == "B_TP") | (new_df1['Ent_C_y'] == "S_TP"),(TGG*LOTSIZE)-Brokerage,
-#                   np.where((new_df1['Ent_C_y'] == "B_SL") | (new_df1['Ent_C_y'] == "S_SL"),(SLL*LOTSIZE+Brokerage)*-1,0)))
-
-# selldates = []
-# outcome = []
-
-# for i in range(length):
-#     if df.Buysignal.iloc[i]:
-#         k = 1
-#         SL = df.SL.iloc[i]     
-#         TP = df.TP.iloc[i]
-#         in_position = True
-#         while in_position:
-#             if [i+k][0] <= length:
-#                 looping_close = df.Close.iloc[i + k]
-#                 if looping_close >= TP:
-#                     selldates.append(df.iloc[i+k].name)
-#                     outcome.append('TP')
-#                     in_position = False
-#                 elif looping_close <= SL:
-#                     selldates.append(df.iloc[i+k].name)
-#                     outcome.append('SL')                         
-#                 k += 1
-#                 in_position = False           
-
-# df.loc[selldates, "Sellsignal"] = 1
-# df.Sellsignal = df.Sellsignal.fillna(0).astype(int)
-# df['Sellsignal1'] = np.where((df['Sellsignal'] == 1) & (df['Sellsignal'].shift(1) == 0),1,0)
-# df.loc[selldates, "outcome"] = outcome
-# buyyy = df[(df.Buysignal1 == 1)]
-# mask2 = df[(df.Sellsignal1 == 1)]
-# print(mask2.outcome.value_counts().sum())
-# print(mask2.outcome.value_counts())
-
-print("Excel Starting....")
-if not os.path.exists("haresh_backtest_new.xlsx"):
+def order_book_func():
     try:
-        wb = xw.Book()
-        wb.save("haresh_backtest_new.xlsx")
-        wb.close()
+        ordbook = pd.DataFrame(client.order_book())
+        ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
+        #ordbook[['Root']] = ordbook['ScripName'].str.split(' ',expand=True)
+        #ordbook['Root'] = ordbook['ScripName'].tolist()#.str.split(" ")[0]
+        pos.range("r1").options(index=False).value = ordbook
+        
     except Exception as e:
-        print(f"Error : {e}")
-        sys.exit()
-wb = xw.Book('haresh_backtest_new.xlsx')
-for i in ["Data","Buy","Sale","Final","Extra"]:
-    try:
-        wb.sheets(i)
-    except:
-        wb.sheets.add(i)
-dt = wb.sheets("Data")
-by = wb.sheets("Buy")
-sl = wb.sheets("Sale")
-fl = wb.sheets("Final")
-ex = wb.sheets("Extra")
-dt.range("a:az").value = None
-by.range("a:az").value = None
-sl.range("a:az").value = None
-fl.range("a:az").value = None
-ex.range("a:az").value = None
+                print(e)
 
-try:
-    time.sleep(0.5)
-    dt.range("a1").options(index=False).value = df
-    by.range("a1").options(index=False).value = buy_df
-    sl.range("a1").options(index=False).value = sell_df
-    final_df.sort_values(['Datetime'], ascending=[True], inplace=True)
-    fl.range("a1").options(index=False).value = final_df
-    # ex.range("a1").value = dfg
-except Exception as e:
-    print(e)
+    try:
+        if ordbook is not None:
+            ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
+            #ordbook['Root'] = ordbook['ScripName'].tolist()#.str.split(" ")[0]
+            #print("Order Book not Empty")        
+            ordbook1 = ordbook[ordbook['OrderStatus'] != "Rejected By 5P"]   
+            ordbook1 = ordbook           
+            Datetimeee = []
+            for i in range(len(ordbook1)):
+                datee = ordbook1['BrokerOrderTime'][i]
+                timestamp = pd.to_datetime(datee[6:19], unit='ms')
+                ExpDate = datetime.strftime(timestamp, '%d-%m-%Y %H:%M:%S')
+                d1 = datetime(int(ExpDate[6:10]),int(ExpDate[3:5]),int(ExpDate[0:2]),int(ExpDate[11:13]),int(ExpDate[14:16]),int(ExpDate[17:19]))
+                d2 = d1 + timedelta(hours = 5.5)
+                Datetimeee.append(d2)
+            ordbook1['Datetimeee'] = Datetimeee
+            ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot', 'OrderValidUpto','ScripName','Root','AtMarket']]
+            ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+            pos.range("a1").options(index=False).value = ordbook1
+        else:
+            print("Order Book Empty")
+    except Exception as e:
+                print(e)
+    return ordbook1
+
+def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee):
+    dfg3 = df.tail(1)
+    price_of_stock = float(dfg3['Close']) 
+    timee = str((dfg3['Datetime'].values)[0])[0:19] 
+    timee1= timee.replace("T", " " )
+    list_append_on.append(list_to_append)
+
+    if orders.upper() == "YES" or orders.upper() == "":                
+        order = client.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=qtyy,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+    else:
+        print(f"Real {CALL_PUT} Order are OFF")
+    print(f"1 Minute {CALL_PUT} Data Selected of "+str(namee)+" ("+str(scrip_code)+")")
+    print(f"{CALL_PUT} {BUY_EXIT} Order Executed of "+str(namee)+" at : Rs "+str(price_of_stock)+" and Quantity is "+str(qtyy)+" on "+str(timee1))
+
+    print("SYMBOL : "+str(namee)+"\n "+str(CALL_PUT)+" "+str(BUY_EXIT)+" AT : "+str(price_of_stock)+"\n QUANTITY : "+str(qtyy)+"\n TIME : "+str(timee1))
+    if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
+        parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(namee)+"\n "+str(CALL_PUT)+" "+str(BUY_EXIT)+" AT : "+str(price_of_stock)+"\n QUANTITY : "+str(qtyy)+"\n TIME : "+str(timee1)}
+        resp = requests.get(telegram_basr_url, data=parameters1)
+    else:
+        print("Telegram Message are OFF")
+    print("----------------------------------------")
+
+posit = pd.DataFrame(client.positions()) 
+if posit.empty:
+    print("Position is Empty")
+    buy_order_list_dummy = []
+    sell_order_list_dummy = []
+    buy_root_list_dummy = []
+else:
+    buy_order = order_book_func()
+    buy_order_li = buy_order[buy_order['BuySell'] == 'B']
+    exit_order_li = buy_order[buy_order['BuySell'] == 'S']
+    buy_order_list_dummy = (np.unique([str(i) for i in buy_order_li['Datetimeee']])).tolist()
+    sell_order_list_dummy = (np.unique([str(i) for i in exit_order_li['Datetimeee']])).tolist()
+    buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
+
+while True:
+    print(buy_order_list_dummy)
+    print(sell_order_list_dummy)
+    df = client.historical_data('N', 'C', symbol1, '1m', last_trading_day,current_trading_day)
+    df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
+    df = df.astype({"Datetime": "datetime64"})
+    df['Scripcode'] = int(symbol1)
+
+    df = pd.merge(df, eq_exc, on=['Scripcode'], how='inner') 
+
+    df = df[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume']]
+    df['Spot'] = round(df['Close']/100,0)*100
+    df["Date"] = df["Datetime"].dt.date   
+
+    df['SMA_14'] = np.round((pta.sma(df['Close'],length=14)),2)
+    df['SMA_29'] = np.round((pta.sma(df['Close'],length=29)),2)
+    df['SMA_60'] = np.round((pta.sma(df['Close'],length=60)),2)
+    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'])
+    df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
+    df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
+    df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
+    df['Adx_ok_up'] = np.where(df['Adx_diff'] > 1,"ok","")
+    df['Adx_ok_dn'] = np.where(df['Adx_diff'] < 1,"ok","")
+    df['Sma_cross_up'] = np.where((df['Close'] >= df['SMA_14']) & (df['SMA_14'] >= df['SMA_29']) & (df['SMA_29'] >= df['SMA_60']),"ok","")
+    df['Sma_cross_dn'] = np.where((df['Close'] <= df['SMA_14']) & (df['SMA_14'] <= df['SMA_29']) & (df['SMA_29'] <= df['SMA_60']),"ok","")
+    df1_up = df[(df["Adx_ok_up"] == "ok") & (df["Sma_cross_up"] == "ok")]
+    df1_dn = df[(df["Adx_ok_dn"] == "ok") & (df["Sma_cross_dn"] == "ok")]
+    df1_up['Date_Dif'] = abs((df1_up["Datetime"] -df1_up["Datetime"].shift(1)).astype('timedelta64[m]')) 
+    df1_dn['Date_Dif'] = abs((df1_dn["Datetime"] -df1_dn["Datetime"].shift(1)).astype('timedelta64[m]')) 
+    df1_up['Entry'] = np.where(df1_up['Date_Dif'] > 1, "Buy","")
+    df1_dn['Entry'] = np.where(df1_dn['Date_Dif'] > 1, "Buy","")
+    buy_df = df1_up[df1_up['Entry'] == "Buy"]
+    sell_df = df1_dn[df1_dn['Entry'] == "Buy"]
+
+    df['Exit'] = np.where((df['Sma_cross_up'].shift(1) == "ok") & (df['Close'] < df['SMA_14']),"Call_Buy_Exit",np.where((df['Sma_cross_dn'].shift(1) == "ok") & (df['Close'] > df['SMA_14']),"Put_Buy_Exit",""))
+    buy_exit_df = df[df['Exit'] == 'Call_Buy_Exit']
+    # sf['Date_Dif'] = abs((sf["Datetime"] -sf["Datetime"].shift(1)).astype('timedelta64[m]')) 
+    # sell_df = sf[sf['Date_Dif'] > 10]
+
+    final_call = pd.concat([buy_df, buy_exit_df])
+    listo_call = np.unique(final_call['Datetime'])
+    final_df_call = pd.DataFrame()
+    position_Call = 0
+    for i in listo_call:
+        f_df_call = final_call[final_call['Datetime'] == i]
+        if list(f_df_call['Entry'])[0] == 'Buy' and position_Call == 0:
+            final_df_call = pd.concat([f_df_call, final_df_call])
+            position_Call = 1
+
+        if list(f_df_call['Exit'])[0] == 'Call_Buy_Exit' and position_Call == 1:
+            final_df_call = pd.concat([f_df_call, final_df_call])
+            position_Call = 0
+
+    dfgg_call_buy_fut = final_df_call[(final_df_call["Entry"] == "Buy") & (final_df_call["Date"] == current_trading_day.date())]# & (final_df_call["Minutes"] < 2 )]
+    dfgg_call_Exit_fut = final_df_call[(final_df_call["Exit"] == "Call_Buy_Exit") & (final_df_call["Date"] == current_trading_day.date())]# & (final_df_call["Minutes"] < 2 )]
+
+    dfgg_call_buy_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
+    dfgg_call_Exit_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
+
+    dfgg_call_buy_fut1 = dfgg_call_buy_fut.tail(1)
+    dfgg_call_Exit_fut1 = dfgg_call_Exit_fut.tail(1)
+
+    Fut_Closee = float(dfgg_call_buy_fut1['Close'])
+    Root = (np.unique([str(i) for i in dfgg_call_buy_fut1['Root']])).tolist()[0] 
+
+    Buy_call_timee_fut = list(dfgg_call_buy_fut1['Datetime'])[0]
+    Buy_call_timee_fut1 = str(Buy_call_timee_fut).replace(' ','T') 
+    Buy_call_exit_timee_fut = list(dfgg_call_Exit_fut1['Datetime'])[0]
+    Buy_call_exit_timee_fut1 = str(Buy_call_exit_timee_fut).replace(' ','T') 
+    print(Fut_Closee,Root,Buy_call_timee_fut1,Buy_call_exit_timee_fut1)
+
+    Excchhh_up = exc_opt[(exc_opt["CpType"] == 'CE')]
+    Excchh_up = Excchhh_up[Excchhh_up['Root'] == Root]
+    Excchh2_up = Excchh_up[(Excchh_up['StrikeRate'] > Fut_Closee)]
+    Excchh2_up.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+
+    Excchh3_up = Excchh2_up.head(1)
+    Buy_call_quantity_of_stock = int(np.unique(Excchh3_up['LotSize']))
+    Buy_call_Scriptcodee = int(np.unique(Excchh3_up['Scripcode'])[0])
+    stk_call_name1_up = (np.unique([str(i) for i in Excchh3_up['Name']])).tolist()[0]
+    print(Buy_call_Scriptcodee,stk_call_name1_up,Buy_call_quantity_of_stock)
+
+    dfgg_buy_call_op = client.historical_data('N', 'D', Buy_call_Scriptcodee, '1m', last_trading_day,current_trading_day)
+
+    dfgg_buy_call_op.sort_values(['Datetime'], ascending=[True], inplace=True)
+    dfgg_buy_call_op['Scriptcode'] = Buy_call_Scriptcodee
+    dfgg_buy_call_op['Name'] = stk_call_name1_up
+    dfgg_buy_call_op['Entry_Date'] = Buy_call_timee_fut1
+    dfgg_buy_call_op['Exit_Date'] = Buy_call_exit_timee_fut1
+
+    dfgg_buy_call_op['Entry_OK_DF'] = np.where(dfgg_buy_call_op['Entry_Date'] == dfgg_buy_call_op['Datetime'],"OK","")
+    dfgg_buy_call_op['Exit_OK_DF'] = np.where(dfgg_buy_call_op['Exit_Date'] == dfgg_buy_call_op['Datetime'],"OK","")
+
+    dfgg_buy_call_opt = dfgg_buy_call_op[dfgg_buy_call_op['Entry_OK_DF'] == "OK"]
+    dfgg_buy_call_Exit_opt = dfgg_buy_call_op[dfgg_buy_call_op['Exit_OK_DF'] == "OK"]
+
+
+    if not dfgg_buy_call_opt.empty:
+        print("Buy Call")
+        if Buy_call_timee_fut in buy_order_list_dummy: 
+            print(str(stk_call_name1_up)+" is Already Buy")
+            print("----------------------------------------")
+        else:
+            rde_exec = order_execution(dfgg_buy_call_opt,buy_order_list_dummy,Buy_call_timee_fut,telegram_msg,orders,"Call","BUY","B",Buy_call_Scriptcodee,Buy_call_quantity_of_stock,stk_call_name1_up)
+            # dfg3 = dfgg_buy_call_opt.tail(1)
+            # Buy_price_of_stock = float(dfg3['Close'])                                  
+            # Buy_timee = str((dfg3['Datetime'].values)[0])[0:19] 
+            # Buy_timee1= Buy_timee.replace("T", " " )
+            # buy_order_list_dummy.append(Buy_call_timee_fut)
+
+            # if orders.upper() == "YES" or orders.upper() == "":                
+            #     order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_call_Scriptcodee, Qty=Buy_call_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+            # else:
+            #     print("Real Call Order are OFF")
+            # print("5 Minute Data Call Selected "+str(stk_call_name1_up)+" ("+str(Buy_call_Scriptcodee)+")")
+            # print("Call Buy Order of "+str(stk_call_name1_up)+" at : Rs "+str(Buy_price_of_stock)+" and Quantity is "+str(Buy_call_quantity_of_stock)+" on "+str(Buy_timee1))
+
+            # print("SYMBOL : "+str(stk_call_name1_up)+"\n Call BUY AT : "+str(Buy_price_of_stock)+"\n QUANTITY : "+str(Buy_call_quantity_of_stock)+"\n TIME : "+str(Buy_timee1))
+            # if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
+            #     parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(stk_call_name1_up)+"\n Call BUY AT : "+str(Buy_price_of_stock)+"\n QUANTITY : "+str(Buy_call_quantity_of_stock)+"\n TIME : "+str(Buy_timee1)}
+            #     resp = requests.get(telegram_basr_url, data=parameters1)
+            # else:
+            #     print("Telegram Message are OFF")
+            # print("----------------------------------------")
+
+    if not dfgg_buy_call_Exit_opt.empty:
+        print("Exit Call")
+        if Buy_call_exit_timee_fut in sell_order_list_dummy: 
+            print(str(stk_call_name1_up)+" is Already Exited")
+        else:
+            rde_exec = order_execution(dfgg_buy_call_Exit_opt,sell_order_list_dummy,Buy_call_exit_timee_fut,telegram_msg,orders,"Call","Exit","S",Buy_call_Scriptcodee,Buy_call_quantity_of_stock,stk_call_name1_up)
+            # dfg4 = dfgg_buy_call_Exit_opt.tail(1)
+            # Buy_Exit_price_of_stock = float(dfg4['Close'])                                  
+            # Buy_Exit_timee = str((dfg4['Datetime'].values)[0])[0:19] 
+            # Buy_Exit_timee1= Buy_Exit_timee.replace("T", " " )
+            # sell_order_list_dummy.append(Buy_call_exit_timee_fut)
+
+            # if orders.upper() == "YES" or orders.upper() == "":                
+            #     order = client.place_order(OrderType='S',Exchange='N',ExchangeType='D', ScripCode = Buy_call_Scriptcodee, Qty=Buy_call_quantity_of_stock,Price=Buy_Exit_price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+            # else:
+            #     print("Real Call Order are OFF")
+            # print("5 Minute Data Call Exited "+str(stk_call_name1_up)+" ("+str(Buy_call_Scriptcodee)+")")
+            # print("Call Exit Order of "+str(stk_call_name1_up)+" at : Rs "+str(Buy_Exit_price_of_stock)+" and Quantity is "+str(Buy_call_quantity_of_stock)+" on "+str(Buy_Exit_timee1))
+
+            # print("SYMBOL : "+str(stk_call_name1_up)+"\n Call Exit AT : "+str(Buy_Exit_price_of_stock)+"\n QUANTITY : "+str(Buy_call_quantity_of_stock)+"\n TIME : "+str(Buy_Exit_timee1))
+            # if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
+            #     parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(stk_call_name1_up)+"\n Call Exit AT : "+str(Buy_Exit_price_of_stock)+"\n QUANTITY : "+str(Buy_call_quantity_of_stock)+"\n TIME : "+str(Buy_Exit_timee1)}
+            #     resp = requests.get(telegram_basr_url, data=parameters1)
+            # else:
+            #     print("Telegram Message are OFF")
+            # print("----------------------------------------")
+            
+    if df.empty:
+        pass
+    else:
+        #df = df[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+        #df.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+        Fiv_dt.range("a:az").value = None
+        Fiv_dt.range("a1").options(index=False).value = df 
+
+    if df1_up.empty:
+        pass
+    else:
+        #df1_up = df1_up[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+        #df1_up.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+        by.range("a:az").value = None
+        by.range("a1").options(index=False).value = df1_up
+
+    if buy_exit_df.empty:
+        pass
+    else:
+        #buy_exit_df = buy_exit_df[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+        #buy_exit_df.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+        sl.range("a:az").value = None
+        sl.range("a1").options(index=False).value = buy_exit_df
+
+    if final_df_call.empty:
+        pass
+    else:
+        #final_df_call = final_df_call[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+        final_df_call.sort_values(['Datetime'], ascending=[True], inplace=True)
+        final_df_call['P&L'] = np.where(final_df_call['Exit'] == 'Call_Buy_Exit',final_df_call['Close']-final_df_call['Close'].shift(1),0)
+        fl_data.range("a:az").value = None
+        fl_data.range("a1").options(index=False).value = final_df_call
