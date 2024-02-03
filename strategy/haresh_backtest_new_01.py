@@ -428,7 +428,7 @@ else:
 while True:
     print(buy_order_list_dummy)
     print(sell_order_list_dummy)
-    df = client.historical_data('N', 'C', symbol1, '1m', last_trading_day,current_trading_day)
+    df = client.historical_data('N', 'C', symbol1, '1m', from_d,to_d)
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
     df['Scripcode'] = int(symbol1)
@@ -446,14 +446,16 @@ while True:
     df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
     df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
-    df['Adx_ok_up'] = np.where(df['Adx_diff'] > 1,"ok","")
-    df['Adx_ok_dn'] = np.where(df['Adx_diff'] > 1,"ok","")
+    df['Adx_ok'] = np.where(df['Adx_diff'] > 1,"ok","")
     df['Sma_cross_up'] = np.where((df['Close'] >= df['SMA_14']) & (df['SMA_14'] >= df['SMA_29']) & (df['SMA_29'] >= df['SMA_60']),"ok","")
     df['Sma_cross_dn'] = np.where((df['Close'] <= df['SMA_14']) & (df['SMA_14'] <= df['SMA_29']) & (df['SMA_29'] <= df['SMA_60']),"ok","")
-    df['Exit'] = np.where((df['Sma_cross_up'].shift(1) == "ok") & (df['Close'] < df['SMA_14']),"Call_Buy_Exit",np.where((df['Sma_cross_dn'].shift(1) == "ok") & (df['Close'] > df['SMA_14']),"Put_Buy_Exit",""))
+    df['Exit'] = np.where((df['Sma_cross_up'].shift(1) == "ok") & (df['Close'] < df['SMA_14']) | 
+                          (df['Adx_ok'].shift(1) == "ok") & (df['Adx_diff'] < 0 ),"Call_Buy_Exit",
+                          np.where((df['Sma_cross_dn'].shift(1) == "ok") & (df['Close'] > df['SMA_14']) |
+                                   (df['Adx_ok'].shift(1) == "ok") & (df['Adx_diff'] < 0 ),"Put_Buy_Exit",""))
     
-    df1_up = df[(df["Adx_ok_up"] == "ok") & (df["Sma_cross_up"] == "ok")]
-    df1_dn = df[(df["Adx_ok_dn"] == "ok") & (df["Sma_cross_dn"] == "ok")]
+    df1_up = df[(df["Adx_ok"] == "ok") & (df["Sma_cross_up"] == "ok")]
+    df1_dn = df[(df["Adx_ok"] == "ok") & (df["Sma_cross_dn"] == "ok")]
 
     df1_up['Date_Dif'] = abs((df1_up["Datetime"] -df1_up["Datetime"].shift(1)).astype('timedelta64[m]')) 
     df1_dn['Date_Dif'] = abs((df1_dn["Datetime"] -df1_dn["Datetime"].shift(1)).astype('timedelta64[m]')) 
@@ -561,7 +563,7 @@ while True:
     print("Put")
     print(Buy_put_Scriptcodee,stk_put_name1_up,Buy_put_quantity_of_stock)
 
-    dfgg_buy_call_op = client.historical_data('N', 'D', Buy_call_Scriptcodee, '1m', last_trading_day,current_trading_day)
+    dfgg_buy_call_op = client.historical_data('N', 'D', Buy_call_Scriptcodee, '1m', from_d,to_d)
     dfgg_buy_call_op.sort_values(['Datetime'], ascending=[True], inplace=True)
     dfgg_buy_call_op['Scriptcode'] = Buy_call_Scriptcodee
     dfgg_buy_call_op['Name'] = stk_call_name1_up
@@ -572,7 +574,7 @@ while True:
     dfgg_buy_call_opt = dfgg_buy_call_op[dfgg_buy_call_op['Entry_OK_DF'] == "OK"]
     dfgg_buy_call_Exit_opt = dfgg_buy_call_op[dfgg_buy_call_op['Exit_OK_DF'] == "OK"]
 
-    dfgg_buy_put_op = client.historical_data('N', 'D', Buy_put_Scriptcodee, '1m', last_trading_day,current_trading_day)
+    dfgg_buy_put_op = client.historical_data('N', 'D', Buy_put_Scriptcodee, '1m', from_d,to_d)
     dfgg_buy_put_op.sort_values(['Datetime'], ascending=[True], inplace=True)
     dfgg_buy_put_op['Scriptcode'] = Buy_put_Scriptcodee
     dfgg_buy_put_op['Name'] = stk_put_name1_up
