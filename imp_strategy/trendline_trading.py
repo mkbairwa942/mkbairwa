@@ -409,6 +409,7 @@ def data_download(cli,stk_nm,Qty,start_dt,end_dt,vol_pr,rsi_up_lvll,rsi_dn_lvll,
     dfg1['Price_OK'] = np.where((dfg1["Price_break"].shift(-1)) == "Pri_Up_brk","Price_Up_OK",np.where((dfg1["Price_break"].shift(-1)) == "Pri_Dwn_brk","Price_Dn_OK",""))
     dfg1['Cand_Col'] = np.where(dfg1['Close'] > dfg1['Open'],"Green",np.where(dfg1['Close'] < dfg1['Open'],"Red","") )
     dfg1['TimeNow'] = datetime.now()
+    dfg1 = dfg1.astype({"Datetime": "datetime64"})
     dfg1["Date"] = dfg1["Datetime"].dt.date
     dfg1['Minutes'] = dfg1['TimeNow']-dfg1["Datetime"]
     dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)

@@ -225,3 +225,4 @@ while True:
 
     print(f"Total Data Analysis Completed Time: {end4:.2f}s")
 
+print("Data Process Completed")

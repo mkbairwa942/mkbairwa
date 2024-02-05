@@ -81,9 +81,9 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[1]
 
-current_trading_day = trading_dayss[1]
-last_trading_day = trading_dayss[2]
-second_last_trading_day = trading_days[3]
+# current_trading_day = trading_dayss[1]
+# last_trading_day = trading_dayss[2]
+# second_last_trading_day = trading_days[3]
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
 print("Trading Days is :- "+str(trading_dayss))
@@ -428,7 +428,7 @@ else:
 while True:
     print(buy_order_list_dummy)
     print(sell_order_list_dummy)
-    df = client.historical_data('N', 'C', symbol1, '1m', last_trading_day,current_trading_day)
+    df = client.historical_data('N', 'C', symbol1, '1m', from_d,to_d)
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
     df['Scripcode'] = int(symbol1)
@@ -561,7 +561,7 @@ while True:
     print("Put")
     print(Buy_put_Scriptcodee,stk_put_name1_up,Buy_put_quantity_of_stock)
 
-    dfgg_buy_call_op = client.historical_data('N', 'D', Buy_call_Scriptcodee, '1m', last_trading_day,current_trading_day)
+    dfgg_buy_call_op = client.historical_data('N', 'D', Buy_call_Scriptcodee, '1m', from_d,to_d)
     dfgg_buy_call_op.sort_values(['Datetime'], ascending=[True], inplace=True)
     dfgg_buy_call_op['Scriptcode'] = Buy_call_Scriptcodee
     dfgg_buy_call_op['Name'] = stk_call_name1_up
@@ -572,7 +572,7 @@ while True:
     dfgg_buy_call_opt = dfgg_buy_call_op[dfgg_buy_call_op['Entry_OK_DF'] == "OK"]
     dfgg_buy_call_Exit_opt = dfgg_buy_call_op[dfgg_buy_call_op['Exit_OK_DF'] == "OK"]
 
-    dfgg_buy_put_op = client.historical_data('N', 'D', Buy_put_Scriptcodee, '1m', last_trading_day,current_trading_day)
+    dfgg_buy_put_op = client.historical_data('N', 'D', Buy_put_Scriptcodee, '1m', from_d,to_d)
     dfgg_buy_put_op.sort_values(['Datetime'], ascending=[True], inplace=True)
     dfgg_buy_put_op['Scriptcode'] = Buy_put_Scriptcodee
     dfgg_buy_put_op['Name'] = stk_put_name1_up

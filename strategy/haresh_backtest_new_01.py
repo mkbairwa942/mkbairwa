@@ -2,6 +2,7 @@
 #import ta
 #from ta import add_all_ta_features
 #from ta.utils import dropna
+from collections import namedtuple
 import pandas_ta as pta
 #from finta import TA
 # import talib
@@ -411,6 +412,8 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         print("Telegram Message are OFF")
     print("----------------------------------------")
 
+
+
 posit = pd.DataFrame(client.positions()) 
 if posit.empty:
     print("Position is Empty")
@@ -425,6 +428,19 @@ else:
     sell_order_list_dummy = (np.unique([str(i) for i in exit_order_li['Datetimeee']])).tolist()
     buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
 
+def HakinAshi_func(df):
+    df = df.copy()
+    df['HA_Close']=(df.Open + df.High + df.Low + df.Close)/4
+    df.reset_index(inplace=True)
+    ha_open = [ (df.Open[0] + df.Close[0]) / 2 ]
+    [ ha_open.append((ha_open[i] + df.HA_Close.values[i]) / 2) \
+    for i in range(0, len(df)-1) ]
+    df['HA_Open'] = ha_open
+    df.set_index('index', inplace=True)
+    df['HA_High']=df[['HA_Open','HA_Close','High']].max(axis=1)
+    df['HA_Low']=df[['HA_Open','HA_Close','Low']].min(axis=1)
+    return df
+
 while True:
     print(buy_order_list_dummy)
     print(sell_order_list_dummy)
@@ -432,10 +448,12 @@ while True:
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
     df['Scripcode'] = int(symbol1)
-
     df = pd.merge(df, eq_exc, on=['Scripcode'], how='inner') 
 
-    df = df[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume']]
+    hakin_ashi = HakinAshi_func(df)
+
+    df = hakin_ashi.copy()
+    df = df[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','HA_Open','HA_High','HA_Low','HA_Close','Volume']]
     df['Spot'] = round(df['Close']/100,0)*100
     df["Date"] = df["Datetime"].dt.date   
 
@@ -453,9 +471,13 @@ while True:
                           (df['Adx_ok'].shift(1) == "ok") & (df['Adx_diff'] < 0 ),"Call_Buy_Exit",
                           np.where((df['Sma_cross_dn'].shift(1) == "ok") & (df['Close'] > df['SMA_14']) |
                                    (df['Adx_ok'].shift(1) == "ok") & (df['Adx_diff'] < 0 ),"Put_Buy_Exit",""))
-    
-    df1_up = df[(df["Adx_ok"] == "ok") & (df["Sma_cross_up"] == "ok")]
-    df1_dn = df[(df["Adx_ok"] == "ok") & (df["Sma_cross_dn"] == "ok")]
+    #df['Exit'] = np.where(df['Low'] < df['HA_Low'].shift(1),"Call_Buy_Exit","")
+
+
+    df1_up = df[(df["Adx_ok"] == "ok") & (df["Sma_cross_up"] == "ok") & (df['RSI_14'] > 70)]
+    df1_dn = df[(df["Adx_ok"] == "ok") & (df["Sma_cross_dn"] == "ok") & (df['RSI_14'] < 30)]
+    # df1_up = df[(df["Adx_ok"] == "ok") & (df["Sma_cross_up"] == "ok") & (df['HA_Open'] == df['HA_Low']) & (df['Close'] > df['SMA_29']) & (df['RSI_14'] > 70) & (df['ADX_14'] > 20)]
+    # df1_dn = df[(df['HA_Open'] == df['HA_High'])]
 
     df1_up['Date_Dif'] = abs((df1_up["Datetime"] -df1_up["Datetime"].shift(1)).astype('timedelta64[m]')) 
     df1_dn['Date_Dif'] = abs((df1_dn["Datetime"] -df1_dn["Datetime"].shift(1)).astype('timedelta64[m]')) 
@@ -463,8 +485,8 @@ while True:
     df1_up['Entry'] = np.where(df1_up['Date_Dif'] > 1, "Buy","")
     df1_dn['Entry'] = np.where(df1_dn['Date_Dif'] > 1, "Buy","")
     
-    buy_df = df1_up[df1_up['Entry'] == "Buy"]
-    sell_df = df1_dn[df1_dn['Entry'] == "Buy"]
+    buy_df = df1_up#[df1_up['Entry'] == "Buy"]
+    sell_df = df1_dn#[df1_dn['Entry'] == "Buy"]
     
     buy_exit_call_df = df[df['Exit'] == 'Call_Buy_Exit']
     buy_exit_put_df = df[df['Exit'] == 'Put_Buy_Exit']
@@ -507,116 +529,116 @@ while True:
     dfgg_put_buy_fut = final_df_put[(final_df_put["Entry"] == "Buy") & (final_df_put["Date"] == current_trading_day.date())]# & (final_df_call["Minutes"] < 2 )]
     dfgg_put_Exit_fut = final_df_put[(final_df_put["Exit"] == "Put_Buy_Exit") & (final_df_put["Date"] == current_trading_day.date())]# & (final_df_call["Minutes"] < 2 )]
 
-    dfgg_call_buy_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
-    dfgg_call_Exit_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
+    # dfgg_call_buy_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
+    # dfgg_call_Exit_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
        
-    dfgg_put_buy_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
-    dfgg_put_Exit_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
+    # dfgg_put_buy_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
+    # dfgg_put_Exit_fut.sort_values(['Datetime'], ascending=[True], inplace=True)
 
-    dfgg_call_buy_fut1 = dfgg_call_buy_fut.tail(1)
-    dfgg_call_Exit_fut1 = dfgg_call_Exit_fut.tail(1)
+    # dfgg_call_buy_fut1 = dfgg_call_buy_fut.tail(1)
+    # dfgg_call_Exit_fut1 = dfgg_call_Exit_fut.tail(1)
 
-    dfgg_put_buy_fut1 = dfgg_put_buy_fut.tail(1)
-    dfgg_put_Exit_fut1 = dfgg_put_Exit_fut.tail(1)
+    # dfgg_put_buy_fut1 = dfgg_put_buy_fut.tail(1)
+    # dfgg_put_Exit_fut1 = dfgg_put_Exit_fut.tail(1)
 
-    Fut_Closee_call = float(dfgg_call_buy_fut1['Close'])
-    Root_call = (np.unique([str(i) for i in dfgg_call_buy_fut1['Root']])).tolist()[0] 
+    # Fut_Closee_call = (np.unique([float(i) for i in dfgg_call_buy_fut1['Close']])).tolist()[0] #float(dfgg_call_buy_fut1['Close'])
+    # Root_call = (np.unique([str(i) for i in dfgg_call_buy_fut1['Root']])).tolist()[0] 
 
-    Fut_Closee_put = float(dfgg_put_buy_fut1['Close'])
-    Root_put = (np.unique([str(i) for i in dfgg_put_buy_fut1['Root']])).tolist()[0] 
+    # Fut_Closee_put = (np.unique([float(i) for i in dfgg_put_buy_fut1['Close']])).tolist()[0] #float(dfgg_put_buy_fut1['Close'])
+    # Root_put = (np.unique([str(i) for i in dfgg_put_buy_fut1['Root']])).tolist()[0] 
 
-    Buy_call_timee_fut = list(dfgg_call_buy_fut1['Datetime'])[0]
-    Buy_call_timee_fut1 = str(Buy_call_timee_fut).replace(' ','T') 
-    Buy_call_exit_timee_fut = list(dfgg_call_Exit_fut1['Datetime'])[0]
-    Buy_call_exit_timee_fut1 = str(Buy_call_exit_timee_fut).replace(' ','T') 
-    print("Call")
-    print(Fut_Closee_call,Root_call,Buy_call_timee_fut1,Buy_call_exit_timee_fut1)
+    # Buy_call_timee_fut = list(dfgg_call_buy_fut1['Datetime'])[0]
+    # Buy_call_timee_fut1 = str(Buy_call_timee_fut).replace(' ','T') 
+    # Buy_call_exit_timee_fut = list(dfgg_call_Exit_fut1['Datetime'])[0]
+    # Buy_call_exit_timee_fut1 = str(Buy_call_exit_timee_fut).replace(' ','T') 
+    # print("Call")
+    # print(Fut_Closee_call,Root_call,Buy_call_timee_fut1,Buy_call_exit_timee_fut1)
 
-    Buy_put_timee_fut = list(dfgg_put_buy_fut1['Datetime'])[0]
-    Buy_put_timee_fut1 = str(Buy_put_timee_fut).replace(' ','T') 
-    Buy_put_exit_timee_fut = list(dfgg_put_Exit_fut1['Datetime'])[0]
-    Buy_put_exit_timee_fut1 = str(Buy_put_exit_timee_fut).replace(' ','T') 
-    print("Put")
-    print(Fut_Closee_put,Root_put,Buy_put_timee_fut1,Buy_put_exit_timee_fut1)
+    # Buy_put_timee_fut = list(dfgg_put_buy_fut1['Datetime'])[0]
+    # Buy_put_timee_fut1 = str(Buy_put_timee_fut).replace(' ','T') 
+    # Buy_put_exit_timee_fut = list(dfgg_put_Exit_fut1['Datetime'])[0]
+    # Buy_put_exit_timee_fut1 = str(Buy_put_exit_timee_fut).replace(' ','T') 
+    # print("Put")
+    # print(Fut_Closee_put,Root_put,Buy_put_timee_fut1,Buy_put_exit_timee_fut1)
 
-    Excchhh_up_call = exc_opt[(exc_opt["CpType"] == 'CE')]
-    Excchh_up_call = Excchhh_up_call[Excchhh_up_call['Root'] == Root_call]
-    Excchh2_up_call = Excchh_up_call[(Excchh_up_call['StrikeRate'] > Fut_Closee_call)]
-    Excchh2_up_call.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+    # Excchhh_up_call = exc_opt[(exc_opt["CpType"] == 'CE')]
+    # Excchh_up_call = Excchhh_up_call[Excchhh_up_call['Root'] == Root_call]
+    # Excchh2_up_call = Excchh_up_call[(Excchh_up_call['StrikeRate'] > Fut_Closee_call)]
+    # Excchh2_up_call.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
 
-    Excchhh_up_put = exc_opt[(exc_opt["CpType"] == 'PE')]
-    Excchh_up_put = Excchhh_up_put[Excchhh_up_put['Root'] == Root_put]
-    Excchh2_up_put = Excchh_up_put[(Excchh_up_put['StrikeRate'] < Fut_Closee_put)]
-    Excchh2_up_put.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+    # Excchhh_up_put = exc_opt[(exc_opt["CpType"] == 'PE')]
+    # Excchh_up_put = Excchhh_up_put[Excchhh_up_put['Root'] == Root_put]
+    # Excchh2_up_put = Excchh_up_put[(Excchh_up_put['StrikeRate'] < Fut_Closee_put)]
+    # Excchh2_up_put.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
 
-    Excchh3_up_call = Excchh2_up_call.head(1)
-    Buy_call_quantity_of_stock = int(np.unique(Excchh3_up_call['LotSize']))
-    Buy_call_Scriptcodee = int(np.unique(Excchh3_up_call['Scripcode'])[0])
-    stk_call_name1_up = (np.unique([str(i) for i in Excchh3_up_call['Name']])).tolist()[0]
-    print("Call")
-    print(Buy_call_Scriptcodee,stk_call_name1_up,Buy_call_quantity_of_stock)
+    # Excchh3_up_call = Excchh2_up_call.head(1)
+    # Buy_call_quantity_of_stock = int(np.unique(Excchh3_up_call['LotSize']))
+    # Buy_call_Scriptcodee = int(np.unique(Excchh3_up_call['Scripcode'])[0])
+    # stk_call_name1_up = (np.unique([str(i) for i in Excchh3_up_call['Name']])).tolist()[0]
+    # print("Call")
+    # print(Buy_call_Scriptcodee,stk_call_name1_up,Buy_call_quantity_of_stock)
 
-    Excchh3_up_put = Excchh2_up_put.tail(1)
-    Buy_put_quantity_of_stock = int(np.unique(Excchh3_up_put['LotSize']))
-    Buy_put_Scriptcodee = int(np.unique(Excchh3_up_put['Scripcode'])[0])
-    stk_put_name1_up = (np.unique([str(i) for i in Excchh3_up_put['Name']])).tolist()[0]
-    print("Put")
-    print(Buy_put_Scriptcodee,stk_put_name1_up,Buy_put_quantity_of_stock)
+    # Excchh3_up_put = Excchh2_up_put.tail(1)
+    # Buy_put_quantity_of_stock = int(np.unique(Excchh3_up_put['LotSize']))
+    # Buy_put_Scriptcodee = int(np.unique(Excchh3_up_put['Scripcode'])[0])
+    # stk_put_name1_up = (np.unique([str(i) for i in Excchh3_up_put['Name']])).tolist()[0]
+    # print("Put")
+    # print(Buy_put_Scriptcodee,stk_put_name1_up,Buy_put_quantity_of_stock)
 
-    dfgg_buy_call_op = client.historical_data('N', 'D', Buy_call_Scriptcodee, '1m', from_d,to_d)
-    dfgg_buy_call_op.sort_values(['Datetime'], ascending=[True], inplace=True)
-    dfgg_buy_call_op['Scriptcode'] = Buy_call_Scriptcodee
-    dfgg_buy_call_op['Name'] = stk_call_name1_up
-    dfgg_buy_call_op['Entry_Date'] = Buy_call_timee_fut1
-    dfgg_buy_call_op['Exit_Date'] = Buy_call_exit_timee_fut1
-    dfgg_buy_call_op['Entry_OK_DF'] = np.where(dfgg_buy_call_op['Entry_Date'] == dfgg_buy_call_op['Datetime'],"OK","")
-    dfgg_buy_call_op['Exit_OK_DF'] = np.where(dfgg_buy_call_op['Exit_Date'] == dfgg_buy_call_op['Datetime'],"OK","")
-    dfgg_buy_call_opt = dfgg_buy_call_op[dfgg_buy_call_op['Entry_OK_DF'] == "OK"]
-    dfgg_buy_call_Exit_opt = dfgg_buy_call_op[dfgg_buy_call_op['Exit_OK_DF'] == "OK"]
+    # dfgg_buy_call_op = client.historical_data('N', 'D', Buy_call_Scriptcodee, '1m', from_d,to_d)
+    # dfgg_buy_call_op.sort_values(['Datetime'], ascending=[True], inplace=True)
+    # dfgg_buy_call_op['Scriptcode'] = Buy_call_Scriptcodee
+    # dfgg_buy_call_op['Name'] = stk_call_name1_up
+    # dfgg_buy_call_op['Entry_Date'] = Buy_call_timee_fut1
+    # dfgg_buy_call_op['Exit_Date'] = Buy_call_exit_timee_fut1
+    # dfgg_buy_call_op['Entry_OK_DF'] = np.where(dfgg_buy_call_op['Entry_Date'] == dfgg_buy_call_op['Datetime'],"OK","")
+    # dfgg_buy_call_op['Exit_OK_DF'] = np.where(dfgg_buy_call_op['Exit_Date'] == dfgg_buy_call_op['Datetime'],"OK","")
+    # dfgg_buy_call_opt = dfgg_buy_call_op[dfgg_buy_call_op['Entry_OK_DF'] == "OK"]
+    # dfgg_buy_call_Exit_opt = dfgg_buy_call_op[dfgg_buy_call_op['Exit_OK_DF'] == "OK"]
 
-    dfgg_buy_put_op = client.historical_data('N', 'D', Buy_put_Scriptcodee, '1m', from_d,to_d)
-    dfgg_buy_put_op.sort_values(['Datetime'], ascending=[True], inplace=True)
-    dfgg_buy_put_op['Scriptcode'] = Buy_put_Scriptcodee
-    dfgg_buy_put_op['Name'] = stk_put_name1_up
-    dfgg_buy_put_op['Entry_Date'] = Buy_put_timee_fut1
-    dfgg_buy_put_op['Exit_Date'] = Buy_put_exit_timee_fut1
-    dfgg_buy_put_op['Entry_OK_DF'] = np.where(dfgg_buy_put_op['Entry_Date'] == dfgg_buy_put_op['Datetime'],"OK","")
-    dfgg_buy_put_op['Exit_OK_DF'] = np.where(dfgg_buy_put_op['Exit_Date'] == dfgg_buy_put_op['Datetime'],"OK","")
-    dfgg_buy_put_opt = dfgg_buy_put_op[dfgg_buy_put_op['Entry_OK_DF'] == "OK"]
-    dfgg_buy_put_Exit_opt = dfgg_buy_put_op[dfgg_buy_put_op['Exit_OK_DF'] == "OK"]
+    # dfgg_buy_put_op = client.historical_data('N', 'D', Buy_put_Scriptcodee, '1m', from_d,to_d)
+    # dfgg_buy_put_op.sort_values(['Datetime'], ascending=[True], inplace=True)
+    # dfgg_buy_put_op['Scriptcode'] = Buy_put_Scriptcodee
+    # dfgg_buy_put_op['Name'] = stk_put_name1_up
+    # dfgg_buy_put_op['Entry_Date'] = Buy_put_timee_fut1
+    # dfgg_buy_put_op['Exit_Date'] = Buy_put_exit_timee_fut1
+    # dfgg_buy_put_op['Entry_OK_DF'] = np.where(dfgg_buy_put_op['Entry_Date'] == dfgg_buy_put_op['Datetime'],"OK","")
+    # dfgg_buy_put_op['Exit_OK_DF'] = np.where(dfgg_buy_put_op['Exit_Date'] == dfgg_buy_put_op['Datetime'],"OK","")
+    # dfgg_buy_put_opt = dfgg_buy_put_op[dfgg_buy_put_op['Entry_OK_DF'] == "OK"]
+    # dfgg_buy_put_Exit_opt = dfgg_buy_put_op[dfgg_buy_put_op['Exit_OK_DF'] == "OK"]
 
-    final_df_call_opt = pd.concat([dfgg_buy_call_opt, dfgg_buy_call_Exit_opt])
-    final_df_put_opt = pd.concat([dfgg_buy_put_opt, dfgg_buy_put_Exit_opt])
+    # final_df_call_opt = pd.concat([dfgg_buy_call_opt, dfgg_buy_call_Exit_opt])
+    # final_df_put_opt = pd.concat([dfgg_buy_put_opt, dfgg_buy_put_Exit_opt])
 
-    if not dfgg_buy_call_opt.empty:
-        print("Buy Call")
-        if Buy_call_timee_fut in buy_order_list_dummy: 
-            print(str(stk_call_name1_up)+" is Already Buy")
-            print("----------------------------------------")
-        else:
-            rde_exec = order_execution(dfgg_buy_call_opt,buy_order_list_dummy,Buy_call_timee_fut,telegram_msg,orders,"Call","BUY","B",Buy_call_Scriptcodee,Buy_call_quantity_of_stock,stk_call_name1_up)
+    # if not dfgg_buy_call_opt.empty:
+    #     print("Buy Call")
+    #     if Buy_call_timee_fut in buy_order_list_dummy: 
+    #         print(str(stk_call_name1_up)+" is Already Buy")
+    #         print("----------------------------------------")
+    #     else:
+    #         rde_exec = order_execution(dfgg_buy_call_opt,buy_order_list_dummy,Buy_call_timee_fut,telegram_msg,orders,"Call","BUY","B",Buy_call_Scriptcodee,Buy_call_quantity_of_stock,stk_call_name1_up)
 
-    if not dfgg_buy_call_Exit_opt.empty:
-        print("Exit Call")
-        if Buy_call_exit_timee_fut in sell_order_list_dummy: 
-            print(str(stk_call_name1_up)+" is Already Exited")
-        else:
-            rde_exec = order_execution(dfgg_buy_call_Exit_opt,sell_order_list_dummy,Buy_call_exit_timee_fut,telegram_msg,orders,"Call","Exit","S",Buy_call_Scriptcodee,Buy_call_quantity_of_stock,stk_call_name1_up)
+    # if not dfgg_buy_call_Exit_opt.empty:
+    #     print("Exit Call")
+    #     if Buy_call_exit_timee_fut in sell_order_list_dummy: 
+    #         print(str(stk_call_name1_up)+" is Already Exited")
+    #     else:
+    #         rde_exec = order_execution(dfgg_buy_call_Exit_opt,sell_order_list_dummy,Buy_call_exit_timee_fut,telegram_msg,orders,"Call","Exit","S",Buy_call_Scriptcodee,Buy_call_quantity_of_stock,stk_call_name1_up)
 
-    if not dfgg_buy_put_opt.empty:
-        print("Buy Put")
-        if Buy_put_timee_fut in buy_order_list_dummy: 
-            print(str(stk_put_name1_up)+" is Already Buy")
-            print("----------------------------------------")
-        else:
-            rde_exec = order_execution(dfgg_buy_put_opt,buy_order_list_dummy,Buy_put_timee_fut,telegram_msg,orders,"Put","BUY","B",Buy_put_Scriptcodee,Buy_put_quantity_of_stock,stk_put_name1_up)
+    # if not dfgg_buy_put_opt.empty:
+    #     print("Buy Put")
+    #     if Buy_put_timee_fut in buy_order_list_dummy: 
+    #         print(str(stk_put_name1_up)+" is Already Buy")
+    #         print("----------------------------------------")
+    #     else:
+    #         rde_exec = order_execution(dfgg_buy_put_opt,buy_order_list_dummy,Buy_put_timee_fut,telegram_msg,orders,"Put","BUY","B",Buy_put_Scriptcodee,Buy_put_quantity_of_stock,stk_put_name1_up)
 
-    if not dfgg_buy_put_Exit_opt.empty:
-        print("Exit Put")
-        if Buy_put_exit_timee_fut in sell_order_list_dummy: 
-            print(str(stk_put_name1_up)+" is Already Exited")
-        else:
-            rde_exec = order_execution(dfgg_buy_put_Exit_opt,sell_order_list_dummy,Buy_put_exit_timee_fut,telegram_msg,orders,"Put","Exit","S",Buy_put_Scriptcodee,Buy_put_quantity_of_stock,stk_put_name1_up)
+    # if not dfgg_buy_put_Exit_opt.empty:
+    #     print("Exit Put")
+    #     if Buy_put_exit_timee_fut in sell_order_list_dummy: 
+    #         print(str(stk_put_name1_up)+" is Already Exited")
+    #     else:
+    #         rde_exec = order_execution(dfgg_buy_put_Exit_opt,sell_order_list_dummy,Buy_put_exit_timee_fut,telegram_msg,orders,"Put","Exit","S",Buy_put_Scriptcodee,Buy_put_quantity_of_stock,stk_put_name1_up)
                     
     if df.empty:
         pass
@@ -640,7 +662,7 @@ while True:
         #df1_dn = df1_dn[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
         #df1_dn.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
         #by.range("a:az").value = None
-        by.range("a200").options(index=False).value = sell_df
+        by.range("a1000").options(index=False).value = sell_df
 
     if buy_exit_call_df.empty:
         pass
@@ -656,7 +678,7 @@ while True:
         #buy_exit_put_df = buy_exit_put_df[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
         #buy_exit_put_df.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
         #sl.range("a:az").value = None
-        sl.range("a200").options(index=False).value = buy_exit_put_df
+        sl.range("a1000").options(index=False).value = buy_exit_put_df
 
     if final_df_call.empty:
         pass
@@ -674,76 +696,76 @@ while True:
         final_df_put.sort_values(['Datetime'], ascending=[True], inplace=True)
         final_df_put['P&L'] = np.where(final_df_put['Exit'] == 'Put_Buy_Exit',final_df_put['Close'].shift(1)-final_df_put['Close'],0)
         #fl_data.range("a:az").value = None
-        fl_data.range("a200").options(index=False).value = final_df_put
+        fl_data.range("a1000").options(index=False).value = final_df_put
 
 
 
 
 
-    if dfgg_buy_call_op.empty:
-        pass
-    else:
-        #dfgg_buy_call_op = dfgg_buy_call_op[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
-        #dfgg_buy_call_op.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
-        st1.range("a:az").value = None
-        st1.range("a1").options(index=False).value = dfgg_buy_call_op
+    # if dfgg_buy_call_op.empty:
+    #     pass
+    # else:
+    #     #dfgg_buy_call_op = dfgg_buy_call_op[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+    #     #dfgg_buy_call_op.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+    #     st1.range("a:az").value = None
+    #     st1.range("a1").options(index=False).value = dfgg_buy_call_op
 
-    if dfgg_buy_put_op.empty:
-        pass
-    else:
-        #dfgg_buy_put_op = dfgg_buy_put_op[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
-        #dfgg_buy_put_op.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
-        #st1.range("a:az").value = None
-        st1.range("a1000").options(index=False).value = dfgg_buy_put_op
+    # if dfgg_buy_put_op.empty:
+    #     pass
+    # else:
+    #     #dfgg_buy_put_op = dfgg_buy_put_op[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+    #     #dfgg_buy_put_op.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+    #     #st1.range("a:az").value = None
+    #     st1.range("a1000").options(index=False).value = dfgg_buy_put_op
     
-    if dfgg_buy_call_opt.empty:
-        pass
-    else:
-        #dfgg_buy_call_opt = dfgg_buy_call_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
-        #dfgg_buy_call_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
-        st2.range("a:az").value = None
-        st2.range("a1").options(index=False).value = dfgg_buy_call_opt
+    # if dfgg_buy_call_opt.empty:
+    #     pass
+    # else:
+    #     #dfgg_buy_call_opt = dfgg_buy_call_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+    #     #dfgg_buy_call_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+    #     st2.range("a:az").value = None
+    #     st2.range("a1").options(index=False).value = dfgg_buy_call_opt
     
-    if dfgg_buy_put_opt.empty:
-        pass
-    else:
-        #dfgg_buy_put_opt = dfgg_buy_put_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
-        #dfgg_buy_put_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
-        #st2.range("a:az").value = None
-        st2.range("a200").options(index=False).value = dfgg_buy_put_opt
+    # if dfgg_buy_put_opt.empty:
+    #     pass
+    # else:
+    #     #dfgg_buy_put_opt = dfgg_buy_put_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+    #     #dfgg_buy_put_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+    #     #st2.range("a:az").value = None
+    #     st2.range("a200").options(index=False).value = dfgg_buy_put_opt
     
-    if dfgg_buy_call_Exit_opt.empty:
-        pass
-    else:
-        #dfgg_buy_call_Exit_opt = dfgg_buy_call_Exit_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
-        #dfgg_buy_call_Exit_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
-        st3.range("a:az").value = None
-        st3.range("a1").options(index=False).value = dfgg_buy_call_Exit_opt
+    # if dfgg_buy_call_Exit_opt.empty:
+    #     pass
+    # else:
+    #     #dfgg_buy_call_Exit_opt = dfgg_buy_call_Exit_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+    #     #dfgg_buy_call_Exit_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+    #     st3.range("a:az").value = None
+    #     st3.range("a1").options(index=False).value = dfgg_buy_call_Exit_opt
     
-    if dfgg_buy_put_Exit_opt.empty:
-        pass
-    else:
-        #dfgg_buy_put_Exit_opt = dfgg_buy_put_Exit_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
-        #dfgg_buy_put_Exit_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
-        #st3.range("a:az").value = None
-        st3.range("a200").options(index=False).value = dfgg_buy_put_Exit_opt
+    # if dfgg_buy_put_Exit_opt.empty:
+    #     pass
+    # else:
+    #     #dfgg_buy_put_Exit_opt = dfgg_buy_put_Exit_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+    #     #dfgg_buy_put_Exit_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+    #     #st3.range("a:az").value = None
+    #     st3.range("a200").options(index=False).value = dfgg_buy_put_Exit_opt
     
-    if final_df_call_opt.empty:
-        pass
-    else:
-        #final_df_call_opt = final_df_call_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
-        #final_df_call_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
-        final_df_call_opt.sort_values(['Datetime'], ascending=[True], inplace=True)
-        final_df_call_opt['P&L'] = np.where(final_df_call_opt['Exit_OK_DF'] == 'OK',final_df_call_opt['Close']-final_df_call_opt['Close'].shift(1),0)
-        st4.range("a:az").value = None
-        st4.range("a1").options(index=False).value = final_df_call_opt
+    # if final_df_call_opt.empty:
+    #     pass
+    # else:
+    #     #final_df_call_opt = final_df_call_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+    #     #final_df_call_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+    #     final_df_call_opt.sort_values(['Datetime'], ascending=[True], inplace=True)
+    #     final_df_call_opt['P&L'] = np.where(final_df_call_opt['Exit_OK_DF'] == 'OK',final_df_call_opt['Close']-final_df_call_opt['Close'].shift(1),0)
+    #     st4.range("a:az").value = None
+    #     st4.range("a1").options(index=False).value = final_df_call_opt
     
-    if final_df_put_opt.empty:
-        pass
-    else:
-        #final_df_put_opt = final_df_put_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
-        #final_df_put_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
-        #st4.range("a:az").value = None
-        final_df_put_opt.sort_values(['Datetime'], ascending=[True], inplace=True)
-        final_df_put_opt['P&L'] = np.where(final_df_put_opt['Exit_OK_DF'] == 'OK',final_df_put_opt['Close'].shift(1)-final_df_put_opt['Close'],0)
-        st4.range("a200").options(index=False).value = final_df_put_opt
+    # if final_df_put_opt.empty:
+    #     pass
+    # else:
+    #     #final_df_put_opt = final_df_put_opt[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
+    #     #final_df_put_opt.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
+    #     #st4.range("a:az").value = None
+    #     final_df_put_opt.sort_values(['Datetime'], ascending=[True], inplace=True)
+    #     final_df_put_opt['P&L'] = np.where(final_df_put_opt['Exit_OK_DF'] == 'OK',final_df_put_opt['Close'].shift(1)-final_df_put_opt['Close'],0)
+    #     st4.range("a200").options(index=False).value = final_df_put_opt

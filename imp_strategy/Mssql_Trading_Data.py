@@ -58,13 +58,13 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 #     from five_paisa import *
 
 operate = "YES"
-telegram_msg = "yes"
-orders = "yes"
+telegram_msg = "no"
+orders = "no"
 # username = "ASHWIN"
 # username1 = str(username)
 # client = credentials(username1)
 
-# credi_ash = credentials("ASHWIN")
+credi_ash = credentials("ASHWIN")
 # credi_har = credentials("HARESH")
 
 from_d = (date.today() - timedelta(days=15))
@@ -166,7 +166,7 @@ st.range("a:u").value = None
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 
-exc.range("a1").value = script_code_5paisa
+#exc.range("a1").value = script_code_5paisa
 
 exchange = None
 while True:
@@ -268,15 +268,16 @@ def resistance(df1, l, n1, n2): #n1 n2 before and after candle l
     return 1
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
-    sqlquery = f"select * from dbo.Live_Data where Scripcode = {stk_nm}"
-    #print(sqlquery)
-    dfg = pd.read_sql(sql=sqlquery, con=engine)
-    dfg1 = pd.DataFrame(dfg) 
+    # sqlquery = f"select * from dbo.Live_Data where Scripcode = {stk_nm}"
+    # #print(sqlquery)
+    # dfg = pd.read_sql(sql=sqlquery, con=engine)
+    # dfg1 = pd.DataFrame(dfg) 
+    dfg1 = credi_ash.historical_data('N', 'C', stk_nm, '1m',from_d,to_d)
+    dfg1['Scripcode'] = stk_nm
     dfg1 = pd.merge(exchange2, dfg1, on=['Scripcode'], how='inner') 
     dfg1 = dfg1[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume']]
     dfg1.sort_values(['Datetime'], ascending=[True], inplace=True)
     dfg1["RSI_14"] = np.round((pta.rsi(dfg1["Close"], length=14)),2) 
-
     dfg1.sort_values(['Datetime'], ascending=[False], inplace=True)
     dfg1['TimeNow'] = datetime.now()
 
@@ -290,7 +291,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
                                                     'Pri_Dwn_brk', "")))
     dfg1['Vol_break'] = np.where(dfg1['Volume'] > (dfg1.Volume.rolling(5).mean() * vol_pr).shift(-5),
                                         "Vol_brk","")       
-                                                                                                        
+                                                                                             
     dfg1['Vol_Price_break'] = np.where((dfg1['Vol_break'] == "Vol_brk") & (dfg1['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((dfg1['Vol_break'] == "Vol_brk") & (dfg1['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
     dfg1["Buy/Sell"] = np.where((dfg1['Vol_break'] == "Vol_brk") & (dfg1['Price_break'] == "Pri_Up_brk"),
                                         "BUY", np.where((dfg1['Vol_break'] == "Vol_brk")
@@ -300,9 +301,9 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     dfg1 = dfg1.astype({"Datetime": "datetime64"})    
     dfg1["Date"] = dfg1["Datetime"].dt.date
     dfg1['Minutes'] = dfg1['TimeNow']-dfg1["Datetime"]
-    dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)
-    dfg1['LotSize'] = 100
+    dfg1['Minutes'] = round((dfg1['Minutes']/np.timedelta64(1,'m')),2)    
     dfg1['Buy_At'] = round((dfg1['Open']),2)
+    dfg1['LotSize'] = round((20000/dfg1['Buy_At']),0)
     dfg1['Add_Till'] = round((dfg1['Buy_At'] - (dfg1['Buy_At']*0.5)/100),1)
     dfg1['StopLoss'] = round((dfg1['Buy_At'] - (dfg1['Buy_At']*1)/100),1)               
     dfg1['Target'] = round((((dfg1['Buy_At']*1)/100) + dfg1['Buy_At']),2) 
@@ -343,16 +344,12 @@ while True:
             dfg1 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl)  
             stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0]
             five_df1 = pd.concat([dfg1, five_df1])
-
-            dfgg_up11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1["Cand_Col"] == "Green" ) & (dfg1["Date"] == current_trading_day.date())]
+            dfgg_up11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1["Cand_Col"] == "Green" )]# & (dfg1["Date"] == current_trading_day.date())]
             #dfgg_dn11 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Rsi_OK"] == "Rsi_Dn_OK" ) & (dfg1["Cand_Col"] == "Red" ) & (dfg1["Date"] == current_trading_day.date())]
-
             five_df2 = pd.concat([dfgg_up11, five_df2])            
             #five_df3 = pd.concat([dfgg_dn11, five_df3])
-
             dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1["Cand_Col"] == "Green" ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
             #dfgg_dn = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Buy/Sell"] == "SELL") & (dfg1["RSI_14"] < DN_Rsi_lvl ) & (dfg1["Rsi_OK"] == "Rsi_Dn_OK" ) & (dfg1["Cand_Col"] == "Red" ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDLB")]
-
             print("1 Min Cash Data Download and Scan "+str(stk_name)+" ("+str(sc)+")")  
 
         except Exception as e:
@@ -366,7 +363,7 @@ while True:
         #five_df1 = five_df1[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Rsi_OK','Cand_Col','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
         #five_df1.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
         st1.range("a:az").value = None
-        st1.range("a1").options(index=False).value = five_df1
+        #st1.range("a1").options(index=False).value = five_df1
 
     if five_df2.empty:
         pass
