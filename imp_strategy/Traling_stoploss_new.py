@@ -136,7 +136,7 @@ har.range("a1:t1").color = (54,226,0)
 har.range("a1:t1").font.bold = True
 har.range("a1:t1").api.WrapText = True
 
-users = ["ashwin"]#,"haresh","alpesh"]
+users = ["ashwin","haresh","alpesh"]
 
 
 TGTT_SLL = "TSL"    
@@ -201,7 +201,7 @@ def ordef_func(client):
                 print(e)
     return ordbook1
 
-st4.range("a1").value = pd.DataFrame(credi_ash.order_book())
+st4.range("a1").value = pd.DataFrame(credi_har.order_book())
 
 SLL = 1
 TSL = 1
@@ -217,28 +217,28 @@ while True:
     # end_time = '15:15:20'
     # if current_time > start_time and current_time < end_time:
     #     print("Market Hours Open")
-    #     market_status = pd.DataFrame(credi_ash.get_market_status())#[1]['MarketStatus']
+    #     market_status = pd.DataFrame(credi_har.get_market_status())#[1]['MarketStatus']
     #     market_status1 = market_status[market_status['ExchDescription'] == 'Nse Derivative']
     #     market_status2 = list(market_status1['MarketStatus'])[0]
     #     if market_status2 == "Open":
     #         print(f"Market {market_status2}")
     for sh_na in users:
         if sh_na == "ashwin":
-            posit = pd.DataFrame(credi_ash.positions()) 
+            posit = pd.DataFrame(credi_har.positions()) 
             if posit.empty:
                 print("Ashwin's Position is Empty")
                 print("--------------------------")
                 pass
             else: 
                 try:      
-                    buy_order_li = ordef_func(credi_ash)         
-                    ash.range("ad1").value = pd.DataFrame(credi_ash.margin())
-                    ash.range("ad10").value = pd.DataFrame(credi_ash.holdings())
-                    ash.range("ad20").value = pd.DataFrame(credi_ash.positions()) 
+                    buy_order_li = ordef_func(credi_har)         
+                    ash.range("ad1").value = pd.DataFrame(credi_har.margin())
+                    ash.range("ad10").value = pd.DataFrame(credi_har.holdings())
+                    ash.range("ad20").value = pd.DataFrame(credi_har.positions()) 
                     ash.range("ad30").value = buy_order_li
                 
                 
-                    posit = pd.DataFrame(credi_ash.positions()) 
+                    posit = pd.DataFrame(credi_har.positions()) 
                     posit1 = posit #posit[(posit['MTOM'] != 0)]             
                     posit3 = np.unique([int(i) for i in posit1['ScripCode']])
                 #print(posit3)
@@ -280,7 +280,7 @@ while True:
 
                         # Buy_timee1 = str(Buy_timee).replace(' ','T')
                         
-                        dfg1 = credi_ash.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
+                        dfg1 = credi_har.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
                         #print(dfg1.head(1))
                         dfg1['ScripCode'] = ord
                         dfg1['ScripName'] = Buy_Name
@@ -325,7 +325,7 @@ while True:
                                 order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
                                 for ordd in order_dff_Scpt:
                                     order_df = order_dff[(order_dff['ScripCode'] == ordd)]
-                                    order = credi_ash.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                    order = credi_har.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                     print("Sell order Executed") 
                             except Exception as e:
                                 print(e)
@@ -388,7 +388,7 @@ while True:
                 # print(order_dff_Scpt2)
                 # for ui in order_dff_Scpt2:
                 #     order_df1 = buy_order_liiist1[(buy_order_liiist1['ScripCode'] == ui)]
-                #     order = credi_ash.cancel_order(exch_order_id=int(order_df1['ExchOrderID']))
+                #     order = credi_har.cancel_order(exch_order_id=int(order_df1['ExchOrderID']))
 
                 #     print(buy_order_liiist1['ExchOrderID'],buy_order_liiist1['ScripCode'],buy_order_liiist1['ScripName'])
                 
@@ -403,15 +403,15 @@ while True:
                 #         buy_order_liiist1 = buy_order_li[(buy_order_li['AveragePrice'] != 0) & (buy_order_li['BuySell'] == 'S')]
                 #         for ordd1 in order_dff_Scpt:
                 #             order_df1 = buy_order_liiist1[(buy_order_liiist1['ScripCode'] == ordd1)]                            
-                #             order = credi_ash.cancel_order(exch_order_id=int(order_df1['ScripCode']))
+                #             order = credi_har.cancel_order(exch_order_id=int(order_df1['ScripCode']))
                 #         for ordd in order_dff_Scpt:
                 #             order_df = order_dff[(order_dff['ScripCode'] == ordd)]
-                #             order = credi_ash.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                #             order = credi_har.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                 #             print("Sell order Executed") 
                 #     except Exception as e:
                 #         print(e)
                         
-            print("Data Analysis Complete for Ashwin")
+            print("Data Analysis Complete for Haresh")
             print("---------------------------------")
 
         
