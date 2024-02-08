@@ -205,10 +205,11 @@ oc.range("a1").value = stock_df
 
 #buy_order_li = ordef_func()
 operate = "YES"
-telegram_msg = "no"
+telegram_msg = "yes"
 orders = "yes"
 Capital = 20000
-StockPriceLessThan = 1000
+StockPriceLessThan = 10000
+Buy_price_buffer = 0.20
 Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
@@ -380,7 +381,8 @@ while True:
             if not dfg3.empty:       
                 Namee = (np.unique([str(i) for i in dfg3['Name']])).tolist()[0]
                 Scripcodee = int(float(dfg3['Scripcode'])) 
-                Buy_At = float(dfg3['Open'])
+                Buy_Att = (float(dfg3['Open'])) 
+                Buy_At = float(round((((Buy_Att*Buy_price_buffer)/100) + Buy_Att),1)) 
                 Qtyy = round((Capital/Buy_At),0)                
                 Buy_Stop_Loss = float(round((Buy_At - (Buy_At*SLL)/100),1))
                 Buy_Target = float(round((((Buy_At*SLL)/100) + Buy_At),1))   

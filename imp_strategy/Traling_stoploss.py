@@ -302,7 +302,7 @@ while True:
     #     if market_status2 == "Open":
     #         print(f"Market {market_status2}")
     for sh_na in users:
-        if sh_na == "ashwin":
+        if sh_na == "haresh":
             posit = pd.DataFrame(client.positions()) 
             #print(posit.head(1))
             if posit.empty:

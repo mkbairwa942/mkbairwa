@@ -141,18 +141,18 @@ users = ["ashwin","haresh","alpesh"]
 
 TGTT_SLL = "TSL"    
 for credi in users:
-    if credi == "ashwin":
-        credi_ash = credentials("ASHWIN")
-        postt = pd.DataFrame(credi_ash.margin())['Ledgerbalance'][0]
-        print(f"Ledger Balance is : {postt}")
+    # if credi == "ashwin":
+    #     credi_ash = credentials("ASHWIN")
+    #     postt = pd.DataFrame(credi_ash.margin())['Ledgerbalance'][0]
+    #     print(f"Ledger Balance is : {postt}")
     if credi == "haresh":
         credi_har = credentials("HARESH")
         postt = pd.DataFrame(credi_har.margin())['Ledgerbalance'][0]
         print(f"Ledger Balance is : {postt}")
-    if credi == "alpesh":
-        credi_alp = credentials("ALPESH")
-        postt = pd.DataFrame(credi_alp.margin())['Ledgerbalance'][0]
-        print(f"Ledger Balance is : {postt}")
+    # if credi == "alpesh":
+    #     credi_alp = credentials("ALPESH")
+    #     postt = pd.DataFrame(credi_alp.margin())['Ledgerbalance'][0]
+    #     print(f"Ledger Balance is : {postt}")
 
 # Dummy_positionss = buy_order_li.copy()
 # print("11")
@@ -223,40 +223,39 @@ while True:
     #     if market_status2 == "Open":
     #         print(f"Market {market_status2}")
     for sh_na in users:
-        if sh_na == "ashwin":
+        if sh_na == "haresh":
             posit = pd.DataFrame(credi_har.positions()) 
             if posit.empty:
-                print("Ashwin's Position is Empty")
+                print("Haresh's Position is Empty")
                 print("--------------------------")
                 pass
             else: 
                 try:      
                     buy_order_li = ordef_func(credi_har)         
-                    ash.range("ad1").value = pd.DataFrame(credi_har.margin())
-                    ash.range("ad10").value = pd.DataFrame(credi_har.holdings())
-                    ash.range("ad20").value = pd.DataFrame(credi_har.positions()) 
-                    ash.range("ad30").value = buy_order_li
+                    har.range("ad1").value = pd.DataFrame(credi_har.margin())
+                    har.range("ad10").value = pd.DataFrame(credi_har.holdings())
+                    har.range("ad20").value = pd.DataFrame(credi_har.positions()) 
+                    har.range("ad30").value = buy_order_li
                 
                 
-                    posit = pd.DataFrame(credi_har.positions()) 
-                    posit1 = posit #posit[(posit['MTOM'] != 0)]             
-                    posit3 = np.unique([int(i) for i in posit1['ScripCode']])
-                #print(posit3)
-                except Exception as e:
-                    print(e)
+                    posi = pd.DataFrame(credi_har.positions()) 
+                    #print(posit)
+                    posit = posi #posit[(posit['MTOM'] != 0)]
+                    #posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()
+                    posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()              
+                    #posit3 = np.unique([int(i) for i in posit1['ScripCode']])
 
-                five_df3 = pd.DataFrame()
-                five_df4 = pd.DataFrame()
 
-                try:
-                    for ord in posit3:                     
+                    five_df3 = pd.DataFrame()
+                    five_df4 = pd.DataFrame()
+                    for ord in posit3:
+           
                         #time.sleep(0.5)
                         #timee = datetime.now()
                         buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
                         buy_order_liiist = buy_order_liiist[['Datetimeee','ScripCode']] 
                         #print(buy_order_liiist)
-                        new_df11 = posit1[(posit1['ScripCode'] == ord)]
-                        #print(new_df11)
+                        new_df11 = posit[(posit['ScripCode'] == ord)]
                         new_df1 = pd.merge(buy_order_liiist, new_df11, on=['ScripCode'], how='inner')
                         #print(new_df1)
                         Buy_Name = list(new_df1['ScripName'])[0]
@@ -265,7 +264,8 @@ while True:
                         Buy_Target = float(round((((new_df1['BuyAvgRate']*SLL)/100) + new_df1['BuyAvgRate']),1))
                         Buy_Exc = list(new_df1['Exch'])[0]
                         Buy_Exc_Type = list(new_df1['ExchType'])[0]
-                        Buy_Qty = int(new_df1['BuyQty'])    
+                        Buy_Qty = int(new_df1['BuyQty'])   
+
                         Buy_timee = list(new_df1['Datetimeee'])[0]
                         Buy_timee1 = str(Buy_timee).replace(' ','T')     
 
@@ -306,7 +306,7 @@ while True:
                             dfg3 = dfg2.tail(1)
                             
                         dfg22 = dfg3.head(1)
-                        final_df = pd.merge(posit1,dfg22, on=['ScripCode'], how='inner')  
+                        final_df = pd.merge(posit,dfg22, on=['ScripCode'], how='inner')  
                         final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
                         final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TSL")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
                         #print(final_df)                         
@@ -318,7 +318,7 @@ while True:
                         order_dff = final_df[(final_df['Exit'] == 'SELL')]
 
                         if order_dff.empty:
-                            print("No Open Position of Ashwin")
+                            print("No Open Position of Haresh")
                         else:
                             try: 
                                 buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
@@ -364,7 +364,7 @@ while True:
                         #fo_bhav = fo_bhav[['Name','Scripcode','Datetime','Date','TimeNow','Open','High','Low','Close','Volume','RSI_14','Price_Chg','Vol_Chg','Vol_Price_break','Buy/Sell','O=H=L','Pattern','Buy/Sell','R3','R2','R1','Pivot','S1','S2','S3','Mid_point','CPR','CPR_SCAN','Candle']]
                         #df_empty_ash.sort_values(['Name', 'Datetime'], ascending=[True, False], inplace=True)
                         #st2.range("a:az").value = None
-                        ash.range("a1").options(index=False).value = five_df4
+                        har.range("a1").options(index=False).value = five_df4
                     except Exception as e:
                         print(e)
 
