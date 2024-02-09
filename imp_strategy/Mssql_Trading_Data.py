@@ -208,8 +208,8 @@ operate = "YES"
 telegram_msg = "yes"
 orders = "yes"
 Capital = 20000
-StockPriceLessThan = 10000
-Buy_price_buffer = 0.20
+StockPriceLessThan = 1000
+Buy_price_buffer = 0.1
 Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
@@ -383,6 +383,7 @@ while True:
                 Scripcodee = int(float(dfg3['Scripcode'])) 
                 Buy_Att = (float(dfg3['Open'])) 
                 Buy_At = float(round((((Buy_Att*Buy_price_buffer)/100) + Buy_Att),1)) 
+                #Buy_At = Buy_Att
                 Qtyy = round((Capital/Buy_At),0)                
                 Buy_Stop_Loss = float(round((Buy_At - (Buy_At*SLL)/100),1))
                 Buy_Target = float(round((((Buy_At*SLL)/100) + Buy_At),1))   
@@ -407,7 +408,7 @@ while True:
                 dfg2['Benchmark'] = dfg2['High'].cummax()
                 dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1                            
                 dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < Buy_Stop_Loss,"SL",""))
-                dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Qtyy,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Qtyy,"" ))
+                #dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Qtyy,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Qtyy,"" ))
                 five_df3 = pd.concat([dfg2, five_df3])
                  
                 sl_d = dfg2[(dfg2['Date'] == Buy_date) & (dfg2['Status'] == 'TSL')]
@@ -418,7 +419,7 @@ while True:
                     sl_df = sl_d = dfg2[(dfg2['Status'] == 'TSL')]
                     sl_df1 = sl_d.head(1)
                 final_d = pd.merge(by_df, sl_df1, on=['Name'], how='inner')
-                final_d['P&LL'] = (final_d['Close_y']-final_d['Buy_At'])*(Qtyy)
+                final_d['P&L'] = (final_d['TStopLoss']-final_d['Buy_At'])*(Qtyy)
                 final_df = pd.concat([final_d,final_df],ignore_index=True)
                 dfgg_up = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Buy/Sell"] == "BUY") & (dfg1["RSI_14"] > UP_Rsi_lvl ) & (dfg1["Rsi_OK"] == "Rsi_Up_OK" ) & (dfg1["Cand_Col"] == "Green" ) & (dfg1["Date"] == current_trading_day.date()) & (dfg1["Minutes"] < 5 )]# & (dfg1['PDB'] == "PDHB")]
                 

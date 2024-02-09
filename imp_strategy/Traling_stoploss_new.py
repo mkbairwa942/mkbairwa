@@ -245,14 +245,14 @@ while True:
                     posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()              
                     #posit3 = np.unique([int(i) for i in posit1['ScripCode']])
 
-
+                    #print(posit3)
                     five_df3 = pd.DataFrame()
                     five_df4 = pd.DataFrame()
                     for ord in posit3:
-           
+                        #print(ord)
                         #time.sleep(0.5)
                         #timee = datetime.now()
-                        buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
+                        buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B')]# & (buy_order_li['AveragePrice'] != 0)]
                         buy_order_liiist = buy_order_liiist[['Datetimeee','ScripCode']] 
                         #print(buy_order_liiist)
                         new_df11 = posit[(posit['ScripCode'] == ord)]
