@@ -1,19 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Sep 30 09:13:23 2022
-
-Here i coded how to trade in finvasia broker using excel, all the trading data (o,h,l,c,..) will stream in excel.
-
-Contact details :
-Telegram Channel:  https://t.me/pythontrader
-Developer Telegram ID : https://t.me/pythontrader_admin
-Gmail ID:   mnkumar2020@gmail.com 
-Whatsapp : 9470669031 
-
-Disclaimer: The information provided by the Python Traders channel is for educational purposes only, so please contact your financial adviser before placing your trade. Developer is not responsible for any profit/loss happened due to coding, logical or any type of error.
-"""
-
-#from NorenRestApiPy.NorenApi import  NorenApi
 import logging
 import time
 from jugaad_data.nse import *
@@ -53,6 +37,88 @@ from dateutil.parser import parse
 from py_vollib.black_scholes.implied_volatility import implied_volatility
 from py_vollib.black_scholes.greeks.analytical import delta, gamma, rho, theta, vega
 
+
+telegram_first_name = "mkbairwa"
+telegram_username = "mkbairwa_bot"
+telegram_id = ":758543600"
+#telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
+telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
+
+# operate = input("Do you want to go with TOTP (yes/no): ")
+# #notifi = input("Do you want to send Notification on Desktop (yes/no): ")
+# telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
+# orders = input("Do you want to Place Real Orders (yes/no): ")
+# if operate.upper() == "YES":
+#     from five_paisa1 import *
+#     username = input("Enter Username : ")
+#     username1 = str(username)
+#     print("Hii "+str(username1)+" have a Good Day")
+#     client = credentials(username1)
+# else:
+#     from five_paisa import *
+
+# operate = "YES"
+# telegram_msg = "no"
+# orders = "no"
+# username = "ASHWIN"
+# username1 = str(username)
+# client = credentials(username1)
+
+#credi_ash = credentials("ASHWIN")
+credi_har = credentials("HARESH")
+
+from_d = (date.today() - timedelta(days=15))
+# from_d = date(2022, 12, 29)
+
+to_d = (date.today())
+#to_d = date(2023, 2, 3)
+
+to_days = (date.today()-timedelta(days=1))
+# to_d = date(2023, 1, 20)
+
+days_365 = (date.today() - timedelta(days=365))
+print(days_365)
+
+holida = pd.read_excel('D:\STOCK\Capital_vercel_new\strategy\holida.xlsx')
+holida["Date"] = holida["Date1"].dt.date
+holida1 = np.unique(holida['Date'])
+
+trading_days_reverse = pd.bdate_range(start=from_d, end=to_d, freq="C", holidays=holida1)
+trading_dayss = trading_days_reverse[::-1]
+# trading_dayss1 = ['2024-01-20', '2024-01-19','2024-01-18']
+# trading_dayss = [parse(x) for x in trading_dayss1]
+
+trading_days = trading_dayss[1:]
+current_trading_day = trading_dayss[0]
+last_trading_day = trading_days[0]
+second_last_trading_day = trading_days[1]
+
+# current_trading_day = trading_dayss[0]
+# last_trading_day = trading_dayss[2]
+# second_last_trading_day = trading_days[3]
+
+print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
+print("Trading Days is :- "+str(trading_dayss))
+print("Last Trading Days Is :- "+str(trading_days))
+print("Current Trading Day is :- "+str(current_trading_day))
+print("Last Trading Day is :- "+str(last_trading_day))
+print("Second Last Trading Day is :- "+str(second_last_trading_day))
+print("Last 365 Day is :- "+str(days_365))
+
+days_count = len(trading_days)
+
+pd.set_option("display.max_rows", None)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", None)
+pd.options.mode.copy_on_write = True
+
+# from_date = date(2022, 7, 9)
+# to_date = date(2022, 12, 28)
+
+con = urllib.parse.quote_plus(
+    'DRIVER={SQL Server Native Client 11.0};SERVER=MUKESH\SQLEXPRESS;DATABASE=Stock_data;trusted_connection=yes')
+engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(con))
+
 if not os.path.exists("Scalping_Trading_new.xlsx"):
     try:
         wb = xw.Book()
@@ -85,270 +151,217 @@ st1 = wb.sheets("Stat1")
 st2 = wb.sheets("Stat2")
 st3 = wb.sheets("Stat3")
 st4 = wb.sheets("Stat4")
-dt.range("a:x").value = None
-by.range("a:x").value = None
-sl.range("a:ab").value = None
-fl.range("a:az").value = None
-exc.range("a:z").value = None
-exp.range("a:z").value = None
-pos.range("a:z").value = None
-ob.range("a:aj").value = None
-ob1.range("a:al").value = None
-st.range("a:u").value = None
+#dt.range("a:x").value = None
+# by.range("a:x").value = None
+# sl.range("a:ab").value = None
+# fl.range("a:az").value = None
+#exc.range("a:z").value = None
+# exp.range("a:z").value = None
+# pos.range("a:z").value = None
+# ob.range("a:aj").value = None
+# ob1.range("a:al").value = None
+# st.range("a:u").value = None
 
-credi_har = credentials("HARESH")
+script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
+script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 
-def get_live_data(Exchange,ExchangeType,Symbol):
+#exc.range("a1").value = script_code_5paisa
 
-    try:
-        live_data
-    except:
-        live_data = {}
-    try:
-        live_data = credi_har.fetch_market_depth_by_symbol([{"Exchange":Exchange,"ExchangeType":ExchangeType,"Symbol":Symbol}])
-    except Exception as e:
-        pass
-    return live_data
-
-def greeks(premium,expiry,asset_price,strike_price,interest_rate,instrument_type):
-    t = ((datetime.datetime(expiry.year,expiry.month,expiry.day,15,30) - datetime.datetime.now()) / datetime.timedelta(days=1)) / 365
-    S = asset_price
-    K = strike_price
-    r = interest_rate
-    if premium == 0 or t <= 0 or S <= 0 or K <= 0 or r<= 0:
-        raise Exception
-    flag = instrument_type[0].lower()
-    imp_v = implied_volatility(premium, S, K, t, r, flag)
-    return [imp_v,
-            delta(flag,S,K,t,r,imp_v),
-            gamma(flag,S,K,t,r,imp_v),
-            rho(flag,S,K,t,r,imp_v),
-            theta(flag,S,K,t,r,imp_v),
-            vega(flag,S,K,t,r,imp_v)]
-
-
-def place_trade(Exche,ExchTypee,symbol,scripte,quantity,price,direction):
-    try:
-        order = credi_har.place_order(OrderType=direction,
-                        Exchange=Exche,
-                        ExchangeType=ExchTypee,
-                        ScripCode = scripte,
-                        Qty=int(quantity),
-                        Price=0.0,
-                        IsIntraday=True,)
-                        #IsStopLossOrder=True
-                        #StopLossPrice=StopLossPrice)
-        print("CALL PLACE TRADE")
-        print(f"order :Exche {Exche},ExchTypee {ExchTypee},scripte {scripte}, Symbol {symbol}, Qty {quantity}, Direction {direction}, Time {datetime.datetime.now().time()}{order}")
-        return order
-    except Exception as e:
-        return f"{e}"
-
-        
-       
-# feed_opened = False
-# SYMBOLDICT = {}
-# live_data = {}
-# def event_handler_quote_update(inmessage):
-#     global live_data
-       
-#     global SYMBOLDICT
-#     #e   Exchange
-#     #tk  Token
-#     #lp  LTP
-#     #pc  Percentage change
-#     #v   volume
-#     #o   Open price
-#     #h   High price
-#     #l   Low price
-#     #c   Close price
-#     #ap  Average trade price
-
-#     fields = ['ts', 'lp', 'pc', 'c', 'o', 'h', 'l', 'v', 'ltq', 'ltp','bp1','sp1','ap','oi','ap']    
-    
-#     message = { field: inmessage[field] for field in set(fields) & set(inmessage.keys())}
-    
-#     key = inmessage['e'] + '|' + inmessage['tk']
-
-#     if key in SYMBOLDICT:
-#         symbol_info =  SYMBOLDICT[key]
-#         symbol_info.update(message)
-#         SYMBOLDICT[key] = symbol_info
-#         live_data[key] = symbol_info
-#     else:
-#         SYMBOLDICT[key] = message
-#         live_data[key] = message
-       
-# def event_handler_order_update(tick_data):
-#     print(f"Order update {tick_data}")
-
-# def open_callback():
-#     global feed_opened
-#     feed_opened = True
-
-# def get_order_book():
-
-#     global api
-#     order_book = api.get_order_book()
-#     order_book = pd.DataFrame(order_book)
-#     order_book = order_book.sort_values(by=['norenordno']).reset_index(drop=True)
-#     return order_book
-    
-# def order_status (orderid):
-#     AverageExecutedPrice = 0
-#     try:
-#         order_book = get_order_book()
-#         order_book = order_book[order_book.norenordno == str(orderid)]
-        
-#         status = order_book.iloc[0]['status']
-#         if(status == 'COMPLETE'):
-#             AverageExecutedPrice = order_book.iloc[0]['avgprc']
-#     except Exception as e:
-#         Message = str(e) + " : Exception occur in order_status"
-#         print(Message)
-#     return AverageExecutedPrice
-    
-# def place_trade(symbol,quantity,buy_or_sell):
-#     global api        
-#     tradingsymbol = symbol[4:]
-#     exchange = symbol[:3]
-#     price_type = 'MKT'
-#     price = 0.0
-    
-#     if(exchange == 'NSE'):  
-#         product_type = 'C'
-#         #price = round(float(price),1)
-#     else:        
-#         product_type = 'M'
-        
-        
-#     ret = api.place_order(buy_or_sell = buy_or_sell[0], 
-#                             product_type = product_type,
-#                             exchange = exchange,
-#                             tradingsymbol = tradingsymbol, 
-#                             quantity = quantity,
-#                             discloseqty=0,
-#                             price_type = price_type,
-#                             price = price,
-#                             trigger_price=None,
-#                             retention='DAY', 
-#                             remarks='Python_Trader').get('norenordno')  
-
-#     ExecutedPrice = order_status (ret)
-    
-#     Message = "Placed order id :" + ret + ", Executed @ " + str(ExecutedPrice)
-#     print(Message)
-    
-#     return ExecutedPrice
-
-# def GetToken(exchange,tradingsymbol):
-#     global api
-#     Token = api.searchscrip(exchange=exchange, searchtext=tradingsymbol).get('values')[0].get('token')
-#     return Token
-
-# def subscribe_new_token(exchange,Token):
-#     global api
-#     symbol = []
-#     symbol.append(f"{exchange}|{Token}")
-#     api.subscribe(symbol)
-    
-def start_excel():
-    global api, live_data
-    global SYMBOLDICT
-    # dt = excel_name.sheets("Data")
-    # ob = excel_name.sheets("OrderBook")
-    ob.range("a:az").value = dt.range("n:q").value = None
-    dt.range(f"a1:q1").value = [ "Symbol", "Open", "High", "Low", "Close", "VWAP", "Best Buy Price",
-                                "Best Sell Price","Volume", "LTP","Percentage change", "Qty", "Direction", "Entry Signal", "Exit Signal", "Entry Price",
-                                "Exit Price"]
-
-
-    subs_lst = []
-    Symbol_Token = {}
-
-    while True:
+exchange = None
+while True:
+    if exchange is None: 
         try:
-            #time.sleep(.5)
+            exchange = pd.DataFrame(script_code_5paisa)
+            exchange['Expiry1'] = pd.to_datetime(exchange['Expiry']).dt.date
+            exchange1 = exchange[(exchange["Exch"] == "N") & (exchange['ExchType'].isin(['D'])) & (exchange['Series'].isin(['XX']))]
+            exchange1["Watchlist"] = exchange1["Exch"] + ":" + exchange1["ExchType"] + ":" + exchange1["Name"]
+            exchange1.sort_values(['Name'], ascending=[True], inplace=True)
+            break
+        except:
+            print("Exchange Download Error....")
+            time.sleep(10)
 
-            symbols = dt.range(f"a{2}:a{250}").value
-            trading_info = dt.range(f"l{2}:q{250}").value
-            main_list = []
-            
-            idx = 0
-            for i in symbols:
-                lst = [None, None, None, None,None, None, None, None, None,None]
-                if i:
-                    if i not in subs_lst:
-                        subs_lst.append(i)
-                        try:
-                            exchange = i[:3]
-                            tradingsymbol = i[4:]
-                            Token = GetToken(exchange,tradingsymbol)
-                            Symbol_Token[i] = exchange + '|' + str(Token)
-                            subscribe_new_token(exchange,Token)
-                            print(f"Symbol = {i}, Token={Token} subscribed")
-                            
-                        except Exception as e:
-                            print(f"Subscribe error {i} : {e}")
-                    if i in subs_lst:
-                        try:
-                            TokenKey = Symbol_Token[i]
-                            
-                            
-                            lst = [live_data[TokenKey].get("o", "-"),
-                                   live_data[TokenKey].get("h", "-"),
-                                   live_data[TokenKey].get("l", "-"),
-                                   live_data[TokenKey].get("c", "-"),
-                                   live_data[TokenKey].get("ap", "-"),
-                                   live_data[TokenKey].get("bp1", "-"),
-                                   live_data[TokenKey].get("sp1", "-"),
-                                   live_data[TokenKey].get("v", "-"),
-                                   live_data[TokenKey].get("lp", "-"),
-                                   live_data[TokenKey].get("pc", "-")]
-                            trade_info = trading_info[idx]
-                            
-                            if trade_info[0] is not None and trade_info[1] is not None:
-                                if type(trade_info[0]) is float and type(trade_info[1]) is str:
-                                    if trade_info[1].upper() == "BUY" and trade_info[2] is True:
-                                        if trade_info[2] is True and trade_info[3] is not True and trade_info[4] is None and trade_info[5] is None:
-                                            dt.range(f"p{idx + 2}").value = place_trade(i, int(trade_info[0]), "Buy")
-                                        elif trade_info[2] is True and trade_info[3] is True and trade_info[4] is not None and \
-                                                trade_info[5] is None:
-                                            dt.range(f"q{idx + 2}").value = place_trade(i, int(trade_info[0]), "Sell")
-                                    if trade_info[1].upper() == "SELL" and trade_info[2] is True:
-                                        if trade_info[2] is True and trade_info[3] is not True and trade_info[4] is None and trade_info[5] is None:
-                                            dt.range(f"p{idx + 2}").value = place_trade(i, int(trade_info[0]), "Sell")
-                                        elif trade_info[2] is True and trade_info[3] is True and trade_info[4] is not None and \
-                                                trade_info[5] is None:
-                                            dt.range(f"q{idx + 2}").value = place_trade(i, int(trade_info[0]), "Buy")
-                            
-                        except Exception as e:
-                            # print(e)
-                            pass
-                main_list.append(lst)
-                
-                idx += 1
+exchange1 = exchange1[(exchange1['Root'].isin(['NIFTY','BANKNIFTY']))]
+exchange1.sort_values(['Expiry'], ascending=[True], inplace=True)
+exchange1 = exchange1[['Exch','ExchType','Name', 'ISIN', 'FullName','Root','StrikeRate', 'CO BO Allowed','CpType','Scripcode','Expiry','LotSize','Watchlist']]
+exchange1 = exchange1[(exchange1['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
+exc_fut1_Expiryy = (np.unique(exchange1['Expiry']).tolist())[:2]         
+print(exc_fut1_Expiryy)
+exchange1 = exchange1[(exchange1['Expiry'].isin(exc_fut1_Expiryy))] 
+exc.range("a1").options(index=False).value = exchange1
 
-            dt.range("b2:k250").value = main_list
-            if excel_name.sheets.active.name == "OrderBook":
-                ob.range("a1").value = get_order_book()
-        except Exception as e:
-            # print(e)
-            pass
-start_excel()
+print("Exchange Download Completed")
 
-# if __name__ == '__main__':
-#     if(Shoonya_login() == 1 ):   
+while True:
+    a=[
+        {"Exchange":"N","ExchangeType":"C","Symbol":"NIFTY"},
+        {"Exchange":"N","ExchangeType":"C","Symbol":"BANKNIFTY"}]        
+        
+    #print(credi_har.fetch_market_depth_by_symbol(a))
+    dfg1 = credi_har.fetch_market_depth_by_symbol(a)
+    dfg2 = dfg1['Data']
+    dfg3 = pd.DataFrame(dfg2)
+    dfg3['TimeNow'] = datetime.now()
+    dfg3['Spot'] = round(dfg3['LastTradedPrice']/100,0)*100
+    dfg3['Root'] = np.where(dfg3['ScripCode'] == 999920000,"NIFTY",np.where(dfg3['ScripCode'] == 999920005,"BANKNIFTY",""))
+    dfg3 = dfg3[['ScripCode','Root','Open','High','Low','Close','LastTradedPrice','Spot','TimeNow']]
+    dt.range("a22").options(index=False).value = dfg3
+
+    listo = (np.unique(dfg3['Root']).tolist())
+    scpt_list = []
+
+    for i in listo: 
+        print(i)
+        dfg4 = dfg3[dfg3['Root'] == i]
+        Spot = int(dfg4['Spot'])   
+        print(Spot) 
+        stk_name = i
+        dfgg = exchange1[exchange1['Root'] == stk_name]
+        dfgg.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+        
+        dfgg_CE1 = dfgg[(dfgg["CpType"] == 'CE')]        
+        dfgg_CE2 = dfgg_CE1[(dfgg_CE1['StrikeRate'] >= Spot)]                        
+        dfgg_CE3 = dfgg_CE2.head(1)
+        dfgg_CE_scpt = int(np.unique(dfgg_CE3['Scripcode']))
+        scpt_list.append(dfgg_CE_scpt)
+        #dfg1 = credi_har.fetch_market_depth_by_symbol(a)
+        # print(dfgg_CE_scpt)
+
+        dfgg_PE1 = dfgg[(dfgg["CpType"] == 'PE')]        
+        dfgg_PE2 = dfgg_PE1[(dfgg_PE1['StrikeRate'] <= Spot)]                        
+        dfgg_PE3 = dfgg_PE2.tail(1)
+        dfgg_PE_scpt = int(np.unique(dfgg_PE3['Scripcode']))
+        scpt_list.append(dfgg_PE_scpt)
+        # print(dfgg_PE_scpt)
+
+    print(scpt_list)
+
+    a=[{"Exchange": "N", "ExchangeType": "D", "ScripCode": f"{scpt_list[0]}"},
+    {"Exchange": "N", "ExchangeType": "D", "ScripCode": f"{scpt_list[1]}"},
+    {"Exchange": "N", "ExchangeType": "D", "ScripCode": f"{scpt_list[2]}"},
+    {"Exchange": "N", "ExchangeType": "D", "ScripCode": f"{scpt_list[3]}"}]
     
-#         api.start_websocket( order_update_callback=event_handler_order_update,
-#                          subscribe_callback=event_handler_quote_update, 
-#                          socket_open_callback=open_callback)
+    dfgg = credi_har.fetch_market_depth(a)
+    dfgg1 = dfgg['Data']
+    dfgg2 = pd.DataFrame(dfgg1)
+    exc = exchange1[['Scripcode','Root','Name','Exch','ExchType','CpType','LotSize']]
+    exc.rename(columns={'Scripcode': 'ScripCode'}, inplace=True)
+    dfgg3 = pd.merge(dfgg2, exc, on=['ScripCode'], how='inner')
+    dfgg3 = dfgg3[['Root','Name','ScripCode','Exch','ExchType','CpType','Open','High','Low','Close','LastTradedPrice','LotSize','OpenInterest','Volume','TotalBuyQuantity','TotalSellQuantity']]
+    #dt.range("a8").options(index=False).value = dfgg3
 
-#         while(feed_opened==False):
-#             print(feed_opened)
-#             pass
-#         print("Connected to WebSocket...")
+    dfgg4 = pd.merge(dfgg3, dfg3, on=['Root'], how='inner')
+    dfgg4.rename(columns={'ScripCode_x': 'ScripCode','CpType':'Type','LotSize':'Lot','Open_x': 'Open_OPT','High_x': 'High_OPT','Low_x': 'Low_OPT','Close_x': 'Close_OPT','LastTradedPrice_x': 'LTP_OPT',
+                          'ScripCode_y': 'ScpCode_SPOT','Open_y': 'Open_SPOT','High_y': 'High_SPOT','Low_y': 'Low_SPOT','Close_y': 'Close_SPOT','LastTradedPrice_y': 'LTP_SPOT',}, inplace=True)
+    dfgg4['Diff_QTY'] = dfgg4['TotalSellQuantity'] - dfgg4['TotalBuyQuantity']
+    #dt.range("a15").options(index=False).value = dfgg4
+    
+    dfgg5 = dfgg4[['Name','Root','Exch','ExchType','Type','ScripCode','TimeNow','LTP_SPOT','Spot','LTP_OPT','Diff_QTY','Lot']]
+         
+    posi = pd.DataFrame(credi_har.positions())
+    
+    if posi.empty:
+        print("First Position is Empty")
+        dfgg5 =dfgg5[['Name','Root','Exch','ExchType','Type','ScripCode','TimeNow','LTP_SPOT','Spot','LTP_OPT','Diff_QTY','Lot']]
+        dt.range(f"m1:x1").value = ['LTP','BuyAvgRate','SellAvgRate','BuyQty','SellQty','BookedPL','MTOM','Buy_lvl','TGT','SLL','BUY','SELL']
+        dt.range("a1").options(index=False).value = dfgg5
+    else:
+        posit = posi #posit[(posit['MTOM'] != 0)]
+        posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()     
+        dfgg6 = pd.merge(dfgg5, posi, on=['ScripCode'], how='outer')
+        dfgg6 =dfgg6[['Name','Root','Exch_x','ExchType_x','Type','ScripCode','TimeNow','LTP_SPOT','Spot','LTP_OPT','Diff_QTY','Lot',
+                    'LTP','BuyAvgRate','SellAvgRate','BuyQty','SellQty','BookedPL','MTOM']]
+        dt.range(f"t1:x1").value = ["Buy_lvl","TGT","SLL","BUY","SELL"]
+        dt.range("a1").options(index=False).value = dfgg6
 
-#         start_excel()
-#     else:
-#         print("Credential is not correct")
+    symbols = dt.range(f"a{2}:a{250}").value
+    trading_info = dt.range(f"a{2}:x{250}").value
+
+    idx = 0
+    for i in symbols:
+        if i:
+            try:
+                trade_info = trading_info[idx]
+                #print(trade_info)                                
+                if trade_info[21] is not None and trade_info[22] is not None:
+                    var =  ((trade_info[7])*0.2)/100
+                    if trade_info[4] == "CE" and trade_info[21] < trade_info[7] and trade_info[21] > trade_info[7]-var:
+                        order = credi_har.place_order(OrderType='B',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[22])*int(trade_info[11]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        print("Buy Call Order Executed")
+                    if trade_info[4] == "PE" and trade_info[21] > trade_info[7] and trade_info[21] < trade_info[7]+var:                        
+                        order = credi_har.place_order(OrderType='B',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[22])*int(trade_info[11]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        print("Buy Put Order Executed")
+
+                if trade_info[18] is not None:
+                    if trade_info[23] is not None:
+                         if float(trade_info[18]) > 0 or float(trade_info[18]) < 0:
+                            order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[23])*int(trade_info[11]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                            print("Sell Order Executed")
+
+                if trade_info[21] is not None:
+                    if trade_info[4] == "CE" and trade_info[7] < trade_info[21]:
+                        order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        print("Call Stop Loss Hit")
+                    if trade_info[4] == "PE" and trade_info[7] > trade_info[21]:
+                        order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        print("Put Stop Loss Hit")
+                
+                if trade_info[20] is not None:
+                    if trade_info[4] == "CE" and trade_info[7] > trade_info[20]:
+                        order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        print("Call Target Hit")
+                    if trade_info[4] == "PE" and trade_info[7] < trade_info[20]:
+                        order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        print("Put Target Hit")
+            
+            except Exception as e:
+                print(e)            
+        idx += 1
+    dt.range(f"w2:w5").value = ''
+    dt.range(f"x2:x5").value = ''
+
+
+    # order_dff_buy = scpts[(scpts['BUY'] >= 1)]    
+    # #print(order_dff_buy)
+    # if order_dff_buy.empty:
+    #     print("No Open Position of Haresh Buy")
+    # else:
+    #     try: 
+    #         print(order_dff_buy)
+    #         #buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
+    #         order_dff_Scpt = np.unique([int(i) for i in order_dff_buy['ScripCode']])
+    #         for ordd in order_dff_Scpt:
+    #             order_df = order_dff_buy[(order_dff_buy['ScripCode'] == ordd)]
+    #             order = credi_har.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BUY'])*int(order_df['Lot']),Price=float(order_df['LTP_OPT']),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+    #             print("Buy order Executed") 
+    #     except Exception as e:
+    #         print(e)
+
+    # order_dff_sell = scpts[(scpts['SELL'] >= 1)]
+    # #print(order_dff_sell)
+    # if order_dff_sell.empty:# and order_dff['MTOM'] == 0:
+    #     print("No Open Position of Haresh Sell")
+    # else:
+    #     if posi.empty:
+    #         print("Position is Empty You Can't Sell")
+    #     else:
+    #         if order_dff_sell['MTOM'] == 0:
+    #             print("There is no Buy Position")
+    #         else:
+    #             try: 
+    #                 print(order_dff_sell)
+    #                 #buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
+    #                 order_dff_Scpt = np.unique([int(i) for i in order_dff_sell['ScripCode']])
+    #                 for ordd in order_dff_Scpt:
+    #                     order_df = order_dff_sell[(order_dff_sell['ScripCode'] == ordd)]
+    #                     order = credi_har.place_order(OrderType='S',Exchange='N',ExchangeType='D', ScripCode = int(order_df['ScripCode']), Qty=int(order_df['SELL'])*int(order_df['Lot']),Price=float(order_df['LTP_OPT']),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+    #                     print("Buy order Executed") 
+    #             except Exception as e:
+    #                 print(e)
+        
+    # dt.range(f"u2:u5").value = ''
+    # dt.range(f"v2:v5").value = ''
+    # dt.range("a10").options(index=False).value = scpts
+        
+    scpt_list = []
+    print(scpt_list)

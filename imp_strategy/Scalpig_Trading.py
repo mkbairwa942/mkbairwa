@@ -220,7 +220,7 @@ while True:
         dfgg.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
         
         dfgg_CE1 = dfgg[(dfgg["CpType"] == 'CE')]        
-        dfgg_CE2 = dfgg_CE1[(dfgg_CE1['StrikeRate'] > Spot)]                        
+        dfgg_CE2 = dfgg_CE1[(dfgg_CE1['StrikeRate'] >= Spot)]                        
         dfgg_CE3 = dfgg_CE2.head(1)
         dfgg_CE_scpt = int(np.unique(dfgg_CE3['Scripcode']))
         scpt_list.append(dfgg_CE_scpt)
@@ -228,7 +228,7 @@ while True:
         # print(dfgg_CE_scpt)
 
         dfgg_PE1 = dfgg[(dfgg["CpType"] == 'PE')]        
-        dfgg_PE2 = dfgg_PE1[(dfgg_PE1['StrikeRate'] < Spot)]                        
+        dfgg_PE2 = dfgg_PE1[(dfgg_PE1['StrikeRate'] <= Spot)]                        
         dfgg_PE3 = dfgg_PE2.tail(1)
         dfgg_PE_scpt = int(np.unique(dfgg_PE3['Scripcode']))
         scpt_list.append(dfgg_PE_scpt)
@@ -309,19 +309,19 @@ while True:
         if posi.empty:
             print("Position is Empty You Can't Sell")
         else:
-            if order_dff_sell['MTOM'] == 0:
-                print("There is no Buy Position")
-            else:
-                try: 
-                    print(order_dff_sell)
-                    #buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
-                    order_dff_Scpt = np.unique([int(i) for i in order_dff_sell['ScripCode']])
-                    for ordd in order_dff_Scpt:
-                        order_df = order_dff_sell[(order_dff_sell['ScripCode'] == ordd)]
-                        order = credi_har.place_order(OrderType='S',Exchange='N',ExchangeType='D', ScripCode = int(order_df['ScripCode']), Qty=int(order_df['SELL'])*int(order_df['Lot']),Price=float(order_df['LTP_OPT']),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                        print("Buy order Executed") 
-                except Exception as e:
-                    print(e)
+            # if order_dff_sell['MTOM'] == 0:
+            #     print("There is no Buy Position")
+            # else:
+            try: 
+                print(order_dff_sell)
+                #buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
+                order_dff_Scpt = np.unique([int(i) for i in order_dff_sell['ScripCode']])
+                for ordd in order_dff_Scpt:
+                    order_df = order_dff_sell[(order_dff_sell['ScripCode'] == ordd)]
+                    order = credi_har.place_order(OrderType='S',Exchange='N',ExchangeType='D', ScripCode = int(order_df['ScripCode']), Qty=int(order_df['SELL'])*int(order_df['Lot']),Price=float(order_df['LTP_OPT']),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                    print("Buy order Executed") 
+            except Exception as e:
+                print(e)
         
     dt.range(f"u2:u5").value = ''
     dt.range(f"v2:v5").value = ''

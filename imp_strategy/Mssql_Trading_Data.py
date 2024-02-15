@@ -302,7 +302,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     # #print(sqlquery)
     # dfg = pd.read_sql(sql=sqlquery, con=engine)
     # dfg1 = pd.DataFrame(dfg) 
-    dfg1 = credi_har.historical_data('N', 'C', stk_nm, '1m',last_trading_day,current_trading_day)
+    dfg1 = credi_har.historical_data('N', 'C', stk_nm, '5m',last_trading_day,current_trading_day)
     dfg1['Scripcode'] = stk_nm
     dfg1 = pd.merge(exchange2, dfg1, on=['Scripcode'], how='inner') 
     dfg1 = dfg1[['Scripcode','Root','Name','Datetime','Open','High','Low','Close','Volume']]
