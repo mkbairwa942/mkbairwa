@@ -982,3 +982,15 @@ while True:
         except Exception as e:
             pass    
 
+    # desire_lst = []
+    # idxex = 0
+    # for ii in scpt:
+    #     if ii:
+    #         trade1 = scpt1[idxex]
+    #         namew = trade1[0]+":"+trade1[1]+":"+trade1[2]
+    #         #print(namew)
+    #         desire_lst.append(namew)
+    #     idxex += 1
+    # print(desire_lst)
+    # exchange11 = exchange2[(exchange2['Watchlist'].isin(desire_lst))] 
+    # print(exchange11['Scripcode'])

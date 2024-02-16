@@ -254,20 +254,20 @@ while True:
                         #timee = datetime.now()
                         buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B')]# & (buy_order_li['AveragePrice'] != 0)]
                         buy_order_liiist = buy_order_liiist[['Datetimeee','ScripCode']] 
-                        #print(buy_order_liiist)
                         new_df11 = posit[(posit['ScripCode'] == ord)]
                         new_df1 = pd.merge(buy_order_liiist, new_df11, on=['ScripCode'], how='inner')
-                        #print(new_df1)
                         Buy_Name = list(new_df1['ScripName'])[0]
-                        Buy_price = float(new_df1['BuyAvgRate'])                 
-                        Buy_Stop_Loss = float(round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*SLL)/100),1))
-                        Buy_Target = float(round((((new_df1['BuyAvgRate']*SLL)/100) + new_df1['BuyAvgRate']),1))
+                        Buy_price = (np.unique([float(i) for i in new_df1['BuyAvgRate']])).tolist()[0]
+       
+                        Buy_Stop_Loss = (round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*SLL)/100),1)).astype(float)
+                        Buy_Target = (round((((new_df1['BuyAvgRate']*SLL)/100) + new_df1['BuyAvgRate']),1)).astype(float)
                         Buy_Exc = list(new_df1['Exch'])[0]
                         Buy_Exc_Type = list(new_df1['ExchType'])[0]
-                        Buy_Qty = int(new_df1['BuyQty'])   
+                        Buy_Qty = (np.unique([int(i) for i in new_df1['BuyQty']])).tolist()[0]  
 
                         Buy_timee = list(new_df1['Datetimeee'])[0]
-                        Buy_timee1 = str(Buy_timee).replace(' ','T')     
+                        Buy_timee1 = str(Buy_timee).replace(' ','T')  
+                        #print(Buy_Name,Buy_price,Buy_Stop_Loss,Buy_Target,Buy_Exc,Buy_Exc_Type,Buy_Qty)  
 
                         #Buy_timee = Buy_timee - timedelta(minutes=1)
 
@@ -281,25 +281,24 @@ while True:
                         # Buy_timee1 = str(Buy_timee).replace(' ','T')
                         
                         dfg1 = credi_har.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
-                        #print(dfg1.head(1))
+                        
                         dfg1['ScripCode'] = ord
                         dfg1['ScripName'] = Buy_Name
                         dfg1['Entry_Date'] = Buy_timee1
                         dfg1['Entry_Price'] = Buy_price
-
+                        
                         dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
                         dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
-                        
+                        #print(dfg1.head(1))
                         #dfg1['TimeNow'] = datetime.now()
                         
                         dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
                         dfg2['StopLoss'] = round((dfg2['Entry_Price'] - (dfg2['Entry_Price']*SLL)/100),1)
                         dfg2['Benchmark'] = dfg2['High'].cummax()
-                        dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1                            
-                        dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < Buy_Stop_Loss,"SL",""))
+                        dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1    
+                        dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < dfg2['StopLoss'],"SL",""))
                         dfg2['P&L_TSL'] = np.where(dfg2['Status'] == "SL",(dfg2['StopLoss'] - dfg2['Entry_Price'])*Buy_Qty,np.where(dfg2['Status'] == "TSL",(dfg2['TStopLoss'] - dfg2['Entry_Price'])*Buy_Qty,"" ))
                         five_df3 = pd.concat([dfg2, five_df3])
-                        #print(dfg2.head(1))
                         dfg3 = dfg2[(dfg2["Status"] == "TSL") | (dfg2["Status"] == "SL")]                       
 
                         if dfg3.empty:
