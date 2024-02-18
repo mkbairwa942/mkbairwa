@@ -417,8 +417,8 @@ while True:
             except Exception as e:
                 print(e)            
         idx += 1
-    dt.range(f"w2:w5").value = ''
-    dt.range(f"x2:x5").value = ''
+    dt.range(f"w2:w15").value = ''
+    dt.range(f"x2:x15").value = ''
     dt.range("y2").value = '=IF(AND(E2="CE",H2>T2),"Buy",IF(AND(E2="PE",H2<T2),"Buy",""))'      
     scpt_list = []
     scpt_listtt = []
