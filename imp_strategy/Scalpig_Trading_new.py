@@ -327,13 +327,13 @@ while True:
         print("First Position is Empty")
     else:
         posit3 = (np.unique([int(i) for i in posi['ScripCode']])).tolist()#[0] 
-        print(posit3)
+        #print(posit3)
         for t in posit3:
             scpt_listtt.append(t) 
 
     Data_fr = []
     scpt_listtt1 = np.unique(scpt_listtt)
-    print(scpt_listtt1)
+    #print(scpt_listtt1)
 
     for dtt in scpt_listtt1:
         #print(dtt)
@@ -390,9 +390,11 @@ while True:
             #print(i)
             try:
                 trade_info = trading_info[idx]
-                print(trade_info)                                
+                print(trade_info)   
+                print("-00")                             
                 if trade_info[21] is not None and trade_info[22] is not None:
                     var =  ((trade_info[7])*0.2)/100
+                    print("-01")
                     if trade_info[4] == "CE" and trade_info[21] < trade_info[7] and trade_info[21] > trade_info[7]-var:
                         order = credi_har.place_order(OrderType='B',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[22])*int(trade_info[11]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         print("Buy Call Order Executed")
@@ -402,28 +404,38 @@ while True:
                 print("0")        
 
                 if trade_info[18] is not None:
+                    print("01")
                     if trade_info[23] is not None:
+                         print("02")
                          if float(trade_info[18]) > 0 or float(trade_info[18]) < 0:
                             order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[23])*int(trade_info[11]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                             print("Sell Order Executed")
-                print("1")    
-                if trade_info[21] is not None:
-                    if float(trade_info[18]) > 0 or float(trade_info[18]) < 0:
-                        if trade_info[4] == "CE" and trade_info[7] < trade_info[21]:
-                            order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                            print("Call Stop Loss Hit")
-                        if trade_info[4] == "PE" and trade_info[7] > trade_info[21]:
-                            order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                            print("Put Stop Loss Hit")
-                print("2")    
-                if trade_info[20] is not None:
-                    if float(trade_info[18]) > 0 or float(trade_info[18]) < 0:
-                        if trade_info[4] == "CE" and trade_info[7] > trade_info[20]:
-                            order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                            print("Call Target Hit")
-                        if trade_info[4] == "PE" and trade_info[7] < trade_info[20]:
-                            order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                            print("Put Target Hit")
+                print("1")  
+                if trade_info[18] is not None: 
+                    print("11")
+                    if trade_info[21] is not None:
+                        print("12")
+                        if float(trade_info[18]) > 0 or float(trade_info[18]) < 0:
+                            print("13")
+                            if trade_info[4] == "CE" and trade_info[7] < trade_info[21]:
+                                order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                print("Call Stop Loss Hit")
+                            if trade_info[4] == "PE" and trade_info[7] > trade_info[21]:
+                                order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                print("Put Stop Loss Hit")
+                print("2")   
+                if trade_info[18] is not None:  
+                    print("21")
+                    if trade_info[20] is not None:
+                        print("22")
+                        if float(trade_info[18]) > 0 or float(trade_info[18]) < 0:
+                            print("23")
+                            if trade_info[4] == "CE" and trade_info[7] > trade_info[20]:
+                                order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                print("Call Target Hit")
+                            if trade_info[4] == "PE" and trade_info[7] < trade_info[20]:
+                                order = credi_har.place_order(OrderType='S',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[15])-int(trade_info[16]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                print("Put Target Hit")
                 print("3")    
             except Exception as e:
                 print(e)            
