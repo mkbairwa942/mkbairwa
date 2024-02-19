@@ -244,10 +244,15 @@ print("Exchange Download Completed")
 
 while True:
     
-    scpt = by.range(f"c{2}:c{250}").value
-    scpt1 = by.range(f"a{2}:d{250}").value
-    symbols = dt.range(f"a{2}:a{250}").value
-    trading_info = dt.range(f"a{2}:x{250}").value
+    scpt = by.range(f"c{2}:c{15}").value
+    scpt1 = by.range(f"a{2}:d{15}").value
+    symbols = dt.range(f"a{2}:a{15}").value
+    trading_info = dt.range(f"a{2}:x{15}").value
+    # print(scpt)
+    # print(scpt1)
+    # print(symbols)
+    # print(trading_info)
+
 
     scpt_list = []
 
@@ -267,7 +272,7 @@ while True:
     for tt in gg:
         scpt_list.append(tt) 
         
-    
+    #print(scpt_list)
     dfg1 = credi_har.fetch_market_depth_by_symbol(scpt_list)
     dfg2 = dfg1['Data']
     dfg3 = pd.DataFrame(dfg2)
@@ -331,9 +336,10 @@ while True:
         for t in posit3:
             scpt_listtt.append(t) 
 
-    Data_fr = []
+    
     scpt_listtt1 = np.unique(scpt_listtt)
     #print(scpt_listtt1)
+    Data_fr = []
 
     for dtt in scpt_listtt1:
         #print(dtt)
@@ -394,6 +400,7 @@ while True:
                 print("-00")                             
                 if trade_info[21] is not None and trade_info[22] is not None:
                     var =  ((trade_info[7])*0.2)/100
+                    print(var)
                     print("-01")
                     if trade_info[4] == "CE" and trade_info[21] < trade_info[7] and trade_info[21] > trade_info[7]-var:
                         order = credi_har.place_order(OrderType='B',Exchange=str(trade_info[2]),ExchangeType=str(trade_info[3]), ScripCode = int(trade_info[5]), Qty=int(trade_info[22])*int(trade_info[11]),Price=float(trade_info[9]),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
@@ -442,8 +449,9 @@ while True:
         idx += 1
     dt.range(f"w2:w15").value = ''
     dt.range(f"x2:x15").value = ''
-    dt.range("y2").value = '=IF(T2="","",IF(AND(E2="CE",H2>T2),"Buy",IF(AND(E2="PE",H2<T2),"Buy","")))'      
+    dt.range("y2").value = '=IF(T2="","",IF(AND(E2="CE",H2>T2),"Buy",IF(AND(E2="PE",H2<T2),"Buy","")))'  
+    dt.range("z2").value = '=IF(H2="","",IF(E2="CE",(H2-H2*0.2%)+1,IF(E2="PE",(H2+H2*0.2%)-1,"")))'    
     scpt_list = []
-    scpt_listtt1 = []
+    scpt_listtt = []
 
     
