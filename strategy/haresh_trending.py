@@ -56,7 +56,7 @@ username1 = str(username)
 client = credentials(username1)
 
 
-from_d = (date.today() - timedelta(days=30))
+from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
 
 to_d = (date.today())
@@ -257,108 +257,117 @@ def HakinAshi_func(df):
     df['HA_High']=df[['HA_Open','HA_Close','High']].max(axis=1)
     df['HA_Low']=df[['HA_Open','HA_Close','Low']].min(axis=1)
     return df
+
 adx_parameter = 0.60
-# while True:
-print(buy_order_list_dummy)
-print(sell_order_list_dummy)
-df = client.historical_data('N', 'C', symbol1, '5m', from_d,to_days)
-df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
-df = df.astype({"Datetime": "datetime64"})
-#df['Scripcode'] = int(symbol1)
-df['Name'] = 'BANKNIFTY'
-df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
-df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
-ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'],length=14)
-df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
-df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
-df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
-df['Adx_ok'] = np.where(df['Adx_diff'] > adx_parameter,"ok","")
-df['SMA_21_diff'] = df['SMA_21'] - df['SMA_21'].shift(1)
-df['DEMA_21_diff'] = df['DEMA_21'] - df['DEMA_21'].shift(1)
-df['SMA_21_ok'] = np.where(df['SMA_21_diff'] > 2,"up_ok",np.where(df['SMA_21_diff'] < -2,"dn_ok",""))
-df['DEMA_21_ok'] = np.where(df['DEMA_21_diff'] > 2,"up_ok",np.where(df['DEMA_21_diff'] < -2,"dn_ok",""))
-#df['SMA_21_ok1'] = np.where((df['SMA_21']) > (df['SMA_21'].shift(1)),"up_ok",np.where((df['SMA_21']) < (df['SMA_21'].shift(1)),"dn_ok",""))
-#df['DEMA_21_ok1'] = np.where((df['DEMA_21']) > (df['DEMA_21'].shift(1)),"up_ok",np.where((df['DEMA_21']) < (df['DEMA_21'].shift(1)),"dn_ok",""))
-df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))
-df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
-df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
-df.sort_values(['Datetime'], ascending=[True], inplace=True)
-st.range("a1").options(index=False).value = df
+while True:
+    print(buy_order_list_dummy)
+    print(sell_order_list_dummy)
+    df = client.historical_data('N', 'C', symbol1, '5m', last_trading_day,current_trading_day)
+    #print(df.head(1))
+    df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
+    df = df.astype({"Datetime": "datetime64"})
+    #df['Scripcode'] = int(symbol1)
+    df['Name'] = 'BANKNIFTY'
+    df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
+    df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
+    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'],length=14)
+    df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
+    df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
+    df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
+    df['Adx_ok'] = np.where(df['Adx_diff'] > adx_parameter,"ok","")
+    df['SMA_21_diff'] = df['SMA_21'] - df['SMA_21'].shift(1)
+    df['DEMA_21_diff'] = df['DEMA_21'] - df['DEMA_21'].shift(1)
+    df['SMA_21_ok'] = np.where(df['SMA_21_diff'] > 2,"up_ok",np.where(df['SMA_21_diff'] < -2,"dn_ok",""))
+    df['DEMA_21_ok'] = np.where(df['DEMA_21_diff'] > 2,"up_ok",np.where(df['DEMA_21_diff'] < -2,"dn_ok",""))
+    #df['SMA_21_ok1'] = np.where((df['SMA_21']) > (df['SMA_21'].shift(1)),"up_ok",np.where((df['SMA_21']) < (df['SMA_21'].shift(1)),"dn_ok",""))
+    #df['DEMA_21_ok1'] = np.where((df['DEMA_21']) > (df['DEMA_21'].shift(1)),"up_ok",np.where((df['DEMA_21']) < (df['DEMA_21'].shift(1)),"dn_ok",""))
+    df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))
+    df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
+    df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
+    df.sort_values(['Datetime'], ascending=[True], inplace=True)
+    st.range("a1").options(index=False).value = df
 
-Call_by_df = df[(df["Signal"] == "Call_Buy")]
-Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 5, "Call_Buy","")
-Call_by_df1 = Call_by_df[Call_by_df['Entry'] == "Call_Buy"]
-Call_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
-by.range("a1").options(index=False).value = Call_by_df
+    Call_by_df = df[(df["Signal"] == "Call_Buy")]
+    Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
+    Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 5, "Call_Buy","")
+    Call_by_df1 = Call_by_df[Call_by_df['Entry'] == "Call_Buy"]
+    Call_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
+    by.range("a1").options(index=False).value = Call_by_df
 
-Call_sl_df = df[(df["Signal"] == "Call_Exit")]
-Call_sl_df['Date_Dif'] = abs((Call_sl_df["Datetime"] - Call_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-Call_sl_df['Entry'] = np.where(Call_sl_df['Date_Dif'] > 5, "Call_Exit","")
-Call_sl_df1 = Call_sl_df[Call_sl_df['Entry'] == "Call_Exit"]
-Call_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
-sl.range("a1").options(index=False).value = Call_sl_df
+    Call_sl_df = df[(df["Signal"] == "Call_Exit")]
+    Call_sl_df['Date_Dif'] = abs((Call_sl_df["Datetime"] - Call_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
+    Call_sl_df['Entry'] = np.where(Call_sl_df['Date_Dif'] > 5, "Call_Exit","")
+    Call_sl_df1 = Call_sl_df[Call_sl_df['Entry'] == "Call_Exit"]
+    Call_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
+    sl.range("a1").options(index=False).value = Call_sl_df
 
-Put_by_df = df[(df["Signal1"] == "Put_Buy")]
-Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-Put_by_df['Entry'] = np.where(Put_by_df['Date_Dif'] > 5, "Put_Buy","")
-Put_by_df1 = Put_by_df[Put_by_df['Entry'] == "Put_Buy"]
-Put_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
-by.range("a500").options(index=False).value = Put_by_df
+    Put_by_df = df[(df["Signal1"] == "Put_Buy")]
+    Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
+    Put_by_df['Entry'] = np.where(Put_by_df['Date_Dif'] > 5, "Put_Buy","")
+    Put_by_df1 = Put_by_df[Put_by_df['Entry'] == "Put_Buy"]
+    Put_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
+    by.range("a500").options(index=False).value = Put_by_df
 
-Put_sl_df = df[(df["Signal1"] == "Put_Exit")]
-Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-Put_sl_df['Entry'] = np.where(Put_sl_df['Date_Dif'] > 5, "Put_Exit","")
-Put_sl_df1 = Put_sl_df[Put_sl_df['Entry'] == "Put_Exit"]
-Put_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
-sl.range("a500").options(index=False).value = Put_sl_df
+    Put_sl_df = df[(df["Signal1"] == "Put_Exit")]
+    Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
+    Put_sl_df['Entry'] = np.where(Put_sl_df['Date_Dif'] > 5, "Put_Exit","")
+    Put_sl_df1 = Put_sl_df[Put_sl_df['Entry'] == "Put_Exit"]
+    Put_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
+    sl.range("a500").options(index=False).value = Put_sl_df
 
-final_call = pd.concat([Call_by_df1, Call_sl_df1])
-final_call.sort_values(['Datetime'], ascending=[True], inplace=True)
-fl_data.range("a1").options(index=False).value = final_call
+    final_call = pd.concat([Call_by_df1, Call_sl_df1])
+    final_call.sort_values(['Datetime'], ascending=[True], inplace=True)
+    fl_data.range("a1").options(index=False).value = final_call
 
-final_Put = pd.concat([Put_by_df1, Put_sl_df1])
-final_Put.sort_values(['Datetime'], ascending=[True], inplace=True)
-fl_data.range("a100").options(index=False).value = final_Put
+    final_Put = pd.concat([Put_by_df1, Put_sl_df1])
+    final_Put.sort_values(['Datetime'], ascending=[True], inplace=True)
+    fl_data.range("a100").options(index=False).value = final_Put
 
-listo_call = np.unique(final_call['Datetime'])
-listo_Put = np.unique(final_Put['Datetime'])
+    listo_call = np.unique(final_call['Datetime'])
+    listo_Put = np.unique(final_Put['Datetime'])
 
-final_df_call = pd.DataFrame()
-final_df_Put = pd.DataFrame()
-position_Call = 0
-position_Put = 0
+    final_df_call = pd.DataFrame()
+    final_df_Put = pd.DataFrame()
+    position_Call = 0
+    position_Put = 0
 
-for i in listo_call:
-    f_df_call = final_call[final_call['Datetime'] == i]
-    if list(f_df_call['Entry'])[0] == 'Call_Buy' and position_Call == 0:
-        final_df_call = pd.concat([f_df_call, final_df_call])
-        position_Call = 1
+    for i in listo_call:
+        f_df_call = final_call[final_call['Datetime'] == i]
+        if list(f_df_call['Entry'])[0] == 'Call_Buy' and position_Call == 0:
+            final_df_call = pd.concat([f_df_call, final_df_call])
+            position_Call = 1
 
-    if list(f_df_call['Entry'])[0] == 'Call_Exit' and position_Call == 1:
-        final_df_call = pd.concat([f_df_call, final_df_call])
-        position_Call = 0
+        if list(f_df_call['Entry'])[0] == 'Call_Exit' and position_Call == 1:
+            final_df_call = pd.concat([f_df_call, final_df_call])
+            position_Call = 0
 
-for i in listo_Put:
-    f_df_put = final_Put[final_Put['Datetime'] == i]
-    if list(f_df_put['Entry'])[0] == 'Put_Buy' and position_Put == 0:
-        final_df_Put = pd.concat([f_df_put, final_df_Put])
-        position_Put = 1
+    for i in listo_Put:
+        f_df_put = final_Put[final_Put['Datetime'] == i]
+        if list(f_df_put['Entry'])[0] == 'Put_Buy' and position_Put == 0:
+            final_df_Put = pd.concat([f_df_put, final_df_Put])
+            position_Put = 1
 
-    if list(f_df_put['Entry'])[0] == 'Put_Exit' and position_Put == 1:
-        final_df_Put = pd.concat([f_df_put, final_df_Put])
-        position_Put = 0
+        if list(f_df_put['Entry'])[0] == 'Put_Exit' and position_Put == 1:
+            final_df_Put = pd.concat([f_df_put, final_df_Put])
+            position_Put = 0
+    
+    if final_df_call.empty:
+        pass
+    else:
+        final_df_call.sort_values(['Datetime'], ascending=[True], inplace=True)
+        final_df_call['P&L'] = np.where(final_df_call['Entry'] == 'Call_Exit',final_df_call['Close']-final_df_call['Close'].shift(1),0)
+        exp.range("a1").options(index=False).value = final_df_call
 
-final_df_call.sort_values(['Datetime'], ascending=[True], inplace=True)
-final_df_call['P&L'] = np.where(final_df_call['Entry'] == 'Call_Exit',final_df_call['Close']-final_df_call['Close'].shift(1),0)
-exp.range("a1").options(index=False).value = final_df_call
+        
+    if final_df_Put.empty:
+        pass
+    else:
+        final_df_Put.sort_values(['Datetime'], ascending=[True], inplace=True)
+        final_df_Put['P&L'] = np.where(final_df_Put['Entry'] == 'Put_Exit',final_df_Put['Close'].shift(1)-final_df_Put['Close'],0)
+        exp.range("a100").options(index=False).value = final_df_Put
 
-final_df_Put.sort_values(['Datetime'], ascending=[True], inplace=True)
-final_df_Put['P&L'] = np.where(final_df_Put['Entry'] == 'Put_Exit',final_df_Put['Close'].shift(1)-final_df_Put['Close'],0)
-exp.range("a100").options(index=False).value = final_df_Put
-
-print(df.head(2))
-print(df.tail(2))
+    print(df.head(1))
+    print(df.tail(1))
 
     # if not dfgg_buy_call_opt.empty:
     #     print("Buy Call")
