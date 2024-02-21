@@ -230,19 +230,28 @@ def exch_down():
     # print(exchange_new.head(20))
     return exchange_new
 
-exchange_new = exch_down()
-exchange_cash = exchange_new[exchange_new['ExchType'] == 'C'] 
-exchange_opt = exchange_new[exchange_new['ExchType'] == 'D'] 
+# exchange_new = exch_down()
+# exchange_cash = exchange_new[exchange_new['ExchType'] == 'C'] 
+# exchange_opt = exchange_new[exchange_new['ExchType'] == 'D'] 
 
-exc.range("a1").options(index=False).value = exchange_opt
-exc.range("x1").options(index=False).value = exchange_cash
+# exc.range("a1").options(index=False).value = exchange_opt
+# exc.range("x1").options(index=False).value = exchange_cash
 
-exchange_cash = exchange_cash[['Exch','ExchType','CpType','LotSize','Root','Name','Expiry','StrikeRate','ScripCode']]
-exchange_opt = exchange_opt[['Exch','ExchType','CpType','LotSize','Root','Name','Expiry','StrikeRate','ScripCode']]
+# exchange_cash = exchange_cash[['Exch','ExchType','CpType','LotSize','Root','Name','Expiry','StrikeRate','ScripCode']]
+# exchange_opt = exchange_opt[['Exch','ExchType','CpType','LotSize','Root','Name','Expiry','StrikeRate','ScripCode']]
 
 print("Exchange Download Completed")
 
 while True:
+    exchange_cash2 = exc.range(f"a{1}:t{2000}").value
+    exchange_opt2 = exc.range(f"x{1}:aq{2000}").value
+    exchange_cash1 = pd.DataFrame(exchange_cash2)
+    exchange_opt1 = pd.DataFrame(exchange_opt2)
+    # exchange_cash = exchange_cash1[1:]
+    # exchange_opt = exchange_opt1[1:]
+    exp.range("a1").options(index=False).value = exchange_opt1
+    exp.range("x1").options(index=False).value = exchange_cash1
+    
     
     scpt = by.range(f"c{2}:c{15}").value
     scpt1 = by.range(f"a{2}:d{15}").value
