@@ -201,8 +201,8 @@ flt_exc.range("a1").options(index=False).value = exc_new2
 stk_list = [999920005]
 
 
-telegram_msg = "no"
-orders = "no"
+telegram_msg = "YES"
+orders = "YES"
 Capital = 20000
 StockPriceLessThan = 1000
 Buy_price_buffer = 0.1
@@ -371,7 +371,7 @@ while True:
             Call_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)            
             five_df2 = pd.concat([Call_by_df1, five_df2])
             
-            Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date())]# & (Call_by_df1["Minutes"] < 5 )]          
+            Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
  
             if Call_by_df2.empty:
                 print("Call Buy DF Empty")
@@ -411,7 +411,7 @@ while True:
             Put_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
             five_df3 = pd.concat([Put_by_df1, five_df3]) 
 
-            Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date())]# & (Put_by_df1["Minutes"] < 5 )]          
+            Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
 
             if Put_by_df2.empty:
                 print("Put Buy DF Empty")
@@ -451,7 +451,7 @@ while True:
             Call_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
             five_df4 = pd.concat([Call_sl_df1, five_df4]) 
 
-            Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date())]# & (Call_sl_df1["Minutes"] < 5 )]          
+            Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date()) & (Call_sl_df1["Minutes"] < 5 )]          
  
             if Call_sl_df2.empty:
                 print("Call DF Empty")
@@ -491,7 +491,7 @@ while True:
             Put_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
             five_df5 = pd.concat([Put_sl_df1, five_df5]) 
 
-            Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date())]# & (Put_sl_df1["Minutes"] < 5 )]          
+            Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 5 )]          
  
             if Put_sl_df2.empty:
                 print("Call DF Empty")
@@ -628,7 +628,6 @@ while True:
         final_df_call['P&L'] = np.where(final_df_call['Entry'] == 'Call_Exit',final_df_call['Close']-final_df_call['Close'].shift(1),0)
         exp.range("a1").options(index=False).value = final_df_call
 
-        
     if final_df_Put.empty:
         pass
     else:
