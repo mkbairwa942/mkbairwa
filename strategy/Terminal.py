@@ -450,6 +450,7 @@ while True:
             if not expiries_list:
                 df = copy.deepcopy(exchange)
                 df = df[df['Root'] == oc_symbol]
+                df = df[(df['Expiry1'].apply(pd.to_datetime) >= current_trading_day)]
                 expiries_list = sorted(list(df["Expiry1"].unique()))
                 df = pd.DataFrame({"Expiry Date": expiries_list})
                 df = df.set_index("Expiry Date",drop=True)

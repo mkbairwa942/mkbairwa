@@ -377,7 +377,6 @@ while True:
             
             #print(len(by_df))
             dfg3 = by_df.tail(1)
-
             if not dfg3.empty:       
                 Namee = (np.unique([str(i) for i in dfg3['Name']])).tolist()[0]
                 Scripcodee = int(float(dfg3['Scripcode'])) 
