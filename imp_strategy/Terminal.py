@@ -33,6 +33,7 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 
 operate = input("Do you want to go with TOTP (yes/no): ")
 TGTT_SLL = input("Do you want to go with FIXED or TRALING STOPLOSS (FSL/TSL): ")
+orders = input("Do you want to Place Real Orders (yes/no): ")
 if operate.upper() == "YES":
     from five_paisa1 import *
     # p=pyotp.TOTP("GUYDQNBQGQ4TKXZVKBDUWRKZ").now()
@@ -525,6 +526,10 @@ while True:
             index = input_list.index(max_value)
             diff = input_list1[index+1]-input_list1[index]
 
+            CE_Chg_OII = sum(df1["CE_Chg_OI"])
+            PE_Chg_OII = sum(df1["PE_Chg_OI"])
+            pcr = round((PE_Chg_OII/CE_Chg_OII),2)
+
 
             # des_ltp = 85
 
@@ -533,7 +538,8 @@ while True:
             # CE_strike_ltp_script = (df1[df1['CE_Ltp'] < des_ltp][['CE_Script']].values.tolist())[0][0]
             # PE_strike_ltp_script = (df1[df1['PE_Ltp'] < des_ltp][['PE_Script']].values.tolist())[-1][0]
 
-            oc.range("d8").value = [["Spot LTP",underlying_price],
+            oc.range("d8").value = [["PCR TODAY",pcr],
+                                    ["Spot LTP",underlying_price],
                                     ["Spot LTP Round",round(underlying_price/diff,0)*diff],
                                     ["Strike Difference",diff],
                                     ["",""],
@@ -648,23 +654,38 @@ while True:
                                 print(trade_info[0],trade_info[1],trade_info[2],trade_info[3],trade_info[4])
 
                                 if trade_info[2].upper() == "BUY" and trade_info[3] is None:  
-                                    print("Buy order")   
-                                    #dt.range(f"t{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"B")
+                                    print("Buy order")  
+                                    if orders.upper() == "YES" or orders.upper() == "":    
+                                        pass            
+                                        #dt.range(f"t{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"B")
+                                    else:
+                                        print("Real Order are OFF")
+                                    
 
                                 if trade_info[2].upper() == "BUY" and trade_info[3].upper() == "SELL":
                                     print("Sell order") 
-                                    #squareoff = client.squareoff_all() 
-                                    dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"S")
+                                    if orders.upper() == "YES" or orders.upper() == "":                
+                                        dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"S")
+                                        #squareoff = client.squareoff_all() 
+                                    else:
+                                        print("Real Order are OFF")                                  
 
                                 if trade_info[2].upper() == "SELL" and trade_info[3] is None:  
-                                    print("Sell order")   
-                                    #squareoff = client.squareoff_all()                                  
-                                    #dt.range(f"t{idx +2 }").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"S")
-
+                                    print("Sell order") 
+                                    if orders.upper() == "YES" or orders.upper() == "":   
+                                        pass             
+                                        #squareoff = client.squareoff_all()                                  
+                                        #dt.range(f"t{idx +2 }").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"S")
+                                    else:
+                                        print("Real Order are OFF")
+                                    
                                 if trade_info[2].upper() == "SELL" and trade_info[3].upper() == "BUY":   
-                                    print("Buy order")                                   
-                                    #dt.range(f"u{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"B")
-
+                                    print("Buy order")   
+                                    if orders.upper() == "YES" or orders.upper() == "":   
+                                        pass             
+                                        #dt.range(f"u{idx + 2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"B")
+                                    else:
+                                        print("Real Order are OFF")                             
                             #print(i,trading_info)
                         except Exception as e:                
                             pass                
