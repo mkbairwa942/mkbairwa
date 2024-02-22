@@ -49,10 +49,16 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 #     from five_paisa import *
 
 
-username = "HARESH"
-username1 = str(username)
-client = credentials(username1)
-
+# username = "HARESH"
+# username1 = str(username)
+# client = credentials(username1)
+credi_har = credentials("HARESH")
+credi_ash = credentials("ASHWIN")
+cred = [credi_har,credi_ash]
+print(cred)
+for credi in cred:
+    postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
+    print(f"Ledger Balance is : {postt}")
 
 from_d = (date.today() - timedelta(days=15))
 # from_d = date(2022, 12, 29)
@@ -217,7 +223,7 @@ print(tsl1)
 
 def order_book_func():
     try:
-        ordbook = pd.DataFrame(client.order_book())
+        ordbook = pd.DataFrame(credi_har.order_book())
         ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
         #ordbook[['Root']] = ordbook['ScripName'].str.split(' ',expand=True)
         #ordbook['Root'] = ordbook['ScripName'].tolist()#.str.split(" ")[0]
@@ -270,8 +276,11 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         print("1")
         list_append_on.append(list_to_append)
 
-        if orders.upper() == "YES" or orders.upper() == "":                
-            order = client.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=qtyy,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+        if orders.upper() == "YES" or orders.upper() == "":  
+            for credi in cred:
+                #postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
+                #print(f"Ledger Balance is : {postt}") 
+                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=qtyy,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
         else:
             print(f"Real {CALL_PUT} Order are OFF")
         print(f"1 Minute {CALL_PUT} Data Selected of "+str(namee)+" ("+str(scrip_code)+")")
@@ -286,7 +295,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         print("----------------------------------------")
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
-    df = client.historical_data('N', 'C', stk_nm, '5m', last_trading_day,current_trading_day)
+    df = credi_har.historical_data('N', 'C', stk_nm, '5m', last_trading_day,current_trading_day)
     #print(df.head(1))
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
@@ -324,7 +333,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df.sort_values(['Datetime'], ascending=[True], inplace=True)
     return df
 
-posit = pd.DataFrame(client.positions()) 
+posit = pd.DataFrame(credi_har.positions()) 
 if posit.empty:
     print("Position is Empty")
     buy_order_list_dummy = []
@@ -352,8 +361,11 @@ while True:
             else:
                 scrip_code1 = int(float(stop_loss['ScripCode'])) 
                 qtyy1 = int(np.unique(stop_loss['BuyQty']))
-                price_of_stock1 = float(stop_loss['LTP'])              
-                order = client.place_order(OrderType="S",Exchange='N',ExchangeType='D', ScripCode = scrip_code1, Qty=qtyy1,Price=price_of_stock1, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                price_of_stock1 = float(stop_loss['LTP'])  
+                for credi in cred:
+                    # postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
+                    # print(f"Ledger Balance is : {postt}")            
+                    order = credi.place_order(OrderType="S",Exchange='N',ExchangeType='D', ScripCode = scrip_code1, Qty=qtyy1,Price=price_of_stock1, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
     print(buy_order_list_dummy)
     print(sell_order_list_dummy)
     start_time = time.time()
@@ -385,7 +397,7 @@ while True:
             Call_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)            
             five_df2 = pd.concat([Call_by_df1, five_df2])
             
-            Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
+            Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date())]# & (Call_by_df1["Minutes"] < 5 )]          
  
             if Call_by_df2.empty:
                 print("Call Buy DF Empty")
@@ -409,7 +421,7 @@ while True:
                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
                 if not Call_by_ord6.empty:                    
-                    dfg1_Call_by = client.historical_data('N', 'D', Call_by_Scripcodee, '1m', last_trading_day,current_trading_day)
+                    dfg1_Call_by = credi_har.historical_data('N', 'D', Call_by_Scripcodee, '1m', last_trading_day,current_trading_day)
                     if Call_by_time in buy_order_list_dummy: 
                         print(str(stk_name)+" Call is Already Buy")
                         print("----------------------------------------")
@@ -425,7 +437,7 @@ while True:
             Put_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
             five_df3 = pd.concat([Put_by_df1, five_df3]) 
 
-            Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
+            Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date())]# & (Put_by_df1["Minutes"] < 5 )]          
 
             if Put_by_df2.empty:
                 print("Put Buy DF Empty")
@@ -449,7 +461,7 @@ while True:
                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
                 if not Put_by_ord6.empty:
-                    dfg1_Put_by = client.historical_data('N', 'D', Put_by_Scripcodee, '1m', last_trading_day,current_trading_day)
+                    dfg1_Put_by = credi_har.historical_data('N', 'D', Put_by_Scripcodee, '1m', last_trading_day,current_trading_day)
                     if Put_by_time in buy_order_list_dummy: 
                         print(str(stk_name)+" Put is Already Buy")
                         print("----------------------------------------")
@@ -465,7 +477,7 @@ while True:
             Call_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
             five_df4 = pd.concat([Call_sl_df1, five_df4]) 
 
-            Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date()) & (Call_sl_df1["Minutes"] < 5 )]          
+            Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date())]# & (Call_sl_df1["Minutes"] < 5 )]          
  
             if Call_sl_df2.empty:
                 print("Call DF Empty")
@@ -493,7 +505,7 @@ while True:
                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
                 if not Call_sl_ord6.empty:                    
-                    dfg1_Call_sl = client.historical_data('N', 'D', Call_sl_Scripcodee, '1m', last_trading_day,current_trading_day)
+                    dfg1_Call_sl = credi_har.historical_data('N', 'D', Call_sl_Scripcodee, '1m', last_trading_day,current_trading_day)
                     if Call_sl_time in sell_order_list_dummy: 
                         print(str(stk_name)+" Call is Already Exit")
                         print("----------------------------------------")
@@ -509,7 +521,7 @@ while True:
             Put_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
             five_df5 = pd.concat([Put_sl_df1, five_df5]) 
 
-            Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 5 )]          
+            Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date())]# & (Put_sl_df1["Minutes"] < 5 )]          
  
             if Put_sl_df2.empty:
                 print("Call DF Empty")
@@ -534,7 +546,7 @@ while True:
                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
                 if not Put_sl_ord6.empty:
-                    dfg1_Put_sl = client.historical_data('N', 'D', Put_sl_Scripcodee, '1m', last_trading_day,current_trading_day)
+                    dfg1_Put_sl = credi_har.historical_data('N', 'D', Put_sl_Scripcodee, '1m', last_trading_day,current_trading_day)
                     if Put_sl_time in sell_order_list_dummy: 
                         print(str(stk_name)+" Put is Already Exit")
                         print("----------------------------------------")
