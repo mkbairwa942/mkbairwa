@@ -295,7 +295,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         print("----------------------------------------")
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
-    df = credi_har.historical_data('N', 'C', stk_nm, '5m', last_trading_day,current_trading_day)
+    df = credi_har.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
     #print(df.head(1))
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
@@ -421,13 +421,12 @@ while True:
                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
                 if not Call_by_ord6.empty:                    
-                    dfg1_Call_by = credi_har.historical_data('N', 'D', Call_by_Scripcodee, '1m', last_trading_day,current_trading_day)
+                    dfg1_Call_by = credi_har.historical_data('N', 'D', Call_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
                     if Call_by_time in buy_order_list_dummy: 
                         print(str(stk_name)+" Call is Already Buy")
                         print("----------------------------------------")
                     else:
-                        print("Call Buy")
-                        #rde_exec = order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee):
+                        print("Call Buy")                        
                         rde_exec = order_execution(dfg1_Call_by,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,stk_name)
                        
             Put_by_df = dfg1[(dfg1["Signal1"] == "Put_Buy")]
@@ -461,13 +460,12 @@ while True:
                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
                 if not Put_by_ord6.empty:
-                    dfg1_Put_by = credi_har.historical_data('N', 'D', Put_by_Scripcodee, '1m', last_trading_day,current_trading_day)
+                    dfg1_Put_by = credi_har.historical_data('N', 'D', Put_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
                     if Put_by_time in buy_order_list_dummy: 
                         print(str(stk_name)+" Put is Already Buy")
                         print("----------------------------------------")
                     else:
-                        print("Put Buy")
-                        #rde_exec = order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee):
+                        print("Put Buy")                        
                         rde_exec = order_execution(dfg1_Put_by,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,stk_name)
 
             Call_sl_df = dfg1[(dfg1["Signal"] == "Call_Exit")]
@@ -505,13 +503,12 @@ while True:
                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
                 if not Call_sl_ord6.empty:                    
-                    dfg1_Call_sl = credi_har.historical_data('N', 'D', Call_sl_Scripcodee, '1m', last_trading_day,current_trading_day)
+                    dfg1_Call_sl = credi_har.historical_data('N', 'D', Call_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
                     if Call_sl_time in sell_order_list_dummy: 
                         print(str(stk_name)+" Call is Already Exit")
                         print("----------------------------------------")
                     else:
-                        print("Call Exit")
-                        #rde_exec = order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee):
+                        print("Call Exit")                        
                         rde_exec = order_execution(dfg1_Call_sl,sell_order_list_dummy,Call_sl_time,telegram_msg,orders,"IDX OPT","CALL EXIT","S",Call_sl_Scripcodee,Call_sl_Qtyy,stk_name)
                        
             Put_sl_df = dfg1[(dfg1["Signal1"] == "Put_Exit")]
@@ -524,7 +521,7 @@ while True:
             Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 5 )]          
  
             if Put_sl_df2.empty:
-                print("Call DF Empty")
+                print("Put DF Empty")
             else:                  
                 Put_sl_ord = Put_sl_df2.tail(1)
                 Put_sl_Closee = (float(Put_sl_ord['Close']))
@@ -546,13 +543,12 @@ while True:
                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
                 if not Put_sl_ord6.empty:
-                    dfg1_Put_sl = credi_har.historical_data('N', 'D', Put_sl_Scripcodee, '1m', last_trading_day,current_trading_day)
+                    dfg1_Put_sl = credi_har.historical_data('N', 'D', Put_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
                     if Put_sl_time in sell_order_list_dummy: 
                         print(str(stk_name)+" Put is Already Exit")
                         print("----------------------------------------")
                     else:
-                        print("Put Exit")
-                        #rde_exec = order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee):
+                        print("Put Exit")                        
                         rde_exec = order_execution(dfg1_Put_sl,sell_order_list_dummy,Put_sl_time,telegram_msg,orders,"IDX OPT","PUT EXIT","S",Put_sl_Scripcodee,Put_sl_Qtyy,stk_name)
 
             try:
