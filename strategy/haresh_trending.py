@@ -52,9 +52,37 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 # username = "HARESH"
 # username1 = str(username)
 # client = credentials(username1)
-credi_har = credentials("HARESH")
-credi_ash = credentials("ASHWIN")
-cred = [credi_har,credi_ash]
+users = ["HARESH","ASHWIN","ALPESH"]
+credi_har = None
+credi_ash = None
+credi_alp = None
+
+while True:
+    if credi_har is None and credi_ash is None and credi_alp is None:
+        try:
+            for us in users:
+                print("1")
+                if us == "HARESH":
+                    credi_har = credentials("HARESH")
+                    if credi_har.request_token is None:
+                        credi_har = credentials("HARESH")
+                        print(credi_har.request_token)
+                if us == "ASHWIN":
+                    credi_ash = credentials("ASHWIN")
+                    if credi_ash.request_token is None:
+                        credi_ash = credentials("ASHWIN")
+                        print(credi_ash.request_token)
+                if us == "ALPESH":
+                    credi_alp = credentials("ALPESH")
+                    if credi_alp.request_token is None:
+                        credi_alp = credentials("ALPESH")
+                        print(credi_alp.request_token)
+            break
+        except:
+            print("credentials Download Error....")
+            time.sleep(5)
+
+cred = [credi_har,credi_ash,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -183,7 +211,7 @@ while True:
             root_list = np.unique(exch['Root']).tolist()
 
             
-            root_list = ["BANKNIFTY"]
+            root_list = ["BANKNIFTY","NIFTY"]
 
             exc_new = exch['Root'].isin(root_list)
             
@@ -204,10 +232,10 @@ flt_exc.range("a:az").value = None
 flt_exc.range("a1").options(index=False).value = exc_new2
 
 #symbol1 = '999920005'
-stk_list = [999920005]
+stk_list = [999920005,999920000]
 
 
-telegram_msg = "YES"
+telegram_msg = "yes"
 orders = "YES"
 Capital = 20000
 StockPriceLessThan = 1000
@@ -300,7 +328,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
     #df['Scripcode'] = int(symbol1)
-    df['Name'] = 'BANKNIFTY'
+    df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))
     df['Price_break'] = np.where((df['Close'] > (df.High.rolling(5).max()).shift(-5)),
                                         'Pri_Up_brk',
                                         (np.where((df['Close'] < (df.Low.rolling(5).min()).shift(-5)),
@@ -387,14 +415,14 @@ while True:
             print(sc)
             dfg1 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl) 
             stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0] 
-            dfg1.sort_values(['Datetime'], ascending=[True], inplace=True)
+            dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
             five_df1 = pd.concat([dfg1, five_df1]) 
 
             Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
             Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
             Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 5, "Call_Buy","")
             Call_by_df1 = Call_by_df[(Call_by_df['Entry'] == "Call_Buy")]
-            Call_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)            
+            Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
             five_df2 = pd.concat([Call_by_df1, five_df2])
             
             Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
@@ -433,7 +461,7 @@ while True:
             Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
             Put_by_df['Entry'] = np.where(Put_by_df['Date_Dif'] > 5, "Put_Buy","")
             Put_by_df1 = Put_by_df[Put_by_df['Entry'] == "Put_Buy"]
-            Put_by_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
+            Put_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
             five_df3 = pd.concat([Put_by_df1, five_df3]) 
 
             Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
@@ -472,7 +500,7 @@ while True:
             Call_sl_df['Date_Dif'] = abs((Call_sl_df["Datetime"] - Call_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
             Call_sl_df['Entry'] = np.where(Call_sl_df['Date_Dif'] > 5, "Call_Exit","")
             Call_sl_df1 = Call_sl_df[Call_sl_df['Entry'] == "Call_Exit"]
-            Call_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
+            Call_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
             five_df4 = pd.concat([Call_sl_df1, five_df4]) 
 
             Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date()) & (Call_sl_df1["Minutes"] < 5 )]          
@@ -515,7 +543,7 @@ while True:
             Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
             Put_sl_df['Entry'] = np.where(Put_sl_df['Date_Dif'] > 5, "Put_Exit","")
             Put_sl_df1 = Put_sl_df[Put_sl_df['Entry'] == "Put_Exit"]
-            Put_sl_df1.sort_values(['Datetime'], ascending=[True], inplace=True)
+            Put_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
             five_df5 = pd.concat([Put_sl_df1, five_df5]) 
 
             Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 5 )]          
@@ -553,11 +581,11 @@ while True:
 
             try:
                 final_call = pd.concat([Call_by_df1, Call_sl_df1])
-                final_call.sort_values(['Datetime'], ascending=[True], inplace=True)
+                final_call.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                 five_df6 = pd.concat([final_call, five_df6]) 
 
                 final_Put = pd.concat([Put_by_df1, Put_sl_df1])
-                final_Put.sort_values(['Datetime'], ascending=[True], inplace=True)
+                final_Put.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                 five_df7 = pd.concat([final_Put, five_df7]) 
 
                 listo_call = np.unique(final_call['Datetime'])
@@ -616,7 +644,7 @@ while True:
             #df1_dn = df1_dn[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
             #df1_dn.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
             #by.range("a:az").value = None
-            by.range("a15").options(index=False).value = five_df3
+            by.range("a50").options(index=False).value = five_df3
 
         if five_df4.empty:
             pass
@@ -632,7 +660,7 @@ while True:
             #buy_exit_put_df = buy_exit_put_df[['Name','Scripcode','Datetime','Date','Open','High','Low','Close','Volume','RSI_14','Date_Dif','Price_Chg','Vol_Chg','Price_break','Vol_break','Vol_Price_break','LotSize','Buy_At','Add_Till','StopLoss','Target','Benchmark','TStopLoss','Status','P&L_TSL']]
             #buy_exit_put_df.sort_values(['Datetime','Name'], ascending=[False,True], inplace=True)
             #sl.range("a:az").value = None
-            sl.range("a15").options(index=False).value = five_df5
+            sl.range("a50").options(index=False).value = five_df5
 
         if five_df6.empty:
             pass
@@ -650,21 +678,21 @@ while True:
             # final_df_put.sort_values(['Datetime'], ascending=[True], inplace=True)
             # final_df_put['P&L'] = np.where(final_df_put['Exit'] == 'Put_Buy_Exit',final_df_put['Close'].shift(1)-final_df_put['Close'],0)
             # fl_data.range("a:az").value = None
-            fl_data.range("a15").options(index=False).value = five_df7
+            fl_data.range("a50").options(index=False).value = five_df7
 
         if final_df_call.empty:
             pass
         else:
-            final_df_call.sort_values(['Datetime'], ascending=[True], inplace=True)
+            final_df_call.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
             final_df_call['P&L'] = np.where(final_df_call['Entry'] == 'Call_Exit',final_df_call['Close']-final_df_call['Close'].shift(1),0)
             exp.range("a1").options(index=False).value = final_df_call
 
         if final_df_Put.empty:
             pass
         else:
-            final_df_Put.sort_values(['Datetime'], ascending=[True], inplace=True)
+            final_df_Put.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
             final_df_Put['P&L'] = np.where(final_df_Put['Entry'] == 'Put_Exit',final_df_Put['Close'].shift(1)-final_df_Put['Close'],0)
-            exp.range("a15").options(index=False).value = final_df_Put
+            exp.range("a50").options(index=False).value = final_df_Put
 
     except Exception as e:
         print(e) 

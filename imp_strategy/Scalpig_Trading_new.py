@@ -68,9 +68,37 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 
 #credi_ash = credentials("ASHWIN")
 
-credi_har = credentials("HARESH")
-credi_ash = credentials("ASHWIN")
-cred = [credi_har,credi_ash]
+users = ["HARESH","ASHWIN","ALPESH"]
+credi_har = None
+credi_ash = None
+credi_alp = None
+
+while True:
+    if credi_har is None and credi_ash is None and credi_alp is None:
+        try:
+            for us in users:
+                print("1")
+                if us == "HARESH":
+                    credi_har = credentials("HARESH")
+                    if credi_har.request_token is None:
+                        credi_har = credentials("HARESH")
+                        print(credi_har.request_token)
+                if us == "ASHWIN":
+                    credi_ash = credentials("ASHWIN")
+                    if credi_ash.request_token is None:
+                        credi_ash = credentials("ASHWIN")
+                        print(credi_ash.request_token)
+                if us == "ALPESH":
+                    credi_alp = credentials("ALPESH")
+                    if credi_alp.request_token is None:
+                        credi_alp = credentials("ALPESH")
+                        print(credi_alp.request_token)
+            break
+        except:
+            print("credentials Download Error....")
+            time.sleep(5)
+
+cred = [credi_har,credi_ash,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
