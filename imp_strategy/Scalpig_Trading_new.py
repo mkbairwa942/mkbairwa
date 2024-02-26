@@ -475,9 +475,9 @@ while True:
         if i:
             try:
                 
-                print("1")
+                #print("1")
                 trade_info = trading_info[idx]
-                print(trade_info)
+                #print(trade_info)
                 Exch = trade_info[2]
                 Exc_typ = trade_info[3]
                 typee = trade_info[4]
@@ -494,10 +494,10 @@ while True:
                 sl_qty = trade_info[16]
                 
 
-                print(i)
-                print(scpt_code)
-                print(buy_lst)
-                print(sell_lst)     
+                # print(i)
+                # print(scpt_code)
+                # print(buy_lst)
+                # print(sell_lst)     
                 if buyy is None:
                     if scpt_code in buy_lst:
                         buy_lst.remove(scpt_code)
@@ -506,10 +506,10 @@ while True:
                         sell_lst.remove(scpt_code)
                 if slll is not None and buyy is not None:
                     var =  ((lt_spt)*0.2)/100                    
-                    print(var)
-                    print(scpt_code)
-                    print(buy_lst)
-                    print("-01")
+                    # print(var)
+                    # print(scpt_code)
+                    # print(buy_lst)
+                    # print("-01")
                     if typee == "CE" and slll < lt_spt and slll > lt_spt-var:  
 
                         if scpt_code in buy_lst: 
@@ -530,13 +530,13 @@ while True:
                                     order = credi.place_order(OrderType='B',Exchange=str(Exch),ExchangeType=str(Exc_typ), ScripCode = int(scpt_code), Qty=int(buyy)*int(lotee),Price=float(pricee),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                     print("Buy Put Order Executed")
                                     buy_lst.append(scpt_code)
-                print("0")        
+                #print("0")        
 
                 if mtomm is not None:
-                    print("01")
+                    #print("01")
                     if selll is not None:
-                         print("02")
-                         if float(mtomm) > 0 or float(mtomm) < 0:
+                         #print("02")
+                        if float(mtomm) > 0 or float(mtomm) < 0:
                             if scpt_code in sell_lst: 
                                 print(str(scpt_code)+" Sell Already Exited")
                             else:
@@ -545,13 +545,13 @@ while True:
                                         order = credi.place_order(OrderType='S',Exchange=str(Exch),ExchangeType=str(Exc_typ), ScripCode = int(scpt_code), Qty=int(selll)*int(lotee),Price=float(pricee),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                         print("Sell Order Executed")
                                         sell_lst.append(scpt_code)
-                print("1")  
+                #print("1")  
                 if mtomm is not None: 
-                    print("11")
+                    #print("11")
                     if slll is not None:
-                        print("12")
+                        #print("12")
                         if float(mtomm) > 0 or float(mtomm) < 0:
-                            print("13")
+                            #print("13")
                             if typee == "CE" and lt_spt < slll:
                                 if scpt_code in sell_lst: 
                                     print(str(scpt_code)+" call Stop Loss Hit Already")
@@ -570,22 +570,22 @@ while True:
                                             order = credi.place_order(OrderType='S',Exchange=str(Exch),ExchangeType=str(Exc_typ), ScripCode = int(scpt_code), Qty=int(by_qty)-int(sl_qty),Price=float(pricee),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                             print("Put Stop Loss Hit")
                                             sell_lst.append(scpt_code)
-                print("2")   
+                #print("2")   
                 if mtomm is not None:  
-                    print("21")
+                    #print("21")
                     if tgtt is not None:
-                        print("22")
+                        #print("22")
                         if float(mtomm) > 0 or float(mtomm) < 0:
-                            print("23")
+                            #print("23")
                             if typee == "CE" and lt_spt > tgtt:
-                                print("24")
+                                #print("24")
                                 if scpt_code in sell_lst: 
-                                    print("25")
+                                    #print("25")
                                     print(str(scpt_code)+" Call Target Hit Already ")
                                 else:
-                                    print("26")
+                                    #print("26")
                                     if orders.upper() == "YES" or orders.upper() == "":  
-                                        print("27")
+                                        #print("27")
                                         ide = idx+2
                                         print(ide)
                                             #dt.range(f"a1:d1").value
@@ -593,18 +593,18 @@ while True:
                                         #for credi in cred:
                                             #order = credi.place_order(OrderType='S',Exchange=str(Exch),ExchangeType=str(Exc_typ), ScripCode = int(scpt_code), Qty=int(by_qty)-int(sl_qty),Price=float(pricee),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                         print("Call Target Hit")
-                                        print("28")
+                                        #print("28")
                                         sell_lst.append(scpt_code)
-                                        print("29")
+                                        #print("29")
                             if typee == "PE" and lt_spt < tgtt:
-                                print("30")
+                                #print("30")
                                 if scpt_code in sell_lst: 
-                                    print("31")
+                                    #print("31")
                                     print(str(scpt_code)+" Put Target Hit Already")
                                 else:
-                                    print("32")
+                                    #print("32")
                                     if orders.upper() == "YES" or orders.upper() == "":  
-                                        print("33")
+                                        #print("33")
                                         #for credi in cred:
                                             # print("34")
                                         
@@ -614,11 +614,11 @@ while True:
                                         dt.range(f'x{ide}').value = int(by_qty)-int(sl_qty)
                                             #order = credi.place_order(OrderType='S',Exchange=str(Exch),ExchangeType=str(Exc_typ), ScripCode = int(scpt_code), Qty=int(by_qty)-int(sl_qty),Price=float(pricee),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                         print("Put Target Hit")
-                                        print("35")
+                                        #print("35")
                                         sell_lst.append(scpt_code)
-                                        print("36")
+                                        #print("36")
 
-                print("3")    
+                #print("3")    
             except Exception as e:
                 print(e)            
         idx += 1
