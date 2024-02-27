@@ -428,7 +428,7 @@ else:
 while True:
     print(buy_order_list_dummy)
     print(sell_order_list_dummy)
-    df = client.historical_data('N', 'C', symbol1, '1m', from_d,to_d)
+    df = client.historical_data('N', 'C', symbol1, '5m', from_d,to_d)
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
     df['Scripcode'] = int(symbol1)
@@ -443,6 +443,10 @@ while True:
     df['SMA_29'] = np.round((pta.sma(df['Close'],length=29)),2)
     df['SMA_60'] = np.round((pta.sma(df['Close'],length=60)),2)
     ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'])
+    supertrend = pta.supertrend(high=df["High"],low=df["Low"],close=df["Close"],length=20,multiplier=2)
+    print(supertrend)
+    df['SuperTrend'] = np.round((supertrend[supertrend.columns[0]]),2)   
+    df['SuperTrend1'] = np.round((supertrend[supertrend.columns[1]]),2)   
     df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
     df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
