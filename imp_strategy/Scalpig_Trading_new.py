@@ -68,13 +68,13 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 
 #credi_ash = credentials("ASHWIN")
 
-users = ["HARESH","ASHWIN","ALPESH"]
+users = ["HARESH","ASHWIN"]#,"ALPESH"]
 credi_har = None
 credi_ash = None
-credi_alp = None
+#credi_alp = None
 
 while True:
-    if credi_har is None and credi_ash is None and credi_alp is None:
+    if credi_har is None and credi_ash is None:# and credi_alp is None:
         try:
             for us in users:
                 print("1")
@@ -88,17 +88,17 @@ while True:
                     if credi_ash.request_token is None:
                         credi_ash = credentials("ASHWIN")
                         print(credi_ash.request_token)
-                if us == "ALPESH":
-                    credi_alp = credentials("ALPESH")
-                    if credi_alp.request_token is None:
-                        credi_alp = credentials("ALPESH")
-                        print(credi_alp.request_token)
+                # if us == "ALPESH":
+                #     credi_alp = credentials("ALPESH")
+                #     if credi_alp.request_token is None:
+                #         credi_alp = credentials("ALPESH")
+                #         print(credi_alp.request_token)
             break
         except:
             print("credentials Download Error....")
             time.sleep(5)
 
-cred = [credi_har,credi_ash,credi_alp]
+cred = [credi_har,credi_ash]#,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -304,9 +304,7 @@ buy_lst = []
 sell_lst = []
 orders = "YES"
 
-while True:
-
-    
+while True:   
     
     scpt = by.range(f"c{2}:c{15}").value
     scpt1 = by.range(f"a{2}:d{15}").value
@@ -370,7 +368,7 @@ while True:
 
         #print(dfg6.head(1))
         Spot = int(dfg6['Spot'])   
-        print("Spot Price is : "+str(Spot)) 
+        #print("Spot Price is : "+str(Spot)) 
         stk_name = i
         dfc2 = exchange_opt[exchange_opt['Root'] == stk_name]
         #print(np.unique(dfc2['Root']).tolist())
