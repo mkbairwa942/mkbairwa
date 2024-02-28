@@ -249,9 +249,9 @@ tsl1 = 1-(TSL/100)
 print(tsl1)
 
 
-def order_book_func():
+def order_book_func(cred):
     try:
-        ordbook = pd.DataFrame(credi_har.order_book())
+        ordbook = pd.DataFrame(cred.order_book())
         ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
         #ordbook[['Root']] = ordbook['ScripName'].str.split(' ',expand=True)
         #ordbook['Root'] = ordbook['ScripName'].tolist()#.str.split(" ")[0]
@@ -276,7 +276,7 @@ def order_book_func():
                 d2 = d1 + timedelta(hours = 5.5)
                 Datetimeee.append(d2)
             ordbook1['Datetimeee'] = Datetimeee
-            ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot','OrderStatus', 'OrderValidUpto','ScripName','Root','AtMarket']]
+            ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot','ExchOrderID','OrderStatus', 'OrderValidUpto','ScripName','Root','AtMarket']]
             ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
             pos.range("a1").options(index=False).value = ordbook1
         else:
@@ -287,12 +287,14 @@ def order_book_func():
 
 def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee):
     timees = list_to_append
-    dfg3 = df
-    dfg3 = dfg3.astype({"Datetime": "datetime64"})   
+    dfg4 = df.tail(1)
     
-    dfg3['Entry_Date'] = timees
-    dfg3['OK_DF'] = np.where(dfg3['Entry_Date'] == dfg3['Datetime'],"OK","")
-    dfg4 = dfg3[(dfg3["OK_DF"] == "OK")]
+    # dfg3 = df
+    # dfg3 = dfg3.astype({"Datetime": "datetime64"})   
+    
+    # dfg3['Entry_Date'] = timees
+    # dfg3['OK_DF'] = np.where(dfg3['Entry_Date'] == dfg3['Datetime'],"OK","")
+    # dfg4 = dfg3[(dfg3["OK_DF"] == "OK")]
     print(timees)
     print(dfg4)
     if dfg4.empty:
@@ -300,11 +302,12 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     else:
         if order_side == "B":
             price_of_stoc = float(dfg4['Close'])
-            buff = (price_of_stoc*Buy_price_buffer)/100
-            price_of_stock = round((price_of_stoc+buff),1)
+            # buff = (price_of_stoc*Buy_price_buffer)/100
+            # price_of_stock = round((price_of_stoc+buff),1)
             # print(price_of_stoc)
             # print(buff)
             # print(price_of_stock)
+            price_of_stock = price_of_stoc
         else:
             price_of_stock = float(dfg4['Close']) 
         # timee = str((dfg3['Datetime'].values)[0])[0:19] 
@@ -376,9 +379,9 @@ if posit.empty:
     sell_order_list_dummy = []
     buy_root_list_dummy = []
 else:
-    buy_order = order_book_func()
-    buy_order_li = buy_order[buy_order['BuySell'] == 'B']
-    exit_order_li = buy_order[buy_order['BuySell'] == 'S']
+    buy_order = order_book_func(credi_har)
+    buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
+    exit_order_li = buy_order[(buy_order['BuySell'] == 'S') & (buy_order['OrderStatus'] == 'Fully Executed')]
     buy_order_list_dummy = (np.unique([str(i) for i in buy_order_li['Datetimeee']])).tolist()
     sell_order_list_dummy = (np.unique([str(i) for i in exit_order_li['Datetimeee']])).tolist()
     buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
@@ -386,8 +389,18 @@ else:
 adx_parameter = 0.60
 sll = -300
 while True:
-    # buy_order_li1 = buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
-    # st1.range("a1").options(index=False).value = buy_order_li1
+    for credi in cred:
+        buy_order = order_book_func(credi)
+        buy_order_li1 = buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Pending')]
+        if buy_order_li1.empty:
+            pass
+        else:
+            exc_order_id = (np.unique([int(i) for i in buy_order_li1['ExchOrderID']])).tolist()[0] 
+            print(exc_order_id)
+            cancel_bulk=[{"ExchOrderID": f"{exc_order_id}"}]
+            credi.cancel_bulk_order(cancel_bulk)
+            buy_order_list_dummy = []
+            st1.range("a1").options(index=False).value = buy_order_li1
     if posit.empty:
         print("Position is Empty")
     else:
@@ -404,8 +417,8 @@ while True:
 #                     # postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
 #                     # print(f"Ledger Balance is : {postt}")            
 #                     order = credi.place_order(OrderType="S",Exchange='N',ExchangeType='D', ScripCode = scrip_code1, Qty=qtyy1,Price=price_of_stock1, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-    # print(buy_order_list_dummy)
-    # print(sell_order_list_dummy)
+    print(buy_order_list_dummy)
+    print(sell_order_list_dummy)
     start_time = time.time()
     five_df1 = pd.DataFrame()
     five_df2 = pd.DataFrame()
@@ -537,23 +550,27 @@ while True:
                 Call_sl_ord6 = Call_sl_ord5.tail(1)
                 
                 #Call_sl_Scripcodee = int(float(Call_sl_ord6['Scripcode']))
-                Call_sl_Name = np.unique([str(i) for i in positt['ScripName']]).tolist()[0] 
-                Call_sl_Scripcodee = int(float(positt['ScripCode']))
-                Call_sl_Qtyy = int(np.unique(Call_sl_ord6['LotSize']))
-                
-                
+                if posit.empty:
+                    pass
+                else:
+                    positt = posit
+                    Call_sl_Name = np.unique([str(i) for i in positt['ScripName']]).tolist()[0] 
+                    Call_sl_Scripcodee = int(float(positt['ScripCode']))
+                    Call_sl_Qtyy = int(np.unique(Call_sl_ord6['LotSize']))
+                    
+                    
 
-                print(Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_time)
-                #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
-                
-                if not Call_sl_ord6.empty:                    
-                    dfg1_Call_sl = credi_har.historical_data('N', 'D', Call_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                    if Call_sl_time in sell_order_list_dummy: 
-                        print(str(stk_name)+" Call is Already Exit")
-                        print("----------------------------------------")
-                    else:
-                        print("Call Exit")                        
-                        rde_exec = order_execution(dfg1_Call_sl,sell_order_list_dummy,Call_sl_time,telegram_msg,orders,"IDX OPT","CALL EXIT","S",Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_Name)
+                    print(Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_time)
+                    #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
+                    
+                    if not Call_sl_ord6.empty:                    
+                        dfg1_Call_sl = credi_har.historical_data('N', 'D', Call_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+                        if Call_sl_time in sell_order_list_dummy: 
+                            print(str(stk_name)+" Call is Already Exit")
+                            print("----------------------------------------")
+                        else:
+                            print("Call Exit")                        
+                            rde_exec = order_execution(dfg1_Call_sl,sell_order_list_dummy,Call_sl_time,telegram_msg,orders,"IDX OPT","CALL EXIT","S",Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_Name)
                        
             Put_sl_df = dfg1[(dfg1["Signal1"] == "Put_Exit")]
             Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -581,21 +598,25 @@ while True:
                 Put_sl_ord5 = Put_sl_ord4[(Put_sl_ord4['StrikeRate'] > Put_sl_Spot)] 
                 Put_sl_ord6 = Put_sl_ord5.head(1)
                 #Put_sl_Scripcodee = int(float(Put_sl_ord6['Scripcode']))
-                Put_sl_Name = np.unique([str(i) for i in positt['ScripName']]).tolist()[0]
-                Put_sl_Scripcodee = int(float(positt['ScripCode']))
-                Put_sl_Qtyy = int(np.unique(Put_sl_ord6['LotSize']))
+                if posit.empty:
+                    pass
+                else:
+                    positt = posit
+                    Put_sl_Name = np.unique([str(i) for i in positt['ScripName']]).tolist()[0]
+                    Put_sl_Scripcodee = int(float(positt['ScripCode']))
+                    Put_sl_Qtyy = int(np.unique(Put_sl_ord6['LotSize']))
 
-                print(Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_time)
-                #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
-                
-                if not Put_sl_ord6.empty:
-                    dfg1_Put_sl = credi_har.historical_data('N', 'D', Put_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                    if Put_sl_time in sell_order_list_dummy: 
-                        print(str(stk_name)+" Put is Already Exit")
-                        print("----------------------------------------")
-                    else:
-                        print("Put Exit")                        
-                        rde_exec = order_execution(dfg1_Put_sl,sell_order_list_dummy,Put_sl_time,telegram_msg,orders,"IDX OPT","PUT EXIT","S",Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_Name)
+                    print(Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_time)
+                    #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
+                    
+                    if not Put_sl_ord6.empty:
+                        dfg1_Put_sl = credi_har.historical_data('N', 'D', Put_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+                        if Put_sl_time in sell_order_list_dummy: 
+                            print(str(stk_name)+" Put is Already Exit")
+                            print("----------------------------------------")
+                        else:
+                            print("Put Exit")                        
+                            rde_exec = order_execution(dfg1_Put_sl,sell_order_list_dummy,Put_sl_time,telegram_msg,orders,"IDX OPT","PUT EXIT","S",Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_Name)
 
             try:
                 final_call = pd.concat([Call_by_df1, Call_sl_df1])
