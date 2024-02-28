@@ -245,6 +245,9 @@ UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
 SLL = 1
 TSL = 1
+adx_parameter = 0.60
+slll = -600
+tgtt = 1200
 tsl1 = 1-(TSL/100)
 print(tsl1)
 
@@ -386,8 +389,7 @@ else:
     sell_order_list_dummy = (np.unique([str(i) for i in exit_order_li['Datetimeee']])).tolist()
     buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
 
-adx_parameter = 0.60
-sll = -300
+
 while True:
     for credi in cred:
         buy_order = order_book_func(credi)
@@ -401,22 +403,22 @@ while True:
             credi.cancel_bulk_order(cancel_bulk)
             buy_order_list_dummy = []
             st1.range("a1").options(index=False).value = buy_order_li1
+    
     if posit.empty:
         print("Position is Empty")
     else:
         positt = posit#[(posit['MTOM'] != 0)]
-#         stop_loss = posit[(posit['MTOM'] <= sll)]
-#         if orders.upper() == "YES" or orders.upper() == "": 
-#             if stop_loss.empty:
-#                 print("NO Loss Less than -300")
-#             else:
-#                 scrip_code1 = int(float(stop_loss['ScripCode'])) 
-#                 qtyy1 = int(np.unique(stop_loss['BuyQty']))
-#                 price_of_stock1 = float(stop_loss['LTP'])  
-#                 for credi in cred:
-#                     # postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
-#                     # print(f"Ledger Balance is : {postt}")            
-#                     order = credi.place_order(OrderType="S",Exchange='N',ExchangeType='D', ScripCode = scrip_code1, Qty=qtyy1,Price=price_of_stock1, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+        exitt = positt[(positt['MTOM'] <= slll) | (positt['MTOM'] >= tgtt)]
+        if orders.upper() == "YES" or orders.upper() == "": 
+            if exitt.empty:
+                pass
+            else:
+                scrip_code1 = int(float(exitt['ScripCode'])) 
+                qtyy1 = int(np.unique(exitt['BuyQty']))
+                price_of_stock1 = float(exitt['LTP'])  
+                for credi in cred:         
+                    order = credi.place_order(OrderType="S",Exchange='N',ExchangeType='D', ScripCode = scrip_code1, Qty=qtyy1,Price=price_of_stock1, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+    
     print(buy_order_list_dummy)
     print(sell_order_list_dummy)
     start_time = time.time()
