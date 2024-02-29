@@ -199,7 +199,7 @@ st = wb.sheets("stats")
 exp = wb.sheets("Expiry")
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
-#exc.range("a1").options(index=False).value = script_code_5paisa
+exc.range("a1").options(index=False).value = script_code_5paisa
 
 segment = "all"
 '''

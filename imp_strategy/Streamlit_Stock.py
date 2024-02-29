@@ -27,7 +27,7 @@ to_d = (date.today())
 to_days = (date.today()-timedelta(days=1))
 # to_d = date(2023, 1, 20)
 
-days_365 = (date.today() - timedelta(days=365))
+days_365 = (date.today() - timedelta(days=50))
 print(days_365)
 
 # holida = pd.read_excel('D:\STOCK\Capital_vercel_new\strategy\holida.xlsx')
@@ -126,15 +126,75 @@ def fii_vol_down(lastTradingDay):
 
 # dfg = bhavcopy(last_trading_day)
 # print(dfg.head(2))
+@st.cache_data
+def load_exc():
+    '''
+    all - scrips across all segments
+    bse_eq - BSE Equity
+    nse_eq - NSE Equity
+    nse_fo - NSE Derivatives
+    bse_fo - BSE Derivatives
+    ncd_fo - NSE Currecny
+    mcx_fo - MCX
+    '''
+    segment_fo = "nse_fo"
+    exc_fo = f"https://Openapi.5paisa.com/VendorsAPI/Service1.svc/ScripMaster/segment/{segment_fo}"
+    exc_fo1 = pd.read_csv(exc_fo,low_memory=False)
+    exc_fo2 = exc_fo1[(exc_fo1["Exch"] == "N") & (exc_fo1["Series"] == "XX")]# & (script_code_5paisa1['ExchType'].isin(['D']))]
+    exc_fo3 = exc_fo2[(exc_fo2['Expiry'].apply(pd.to_datetime) == current_trading_day)]
+    exc_fo_list = (np.unique(exc_fo3['SymbolRoot']).tolist())
+    # print(exc_fo_list)
+    # print(len(exc_fo_list))
 
+    segment_eq = "nse_eq"
+    exc_eq = f"https://Openapi.5paisa.com/VendorsAPI/Service1.svc/ScripMaster/segment/{segment_eq}"
+    exc_eq1 = pd.read_csv(exc_eq,low_memory=False)
+    #exc_eq2 = exc_eq1[(exc_eq1["Exch"] == "N") & (exc_eq1["Series"] == "XX")]# & (script_code_5paisa1['ExchType'].isin(['D']))]
+    exc_eq2 = exc_eq1[(exc_eq1['SymbolRoot'].isin(exc_fo_list))]
+
+
+    # print(exc_eq_list_scpt)
+    # print(len(exc_eq_list_scpt))
+    # print(exc_eq_list_sym)
+    # print(len(exc_eq_list_sym))
+    return exc_eq2
+
+
+
+symb  = load_exc()
+# print(symb)
+print(len(symb))
+exc_eq_list_scpt = (np.unique(symb['ScripCode']).tolist())
+exc_eq_list_sym = (np.unique(symb['SymbolRoot']).tolist())
 stock = 999920005
-df = client.historical_data('N', 'C', stock, '1d', days_365,current_trading_day)
+
+
+
+st.sidebar.header('User Input Features')
+select_symbol = st.sidebar.selectbox('Symbol',list(exc_eq_list_sym))
+#select_symbol = st.sidebar.multiselect('Symbol',exc_eq_list_sym,exc_eq_list_sym)
+df_frame = symb[symb['SymbolRoot'] == select_symbol]
+df_scpt = (np.unique([int(i) for i in df_frame['ScripCode']])).tolist()[0]
+print(select_symbol)
+df = client.historical_data('N', 'C', df_scpt, '1d', days_365,current_trading_day)
+df = df.astype({"Datetime": "datetime64[ns]"})    
+df["Date"] = df["Datetime"].dt.date
+df.set_index("Date", inplace = True)
 print(df.head(1))
+st.title("Simple Stock Price App")
 
-
-st.write("""
-         # Simple Stock Price App
-         Shown are the stock closing price and volume of Google!
-         """)
+st.subheader('Shown are the stock closing price and volume of "'+str(select_symbol) + '" for 50 Days Data')
+        
+         
+st.markdown("""This app is simple web scraping""")
 st.line_chart(df['Close'])
 st.line_chart(df['Volume'])
+
+
+st.header('Display Stocks Stats of Selected Stocks')
+st.write('Data Dimension '+str(df.shape[0])+ ' rows and ' + str(df.shape[1])+ ' columns')
+st.dataframe(df)
+
+
+
+# python -m streamlit run Streamlit_Stock.py
