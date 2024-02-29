@@ -428,11 +428,13 @@ def get_fibonachi(high,low,direct,fib_level):
 # print(Dummy_positionss.head(1))
 
 while True:
-    oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
-    pos.range("a1").value = pd.DataFrame(client.margin())
-    pos.range("a10").value = pd.DataFrame(client.holdings())
-    pos.range("a20").value = pd.DataFrame(client.positions()) 
-      
+    try:
+        oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
+        pos.range("a1").value = pd.DataFrame(client.margin())
+        pos.range("a10").value = pd.DataFrame(client.holdings())
+        pos.range("a20").value = pd.DataFrame(client.positions()) 
+    except Exception as e:
+        print(e)
     # pos.range("a12").value = pd.DataFrame(client.get_tradebook())
     
     if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:

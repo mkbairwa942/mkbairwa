@@ -655,7 +655,7 @@ while True:
                                 if trade_info[2].upper() == "BUY" and trade_info[3].upper() == "SELL":
                                     print("Sell order") 
                                     #squareoff = client.squareoff_all() 
-                                    dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"S")
+                                    #dt.range(f"u{idx +2}").value = place_trade(Exche,ExchTypee,Namee,Scripcodee,int(trade_info[0]),float(trade_info[1]),"S")
 
                                 if trade_info[2].upper() == "SELL" and trade_info[3] is None:  
                                     print("Sell order")   
