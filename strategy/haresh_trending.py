@@ -391,12 +391,12 @@ else:
 
 
 while True:
-    for credi in cred:
-        buy_order = order_book_func(credi)
-        buy_order_li1 = buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Pending')]
-        if buy_order_li1.empty:
+    for credi in cred:        
+        if posit.empty:
             pass
         else:
+            buy_order = order_book_func(credi)
+            buy_order_li1 = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Pending')]
             exc_order_id = (np.unique([int(i) for i in buy_order_li1['ExchOrderID']])).tolist()[0] 
             print(exc_order_id)
             cancel_bulk=[{"ExchOrderID": f"{exc_order_id}"}]
