@@ -207,7 +207,6 @@ def load_data():
         st.line_chart(dff['Close'])
         st.line_chart(dff['Volume'])
 
-
         st.header('Display Stocks Stats of Selected Stocks')
         st.write('Data Dimension '+str(dff.shape[0])+ ' rows and ' + str(dff.shape[1])+ ' columns')
         st.dataframe(dff)
