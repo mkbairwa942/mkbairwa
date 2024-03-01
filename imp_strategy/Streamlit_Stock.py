@@ -1,4 +1,5 @@
 #import yfinance as yf
+from contourpy import Mpl2005ContourGenerator
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -9,7 +10,8 @@ from io import BytesIO
 from zipfile import ZipFile
 #from five_paisa1 import *
 from five_paisa import *
-
+import time
+import multiprocessing as mp
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -140,8 +142,9 @@ def load_exc():
     segment_fo = "nse_fo"
     exc_fo = f"https://Openapi.5paisa.com/VendorsAPI/Service1.svc/ScripMaster/segment/{segment_fo}"
     exc_fo1 = pd.read_csv(exc_fo,low_memory=False)
-    exc_fo2 = exc_fo1[(exc_fo1["Exch"] == "N") & (exc_fo1["Series"] == "XX")]# & (script_code_5paisa1['ExchType'].isin(['D']))]
-    exc_fo3 = exc_fo2[(exc_fo2['Expiry'].apply(pd.to_datetime) == current_trading_day)]
+    # print(len(exc_fo1))
+    exc_fo2 = exc_fo1[(exc_fo1["Exch"] == "N")]# & (exc_fo1["Series"] == "XX")]# & (script_code_5paisa1['ExchType'].isin(['D']))]
+    exc_fo3 = exc_fo2[(exc_fo2['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
     exc_fo_list = (np.unique(exc_fo3['SymbolRoot']).tolist())
     # print(exc_fo_list)
     # print(len(exc_fo_list))
@@ -149,9 +152,10 @@ def load_exc():
     segment_eq = "nse_eq"
     exc_eq = f"https://Openapi.5paisa.com/VendorsAPI/Service1.svc/ScripMaster/segment/{segment_eq}"
     exc_eq1 = pd.read_csv(exc_eq,low_memory=False)
-    #exc_eq2 = exc_eq1[(exc_eq1["Exch"] == "N") & (exc_eq1["Series"] == "XX")]# & (script_code_5paisa1['ExchType'].isin(['D']))]
+    # print(len(exc_eq1))
+    # exc_eq2 = exc_eq1[(exc_eq1["Exch"] == "N") & (exc_eq1["Series"] == "XX")]# & (script_code_5paisa1['ExchType'].isin(['D']))]
     exc_eq2 = exc_eq1[(exc_eq1['SymbolRoot'].isin(exc_fo_list))]
-
+    # print(exc_eq2)
 
     # print(exc_eq_list_scpt)
     # print(len(exc_eq_list_scpt))
@@ -163,9 +167,10 @@ def load_exc():
 
 symb  = load_exc()
 # print(symb)
-print(len(symb))
+# print(len(symb))
 exc_eq_list_scpt = (np.unique(symb['ScripCode']).tolist())
 exc_eq_list_sym = (np.unique(symb['SymbolRoot']).tolist())
+# print(exc_eq_list_sym)
 stock = 999920005
 
 
@@ -175,25 +180,43 @@ select_symbol = st.sidebar.selectbox('Symbol',list(exc_eq_list_sym))
 #select_symbol = st.sidebar.multiselect('Symbol',exc_eq_list_sym,exc_eq_list_sym)
 df_frame = symb[symb['SymbolRoot'] == select_symbol]
 df_scpt = (np.unique([int(i) for i in df_frame['ScripCode']])).tolist()[0]
-print(select_symbol)
-df = client.historical_data('N', 'C', df_scpt, '1d', days_365,current_trading_day)
-df = df.astype({"Datetime": "datetime64[ns]"})    
-df["Date"] = df["Datetime"].dt.date
-df.set_index("Date", inplace = True)
-print(df.head(1))
+
 st.title("Simple Stock Price App")
-
 st.subheader('Shown are the stock closing price and volume of "'+str(select_symbol) + '" for 50 Days Data')
-        
-         
 st.markdown("""This app is simple web scraping""")
-st.line_chart(df['Close'])
-st.line_chart(df['Volume'])
+print(select_symbol)
+
+def generate_new_data():
+# loop = st.checkbox('Update Continuously')
+# while loop:
+    while True:
+        time.sleep(5)
+        df = client.historical_data('N', 'C', df_scpt, '1m', last_trading_day,current_trading_day)
+        df = df.astype({"Datetime": "datetime64[ns]"})    
+        df["Date"] = df["Datetime"].dt.date
+        df.set_index("Datetime", inplace = True)
+        print(df.tail(2))  
+        return df
+        
+
+def load_data():
+    # loop = st.checkbox('Update Continuously')
+    # dff = generate_new_data()
+    while True:
+        dff = generate_new_data()
+        st.line_chart(dff['Close'])
+        st.line_chart(dff['Volume'])
 
 
-st.header('Display Stocks Stats of Selected Stocks')
-st.write('Data Dimension '+str(df.shape[0])+ ' rows and ' + str(df.shape[1])+ ' columns')
-st.dataframe(df)
+        st.header('Display Stocks Stats of Selected Stocks')
+        st.write('Data Dimension '+str(dff.shape[0])+ ' rows and ' + str(dff.shape[1])+ ' columns')
+        st.dataframe(dff)
+
+while True:
+    load_data()
+
+
+
 
 
 

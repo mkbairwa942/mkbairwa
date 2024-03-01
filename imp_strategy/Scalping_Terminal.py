@@ -467,7 +467,8 @@ while True:
                         'LTP','BuyAvgRate','SellAvgRate','BuyQty','SellQty','BookedPL','MTOM']]
             dfgg6.sort_values(['Spot','Type'], ascending=[False, True], inplace=True)
             dt.range(f"t1:x1").value = ["Buy_lvl","TGT","SLL","BUY","SELL","Status"]   
-            #dt.range("a2:s15").value = None         
+            #dt.range("a2:s15").value = None     
+            dfgg6.sort_values(['BookedPL'], ascending=[True], inplace=True)    
             dt.range("a1").options(index=False).value = dfgg6
 
     except Exception as e:
