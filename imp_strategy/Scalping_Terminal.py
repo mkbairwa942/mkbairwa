@@ -200,7 +200,9 @@ st4 = wb.sheets("Stat4")
 # ob.range("a:aj").value = None
 # ob1.range("a:al").value = None
 # st.range("a:u").value = None
-
+script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
+script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
+script_code_5paisa.rename(columns={'Scripcode': 'ScripCode',}, inplace=True)
 def exch_down():
     try:
         script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
@@ -269,8 +271,8 @@ def exch_down():
     # print(exchange_new.shape[0])
     # print(exchange_new.head(20))
     return exchange_new
-
-exchange_new = exch_down()
+exchange_new = script_code_5paisa
+#exchange_new = exch_down()
 exchange_cash = exchange_new[exchange_new['ExchType'] == 'C'] 
 exchange_opt = exchange_new[exchange_new['ExchType'] == 'D'] 
 
