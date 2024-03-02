@@ -189,29 +189,31 @@ print(select_symbol)
 def generate_new_data():
 # loop = st.checkbox('Update Continuously')
 # while loop:
-    while True:
-        time.sleep(5)
-        df = client.historical_data('N', 'C', df_scpt, '1m', last_trading_day,current_trading_day)
-        df = df.astype({"Datetime": "datetime64[ns]"})    
-        df["Date"] = df["Datetime"].dt.date
-        df.set_index("Datetime", inplace = True)
-        print(df.tail(2))  
-        return df
+    # while True:
+    time.sleep(5)
+    df = client.historical_data('N', 'C', df_scpt, '1m', last_trading_day,current_trading_day)
+    df = df.astype({"Datetime": "datetime64[ns]"})    
+    df["Date"] = df["Datetime"].dt.date
+    df.set_index("Datetime", inplace = True)
+    print(df.tail(2))  
+    return df
         
 
 def load_data():
     # loop = st.checkbox('Update Continuously')
     # dff = generate_new_data()
-    while True:
-        dff = generate_new_data()
-        st.line_chart(dff['Close'])
-        st.line_chart(dff['Volume'])
+    # while True:
+    dff = generate_new_data()
+    st.line_chart(dff['Close'])
+    st.line_chart(dff['Volume'])
 
-        st.header('Display Stocks Stats of Selected Stocks')
-        st.write('Data Dimension '+str(dff.shape[0])+ ' rows and ' + str(dff.shape[1])+ ' columns')
-        st.dataframe(dff)
+    st.header('Display Stocks Stats of Selected Stocks')
+    st.write('Data Dimension '+str(dff.shape[0])+ ' rows and ' + str(dff.shape[1])+ ' columns')
+    st.dataframe(dff)
 
-while True:
+
+loop = st.checkbox('Update Continuously')
+while loop:
     load_data()
 
 
