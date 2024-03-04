@@ -52,13 +52,13 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 # username = "HARESH"
 # username1 = str(username)
 # client = credentials(username1)
-users = ["HARESH","ASHWIN"]#,"ALPESH"]
+users = ["HARESH"]#,"ASHWIN","ALPESH"]
 credi_har = None
-credi_ash = None
-#credi_alp = None
+# credi_ash = None
+# credi_alp = None
 
 while True:
-    if credi_har is None and credi_ash is None:# and credi_alp is None:
+    if credi_har is None:# and credi_ash is None and credi_alp is None:
         try:
             for us in users:
                 print("1")
@@ -67,11 +67,11 @@ while True:
                     if credi_har.request_token is None:
                         credi_har = credentials("HARESH")
                         print(credi_har.request_token)
-                if us == "ASHWIN":
-                    credi_ash = credentials("ASHWIN")
-                    if credi_ash.request_token is None:
-                        credi_ash = credentials("ASHWIN")
-                        print(credi_ash.request_token)
+                # if us == "ASHWIN":
+                #     credi_ash = credentials("ASHWIN")
+                #     if credi_ash.request_token is None:
+                #         credi_ash = credentials("ASHWIN")
+                #         print(credi_ash.request_token)
                 # if us == "ALPESH":
                 #     credi_alp = credentials("ALPESH")
                 #     if credi_alp.request_token is None:
@@ -82,7 +82,7 @@ while True:
             print("credentials Download Error....")
             time.sleep(5)
 
-cred = [credi_har,credi_ash]#,credi_alp]
+cred = [credi_har]#,credi_ash,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -245,10 +245,13 @@ UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
 SLL = 1
 TSL = 1
-adx_parameter = 0.60
+adx_parameter = 0.40
+sam_21_slop = 1.5
+dema_21_slope = 2
 slll = -600
 tgtt = 1200
 tsl1 = 1-(TSL/100)
+lotsize = 2
 print(tsl1)
 
 
@@ -322,7 +325,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
             for credi in cred:
                 #postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
                 #print(f"Ledger Balance is : {postt}") 
-                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=qtyy,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=qtyy*lotsize,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
         else:
             print(f"Real {CALL_PUT} Order are OFF")
         print(f"1 Minute {CALL_PUT} Data Selected of "+str(namee)+" ("+str(scrip_code)+")")
@@ -342,6 +345,16 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
     #df['Scripcode'] = int(symbol1)
+    df['HA_Close']=(df.Open + df.High + df.Low + df.Close)/4
+    df.reset_index(inplace=True)
+    ha_open = [ (df.Open[0] + df.Close[0]) / 2 ]
+    [ ha_open.append((ha_open[i] + df.HA_Close.values[i]) / 2) \
+    for i in range(0, len(df)-1) ]
+    df['HA_Open'] = ha_open
+    df.set_index('index', inplace=True)
+    df['HA_High']=df[['HA_Open','HA_Close','High']].max(axis=1)
+    df['HA_Low']=df[['HA_Open','HA_Close','Low']].min(axis=1)
+    df['SLL_NEW'] = df["HA_Low"].shift(1)
     df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))
     df['Price_break'] = np.where((df['Close'] > (df.High.rolling(5).max()).shift(-5)),
                                         'Pri_Up_brk',
@@ -352,20 +365,23 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
     ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'],length=14)
+    #df['SLL_Diff'] = df['Close'] - df['SLL_NEW']
     df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
     df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
     df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
     df['Adx_ok'] = np.where(df['Adx_diff'] > adx_parameter,"ok","")
     df['SMA_21_diff'] = df['SMA_21'] - df['SMA_21'].shift(1)
-    df['DEMA_21_diff'] = df['DEMA_21'] - df['DEMA_21'].shift(1)
-    df['SMA_21_ok'] = np.where(df['SMA_21_diff'] > 2,"up_ok",np.where(df['SMA_21_diff'] < -2,"dn_ok",""))
-    df['DEMA_21_ok'] = np.where(df['DEMA_21_diff'] > 2,"up_ok",np.where(df['DEMA_21_diff'] < -2,"dn_ok",""))
+    df['DEMA_21_diff'] = df['DEMA_21'] - df['DEMA_21'].shift(1)     
+    df['SMA_21_ok'] = np.where(df['SMA_21_diff'] > sam_21_slop,"up_ok",np.where(df['SMA_21_diff'] < -sam_21_slop,"dn_ok",""))
+    df['DEMA_21_ok'] = np.where(df['DEMA_21_diff'] > dema_21_slope,"up_ok",np.where(df['DEMA_21_diff'] < -dema_21_slope,"dn_ok",""))
     #df['SMA_21_ok1'] = np.where((df['SMA_21']) > (df['SMA_21'].shift(1)),"up_ok",np.where((df['SMA_21']) < (df['SMA_21'].shift(1)),"dn_ok",""))
     #df['DEMA_21_ok1'] = np.where((df['DEMA_21']) > (df['DEMA_21'].shift(1)),"up_ok",np.where((df['DEMA_21']) < (df['DEMA_21'].shift(1)),"dn_ok",""))
     df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))
     df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
     df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
+    df['Call_Statuss'] = np.where((df['CROSS'] == 'up_ok') & (((df['Close'] - df['SLL_NEW']) < 0) | ((df['Close'] - df['SLL_NEW']) < 0)),"Call_SL","")
+    df['Put_Statuss'] = np.where((df['CROSS'] == 'dn_ok') & (((df['SLL_NEW'] - df['Close']) > 0) | ((df['SLL_NEW'] - df['High']) > 0)),"Put_SL","")
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") ) 
     df['TimeNow'] = datetime.now()
     df = df.astype({"Datetime": "datetime64[ns]"})    
@@ -373,6 +389,20 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['Minutes'] = df['TimeNow']-df["Datetime"]
     df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
     df.sort_values(['Datetime'], ascending=[True], inplace=True)
+    return df
+
+def HakinAshi_func(df):
+    df = df.copy()
+    df['HA_Close']=(df.Open + df.High + df.Low + df.Close)/4
+    df.reset_index(inplace=True)
+    ha_open = [ (df.Open[0] + df.Close[0]) / 2 ]
+    [ ha_open.append((ha_open[i] + df.HA_Close.values[i]) / 2) \
+    for i in range(0, len(df)-1) ]
+    df['HA_Open'] = ha_open
+    df.set_index('index', inplace=True)
+    df['HA_High']=df[['HA_Open','HA_Close','High']].max(axis=1)
+    df['HA_Low']=df[['HA_Open','HA_Close','Low']].min(axis=1)
+    df = df[['Datetime','Open','High','Low','Close','Volume','HA_Open','HA_High','HA_Low','HA_Close']]			
     return df
 
 posit = pd.DataFrame(credi_har.positions()) 

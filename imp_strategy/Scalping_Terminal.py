@@ -68,13 +68,13 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 
 #credi_ash = credentials("ASHWIN")
 
-users = ["HARESH","ASHWIN"]#,"ALPESH"]
+users = ["HARESH"]#,"ASHWIN","ALPESH"]
 credi_har = None
-credi_ash = None
+#credi_ash = None
 #credi_alp = None
 
 while True:
-    if credi_har is None and credi_ash is None:# and credi_alp is None:
+    if credi_har is None:# and credi_ash is None# and credi_alp is None:
         try:
             for us in users:
                 print("1")
@@ -83,11 +83,11 @@ while True:
                     if credi_har.request_token is None:
                         credi_har = credentials("HARESH")
                         print(credi_har.request_token)
-                if us == "ASHWIN":
-                    credi_ash = credentials("ASHWIN")
-                    if credi_ash.request_token is None:
-                        credi_ash = credentials("ASHWIN")
-                        print(credi_ash.request_token)
+                # if us == "ASHWIN":
+                #     credi_ash = credentials("ASHWIN")
+                #     if credi_ash.request_token is None:
+                #         credi_ash = credentials("ASHWIN")
+                #         print(credi_ash.request_token)
                 # if us == "ALPESH":
                 #     credi_alp = credentials("ALPESH")
                 #     if credi_alp.request_token is None:
@@ -98,7 +98,7 @@ while True:
             print("credentials Download Error....")
             time.sleep(5)
 
-cred = [credi_har,credi_ash]#,credi_alp]
+cred = [credi_har]#,credi_ash,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -203,6 +203,7 @@ st4 = wb.sheets("Stat4")
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 script_code_5paisa.rename(columns={'Scripcode': 'ScripCode',}, inplace=True)
+
 def exch_down():
     try:
         script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
@@ -301,6 +302,18 @@ print("Exchange Download Completed")
 # exp.range("a1").options(index=False).value = exchange_opt
 # exp.range("x1").options(index=False).value = exchange_cash
 
+def HakinAshi_func(df):
+    df = df.copy()
+    df['HA_Close']=(df.Open + df.High + df.Low + df.Close)/4
+    df.reset_index(inplace=True)
+    ha_open = [ (df.Open[0] + df.Close[0]) / 2 ]
+    [ ha_open.append((ha_open[i] + df.HA_Close.values[i]) / 2) \
+    for i in range(0, len(df)-1) ]
+    df['HA_Open'] = ha_open
+    df.set_index('index', inplace=True)
+    df['HA_High']=df[['HA_Open','HA_Close','High']].max(axis=1)
+    df['HA_Low']=df[['HA_Open','HA_Close','Low']].min(axis=1)
+    return df
 
 buy_lst = []
 sell_lst = []
@@ -309,6 +322,8 @@ Fixed_SL = -300
 Fixed_TGT = 600
 
 while True:   
+
+    
     
     scpt = by.range(f"c{2}:c{15}").value
     scpt1 = by.range(f"a{2}:d{15}").value
@@ -398,16 +413,16 @@ while True:
         scpt_listtt.append(dfgg_PE_scpt)
 
     posi = pd.DataFrame(credi_har.positions())
-    posi1 = pd.DataFrame(credi_ash.positions())
+    #posi1 = pd.DataFrame(credi_ash.positions())
     if posi.empty:
         print("First Position of Haresh Empty")
     else:
         try:
             pos.range("a1").options(index=False).value = posi
-            if posi1.empty:
+            if posi.empty:
                 print("First Position of Ashwin Empty")
             else:
-                pos.range("a10").options(index=False).value = posi1
+                pos.range("a10").options(index=False).value = posi
             #dt.range("a10").options(index=False).value = posi1
             posit3 = (np.unique([int(i) for i in posi['ScripCode']])).tolist()#[0] 
             #print(posit3)
