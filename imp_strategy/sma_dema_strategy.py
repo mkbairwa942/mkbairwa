@@ -354,7 +354,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df.set_index('index', inplace=True)
     df['HA_High']=df[['HA_Open','HA_Close','High']].max(axis=1)
     df['HA_Low']=df[['HA_Open','HA_Close','Low']].min(axis=1)
-    df['SLL_NEW'] = df["HA_Low"].shift(1)
+    df['SLL_NEW_low'] = df["HA_Low"].shift(1)
+    df['SLL_NEW_Hi'] = df["HA_High"].shift(1)
     df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))
     df['Price_break'] = np.where((df['Close'] > (df.High.rolling(5).max()).shift(-5)),
                                         'Pri_Up_brk',
@@ -365,7 +366,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
     ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'],length=14)
-    #df['SLL_Diff'] = df['Close'] - df['SLL_NEW']
+    df['Call_SLL_Diff'] = df['Close'] - df['SLL_NEW_low']
+    df['Put_SLL_Diff'] =  df['SLL_NEW_Hi'] - df['Close']
     df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
     df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
@@ -380,8 +382,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))
     df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
     df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
-    df['Call_Statuss'] = np.where((df['CROSS'] == 'up_ok') & (((df['Close'] - df['SLL_NEW']) < 0) | ((df['Close'] - df['SLL_NEW']) < 0)),"Call_SL","")
-    df['Put_Statuss'] = np.where((df['CROSS'] == 'dn_ok') & (((df['SLL_NEW'] - df['Close']) > 0) | ((df['SLL_NEW'] - df['High']) > 0)),"Put_SL","")
+    df['Call_Statuss'] = np.where((df['CROSS'] == 'up_ok') & (((df['Call_SLL_Diff']) < 0) | ((df['Call_SLL_Diff']) < 0)),"Call_SL","")
+    df['Put_Statuss'] = np.where((df['CROSS'] == 'dn_ok') & (((df['Put_SLL_Diff']) > 0) | ((df['Put_SLL_Diff']) > 0)),"Put_SL","")
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") ) 
     df['TimeNow'] = datetime.now()
     df = df.astype({"Datetime": "datetime64[ns]"})    
@@ -441,11 +443,14 @@ while True:
         print("Position is Empty")
     else:
         positt = posit#[(posit['MTOM'] != 0)]
-        exitt = positt[(positt['MTOM'] <= slll) | (positt['MTOM'] >= tgtt)]        
+        exitts = positt[(positt['MTOM'] <= slll) | (positt['MTOM'] >= tgtt)]     
+        exitt = exitts.tail(1)
+           
         if orders.upper() == "YES" or orders.upper() == "": 
             if exitt.empty:
                 pass
             else:
+                print(exitt)
                 print("SLL Or TGT Executed")
                 scrip_code1 = int(float(exitt['ScripCode'])) 
                 qtyy1 = int(np.unique(exitt['BuyQty']))

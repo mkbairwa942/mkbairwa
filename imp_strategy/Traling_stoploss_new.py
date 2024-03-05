@@ -136,7 +136,7 @@ har.range("a1:t1").color = (54,226,0)
 har.range("a1:t1").font.bold = True
 har.range("a1:t1").api.WrapText = True
 
-users = ["ashwin","haresh","alpesh"]
+users = ["haresh"]
 
 
 TGTT_SLL = "TSL"    
@@ -203,8 +203,8 @@ def ordef_func(client):
 
 st4.range("a1").value = pd.DataFrame(credi_har.order_book())
 
-SLL = 1
-TSL = 1
+SLL = 10
+TSL = 10
 
 
 tsl1 = 1-(TSL/100)

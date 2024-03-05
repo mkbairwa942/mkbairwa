@@ -760,7 +760,7 @@ while True:
 
                     dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
                     dfg2['Benchmark'] = dfg2['High'].cummax()
-                    dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.99
+                    dfg2['TStopLoss'] = dfg2['Benchmark'] * 0.9
                     dfg2['BValue'] = dfg2['Entry_Price']*Buy_Qty
                     
                     dfg2['TGT_SL'] = np.where(dfg2['High'] > Buy_Target,"TGT",np.where(dfg2['Low'] < Buy_Stop_Loss,"SL",""))
