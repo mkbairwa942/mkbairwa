@@ -238,7 +238,7 @@ flt_exc.range("a1").options(index=False).value = exc_new2
 stk_list = [999920005,999920000]
 
 
-telegram_msg = "yes"
+telegram_msg = "no"
 orders = "yes"
 Capital = 20000
 StockPriceLessThan = 1000
@@ -294,10 +294,16 @@ def order_book_func(cred):
                 print(e)
     return ordbook1
 
-def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee):
+def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee,stk_name):
     timees = list_to_append
     dfg4 = df.tail(1)
-    
+    if stk_name == "BANKNIFTY":
+        lotsize = 3
+    if stk_name == "NIFTY":
+        lotsize = 2
+    quantity = (qtyy*lotsize)
+    # print(stk_name)
+    # print(quantity)
     # dfg3 = df
     # dfg3 = dfg3.astype({"Datetime": "datetime64"})   
     
@@ -328,7 +334,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
             for credi in cred:
                 #postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
                 #print(f"Ledger Balance is : {postt}") 
-                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=qtyy*lotsize,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=quantity,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
         else:
             print(f"Real {CALL_PUT} Order are OFF")
         print(f"1 Minute {CALL_PUT} Data Selected of "+str(namee)+" ("+str(scrip_code)+")")
@@ -524,7 +530,7 @@ while True:
                         print("----------------------------------------")
                     else:
                         print("Call Buy")                        
-                        rde_exec = order_execution(dfg1_Call_by,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name)
+                        rde_exec = order_execution(dfg1_Call_by,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name)
                        
             Put_by_df = dfg1[(dfg1["Signal1"] == "Put_Buy")]
             Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -565,7 +571,7 @@ while True:
                         print("----------------------------------------")
                     else:
                         print("Put Buy")                        
-                        rde_exec = order_execution(dfg1_Put_by,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name)
+                        rde_exec = order_execution(dfg1_Put_by,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
 
             Call_sl_df = dfg1[(dfg1["Signal"] == "Call_Exit")]
             Call_sl_df['Date_Dif'] = abs((Call_sl_df["Datetime"] - Call_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -614,7 +620,7 @@ while True:
                             print("----------------------------------------")
                         else:
                             print("Call Exit")                        
-                            rde_exec = order_execution(dfg1_Call_sl,sell_order_list_dummy,Call_sl_time,telegram_msg,orders,"IDX OPT","CALL EXIT","S",Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_Name)
+                            rde_exec = order_execution(dfg1_Call_sl,sell_order_list_dummy,Call_sl_time,telegram_msg,orders,"IDX OPT","CALL EXIT","S",Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_Name,stk_name)
                        
             Put_sl_df = dfg1[(dfg1["Signal1"] == "Put_Exit")]
             Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -660,7 +666,7 @@ while True:
                             print("----------------------------------------")
                         else:
                             print("Put Exit")                        
-                            rde_exec = order_execution(dfg1_Put_sl,sell_order_list_dummy,Put_sl_time,telegram_msg,orders,"IDX OPT","PUT EXIT","S",Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_Name)
+                            rde_exec = order_execution(dfg1_Put_sl,sell_order_list_dummy,Put_sl_time,telegram_msg,orders,"IDX OPT","PUT EXIT","S",Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_Name,stk_name)
 
             try:
                 final_call = pd.concat([Call_by_df1, Call_sl_df1])
