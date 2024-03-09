@@ -46,6 +46,11 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[2]
 
+trading_days = trading_dayss[1:]
+current_trading_day = trading_dayss[1]
+last_trading_day = trading_days[1]
+second_last_trading_day = trading_days[2]
+
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
 print("Trading Days is :- "+str(trading_dayss))
@@ -203,7 +208,7 @@ def load_data():
     # loop = st.checkbox('Update Continuously')
     # dff = generate_new_data()
     # while True:
-    dff = generate_new_data()
+    dff = generate_new_data()    
     st.line_chart(dff['Close'])
     st.line_chart(dff['Volume'])
 
@@ -212,9 +217,17 @@ def load_data():
     st.dataframe(dff)
 
 
-loop = st.checkbox('Update Continuously')
-while loop:
-    load_data()
+
+
+#loop = st.checkbox('Update Continuously')
+while (1):
+    dff = client.historical_data('N', 'C', df_scpt, '1m', last_trading_day,current_trading_day)
+    st.line_chart(dff['Close'])
+    st.line_chart(dff['Volume'])
+
+    st.header('Display Stocks Stats of Selected Stocks')
+    st.write('Data Dimension '+str(dff.shape[0])+ ' rows and ' + str(dff.shape[1])+ ' columns')
+    st.dataframe(dff)
 
 
 
