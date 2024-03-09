@@ -341,7 +341,7 @@ while True:
                                     print("No Target And Stoploss Hit")
                                 else:
                                     try: 
-                                        buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
+                                        buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B')]# & (buy_order_li['AveragePrice'] != 0)]
                                         #print(buy_order_liiist)
                                         order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
                                         for ordd in order_dff_Scpt:

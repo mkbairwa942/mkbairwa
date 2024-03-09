@@ -426,101 +426,101 @@ while True:
         print("Haresh's Position is Empty")
         print("--------------------------")
     else: 
-        try:         
-            posii = pd.DataFrame(credi_har.positions()) 
-            positt = posii[(posii['MTOM'] != 0)]
-            posit = positt.tail(1)
+        try:      
+            for sc in stk_list:
+                dfg1 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl) 
+                stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0] 
+                print(stk_name)
+                dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
+                five_df1 = pd.concat([dfg1, five_df1]) 
 
-            if posit.empty:
-                for sc in stk_list:
-                    dfg1 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl) 
-                    stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0] 
-                    print(stk_name)
-                    dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
-                    five_df1 = pd.concat([dfg1, five_df1]) 
-
-                    Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
-                    Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-                    Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 5, "Call_Buy","")
-                    Call_by_df1 = Call_by_df[(Call_by_df['Entry'] == "Call_Buy")]
-                    Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
-                    five_df2 = pd.concat([Call_by_df1, five_df2])
-                    
-                    Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
-        
-                    if Call_by_df2.empty:
-                        pass
-                        #print("Call Buy DF Empty")
-                    else:                  
-                        Call_by_ord = Call_by_df2.tail(1)
-                        Call_by_Closee = (float(Call_by_ord['Close']))
-                        Call_by_Spot = round(Call_by_Closee/100,0)*100
-                        Call_by_time = str(list(Call_by_ord['Datetime'])[0])
-                        Call_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
-                        Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
-                        Expiryyy_Call_by = (np.unique(Call_by_ord2['Expiry']).tolist())[0]      
-                        Call_by_ord3 = Call_by_ord2[Call_by_ord2['Expiry'] == Expiryyy_Call_by]
-                        Call_by_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-                        Call_by_ord4 = Call_by_ord3[(Call_by_ord3["CpType"] == 'CE')] 
-                        Call_by_ord5 = Call_by_ord4[(Call_by_ord4['StrikeRate'] < Call_by_Spot)] 
-                        Call_by_ord6 = Call_by_ord5.tail(1)
-                        Call_by_Name = np.unique([str(i) for i in Call_by_ord6['Name']]).tolist()[0]
-                        Call_by_Scripcodee = int(float(Call_by_ord6['Scripcode']))
-                        Call_by_Qtyy = int(np.unique(Call_by_ord6['LotSize']))
-
-                        print(Call_by_Scripcodee,Call_by_Qtyy,Call_by_time)
-                        #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
-                        
-                        if not Call_by_ord6.empty:                    
-                            dfg1_Call_by = credi_har.historical_data('N', 'D', Call_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                            if Call_by_time in buy_order_list_dummy: 
-                                print(str(stk_name)+" Call is Already Buy")
-                                print("----------------------------------------")
-                            else:
-                                print("Call Buy")                        
-                                rde_exec = order_execution(dfg1_Call_by,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name)
-                            
-                    Put_by_df = dfg1[(dfg1["Signal1"] == "Put_Buy")]
-                    Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-                    Put_by_df['Entry'] = np.where(Put_by_df['Date_Dif'] > 5, "Put_Buy","")
-                    Put_by_df1 = Put_by_df[Put_by_df['Entry'] == "Put_Buy"]
-                    Put_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
-                    five_df3 = pd.concat([Put_by_df1, five_df3]) 
-
-                    Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
-
-                    if Put_by_df2.empty:
-                        pass
-                        #print("Put Buy DF Empty")
-                    else:                
-                        Put_by_ord = Put_by_df2.tail(1)
-                        Put_by_Closee = (float(Put_by_ord['Close']))
-                        Put_by_Spot = round(Put_by_Closee/100,0)*100
-                        Put_by_time = str(list(Put_by_ord['Datetime'])[0])
-                        Put_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
-                        Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
-                        Expiryyy_Put_by = (np.unique(Put_by_ord2['Expiry']).tolist())[0]  
-                        Put_by_ord3 = Put_by_ord2[Put_by_ord2['Expiry'] == Expiryyy_Put_by]
-                        Put_by_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-                        Put_by_ord4 = Put_by_ord3[(Put_by_ord3["CpType"] == 'PE')] 
-                        Put_by_ord5 = Put_by_ord4[(Put_by_ord4['StrikeRate'] > Put_by_Spot)] 
-                        Put_by_ord6 = Put_by_ord5.head(1)    
-                        Put_by_Name = np.unique([str(i) for i in Put_by_ord6['Name']]).tolist()[0]  
-                        Put_by_Scripcodee = int(float(Put_by_ord6['Scripcode']))
-                        Put_by_Qtyy = int(np.unique(Put_by_ord6['LotSize']))
-                        
-                        print(Put_by_Scripcodee,Put_by_Qtyy,Put_by_time)
-                        #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
-                        
-                        if not Put_by_ord6.empty:
-                            dfg1_Put_by = credi_har.historical_data('N', 'D', Put_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                            if Put_by_time in buy_order_list_dummy: 
-                                print(str(stk_name)+" Put is Already Buy")
-                                print("----------------------------------------")
-                            else:
-                                print("Put Buy")                        
-                                rde_exec = order_execution(dfg1_Put_by,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
+                Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
+                Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
+                Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 5, "Call_Buy","")
+                Call_by_df1 = Call_by_df[(Call_by_df['Entry'] == "Call_Buy")]
+                Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
+                five_df2 = pd.concat([Call_by_df1, five_df2])
                 
+                Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
+    
+                if Call_by_df2.empty:
+                    pass
+                    #print("Call Buy DF Empty")
+                else:                  
+                    Call_by_ord = Call_by_df2.tail(1)
+                    Call_by_Closee = (float(Call_by_ord['Close']))
+                    Call_by_Spot = round(Call_by_Closee/100,0)*100
+                    Call_by_time = str(list(Call_by_ord['Datetime'])[0])
+                    Call_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                    Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
+                    Expiryyy_Call_by = (np.unique(Call_by_ord2['Expiry']).tolist())[0]      
+                    Call_by_ord3 = Call_by_ord2[Call_by_ord2['Expiry'] == Expiryyy_Call_by]
+                    Call_by_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+                    Call_by_ord4 = Call_by_ord3[(Call_by_ord3["CpType"] == 'CE')] 
+                    Call_by_ord5 = Call_by_ord4[(Call_by_ord4['StrikeRate'] < Call_by_Spot)] 
+                    Call_by_ord6 = Call_by_ord5.tail(1)
+                    Call_by_Name = np.unique([str(i) for i in Call_by_ord6['Name']]).tolist()[0]
+                    Call_by_Scripcodee = int(float(Call_by_ord6['Scripcode']))
+                    Call_by_Qtyy = int(np.unique(Call_by_ord6['LotSize']))
+
+                    print(Call_by_Scripcodee,Call_by_Qtyy,Call_by_time)
+                    #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
+                    
+                    if not Call_by_ord6.empty:                    
+                        dfg1_Call_by = credi_har.historical_data('N', 'D', Call_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+                        if Call_by_time in buy_order_list_dummy: 
+                            print(str(stk_name)+" Call is Already Buy")
+                            print("----------------------------------------")
+                        else:
+                            print("Call Buy")                        
+                            rde_exec = order_execution(dfg1_Call_by,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name)
+                        
+                Put_by_df = dfg1[(dfg1["Signal1"] == "Put_Buy")]
+                Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
+                Put_by_df['Entry'] = np.where(Put_by_df['Date_Dif'] > 5, "Put_Buy","")
+                Put_by_df1 = Put_by_df[Put_by_df['Entry'] == "Put_Buy"]
+                Put_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
+                five_df3 = pd.concat([Put_by_df1, five_df3]) 
+
+                Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
+
+                if Put_by_df2.empty:
+                    pass
+                    #print("Put Buy DF Empty")
+                else:                
+                    Put_by_ord = Put_by_df2.tail(1)
+                    Put_by_Closee = (float(Put_by_ord['Close']))
+                    Put_by_Spot = round(Put_by_Closee/100,0)*100
+                    Put_by_time = str(list(Put_by_ord['Datetime'])[0])
+                    Put_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                    Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
+                    Expiryyy_Put_by = (np.unique(Put_by_ord2['Expiry']).tolist())[0]  
+                    Put_by_ord3 = Put_by_ord2[Put_by_ord2['Expiry'] == Expiryyy_Put_by]
+                    Put_by_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+                    Put_by_ord4 = Put_by_ord3[(Put_by_ord3["CpType"] == 'PE')] 
+                    Put_by_ord5 = Put_by_ord4[(Put_by_ord4['StrikeRate'] > Put_by_Spot)] 
+                    Put_by_ord6 = Put_by_ord5.head(1)    
+                    Put_by_Name = np.unique([str(i) for i in Put_by_ord6['Name']]).tolist()[0]  
+                    Put_by_Scripcodee = int(float(Put_by_ord6['Scripcode']))
+                    Put_by_Qtyy = int(np.unique(Put_by_ord6['LotSize']))
+                    
+                    print(Put_by_Scripcodee,Put_by_Qtyy,Put_by_time)
+                    #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
+                    
+                    if not Put_by_ord6.empty:
+                        dfg1_Put_by = credi_har.historical_data('N', 'D', Put_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+                        if Put_by_time in buy_order_list_dummy: 
+                            print(str(stk_name)+" Put is Already Buy")
+                            print("----------------------------------------")
+                        else:
+                            print("Put Buy")                        
+                            rde_exec = order_execution(dfg1_Put_by,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
+
+            posi = pd.DataFrame(credi_har.positions()) 
+            #print(posit)
+            posit = posi[(posi['MTOM'] != 0)]
+            if posit.empty:
+                print("No Current Running Position")
             else:
                 pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
                 if pl < -1000:
@@ -585,7 +585,7 @@ while True:
                             print("No Target And Stoploss Hit")
                         else:
                             try: 
-                                buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B') & (buy_order_li['AveragePrice'] != 0)]
+                                buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B')]# & (buy_order_li['AveragePrice'] != 0)]
                                 #print(buy_order_liiist)
                                 order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
                                 for ordd in order_dff_Scpt:
