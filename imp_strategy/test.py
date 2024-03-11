@@ -360,7 +360,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
                                         "Vol_brk","") 
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
-    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'],length=14)
+    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)
     df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
     df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))

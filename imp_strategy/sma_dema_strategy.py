@@ -374,7 +374,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
                                         "Vol_brk","") 
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
-    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'],length=14)
+    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)
     df['Call_SLL_Diff'] = df['Close'] - df['SLL_NEW_low']
     df['Put_SLL_Diff'] =  df['SLL_NEW_Hi'] - df['Close']
     df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)

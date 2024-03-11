@@ -460,7 +460,7 @@ while True:
     df['SMA_14'] = np.round((pta.sma(df['Close'],length=14)),2)
     df['SMA_29'] = np.round((pta.sma(df['Close'],length=29)),2)
     df['SMA_60'] = np.round((pta.sma(df['Close'],length=60)),2)
-    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'])
+    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['Close'])
     df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
     df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
