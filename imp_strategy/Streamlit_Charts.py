@@ -41,10 +41,10 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[2]
 
-trading_days = trading_dayss[1:]
-current_trading_day = trading_dayss[1]
-last_trading_day = trading_days[1]
-second_last_trading_day = trading_days[2]
+# trading_days = trading_dayss[1:]
+# current_trading_day = trading_dayss[1]
+# last_trading_day = trading_days[1]
+# second_last_trading_day = trading_days[2]
 
 
 print("Trading_Days_Reverse is :- "+str(trading_days_reverse))
@@ -101,9 +101,9 @@ print(select_symbol)
 
 col1,col2 = st.sidebar.columns(2)
 with col1:
-    start_date = st.date_input(label="Start Date:", value=datetime(2023,1,1))
+    start_date = st.date_input(label="Start Date:", value=datetime(2023,9,1))
 with col2:
-    end_date = st.date_input(label="End Date:", value=datetime(2023,12,31))
+    end_date = st.date_input(label="End Date:", value=current_trading_day)
 
 print(start_date,end_date)
 
@@ -136,7 +136,7 @@ def create_chart(df,close_line=False,include_vol=False,indicators=[]):
     candle=figure(x_axis_type="datetime",height=400,width=1200,
                   tooltips=[("Date","@Date_str"),("Open","@Open"),("High","@High"),("Low","@Low"),("Close","@Close"),("SMA_21","@SMA_21"),("DEMA_21","@DEMA_21"),("EMA_21","@EMA_21")],)
     candle.segment("Date","Low","Date","High",color="black",line_width=0.5,source=df)
-    candle.segment("Date","Open","Date","Close",color="BarColor",line_width=4 if len(df)>100 else 7,source=df)
+    candle.segment("Date","Open","Date","Close",color="BarColor",line_width=3 if len(df)>100 else 6,source=df)
 
     candle.xaxis.axis_label="Date"
     candle.yaxis.axis_label="Price"
@@ -172,11 +172,11 @@ fig = create_chart(sub_df,close_line,volume,indicators)
 st.bokeh_chart(fig,use_container_width=True)
 xx = list(sub_df['Datetime'])
 yy = list(sub_df['ADX_14'])
-st.line_chart(dff['ADX_14'],height=200,color="#ffaa00",use_container_width=True)
+# st.line_chart(sub_df['ADX_14'],height=200,color="#ffaa00",use_container_width=True)
 # st.line_chart(dff['Close'])
 
 c = alt.Chart(sub_df, title='ADX Line Chart').mark_line().encode(
-     x='Datetime', y='ADX_14',)
+     x='Datetime', y='ADX_14')
 
 st.altair_chart(c, use_container_width=True)
 
