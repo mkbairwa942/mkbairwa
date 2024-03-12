@@ -421,6 +421,7 @@ while True:
                 credi.cancel_bulk_order(cancel_bulk)
                 buy_order_list_dummy = []
 
+<<<<<<< Updated upstream
     # posit = pd.DataFrame(credi_har.positions()) 
     # if posit.empty:
     #     print("Haresh's Position is Empty")
@@ -433,6 +434,22 @@ while True:
             print(stk_name)
             dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
             five_df1 = pd.concat([dfg1, five_df1]) 
+=======
+    posit = pd.DataFrame(credi_har.positions()) 
+    if posit.empty:
+        print("Haresh's Position is Empty")
+        print("--------------------------")
+    else: 
+        try:      
+            for sc in stk_list:
+                dfg1 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl) 
+                stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0] 
+                print(stk_name)
+                dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
+                dfg1 = dfg1[(dfg1["Date"] == current_trading_day.date())]
+                dfg111 = dfg1.tail(10)
+                five_df1 = pd.concat([dfg111, five_df1]) 
+>>>>>>> Stashed changes
 
             Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
             Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
