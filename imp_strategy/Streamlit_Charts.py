@@ -109,7 +109,7 @@ print(start_date,end_date)
 
 close_line = st.sidebar.checkbox(label="Close Price Line")
 volume = st.sidebar.checkbox(label="Include ADX & Trading Volume")
-
+with_delivery = st.sidebar.checkbox(label="Include Delivery Per")
 
 @st.cache_data
 def load_dataset(scpt):
