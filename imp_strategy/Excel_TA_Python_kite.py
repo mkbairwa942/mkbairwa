@@ -1,5 +1,5 @@
 import os
-from imp_strategy.kite_trade import *
+from kite_trade import *
 # from kiteconnect import KiteConnect
 import time,json,datetime,sys
 import xlwings as xw
@@ -346,7 +346,7 @@ if __name__=='__main__':
     # enctoken = get_enctoken(user_id, password, twofa)
     # kite = KiteApp(enctoken=enctoken)
 
-    enctoken = "gQ/zLVyhmVCyuSSga5+qu+44S7z7kcKiOfb1eww3FYFrhVfgG/0pUuTcpc5Kz0yYWInqvFG1XZT+9CKGNf8Za4LEWssj1r0UnZcaQnO/NiuuvETXs9trrA=="
+    enctoken = "eUxz6pBObvIz3Yin/A0ffISpqcaedQw+GaYIpTmxFUNSeEFi2WnO/zJToiNvETck+RAZh6wLt7JJfjmT9r3dXFm3tKobnfVbFDGVq7gx8VtgvnIjolVS1A=="
     kite = KiteApp(enctoken=enctoken)
     get_orderbook()
     # quote('NIFTY')
