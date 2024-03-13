@@ -16,15 +16,15 @@ TOTP=pyotp.TOTP("X3IFPEPCYJUPT2YMOYFTL5BJZ4VVF3F7").now()
 print(user_id, password, TOTP)
 
 
-enctoken = get_enctoken(user_id, password, TOTP)
+mukesh = get_enctoken(user_id, password, TOTP)
+credi_muk = KiteApp(mukesh)
+
+enctoken = "JpWFQuzNYNiE0cQweFyxUjT7NZ8TKsjR7I3IyxQQUgrF7tPA52WTgyGgjSpObyR9Tnv9Ym409AqIKtZn8VciDIwB6kDkpanP0eqFUUmFS5m3gICiua8Reg=="
 kite = KiteApp(enctoken=enctoken)
 
-# enctoken = "gQ/zLVyhmVCyuSSga5+qu+44S7z7kcKiOfb1eww3FYFrhVfgG/0pUuTcpc5Kz0yYWInqvFG1XZT+9CKGNf8Za4LEWssj1r0UnZcaQnO/NiuuvETXs9trrA=="
-# kite = KiteApp(enctoken=enctoken)
-
-# print(kite.margins())
-# print(kite.orders())
-# print(kite.positions())
+# print(credi_muk.margins())
+# print(credi_muk.orders())
+# print(credi_muk.positions())
 
 # print(pd.DataFrame(kite.instruments()).tail(5))
 # print(kite.instruments("NSE"))
@@ -38,10 +38,10 @@ kite = KiteApp(enctoken=enctoken)
 # # Get Historical Data
 # import datetime
 # instrument_token = 256265
-# from_datetime = datetime.datetime.now() - datetime.timedelta(days=7)     # From last & days
+# from_datetime = datetime.datetime.now() - datetime.timedelta(days=3)     # From last & days
 # to_datetime = datetime.datetime.now()
 # interval = "5minute"
-# print(kite.historical_data(instrument_token, from_datetime, to_datetime, interval, continuous=False, oi=False))
+# print(pd.DataFrame(credi_muk.historical_data(256265, from_datetime, to_datetime, interval, continuous=False, oi=True)))
 
 
 # # Place Order
@@ -79,10 +79,10 @@ kite = KiteApp(enctoken=enctoken)
 #                   order_id="order_id",
 #                   parent_order_id=None)
 
-instruments = 'NFO:BANKNIFTY2432047100PE'
-while True:
-    inst  = kite.quote(instruments)
-    data = pd.DataFrame.from_dict(inst)
-    #print(data)
-    print(inst)
-    print(data)
+# instruments = 'NFO:BANKNIFTY2432047100PE'
+# while True:
+#     inst  = credi_muk.quote(instruments)
+#     data = pd.DataFrame.from_dict(inst)
+#     #print(data)
+#     print(inst)
+#     print(data)

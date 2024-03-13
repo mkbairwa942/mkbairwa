@@ -348,7 +348,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df = credi_har.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
-    #print(df.head(1))
+    #print(df.head(5))
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
     df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))
@@ -379,7 +379,9 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df["Date"] = df["Datetime"].dt.date
     df['Minutes'] = df['TimeNow']-df["Datetime"]
     df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
+    #print(df.head(5))
     df.sort_values(['Datetime'], ascending=[True], inplace=True)
+    #print(df.head(5))
     return df
 
 posit = pd.DataFrame(credi_har.positions()) 
