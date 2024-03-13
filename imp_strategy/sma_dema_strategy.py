@@ -296,7 +296,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     timees = list_to_append
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        lotsize = 2
+        lotsize = 3
     if stk_name == "NIFTY":
         lotsize = 2
     quantity = (qtyy*lotsize)
@@ -524,7 +524,7 @@ while True:
                 if pl < -600 or pl > 1200:
                     Buy_Qty1 = posit['BuyQty'] - posit['SellQty']
                     order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                    print("StopLoss is Greater than -1000")
+                    print("StopLoss is Greater than -600")
                     print("Sell stoplOSS order Executed")
                 else:
                     posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()  
