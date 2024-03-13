@@ -1,6 +1,6 @@
 import os
 # from kiteconnect import KiteConnect
-from kite_trade import *
+from imp_strategy.kite_trade import *
 import time, json,  datetime, sys
 import pandas as pd
 

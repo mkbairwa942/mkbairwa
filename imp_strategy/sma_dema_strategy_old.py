@@ -416,6 +416,55 @@ def HakinAshi_func(df):
     df = df[['Datetime','Open','High','Low','Close','Volume','HA_Open','HA_High','HA_Low','HA_Close']]			
     return df
 
+def ADX(data: pd.DataFrame, period: int):
+    """
+    Computes the ADX indicator.
+    """
+    
+    df = data.copy()
+    alpha = 1/period
+
+    # TR
+    df['H-L'] = df['High'] - df['Low']
+    df['H-C'] = np.abs(df['High'] - df['Close'].shift(1))
+    df['L-C'] = np.abs(df['Low'] - df['Close'].shift(1))
+    df['TR'] = df[['H-L', 'H-C', 'L-C']].max(axis=1)
+    del df['H-L'], df['H-C'], df['L-C']
+
+    # ATR
+    df['ATR'] = df['TR'].ewm(alpha=alpha, adjust=False).mean()
+
+    # +-DX
+    df['H-pH'] = df['High'] - df['High'].shift(1)
+    df['pL-L'] = df['Low'].shift(1) - df['Low']
+    df['+DX'] = np.where(
+        (df['H-pH'] > df['pL-L']) & (df['H-pH']>0),
+        df['H-pH'],
+        0.0
+    )
+    df['-DX'] = np.where(
+        (df['H-pH'] < df['pL-L']) & (df['pL-L']>0),
+        df['pL-L'],
+        0.0
+    )
+    del df['H-pH'], df['pL-L']
+
+    # +- DMI
+    df['S+DM'] = df['+DX'].ewm(alpha=alpha, adjust=False).mean()
+    df['S-DM'] = df['-DX'].ewm(alpha=alpha, adjust=False).mean()
+    df['+DMI'] = (df['S+DM']/df['ATR'])*100
+    df['-DMI'] = (df['S-DM']/df['ATR'])*100
+    del df['S+DM'], df['S-DM']
+
+    # ADX
+    df['DX'] = (np.abs(df['+DMI'] - df['-DMI'])/(df['+DMI'] + df['-DMI']))*100
+    df['ADX'] = df['DX'].ewm(alpha=alpha, adjust=False).mean()
+    del df['DX'], df['ATR'], df['TR'], df['-DX'], df['+DX'], df['+DMI'], df['-DMI']
+
+    return df
+
+
+
 posit = pd.DataFrame(credi_har.positions()) 
 if posit.empty:
     print("Position is Empty")
@@ -486,9 +535,12 @@ while True:
     for sc in stk_list:
         try:
             #print(sc)
-            dfg1 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl) 
+            dfg111 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl) 
+            dfg1 = ADX(dfg111,14)
             stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0] 
             dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
+            #dfg1 = dfg1[(dfg1["Date"] == current_trading_day.date())]
+            #dfg111 = dfg1.tail(10)
             five_df1 = pd.concat([dfg1, five_df1]) 
 
             Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]

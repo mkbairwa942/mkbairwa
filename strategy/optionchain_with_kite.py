@@ -1,5 +1,5 @@
 import os
-from kite_trade import *
+from imp_strategy.kite_trade import *
 # from kiteconnect import KiteConnect
 import time,json,datetime,sys
 import xlwings as xw

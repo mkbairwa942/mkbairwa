@@ -426,10 +426,11 @@ while True:
             dfg1 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl) 
             stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0] 
             print(stk_name)
+            #print(ADX(dfg1))
             dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
-            dfg1 = dfg1[(dfg1["Date"] == current_trading_day.date())]
-            dfg111 = dfg1.tail(10)
-            five_df1 = pd.concat([dfg111, five_df1]) 
+            dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
+            dfg1112 = dfg111.tail(10)
+            five_df1 = pd.concat([dfg1112, five_df1]) 
 
 
             Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
@@ -439,12 +440,12 @@ while True:
             Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
             five_df2 = pd.concat([Call_by_df1, five_df2])
             
-            Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
+            Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]   
 
             if Call_by_df2.empty:
                 pass
                 #print("Call Buy DF Empty")
-            else:                  
+            else:
                 Call_by_ord = Call_by_df2.tail(1)
                 Call_by_Closee = (float(Call_by_ord['Close']))
                 Call_by_Spot = round(Call_by_Closee/100,0)*100
@@ -481,11 +482,10 @@ while True:
             five_df3 = pd.concat([Put_by_df1, five_df3]) 
 
             Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
-
             if Put_by_df2.empty:
                 pass
                 #print("Put Buy DF Empty")
-            else:                
+            else:   
                 Put_by_ord = Put_by_df2.tail(1)
                 Put_by_Closee = (float(Put_by_ord['Close']))
                 Put_by_Spot = round(Put_by_Closee/100,0)*100
@@ -516,82 +516,85 @@ while True:
 
             posi = pd.DataFrame(credi_har.positions()) 
             if posi.empty:            
-                print("No Current Running Position")
+                print("No First Running Position")
             else:
-                posit = posi[(posi['MTOM'] != 0)]            
-                pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
-                if pl < -600 or pl > 1200:
-                    Buy_Qty1 = posit['BuyQty'] - posit['SellQty']
-                    order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                    print("StopLoss is Greater than -600")
-                    print("Sell stoplOSS order Executed")
+                posit = posi[(posi['MTOM'] != 0)]        
+                if posit.empty:
+                    print("No Current Running Position")
                 else:
-                    posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()  
-                    buy_order_li = order_book_func(credi_har)             
-                    for ord in posit3:
-                        buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B')]# & (buy_order_li['AveragePrice'] != 0)]
-                        buy_order_liiist = buy_order_liiist[['Datetimeee','ScripCode']] 
-                        new_df11 = posit[(posit['ScripCode'] == ord)]
-                        new_df1 = pd.merge(buy_order_liiist, new_df11, on=['ScripCode'], how='inner')
-                        Buy_Name = list(new_df1['ScripName'])[0]
-                        Buy_price = (np.unique([float(i) for i in new_df1['BuyAvgRate']])).tolist()[0]    
-                        Buy_Stop_Loss = (round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*SLL)/100),1)).astype(float)
-                        Buy_Target = (round((((new_df1['BuyAvgRate']*SLL)/100) + new_df1['BuyAvgRate']),1)).astype(float)
-                        Buy_Exc = list(new_df1['Exch'])[0]
-                        Buy_Exc_Type = list(new_df1['ExchType'])[0]
-                        Buy_Qty = new_df1['BuyQty'] - new_df1['SellQty']
-                        Buy_timee = list(new_df1['Datetimeee'])[0]
-                        Buy_timee1 = str(Buy_timee).replace(' ','T')  
-                        
-                        dfg1 = credi_har.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
-                        #print(dfg1.head(1))
-                        dfg1['ScripCode'] = ord
-                        dfg1['ScripName'] = Buy_Name
-                        dfg1['Entry_Date'] = Buy_timee1
-                        dfg1['Entry_Price'] = Buy_price
-                        
-                        dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
-                        dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
-                        
-                        dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
-                        dfg2['StopLoss'] = round((dfg2['Entry_Price'] - (dfg2['Entry_Price']*SLL)/100),1)
-
-                        dfg2['Benchmark'] = dfg2['High'].cummax()
-                        dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1  
-                        dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < dfg2['StopLoss'],"SL",""))
-    
-                        five_df4 = pd.concat([dfg2, five_df4])
-                        dfg3 = dfg2[(dfg2["Status"] == "TSL") | (dfg2["Status"] == "SL")]                       
-
-                        if dfg3.empty:
-                            dfg3 = dfg2.tail(1)
+                    pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
+                    if pl < -600 or pl > 1200:
+                        Buy_Qty1 = posit['BuyQty'] - posit['SellQty']
+                        order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        print("StopLoss is Greater than -600")
+                        print("Sell stoplOSS order Executed")
+                    else:
+                        posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()  
+                        buy_order_li = order_book_func(credi_har)             
+                        for ord in posit3:
+                            buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B')]# & (buy_order_li['AveragePrice'] != 0)]
+                            buy_order_liiist = buy_order_liiist[['Datetimeee','ScripCode']] 
+                            new_df11 = posit[(posit['ScripCode'] == ord)]
+                            new_df1 = pd.merge(buy_order_liiist, new_df11, on=['ScripCode'], how='inner')
+                            Buy_Name = list(new_df1['ScripName'])[0]
+                            Buy_price = (np.unique([float(i) for i in new_df1['BuyAvgRate']])).tolist()[0]    
+                            Buy_Stop_Loss = (round((new_df1['BuyAvgRate'] - (new_df1['BuyAvgRate']*SLL)/100),1)).astype(float)
+                            Buy_Target = (round((((new_df1['BuyAvgRate']*SLL)/100) + new_df1['BuyAvgRate']),1)).astype(float)
+                            Buy_Exc = list(new_df1['Exch'])[0]
+                            Buy_Exc_Type = list(new_df1['ExchType'])[0]
+                            Buy_Qty = new_df1['BuyQty'] - new_df1['SellQty']
+                            Buy_timee = list(new_df1['Datetimeee'])[0]
+                            Buy_timee1 = str(Buy_timee).replace(' ','T')  
                             
-                        dfg22 = dfg3.head(1)
+                            dfg1 = credi_har.historical_data(str(Buy_Exc), str(Buy_Exc_Type), ord, '1m',last_trading_day,current_trading_day)
+                            #print(dfg1.head(1))
+                            dfg1['ScripCode'] = ord
+                            dfg1['ScripName'] = Buy_Name
+                            dfg1['Entry_Date'] = Buy_timee1
+                            dfg1['Entry_Price'] = Buy_price
+                            
+                            dfg1.sort_values(['ScripName', 'Datetime'], ascending=[True, True], inplace=True)
+                            dfg1['OK_DF'] = np.where(dfg1['Entry_Date'] <= dfg1['Datetime'],"OK","")
+                            
+                            dfg2 = dfg1[(dfg1["OK_DF"] == "OK")]
+                            dfg2['StopLoss'] = round((dfg2['Entry_Price'] - (dfg2['Entry_Price']*SLL)/100),1)
 
-                        final_df = pd.merge(posit,dfg22, on=['ScripCode'], how='inner')  
-                        final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
-                        final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TSL")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
-                    
-                        final_df = final_df[['ScripName_x','Exch','ExchType','OrderFor','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	   
-                        final_df.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
-                        final_df.sort_values(['Entry_Date'], ascending=[True], inplace=True)
-                        five_df5 = pd.concat([final_df, five_df5])
+                            dfg2['Benchmark'] = dfg2['High'].cummax()
+                            dfg2['TStopLoss'] = dfg2['Benchmark'] * tsl1  
+                            dfg2['Status'] = np.where(dfg2['Close'] < dfg2['TStopLoss'],"TSL",np.where(dfg2['Close'] < dfg2['StopLoss'],"SL",""))
+        
+                            five_df4 = pd.concat([dfg2, five_df4])
+                            dfg3 = dfg2[(dfg2["Status"] == "TSL") | (dfg2["Status"] == "SL")]                       
+
+                            if dfg3.empty:
+                                dfg3 = dfg2.tail(1)
+                                
+                            dfg22 = dfg3.head(1)
+
+                            final_df = pd.merge(posit,dfg22, on=['ScripCode'], how='inner')  
+                            final_df['Entry'] = np.where((final_df['MTOM'] != 0) & (final_df['BuyQty'] != 0) & (final_df['MTOM'] != "") & (final_df['BuyQty'] != ""),"BUY","")
+                            final_df['Exit'] = np.where(((final_df['Entry'] == "BUY") & (final_df['Status'] == "TSL")) | ((final_df['Entry'] == "BUY") & (final_df['Status'] == "SL")),"SELL","")
                         
-                        order_dff = final_df[(final_df['Exit'] == 'SELL')]
+                            final_df = final_df[['ScripName_x','Exch','ExchType','OrderFor','ScripCode','Entry_Date','Datetime','BuyValue','BuyAvgRate','SellAvgRate','StopLoss','Benchmark','TStopLoss','Status','LTP','BookedPL','MTOM','BuyQty','Entry','Exit']]	   
+                            final_df.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
+                            final_df.sort_values(['Entry_Date'], ascending=[True], inplace=True)
+                            five_df5 = pd.concat([final_df, five_df5])
+                            
+                            order_dff = final_df[(final_df['Exit'] == 'SELL')]
 
-                        if order_dff.empty:
-                            print("No Target And Stoploss Hit")
-                        else:
-                            try: 
-                                buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B')]# & (buy_order_li['AveragePrice'] != 0)]
-                                #print(buy_order_liiist)
-                                order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
-                                for ordd in order_dff_Scpt:
-                                    order_df = order_dff[(order_dff['ScripCode'] == ordd)]
-                                    order = credi_har.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                                    print("Sell order Executed") 
-                            except Exception as e:
-                                print(e)
+                            if order_dff.empty:
+                                print("No Target And Stoploss Hit")
+                            else:
+                                try: 
+                                    buy_order_liiist = buy_order_li[(buy_order_li['BuySell'] == 'B')]# & (buy_order_li['AveragePrice'] != 0)]
+                                    #print(buy_order_liiist)
+                                    order_dff_Scpt = np.unique([int(i) for i in order_dff['ScripCode']])
+                                    for ordd in order_dff_Scpt:
+                                        order_df = order_dff[(order_dff['ScripCode'] == ordd)]
+                                        order = credi_har.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                        print("Sell order Executed") 
+                                except Exception as e:
+                                    print(e)
     except Exception as e:
         print(e) 
     

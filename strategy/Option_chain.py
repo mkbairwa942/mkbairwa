@@ -4,7 +4,7 @@ import xlwings as xw
 import pandas as pd
 # from kiteconnect import KiteConnect
 import time
-from kite_trade import *
+from imp_strategy.kite_trade import *
 
 
 class OptionChain:
