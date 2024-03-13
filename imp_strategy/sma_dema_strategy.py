@@ -515,11 +515,10 @@ while True:
                         rde_exec = order_execution(dfg1_Put_by,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
 
             posi = pd.DataFrame(credi_har.positions()) 
-            #print(posit)
-            posit = posi[(posi['MTOM'] != 0)]
-            if posit.empty:
+            if posi.empty:            
                 print("No Current Running Position")
             else:
+                posit = posi[(posi['MTOM'] != 0)]            
                 pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
                 if pl < -600 or pl > 1200:
                     Buy_Qty1 = posit['BuyQty'] - posit['SellQty']
