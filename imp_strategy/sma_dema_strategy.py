@@ -248,8 +248,8 @@ DN_Rsi_lvl = 40
 adx_parameter = 0.40
 sam_21_slop = 1.5
 dema_21_slope = 2
-slll = -600
-tgtt = 1200
+slll = -900
+tgtt = 1800
 lotsize = 2
 
 SLL = 10
@@ -529,10 +529,10 @@ while True:
                     print("No Current Running Position")
                 else:
                     pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
-                    if pl < -600 or pl > 1200:
+                    if pl < slll or pl > tgtt:
                         order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         order = credi_muk.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['LotSize']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                        print("StopLoss is Greater than -600")
+                        print("StopLoss is Greater than -900")
                         print("Sell stoplOSS order Executed")
                     else:
                         posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()  
