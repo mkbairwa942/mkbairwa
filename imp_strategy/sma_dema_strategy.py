@@ -249,7 +249,7 @@ adx_parameter = 0.40
 sam_21_slop = 1.5
 dema_21_slope = 2
 slll = -900
-tgtt = 1800
+tgtt = 3000
 lotsize = 2
 
 SLL = 10
@@ -416,7 +416,7 @@ while True:
             pass
         else:
             buy_order = order_book_func(credi_har)
-            buy_order_li1 = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Pending')]
+            buy_order_li1 = buy_order[(buy_order['OrderStatus'] == 'Pending')]
             if buy_order_li1.empty:
                 pass
             else:
@@ -529,6 +529,14 @@ while True:
                     print("No Current Running Position")
                 else:
                     pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
+                    Qtty=int(posit['LotSize'])
+                    print(Qtty)
+                    # if Qtty == 50:
+                    #     slll = -600
+                    #     tgtt = 1200
+                    # if Qtty == 15:
+                    #     slll = -900
+                    #     tgtt = 1800
                     if pl < slll or pl > tgtt:
                         order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         order = credi_muk.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['LotSize']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
