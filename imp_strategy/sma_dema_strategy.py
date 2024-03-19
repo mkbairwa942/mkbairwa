@@ -531,12 +531,12 @@ while True:
                     pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
                     Qtty=int(posit['LotSize'])
                     print(Qtty)
-                    # if Qtty == 50:
-                    #     slll = -600
-                    #     tgtt = 1200
-                    # if Qtty == 15:
-                    #     slll = -900
-                    #     tgtt = 1800
+                    if Qtty == 50:
+                        slll = -600
+                        tgtt = 1200
+                    if Qtty == 15:
+                        slll = -900
+                        tgtt = 1800
                     if pl < slll or pl > tgtt:
                         order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         order = credi_muk.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['LotSize']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
