@@ -239,7 +239,7 @@ flt_exc.range("a1").options(index=False).value = exc_new2
 stk_list = [260105,256265]
 
 telegram_msg = "no"
-orders = "no"
+orders = "yes"
 Capital = 20000
 StockPriceLessThan = 1000
 Buy_price_buffer = 2
