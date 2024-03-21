@@ -49,24 +49,24 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 #     from five_paisa import *
 
 
-# username = "HARESH"
+# username = "BHAVNA"
 # username1 = str(username)
 # client = credentials(username1)
-users = ["HARESH"]#,"ASHWIN"]#,"ALPESH"]
-credi_har = None
+users = ["BHAVNA"]#,"ASHWIN"]#,"ALPESH"]
+credi_bhav = None
 #credi_ash = None
 #credi_alp = None
 
 while True:
-    if credi_har is None:# and credi_ash is None:# and credi_alp is None:
+    if credi_bhav is None:# and credi_ash is None:# and credi_alp is None:
         try:
             for us in users:
                 print("1")
-                if us == "HARESH":
-                    credi_har = credentials("HARESH")
-                    if credi_har.request_token is None:
-                        credi_har = credentials("HARESH")
-                        print(credi_har.request_token)
+                if us == "BHAVNA":
+                    credi_bhav = credentials("BHAVNA")
+                    if credi_bhav.request_token is None:
+                        credi_bhav = credentials("BHAVNA")
+                        print(credi_bhav.request_token)
                 # if us == "ASHWIN":
                 #     credi_ash = credentials("ASHWIN")
                 #     if credi_ash.request_token is None:
@@ -82,7 +82,7 @@ while True:
             print("credentials Download Error....")
             time.sleep(5)
 
-cred = [credi_har]#,credi_ash]#,credi_alp]
+cred = [credi_bhav]#,credi_ash]#,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -97,8 +97,8 @@ to_d = (date.today())
 to_days = (date.today()-timedelta(days=1))
 # to_d = date(2023, 1, 20)
 
-days_365 = (date.today() - timedelta(days=30))
-print(days_365)
+days_30 = (date.today() - timedelta(days=30))
+print(days_30)
 
 holida = pd.read_excel('D:\STOCK\Capital_vercel_new\strategy\holida.xlsx')
 holida["Date"] = holida["Date1"].dt.date
@@ -113,6 +113,8 @@ trading_days = trading_dayss[1:]
 current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[2]
+time_change = timedelta(minutes=870) 
+new_current_trading_day = current_trading_day + time_change
 
 # current_trading_day = trading_dayss[0]
 # last_trading_day = trading_dayss[2]
@@ -124,7 +126,7 @@ print("Last Trading Days Is :- "+str(trading_days))
 print("Current Trading Day is :- "+str(current_trading_day))
 print("Last Trading Day is :- "+str(last_trading_day))
 print("Second Last Trading Day is :- "+str(second_last_trading_day))
-print("Last 365 Day is :- "+str(days_365))
+print("Last 365 Day is :- "+str(days_30))
 # to_d = date(2023, 1, 20)
 
 symbol = 'MOTHERSUMI'
@@ -168,7 +170,7 @@ strategy1 = wb.sheets("Strategy1")
 strategy2 = wb.sheets("Strategy2")
 strategy3 = wb.sheets("Strategy3")
 
-exc.range("a:u").value = None
+#exc.range("a:u").value = None
 #flt_exc.range("a:u").value = None
 bhv.range("a:u").value = None
 #bhv_fo.range("a:u").value = None
@@ -197,74 +199,103 @@ by = wb.sheets("Buy")
 sl = wb.sheets("Sale")
 st = wb.sheets("stats")
 exp = wb.sheets("Expiry")
-# script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
-# script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
-#exc.range("a1").options(index=False).value = script_code_5paisa
 
-segment = "all"
-'''
-all - scrips across all segments
-bse_eq - BSE Equity
-nse_eq - NSE Equity
-nse_fo - NSE Derivatives
-bse_fo - BSE Derivatives
-ncd_fo - NSE Currecny
-mcx_fo - MCX
-'''
-# script_code_5paisa_url1 = f"https://Openapi.5paisa.com/VendorsAPI/Service1.svc/ScripMaster/segment/{segment}"
-# script_code_5paisa1 = pd.read_csv(script_code_5paisa_url1,low_memory=False)
+root_list = ["BANKNIFTY","NIFTY","FINNIFTY","MIDCPNIFTY"]
+
+
 script_code_5paisa_url1 = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
-script_code_5paisa1 = pd.read_csv(script_code_5paisa_url1,low_memory=False)
+exch = pd.read_csv(script_code_5paisa_url1,low_memory=False)
 
-exc_new = script_code_5paisa1[(script_code_5paisa1["Root"] == "BANKNIFTY") & (script_code_5paisa1["Series"] == "XX")]
-#print(exc_new.head(2))
+eq_exc = exch[(exch["Exch"] == "N") & (exch["Series"] == "EQ") & (exch["CpType"] == "EQ")]
 
+five_delv.range("a1").options(index=False).value = eq_exc
+
+#exc.range("a1").options(index=False).value = exch
+exc_new2 = exch['Root'].isin(root_list)
+exc_new1 = exch[exc_new2]
+exc_neww = exc_new1[(exc_new1["Series"] == "XX")]
+
+exc_new = exc_neww[(exc_neww['Expiry'].apply(pd.to_datetime) <= new_current_trading_day)]
 exc_new['Expiry'] = (exc_new['Expiry'].apply(pd.to_datetime)).dt.strftime('%Y-%m-%d')
 exc_new.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
 exc_new.rename(columns={'Scripcode': 'ScripCode' },inplace=True)
+flt_exc.range("a:u").value = None
 flt_exc.range("a1").options(index=False).value = exc_new
 
-Expiry_exc = (np.unique(exc_new['Expiry']).tolist())   
+index_name = root_list[2]
+Expiry_exc_new = exc_new[(exc_new["Root"] == index_name)]
+eq_exc1 = eq_exc[(eq_exc["Root"] == index_name)]
+scpt_code = (np.unique([int(i) for i in eq_exc1['Scripcode']])).tolist()[0]
+
+Expiry_exc = (np.unique(Expiry_exc_new['Expiry']).tolist())   
 Expiry_exc1 = [datetime.strptime(x,'%Y-%m-%d') for x in Expiry_exc]
 Expiry_exc2 = Expiry_exc1[0] 
-print(Expiry_exc2)
-# print(Expiry_exc)
+time_date = timedelta(days=-1)
+new_date = Expiry_exc2 + time_date
+print(new_date)
+
 # print(Expiry_exc1)
 # print(type(Expiry_exc))
 # print(type(Expiry_exc1))
 # print(type(Expiry_exc2))
 # print(df.dtypes)
 
-up_to_time = '29-02-2024  13:30:00'
+time_only = pd.Timedelta(hours=13,minutes=30)
+up_to_time = Expiry_exc2 + time_only
 
-symbol = 999920005
-df = credi_har.historical_data('N', 'C', symbol, '5m', days_365,current_trading_day)
+df = credi_bhav.historical_data('N', 'C', scpt_code, '5m', days_30,current_trading_day)
 df = df.astype({"Datetime": "datetime64[ns]"})  
 df["Date"] = (df["Datetime"].dt.date).apply(pd.to_datetime) 
 df1 = df[(df["Date"] == Expiry_exc2)]  
 df1['Entry_Date'] = up_to_time
 df1.sort_values(['Datetime'], ascending=[ True], inplace=True)
 df1['OK_DF'] = np.where(df1['Entry_Date'] >= df1['Datetime'],"OK","")
-df2 = df1[(df1["OK_DF"] == "OK")]
+Fiv_dt.range("a1").options(index=False).value = df1
 
-print(df.head(1))
-print(df1.head(1))
+df2 = df1[(df1["OK_DF"] == "OK")]
+df3 = df2.tail(1)
+df_Closee = (float(df3['Close']))
+df_Spot = round(df_Closee/100,0)*100
 
 maxx =df2['High'].max()
 minn =df2['Low'].min()
 avgr = (maxx+minn)/2
-diff = maxx-minn
+diff = round((maxx-minn),2)
 rangee = round(((100*diff)/avgr),2)
-print(maxx,minn,diff)
-print(rangee)
 
-Fiv_dt.range("a1").options(index=False).value = df
-delv_dt.range("a1").options(index=False).value = df1
+CE_scpt_code1 = exc_new[(exc_new["Root"] == index_name) & (exc_new["StrikeRate"] == df_Spot) & (exc_new["CpType"] == "CE") & (exc_new["Expiry"].apply(pd.to_datetime) == Expiry_exc2)]
+PE_scpt_code1 = exc_new[(exc_new["Root"] == index_name) & (exc_new["StrikeRate"] == df_Spot) & (exc_new["CpType"] == "PE") & (exc_new["Expiry"].apply(pd.to_datetime) == Expiry_exc2)]
+Call_Scripcodee = int(float(CE_scpt_code1['ScripCode']))
+Put_Scripcodee = int(float(PE_scpt_code1['ScripCode']))
+print(CE_scpt_code1)
+print(PE_scpt_code1)
+print(Call_Scripcodee)
+print(Put_Scripcodee)
+
+
+print("--------------------------------")
+print(index_name+" Expiry List is : "+str(Expiry_exc)+"\n"+index_name+" Expiry Date is : "+str(Expiry_exc2)+"\n"+index_name+" Expiry Date & Time is : "+str(up_to_time))
+print("--------------------------------")
+print(index_name+" Upper Range is : "+str(maxx)+"\n"+index_name+" Lower range is : "+str(minn)+"\n"+index_name+" Difference Between Range is : "+str(diff)+"\n"+index_name+" Range Percentage is : "+str(rangee))
+print("--------------------------------")
+print(index_name+" Close Price is : "+str(df_Closee)+"\n"+index_name+" Spot Price is : "+str(df_Spot))
+print("--------------------------------")
+
+CE_df = credi_bhav.historical_data('N', 'D', Call_Scripcodee, '5m', new_date,Expiry_exc2)
+PE_df = credi_bhav.historical_data('N', 'D', Put_Scripcodee, '5m', new_date,Expiry_exc2)
+new_df1 = pd.merge(CE_df, PE_df, on=['Datetime'], how='inner')
+new_df1['Combine_LTP'] = new_df1['Close_x']+new_df1['Close_y']									
+new_df1.rename(columns={'Open_x': 'Open_CE','High_x': 'High_CE','Low_x': 'Low_CE','Close_x': 'Close_CE','Volume_x': 'Volume_CE',
+                        'Open_y': 'Open_PE','High_y': 'High_PE','Low_y': 'low_PE','Close_y': 'Close_PE','Volume_y': 'Volume_PE' },inplace=True)
+new_df1['Max'] = (new_df1.Combine_LTP.rolling(4).max()).shift(1)
+new_df1['Max_OK'] = np.where(new_df1['Combine_LTP'] > new_df1['Max'],"OK","")
+delv_dt.range("a1").options(index=False).value = new_df1
+
 
 
 def order_book_func():
     try:
-        ordbook = pd.DataFrame(credi_har.order_book())
+        ordbook = pd.DataFrame(credi_bhav.order_book())
         ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
         #ordbook[['Root']] = ordbook['ScripName'].str.split(' ',expand=True)
         #ordbook['Root'] = ordbook['ScripName'].tolist()#.str.split(" ")[0]
@@ -347,66 +378,6 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
 bknifty_exp  = ['2024-02-29', '2024-03-06', '2024-03-13', '2024-03-20', '2024-03-28', '2024-04-03', '2024-04-25', '2024-06-27']
 bknifty_exp11 = ['2024-03-20', '2024-03-27', '2024-04-03', '2024-04-10', '2024-04-16', '2024-04-24', '2024-05-29', '2024-06-26', '2024-09-25']
 
-
-
-# def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
-#     df = credi_har.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
-#     #print(df.head(1))
-#     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
-#     df = df.astype({"Datetime": "datetime64"})
-#     print(df.head(1))
-#     df['ScripCode'] = int(stk_nm)
-
-#     df = pd.merge(neww_exch, df, on=['ScripCode'], how='inner') 
-#     df = df[['ScripCode','Name','Datetime','Open','High','Low','Close','Volume']]
-#     print(df.head(1))
-#     #df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))
-#     df['Price_break'] = np.where((df['Close'] > (df.High.rolling(5).max()).shift(-5)),
-#                                         'Pri_Up_brk',
-#                                         (np.where((df['Close'] < (df.Low.rolling(5).min()).shift(-5)),
-#                                                     'Pri_Dwn_brk', "")))
-#     df['Vol_break'] = np.where(df['Volume'] > (df.Volume.rolling(5).mean() * vol_pr).shift(-5),
-#                                         "Vol_brk","") 
-#     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
-#     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
-#     ADX = pta.adx(high=df['High'],low=df['Low'],close=df['High'],length=14)
-#     df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
-#     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
-#     df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
-#     df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
-#     df['Adx_ok'] = np.where(df['Adx_diff'] > adx_parameter,"ok","")
-#     df['SMA_21_diff'] = df['SMA_21'] - df['SMA_21'].shift(1)
-#     df['DEMA_21_diff'] = df['DEMA_21'] - df['DEMA_21'].shift(1)
-#     df['SMA_21_ok'] = np.where(df['SMA_21_diff'] > 2,"up_ok",np.where(df['SMA_21_diff'] < -2,"dn_ok",""))
-#     df['DEMA_21_ok'] = np.where(df['DEMA_21_diff'] > 2,"up_ok",np.where(df['DEMA_21_diff'] < -2,"dn_ok",""))
-#     #df['SMA_21_ok1'] = np.where((df['SMA_21']) > (df['SMA_21'].shift(1)),"up_ok",np.where((df['SMA_21']) < (df['SMA_21'].shift(1)),"dn_ok",""))
-#     #df['DEMA_21_ok1'] = np.where((df['DEMA_21']) > (df['DEMA_21'].shift(1)),"up_ok",np.where((df['DEMA_21']) < (df['DEMA_21'].shift(1)),"dn_ok",""))
-#     df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))
-#     df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
-#     df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
-#     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") ) 
-#     df['TimeNow'] = datetime.now()
-#     df = df.astype({"Datetime": "datetime64[ns]"})    
-#     df["Date"] = df["Datetime"].dt.date
-#     df['Minutes'] = df['TimeNow']-df["Datetime"]
-#     df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
-#     df.sort_values(['Datetime'], ascending=[True], inplace=True)
-#     return df
-
-# posit = pd.DataFrame(credi_har.positions()) 
-# if posit.empty:
-#     print("Position is Empty")
-#     buy_order_list_dummy = []
-#     sell_order_list_dummy = []
-#     buy_root_list_dummy = []
-# else:
-#     buy_order = order_book_func()
-#     buy_order_li = buy_order[buy_order['BuySell'] == 'B']
-#     exit_order_li = buy_order[buy_order['BuySell'] == 'S']
-#     buy_order_list_dummy = (np.unique([str(i) for i in buy_order_li['Datetimeee']])).tolist()
-#     sell_order_list_dummy = (np.unique([str(i) for i in exit_order_li['Datetimeee']])).tolist()
-#     buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
-
 telegram_msg = "no"
 orders = "no"
 Capital = 20000
@@ -418,10 +389,25 @@ DN_Rsi_lvl = 40
 SLL = 1
 TSL = 1
 tsl1 = 1-(TSL/100)
-print(tsl1)
+#print(tsl1)
 
 adx_parameter = 0.60
 sll = -300
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # while True:
 
@@ -487,7 +473,7 @@ sll = -300
 #                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
 #                 if not Call_by_ord6.empty:                    
-#                     dfg1_Call_by = credi_har.historical_data('N', 'D', Call_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+#                     dfg1_Call_by = credi_bhav.historical_data('N', 'D', Call_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
 #                     if Call_by_time in buy_order_list_dummy: 
 #                         print(str(stk_name)+" Call is Already Buy")
 #                         print("----------------------------------------")
@@ -528,7 +514,7 @@ sll = -300
 #                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
 #                 if not Put_by_ord6.empty:
-#                     dfg1_Put_by = credi_har.historical_data('N', 'D', Put_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+#                     dfg1_Put_by = credi_bhav.historical_data('N', 'D', Put_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
 #                     if Put_by_time in buy_order_list_dummy: 
 #                         print(str(stk_name)+" Put is Already Buy")
 #                         print("----------------------------------------")
@@ -573,7 +559,7 @@ sll = -300
 #                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
 #                 if not Call_sl_ord6.empty:                    
-#                     dfg1_Call_sl = credi_har.historical_data('N', 'D', Call_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+#                     dfg1_Call_sl = credi_bhav.historical_data('N', 'D', Call_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
 #                     if Call_sl_time in sell_order_list_dummy: 
 #                         print(str(stk_name)+" Call is Already Exit")
 #                         print("----------------------------------------")
@@ -615,7 +601,7 @@ sll = -300
 #                 #order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,Buy_At,namee)
                 
 #                 if not Put_sl_ord6.empty:
-#                     dfg1_Put_sl = credi_har.historical_data('N', 'D', Put_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+#                     dfg1_Put_sl = credi_bhav.historical_data('N', 'D', Put_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
 #                     if Put_sl_time in sell_order_list_dummy: 
 #                         print(str(stk_name)+" Put is Already Exit")
 #                         print("----------------------------------------")

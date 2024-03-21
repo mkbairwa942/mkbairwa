@@ -453,7 +453,7 @@ while True:
             if not expiries_list:
                 df = copy.deepcopy(exchange)
                 df = df[df['Root'] == oc_symbol]
-                df = df[(df['Expiry1'].apply(pd.to_datetime) >= current_trading_day)]
+                #df = df[(df['Expiry1'].apply(pd.to_datetime) >= current_trading_day)]
                 expiries_list = sorted(list(df["Expiry1"].unique()))
                 df = pd.DataFrame({"Expiry Date": expiries_list})
                 df = df.set_index("Expiry Date",drop=True)
@@ -503,6 +503,7 @@ while True:
                 pe_data = opt[opt['CPType'] == 'PE']
                 pe_data = pe_data.sort_values(['StrikeRate'])
                 PE.append(pe_data)
+            print(oc_symbol,expiry)
             option = pd.DataFrame(client.get_option_chain("N", oc_symbol, expiry)['Options'])
 
             ce_values1 = option[option['CPType'] == 'CE']
