@@ -1,12 +1,14 @@
 import pandas as pd
 import streamlit as st
-from datetime import datetime
+#from datetime import datetime
 import plotly.graph_objects as go
 from jugaad_data.nse import *
 import pandas_ta as pta
 import altair as alt
 import matplotlib.pyplot as plt
 import mplfinance as mpf
+from five_paisa1 import *
+import datetime 
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -14,7 +16,11 @@ pd.set_option('display.width', None)
 pd.options.mode.chained_assignment = None
 
 from_date = date(2024, 3, 1)
-to_date = date(2024, 3, 12)
+to_date = date(2024, 3, 21)
+
+username = "BHAVNA"
+username1 = str(username)
+client = credentials(username1)
 
 All = ['20MICRONS', '21STCENMGM', '3IINFOTECH', '3MINDIA', '3PLAND', '5PAISA',
        '63MOONS', 'A2ZINFRA', 'AAATECH', 'AAKASH', 'AARON', 'AARTIDRUGS', 'AARTIIND',
@@ -232,110 +238,128 @@ CN100 = ['ABBOTINDIA', 'ACC', 'ADANIGREEN', 'ADANIPORTS', 'ADANITRANS', 'ALKEM',
          'TORNTPHARM', 'UBL', 'ULTRACEMCO', 'UPL', 'WIPRO'
          ]
 
-nse = NSELive()
-
-dates_list = stock_df(symbol="SBIN", from_date=from_date, to_date=to_date, series="EQ")
-dates_list = dates_list['DATE']
-print(dates_list)
 
 
-def bhavcopy(dates_list1):   
-    data_eq = pd.DataFrame()
-    for day in dates_list1:
-        print(day)
-        try:
-            dmyformat = datetime.strftime(day, '%d%m%Y')
-            url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
-            bhav_eq1 = pd.read_csv(url)
-            bhav_eq1.columns = bhav_eq1.columns.str.strip()
-            bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-            bhav_eq1['DATE1'] = pd.to_datetime(bhav_eq1['DATE1'])
-            bhav_eq = bhav_eq1[bhav_eq1['SERIES'] == 'EQ']
-            bhav_eq['LAST_PRICE'] = bhav_eq['LAST_PRICE'].astype(float)
-            bhav_eq['DELIV_QTY'] = bhav_eq['DELIV_QTY'].astype(float)
-            bhav_eq['DELIV_PER'] = bhav_eq['DELIV_PER'].astype(float)
-            data_eq = pd.concat([bhav_eq, data_eq])
-        except Exception as e:
-            print(f'erroe {e} for {day}')
-    return data_eq
-
-data_eq = bhavcopy(dates_list)
-Symbol = "IDEA"
-data = data_eq[data_eq['SYMBOL'] == Symbol]
-
-print(data)
-# engulfing_pattern = talib.CDLENGULFING(data['Open'], data['High'], data['Low'], data['Close']).replace(0, np.nan)
-# bull_engulf = engulfing_pattern.replace(-100, np.nan) / 100
-# bear_engulf = engulfing_pattern.replace(100, np.nan) / 100
-# print(bear_engulf)
-# deliv_data = [mpf.make_addplot(data['Deliv_per'], panel=2, mav=5),
-#                mpf.make_addplot(bull_engulf * data.Low * 0.97, type='scatter', marker='^', color='green'),
-#                mpf.make_addplot(-bear_engulf * data.High * 1.03, type='scatter', marker='v', color='red')]
-mpf.plot(data, addplot=deliv_data, type='candle', style='yahoo', volume=True)
-# data = ta.add_trend_ta(data,data['HIGH_PRICE'], data['LOW_PRICE'], data['CLOSE_PRICE'])
-#engulfing_pattern = pta.cdl_pattern(data['OPEN_PRICE'], data['HIGH_PRICE'], data['LOW_PRICE'], data['CLOSE_PRICE'],"engulfing")
-df_engulfing = data[data["bullish_engulfing"] == True]
-print(df_engulfing)
+# Get today's date
+start = datetime.time(9, 30, 0)
+end = datetime.time(14, 45, 0)
+current = datetime.datetime.now().time()
+print(start, end, current)
 
 
-# df = data_eq
-# # df = pd.read_csv('NSE_Bhavcopy.csv')
-# df['DATE'] = pd.to_datetime(df['DATE1'])
 
-# st.title('Stock Technical Analysis')
-# st.sidebar.title("Stock Technical Analysis")
-# select_type = st.sidebar.selectbox('Select Type', ['All', 'CN100'])
-# select = 'ITC'
-# if select_type == 'All':
-#     select = st.sidebar.selectbox('Select SYMBOL', All)
-# elif select_type == 'CN100':
-#     select = st.sidebar.selectbox('Select SYMBOL', CN100)
 
-# # Simple Moving average calculation
-# df_for_plot = df.loc[(df['SYMBOL'] == select) & (df['SERIES'] == 'EQ')]
-# df_for_plot['SMA44'] = df_for_plot['CLOSE_PRICE'].rolling(44).mean()
-# df_for_plot['SMA10'] = df_for_plot['CLOSE_PRICE'].rolling(10).mean()
-# df_for_plot['SMA20'] = df_for_plot['CLOSE_PRICE'].rolling(20).mean()
+symbol = 999920000
 
-# # Data for plotting
-# data1 = {'x': df_for_plot.DATE,
-#          'open': df_for_plot.OPEN_PRICE,
-#          'close': df_for_plot.CLOSE_PRICE,
-#          'high': df_for_plot.HIGH_PRICE,
-#          'low': df_for_plot.LOW_PRICE,
-#          'type': 'candlestick', }
+CE_df = client.historical_data('N', 'C', symbol, '5m', from_date,to_date)
+print(CE_df.head(5))
 
-# data2 = {'x': df_for_plot.DATE,
-#          'y': df_for_plot.SMA44,
-#          'type': 'scatter',
-#          'mode': 'lines',
-#          'line': {'width': 1, 'color': 'blue'},
-#          'name': 'SMA 44'}
+#start_time = 
 
-# data3 = {'x': df_for_plot.DATE,
-#          'y': df_for_plot.SMA20,
-#          'type': 'scatter',
-#          'mode': 'lines',
-#          'line': {'width': 1, 'color': 'red'},
-#          'name': 'SMA 20'}
+# nse = NSELive()
 
-# data4 = {'x': df_for_plot.DATE,
-#          'y': df_for_plot.SMA10,
-#          'type': 'scatter',
-#          'mode': 'lines',
-#          'line': {'width': 1, 'color': 'green'},
-#          'name': 'SMA 10 periods'}
-# data = [data1, data2, data3, data4]
-# fig = go.Figure(data=data)
+# dates_list = stock_df(symbol="SBIN", from_date=from_date, to_date=to_date, series="EQ")
+# dates_list = dates_list['DATE']
+# print(dates_list)
 
-# # update figure layout
-# fig.update_layout(
-#     title={
-#         'text': "SYMBOL = " + select,
-#         'xanchor': 'left',
-#         'yanchor': 'top'}
-# )
 
-# st.subheader('Candlestick chart with SMA curves')
-# st.write('Data Range: 04/01/2021 to 30/07/2021')
-# st.plotly_chart(fig)
+# def bhavcopy(dates_list1):   
+#     data_eq = pd.DataFrame()
+#     for day in dates_list1:
+#         print(day)
+#         try:
+#             dmyformat = datetime.strftime(day, '%d%m%Y')
+#             url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
+#             bhav_eq1 = pd.read_csv(url)
+#             bhav_eq1.columns = bhav_eq1.columns.str.strip()
+#             bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+#             bhav_eq1['DATE1'] = pd.to_datetime(bhav_eq1['DATE1'])
+#             bhav_eq = bhav_eq1[bhav_eq1['SERIES'] == 'EQ']
+#             bhav_eq['LAST_PRICE'] = bhav_eq['LAST_PRICE'].astype(float)
+#             bhav_eq['DELIV_QTY'] = bhav_eq['DELIV_QTY'].astype(float)
+#             bhav_eq['DELIV_PER'] = bhav_eq['DELIV_PER'].astype(float)
+#             data_eq = pd.concat([bhav_eq, data_eq])
+#         except Exception as e:
+#             print(f'erroe {e} for {day}')
+#     return data_eq
+
+# data_eq = bhavcopy(dates_list)
+# Symbol = "IDEA"
+# data = data_eq[data_eq['SYMBOL'] == Symbol]
+
+# print(data)
+# # engulfing_pattern = talib.CDLENGULFING(data['Open'], data['High'], data['Low'], data['Close']).replace(0, np.nan)
+# # bull_engulf = engulfing_pattern.replace(-100, np.nan) / 100
+# # bear_engulf = engulfing_pattern.replace(100, np.nan) / 100
+# # print(bear_engulf)
+# # deliv_data = [mpf.make_addplot(data['Deliv_per'], panel=2, mav=5),
+# #                mpf.make_addplot(bull_engulf * data.Low * 0.97, type='scatter', marker='^', color='green'),
+# #                mpf.make_addplot(-bear_engulf * data.High * 1.03, type='scatter', marker='v', color='red')]
+# mpf.plot(data, addplot=deliv_data, type='candle', style='yahoo', volume=True)
+# # data = ta.add_trend_ta(data,data['HIGH_PRICE'], data['LOW_PRICE'], data['CLOSE_PRICE'])
+# #engulfing_pattern = pta.cdl_pattern(data['OPEN_PRICE'], data['HIGH_PRICE'], data['LOW_PRICE'], data['CLOSE_PRICE'],"engulfing")
+# df_engulfing = data[data["bullish_engulfing"] == True]
+# print(df_engulfing)
+
+
+# # df = data_eq
+# # # df = pd.read_csv('NSE_Bhavcopy.csv')
+# # df['DATE'] = pd.to_datetime(df['DATE1'])
+
+# # st.title('Stock Technical Analysis')
+# # st.sidebar.title("Stock Technical Analysis")
+# # select_type = st.sidebar.selectbox('Select Type', ['All', 'CN100'])
+# # select = 'ITC'
+# # if select_type == 'All':
+# #     select = st.sidebar.selectbox('Select SYMBOL', All)
+# # elif select_type == 'CN100':
+# #     select = st.sidebar.selectbox('Select SYMBOL', CN100)
+
+# # # Simple Moving average calculation
+# # df_for_plot = df.loc[(df['SYMBOL'] == select) & (df['SERIES'] == 'EQ')]
+# # df_for_plot['SMA44'] = df_for_plot['CLOSE_PRICE'].rolling(44).mean()
+# # df_for_plot['SMA10'] = df_for_plot['CLOSE_PRICE'].rolling(10).mean()
+# # df_for_plot['SMA20'] = df_for_plot['CLOSE_PRICE'].rolling(20).mean()
+
+# # # Data for plotting
+# # data1 = {'x': df_for_plot.DATE,
+# #          'open': df_for_plot.OPEN_PRICE,
+# #          'close': df_for_plot.CLOSE_PRICE,
+# #          'high': df_for_plot.HIGH_PRICE,
+# #          'low': df_for_plot.LOW_PRICE,
+# #          'type': 'candlestick', }
+
+# # data2 = {'x': df_for_plot.DATE,
+# #          'y': df_for_plot.SMA44,
+# #          'type': 'scatter',
+# #          'mode': 'lines',
+# #          'line': {'width': 1, 'color': 'blue'},
+# #          'name': 'SMA 44'}
+
+# # data3 = {'x': df_for_plot.DATE,
+# #          'y': df_for_plot.SMA20,
+# #          'type': 'scatter',
+# #          'mode': 'lines',
+# #          'line': {'width': 1, 'color': 'red'},
+# #          'name': 'SMA 20'}
+
+# # data4 = {'x': df_for_plot.DATE,
+# #          'y': df_for_plot.SMA10,
+# #          'type': 'scatter',
+# #          'mode': 'lines',
+# #          'line': {'width': 1, 'color': 'green'},
+# #          'name': 'SMA 10 periods'}
+# # data = [data1, data2, data3, data4]
+# # fig = go.Figure(data=data)
+
+# # # update figure layout
+# # fig.update_layout(
+# #     title={
+# #         'text': "SYMBOL = " + select,
+# #         'xanchor': 'left',
+# #         'yanchor': 'top'}
+# # )
+
+# # st.subheader('Candlestick chart with SMA curves')
+# # st.write('Data Range: 04/01/2021 to 30/07/2021')
+# # st.plotly_chart(fig)
