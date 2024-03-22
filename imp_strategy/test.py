@@ -10,6 +10,35 @@ import mplfinance as mpf
 from five_paisa1 import *
 import datetime 
 
+from collections import namedtuple
+import pandas_ta as pta
+#from finta import TA
+# import talib
+import pandas as pd
+import copy
+import numpy as np
+import xlwings as xw
+from datetime import datetime,timedelta
+from numpy import log as nplog
+from numpy import NaN as npNaN
+from pandas import DataFrame, Series
+from pandas_ta.overlap import ema, hl2
+from pandas_ta.utils import get_offset, high_low_range, verify_series, zero
+from io import BytesIO
+import os
+import sys
+from zipfile import ZipFile
+import requests
+import itertools
+import math 
+from telethon.sync import TelegramClient
+#from notifypy import Notify
+#from plyer import notification
+import inspect
+import time
+from five_paisa1 import *
+import threading
+
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
@@ -18,7 +47,7 @@ pd.options.mode.chained_assignment = None
 from_date = date(2024, 3, 1)
 to_date = date(2024, 3, 21)
 
-username = "BHAVNA"
+username = "haresh"
 username1 = str(username)
 client = credentials(username1)
 
@@ -239,8 +268,48 @@ CN100 = ['ABBOTINDIA', 'ACC', 'ADANIGREEN', 'ADANIPORTS', 'ADANITRANS', 'ALKEM',
          ]
 
 
+def order_book_func(cred):
+    try:
+       ordbook = pd.DataFrame(cred.order_book())
+       ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
+       #ordbook[['Root']] = ordbook['ScripName'].str.split(' ',expand=True)
+       #ordbook['Root'] = ordbook['ScripName'].tolist()#.str.split(" ")[0]
+       #pos.range("r1").options(index=False).value = ordbook
+        
+    except Exception as e:
+                print(e)
 
-# Get today's date
+    try:
+       if ordbook is not None:
+            ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
+            #ordbook['Root'] = ordbook['ScripName'].tolist()#.str.split(" ")[0]
+            #print("Order Book not Empty")        
+            ordbook1 = ordbook[ordbook['OrderStatus'] != "Rejected By 5P"]   
+            ordbook1 = ordbook           
+            Datetimeee = []
+            for i in range(len(ordbook1)):
+                datee = ordbook1['BrokerOrderTime'][i]
+                timestamp = pd.to_datetime(datee[6:19], unit='ms')
+                ExpDate = datetime.strftime(timestamp, '%d-%m-%Y %H:%M')
+                d1 = datetime(int(ExpDate[6:10]),int(ExpDate[3:5]),int(ExpDate[0:2]),int(ExpDate[11:13]),int(ExpDate[14:16]))
+                d2 = d1 + timedelta(hours = 5.5)
+                Datetimeee.append(d2)
+            ordbook1['Datetimeee'] = Datetimeee
+            ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot','ExchOrderID','OrderStatus', 'OrderValidUpto','ScripName','Root','AtMarket']]
+            ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+            #pos.range("a1").options(index=False).value = ordbook1
+       else:
+            print("Order Book Empty")
+    except Exception as e:
+                print(e)
+    return ordbook1
+
+
+buy_order = order_book_func(client)
+buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
+print(buy_order_li)
+
+
 start = datetime.time(9, 30, 0)
 end = datetime.time(14, 45, 0)
 current = datetime.datetime.now().time()
@@ -249,10 +318,17 @@ print(start, end, current)
 
 
 
+if current > start and current < end:
+    print("Time Not Over")
+else:
+    print("Time Over")
+
+
+
 symbol = 999920000
 
-CE_df = client.historical_data('N', 'C', symbol, '5m', from_date,to_date)
-print(CE_df.head(5))
+#CE_df = client.historical_data('N', 'C', symbol, '5m', from_date,to_date)
+#print(CE_df.head(5))
 
 #start_time = 
 
