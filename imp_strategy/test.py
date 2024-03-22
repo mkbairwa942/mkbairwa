@@ -296,7 +296,7 @@ def order_book_func(cred):
                 Datetimeee.append(d2)
             ordbook1['Datetimeee'] = Datetimeee
             ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot','ExchOrderID','OrderStatus', 'OrderValidUpto','ScripName','Root','AtMarket']]
-            ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+            ordbook1.sort_values(['Datetimeee'], ascending=[True], inplace=True)
             #pos.range("a1").options(index=False).value = ordbook1
        else:
             print("Order Book Empty")
@@ -304,24 +304,40 @@ def order_book_func(cred):
                 print(e)
     return ordbook1
 
+while True:
+    buy_order = order_book_func(client)
+    posi = pd.DataFrame(client.positions()) 
 
-buy_order = order_book_func(client)
-buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
-print(buy_order_li)
+    buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
+    new_df = pd.merge(buy_order_li, posi, on=['ScripCode'], how='inner')
+    new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+    new_df1 = new_df.head(1)
+    Ratee = (np.unique([float(i) for i in new_df1['Rate']])).tolist()[0]
+    LTPP = (np.unique([float(i) for i in new_df1['LTP']])).tolist()[0]
+    Qtty = (np.unique([float(i) for i in new_df1['Qty']])).tolist()[0]
+    pl = round(((LTPP-Ratee)*Qtty),2)
+
+    # print(new_df)
+    print("Last Buy Rate is : "+str(Ratee))
+    print("Last LTP Rate is : "+str(LTPP))
+    print("Last LTP Rate is : "+str(pl))
 
 
-start = datetime.time(9, 30, 0)
-end = datetime.time(14, 45, 0)
-current = datetime.datetime.now().time()
-print(start, end, current)
+
+
+
+# start = datetime.time(9, 30, 0)
+# end = datetime.time(14, 45, 0)
+# current = datetime.datetime.now().time()
+# print(start, end, current)
 
 
 
 
-if current > start and current < end:
-    print("Time Not Over")
-else:
-    print("Time Over")
+# if current > start and current < end:
+#     print("Time Not Over")
+# else:
+#     print("Time Over")
 
 
 

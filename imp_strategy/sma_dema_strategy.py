@@ -191,6 +191,7 @@ st2 = wb.sheets("Stat2")
 st3 = wb.sheets("Stat3")
 st4 = wb.sheets("Stat4")
 st.range("a:u").value = None
+
 # st1.range("a:u").value = None
 # st2.range("a:u").value = None
 # st3.range("a:u").value = None
@@ -200,6 +201,8 @@ by = wb.sheets("Buy")
 sl = wb.sheets("Sale")
 st = wb.sheets("stats")
 exp = wb.sheets("Expiry")
+
+
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
@@ -246,6 +249,7 @@ Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
 adx_parameter = 0.40
+adx_parameter_opt = 0.60
 sam_21_slop = 1.5
 dema_21_slope = 2
 slll = -900
@@ -256,6 +260,14 @@ SLL = 10
 TSL = 10
 tsl1 = 1-(TSL/100)
 print(tsl1)
+
+st.range("ac1").value = "Orders"
+st.range("ae1").value = "Tele_Msg"
+st.range("ad1").value = "YES"
+st.range("af1").value = "YES"
+
+
+
 
 def order_book_func(cred):
     try:
@@ -295,6 +307,8 @@ def order_book_func(cred):
 
 def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee,stk_name):
     timees = list_to_append
+
+    
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
         lotsize = 2
@@ -363,14 +377,13 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
                                         "Vol_brk","") 
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
-    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)
-    df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
-    df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
-    df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
-    #df['Adx_diff_prev'] = df['ADX_14'].shift(1) - df['ADX_14'].shift(2)
+    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)    
+    df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
     df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)
     df['Adx_ok'] = np.where(df['Adx_diff'] > adx_parameter,"ok","")
-    #df['Adx_ok_NEW'] = np.where(df['Adx_diff_prev'] < -adx_parameter,"ok","")
+    #print(df.tail(5))
+    df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)   
+    df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
     df['SMA_21_diff'] = df['SMA_21'] - df['SMA_21'].shift(1)
     df['DEMA_21_diff'] = df['DEMA_21'] - df['DEMA_21'].shift(1)     
     df['SMA_21_ok'] = np.where(df['SMA_21_diff'] > sam_21_slop,"up_ok",np.where(df['SMA_21_diff'] < -sam_21_slop,"dn_ok",""))
@@ -406,8 +419,14 @@ else:
     buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
 
 while True:
+    orders,telegram_msg = st.range("ad1").value,st.range("af1").value
+    if orders is None:
+        orders = "yes"
+    if telegram_msg is None:
+        telegram_msg = "yes"
     # print(buy_order_list_dummy)
     # print(sell_order_list_dummy)
+    print(orders,telegram_msg)
     start_time = time.time()
     five_df1 = pd.DataFrame()
     five_df2 = pd.DataFrame()
@@ -476,12 +495,23 @@ while True:
                 
                 if not Call_by_ord6.empty:                    
                     dfg1_Call_by = credi_har.historical_data('N', 'D', Call_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                    if Call_by_time in buy_order_list_dummy: 
-                        print(str(stk_name)+" Call is Already Buy")
-                        print("----------------------------------------")
+                    ADX = pta.adx(high=dfg1_Call_by['High'],low=dfg1_Call_by['Low'],close=dfg1_Call_by['Close'],length=14)    
+                    dfg1_Call_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
+                    dfg1_Call_by['Adx_diff'] = dfg1_Call_by['ADX_14'] - dfg1_Call_by['ADX_14'].shift(1)
+                    dfg1_Call_by['Adx_ok'] = np.where(dfg1_Call_by['Adx_diff'] > adx_parameter_opt,"ok","")
+                    #print(dfg1_Call_by.tail(5))
+                    dfg1_Call_by1 = dfg1_Call_by.tail(1)
+                    dfg1_Call_by2 = dfg1_Call_by1[(dfg1_Call_by1["Adx_ok"] == "ok")]
+
+                    if dfg1_Call_by2.empty:
+                        print("No Call Buy Position Activate")
                     else:
-                        print("Call Buy")                        
-                        rde_exec = order_execution(dfg1_Call_by,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name)
+                        if Call_by_time in buy_order_list_dummy: 
+                            print(str(stk_name)+" Call is Already Buy")
+                            print("----------------------------------------")
+                        else:
+                            print("Call Buy")                        
+                            rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name)
                     
             Put_by_df = dfg1[(dfg1["Signal1"] == "Put_Buy")]
             Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -516,12 +546,23 @@ while True:
                 
                 if not Put_by_ord6.empty:
                     dfg1_Put_by = credi_har.historical_data('N', 'D', Put_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                    if Put_by_time in buy_order_list_dummy: 
-                        print(str(stk_name)+" Put is Already Buy")
-                        print("----------------------------------------")
+                    ADX = pta.adx(high=dfg1_Put_by['High'],low=dfg1_Put_by['Low'],close=dfg1_Put_by['Close'],length=14)    
+                    dfg1_Put_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
+                    dfg1_Put_by['Adx_diff'] = dfg1_Put_by['ADX_14'] - dfg1_Put_by['ADX_14'].shift(1)
+                    dfg1_Put_by['Adx_ok'] = np.where(dfg1_Put_by['Adx_diff'] > adx_parameter_opt,"ok","")
+                    #print(dfg1_Put_by.tail(5))
+                    dfg1_Put_by1 = dfg1_Put_by.tail(1)
+                    dfg1_Put_by2 = dfg1_Put_by1[(dfg1_Put_by1["Adx_ok"] == "ok")]
+
+                    if dfg1_Put_by2.empty:
+                        print("No Put Buy Position Activate")
                     else:
-                        print("Put Buy")                        
-                        rde_exec = order_execution(dfg1_Put_by,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
+                        if Put_by_time in buy_order_list_dummy: 
+                            print(str(stk_name)+" Put is Already Buy")
+                            print("----------------------------------------")
+                        else:
+                            print("Put Buy")                        
+                            rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
 
             posi = pd.DataFrame(credi_har.positions()) 
             #print(posi)
@@ -532,15 +573,33 @@ while True:
                 if posit.empty:
                     print("No Current Running Position")
                 else:
-                    pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
+                    buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
+                    #print(buy_order_li)
+                    new_df = pd.merge(buy_order_li, posi, on=['ScripCode'], how='inner')
+                    new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+                    new_df1 = new_df.head(1)
+                    Ratee = (np.unique([float(i) for i in new_df1['Rate']])).tolist()[0]
+                    LTPP = (np.unique([float(i) for i in new_df1['LTP']])).tolist()[0]
+                    Qtty1 = (np.unique([float(i) for i in new_df1['Qty']])).tolist()[0]
+                    
+
+                    # print(new_df)
+                    print("Last Buy Rate is : "+str(Ratee))
+                    print("Last LTP Rate is : "+str(LTPP))
+                    
+
+                    # pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
                     Qtty=int(posit['LotSize'])
+                    pl = round(((LTPP-Ratee)*Qtty1),2)
+                    print("Last PL Rate is : "+str(pl))
                     print(Qtty)
                     if Qtty == 50:
-                        slll = -250
+                        slll = -200
                         tgtt = 1000
                     if Qtty == 15:
                         slll = -400
                         tgtt = 2000
+                    print(slll,tgtt)
                     if pl < slll or pl > tgtt:
                         order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         order = credi_muk.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['LotSize']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
