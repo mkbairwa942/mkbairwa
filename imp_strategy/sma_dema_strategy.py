@@ -202,6 +202,10 @@ sl = wb.sheets("Sale")
 st = wb.sheets("stats")
 exp = wb.sheets("Expiry")
 
+# start = datetime.time(9, 30, 0)
+# end = datetime.time(14, 45, 0)
+# current = datetime.datetime.now().time()
+# print(start, end, current)
 
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
@@ -248,8 +252,8 @@ Buy_price_buffer = 2
 Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
-adx_parameter = 0.40
-adx_parameter_opt = 0.60
+adx_parameter = 0.20
+adx_parameter_opt = 0.50
 sam_21_slop = 1.5
 dema_21_slope = 2
 slll = -900
@@ -373,7 +377,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
                                         'Pri_Up_brk',
                                         (np.where((df['Close'] < (df.Low.rolling(5).min()).shift(-5)),
                                                     'Pri_Dwn_brk', "")))
-    df['Vol_break'] = np.where(df['Volume'] > (df.Volume.rolling(5).mean() * vol_pr).shift(-5),
+    df['Vol_break'] = np.where(df['Volume'] > (df.Volume.rolling(5).mean() * vol_pr).shift(5),
                                         "Vol_brk","") 
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)

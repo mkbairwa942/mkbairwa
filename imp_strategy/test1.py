@@ -142,16 +142,16 @@ pd.options.mode.copy_on_write = True
 
 print("Excel Starting....")
 
-if not os.path.exists("test.xlsx"):
+if not os.path.exists("test1.xlsx"):
     try:
         wb = xw.Book()
         wb.sheets.add("optionchain")
-        wb.save("test.xlsx")
+        wb.save("test1.xlsx")
         wb.close()
     except Exception as e:
         print(f"Error : {e}")
         sys.exit()
-wb = xw.Book('test.xlsx')
+wb = xw.Book('test1.xlsx')
 for i in ["Exchange","Filt_Exc","Bhavcopy","FO_Bhavcopy","Five_data","Delv_data","Five_Delv","Final_Data","Position","Strategy1","Strategy2","Strategy3","Buy","Sale",
            "Expiry","stats","Stat","Stat1","Stat2","Stat3","Stat4"]:
     try:
@@ -253,9 +253,9 @@ Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
 adx_parameter = 0.20
-adx_parameter_opt = 0.60
-sam_21_slop = 1.5
-dema_21_slope = 2
+adx_parameter_opt = 0.4
+sam_21_slop = 2
+dema_21_slope = 5
 slll = -900
 tgtt = 3000
 lotsize = 2
@@ -270,8 +270,21 @@ st.range("ae1").value = "Tele_Msg"
 st.range("ad1").value = "YES"
 st.range("af1").value = "YES"
 
+stk_nm = 67303
+vol_pr = 1.5
 
-
+df = credi_har.historical_data('N', 'D', stk_nm, '1m', second_last_trading_day,current_trading_day)
+df = df.astype({"Datetime": "datetime64"})
+df['Vol_break'] = np.where(df['Volume'] > (df.Volume.rolling(5).mean() * vol_pr).shift(5),"Vol_brk","") 
+df['SMA_21'] = np.round((pta.sma(df['Close'],length=9)),2)
+df['DEMA_21'] = np.round((pta.dema(df['Close'],length=9)),2)  
+df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))  
+ADX = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)    
+df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)   
+df['Adx_diff'] = df['ADX_14'] - df['ADX_14'].shift(1)  
+df['Adx_ok'] = np.where(df['Adx_diff'] > adx_parameter_opt,"ok","")                                
+st1.range("a1").options(index=False).value = df
+#print(df.head(10))
 
 def order_book_func(cred):
     try:
@@ -373,7 +386,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
     df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))
-    df['Price_break'] = np.where((df['Close'] > (df.High.rolling(5).max()).shift(-5)),
+    df['Price_break'] = np.where((df['Close'] > (df.High.rolling(5).max()).shift(5)),
                                         'Pri_Up_brk',
                                         (np.where((df['Close'] < (df.Low.rolling(5).min()).shift(-5)),
                                                     'Pri_Dwn_brk', "")))
@@ -393,8 +406,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['SMA_21_ok'] = np.where(df['SMA_21_diff'] > sam_21_slop,"up_ok",np.where(df['SMA_21_diff'] < -sam_21_slop,"dn_ok",""))
     df['DEMA_21_ok'] = np.where(df['DEMA_21_diff'] > dema_21_slope,"up_ok",np.where(df['DEMA_21_diff'] < -dema_21_slope,"dn_ok",""))
     df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))
-    df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
-    df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
+    df['Signal'] = np.where((df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
+    df['Signal1'] = np.where((df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
     # df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok"),"Call_Buy","Call_Exit")
     # df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok"),"Put_Buy","Put_Exit")
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") ) 
@@ -423,11 +436,11 @@ else:
     buy_root_list_dummy = (np.unique([str(i) for i in buy_order_li['Root']])).tolist()
 
 while True:
-    orders,telegram_msg = st.range("ad1").value,st.range("af1").value
-    if orders is None:
-        orders = "yes"
-    if telegram_msg is None:
-        telegram_msg = "yes"
+    # orders,telegram_msg = st.range("ad1").value,st.range("af1").value
+    # if orders is None:
+    #     orders = "yes"
+    # if telegram_msg is None:
+    #     telegram_msg = "yes"
     # print(buy_order_list_dummy)
     # print(sell_order_list_dummy)
     print(orders,telegram_msg)
@@ -462,14 +475,17 @@ while True:
             dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
             dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
             dfg1112 = dfg111.tail(10)
-            five_df1 = pd.concat([dfg1, five_df1]) 
+            new_dffg = pd.merge(dfg1, df, on=['Datetime'], how='inner')            
+            new_dffg['buy_ok1'] = np.where((new_dffg['Signal'] == 'Call_Buy') & (new_dffg['CROSS_y'] == 'up_ok'),'OKK','')
+            five_df1 = pd.concat([new_dffg, five_df1]) 
 
 
             Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
             Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
             Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 5, "Call_Buy","")
             Call_by_df1 = Call_by_df[(Call_by_df['Entry'] == "Call_Buy")]
-            Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
+            Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
+                      
             five_df2 = pd.concat([Call_by_df1, five_df2])
             
             Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]   
