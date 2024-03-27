@@ -315,9 +315,9 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        lotsize = 2
+        lotsize = 3
     if stk_name == "NIFTY":
-        lotsize = 1
+        lotsize = 2
     har_quantity = (qtyy*lotsize)
     muk_quantity = (qtyy)
     # print(stk_name)
@@ -598,11 +598,11 @@ while True:
                     print("Last PL Rate is : "+str(pl))
                     print(Qtty)
                     if Qtty == 50:
-                        slll = -200
-                        tgtt = 1000
-                    if Qtty == 15:
                         slll = -400
-                        tgtt = 2000
+                        tgtt = 1200
+                    if Qtty == 15:
+                        slll = -600
+                        tgtt = 2400
                     print(slll,tgtt)
                     if pl < slll or pl > tgtt:
                         order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
