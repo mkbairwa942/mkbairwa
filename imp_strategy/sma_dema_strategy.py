@@ -210,8 +210,8 @@ exp = wb.sheets("Expiry")
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
-script_code_5paisa1 = script_code_5paisa[(script_code_5paisa["Exch"] == "N") & (script_code_5paisa["Series"] == "XX")]
-exc.range("a1").options(index=False).value = script_code_5paisa1
+#script_code_5paisa1 = script_code_5paisa[(script_code_5paisa["Exch"] == "N") & (script_code_5paisa["Series"] == "XX")]
+#exc.range("a1").options(index=False).value = script_code_5paisa1
 
 exchange = None
 while True:    
@@ -725,7 +725,7 @@ while True:
             try:
                 fl_data.range("a:z").value = None
                 fl_data.range("a1").options(index=False).value = five_df4
-            except Exception as e:s
+            except Exception as e:
                 print(e)
         
         if five_df5.empty:
