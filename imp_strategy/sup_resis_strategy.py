@@ -170,6 +170,7 @@ strategy1 = wb.sheets("Strategy1")
 strategy2 = wb.sheets("Strategy2")
 strategy3 = wb.sheets("Strategy3")
 
+
 exc.range("a:u").value = None
 #flt_exc.range("a:u").value = None
 bhv.range("a:u").value = None
@@ -274,10 +275,17 @@ st.range("ac3").value = "NIFTY"
 st.range("ad3").value = "BANKNIFTY"
 
 while True:
+    start_time = time.time()
+    five_df1 = pd.DataFrame()
+    five_df2 = pd.DataFrame()
+    five_df3 = pd.DataFrame()
+    five_df4 = pd.DataFrame()
+    five_df5 = pd.DataFrame()
+
     orders,telegram_msg = st.range("ad1").value,st.range("af1").value
-    nft_rng_1 = st.range("ac5").options(numbers = lambda x : float(x)).value
+    nft_rng_1 = st.range("ac5").value
     #nft_rng_1 = st.range("ac5").value
-    nft_rng_2 = st["ac6"].value
+    nft_rng_2 = st.range("ac6").value
     nft_rng_3 = st.range("ac7").value
     nft_rng_4 = st.range("ac8").value
     nft_rng_5 = st.range("ac9").value
@@ -287,11 +295,92 @@ while True:
     bk_nft_rng_4 = st.range("ad8").value
     bk_nft_rng_5 = st.range("ad9").value
 
+    nft_1_high = nft_rng_1
+    nft_1_low = nft_rng_2
+    nft_2_high = nft_rng_2
+    nft_2_low = nft_rng_3
+    nft_3_high = nft_rng_3
+    nft_3_low = nft_rng_4
+    nft_4_high = nft_rng_4
+    nft_4_low = nft_rng_5
+
+    bk_nft_1_high = bk_nft_rng_1
+    bk_nft_1_low = bk_nft_rng_2
+    bk_nft_2_high = bk_nft_rng_2
+    bk_nft_2_low = bk_nft_rng_3
+    bk_nft_3_high = bk_nft_rng_3
+    bk_nft_3_low = bk_nft_rng_4
+    bk_nft_4_high = bk_nft_rng_4
+    bk_nft_4_low = bk_nft_rng_5
+
+    for sc in stk_list:
+        df = credi_har.historical_data('N', 'C', sc, '5m', second_last_trading_day,current_trading_day)
+        df['Name'] = np.where(sc == 999920005,"BANKNIFTY",np.where(sc == 999920000,"NIFTY",""))
+        df['Range_1'] = (np.where(sc == 999920005,float(bk_nft_rng_1),np.where(sc == 999920000,float(nft_rng_1),""))).astype(float)
+        df['Range_2'] = (np.where(sc == 999920005,float(bk_nft_rng_2),np.where(sc == 999920000,float(nft_rng_2),""))).astype(float)
+        df['Range_3'] = (np.where(sc == 999920005,float(bk_nft_rng_3),np.where(sc == 999920000,float(nft_rng_3),""))).astype(float)
+        df['Range_4'] = (np.where(sc == 999920005,float(bk_nft_rng_4),np.where(sc == 999920000,float(nft_rng_4),""))).astype(float)
+        df['Range_5'] = (np.where(sc == 999920005,float(bk_nft_rng_5),np.where(sc == 999920000,float(nft_rng_5),""))).astype(float)
+        df['Call_Sig'] = np.where(((df['Close'].shift(1) < df['Range_1']) & (df['Close'] > df['Range_1'])) |
+                                ((df['Close'].shift(1) < df['Range_2']) & (df['Close'] > df['Range_2'])) |
+                                ((df['Close'].shift(1) < df['Range_3']) & (df['Close'] > df['Range_3'])) |
+                                ((df['Close'].shift(1) < df['Range_4']) & (df['Close'] > df['Range_4'])) |
+                                ((df['Close'].shift(1) < df['Range_5']) & (df['Close'] > df['Range_5'])),"Call_Buy","")
+        df['Put_Sig'] = np.where(((df['Close'].shift(1) > df['Range_1']) & (df['Close'] < df['Range_1'])) |
+                                ((df['Close'].shift(1) > df['Range_2']) & (df['Close'] < df['Range_2'])) |
+                                ((df['Close'].shift(1) > df['Range_3']) & (df['Close'] < df['Range_3'])) |
+                                ((df['Close'].shift(1) > df['Range_4']) & (df['Close'] < df['Range_4'])) |
+                                ((df['Close'].shift(1) > df['Range_5']) & (df['Close'] < df['Range_5'])),"Put_Buy","")
+        five_df1 = pd.concat([df, five_df1])
+        df1 = df.tail(2)
+        #print(df1)
+        
+        Name = np.unique([str(i) for i in df1['Name']]).tolist()[0]
+        price = np.unique([float(i) for i in df1['Close']]).tolist()[0]
+        prv_price = np.unique([float(i) for i in df1['Close']]).tolist()[1]
+        print(Name,price,prv_price)
+    
+        if Name == "NIFTY":
+            if price < nft_1_high and price > nft_1_low:
+                print("Nifty Price is Range 1")
+            if price < nft_2_high and price > nft_2_low:
+                print("Nifty Price is Range 2")
+            if price < nft_3_high and price > nft_3_low:
+                print("Nifty Price is Range 3")
+            if price < nft_4_high and price > nft_4_low:
+                print("Nifty Price is Range 4")
+            if price > nft_1_high or price < nft_4_low:
+                print("Nifty Breakout happened")
+
+        if Name == "BANKNIFTY":
+            if price < bk_nft_1_high and price > bk_nft_1_low:
+                print("Bank Nifty Price is Range 1")
+            if price < bk_nft_2_high and price > bk_nft_2_low:
+                print("Bank Nifty Price is Range 2")
+            if price < bk_nft_3_high and price > bk_nft_3_low:
+                print("Bank Nifty Price is Range 3")
+            if price < bk_nft_4_high and price > bk_nft_4_low:
+                print("Bank Nifty Price is Range 4")
+            if price > bk_nft_1_high or price < bk_nft_4_low:
+                print("Bank Nifty Breakout happened")
+
+   
+
     # if orders is None:
     #     orders = "yes"
     # if telegram_msg is None:
     #     telegram_msg = "yes"
 
-    print(orders,telegram_msg)
-    print(nft_rng_1,nft_rng_2,nft_rng_3,nft_rng_4,nft_rng_5)
-    print(bk_nft_rng_1,bk_nft_rng_2,bk_nft_rng_3,bk_nft_rng_4,bk_nft_rng_5)
+    # print(orders,telegram_msg)
+    # print(nft_rng_1,nft_rng_2,nft_rng_3,nft_rng_4,nft_rng_5)
+    # print(bk_nft_rng_1,bk_nft_rng_2,bk_nft_rng_3,bk_nft_rng_4,bk_nft_rng_5)
+    try:
+        if five_df1.empty:
+            pass
+        else:
+            try:
+                st1.range("a1").options(index=False).value = five_df1 
+            except Exception as e:
+                print(e)
+    except Exception as e:
+        print(e) 

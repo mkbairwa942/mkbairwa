@@ -665,9 +665,10 @@ while True:
                             final_df.rename(columns={'Datetime': 'Exit_Date' },inplace=True)
                             #print(final_df.head(1))
                             final_df.sort_values(['Entry_Date'], ascending=[True], inplace=True)
-                            five_df5 = pd.concat([final_df, five_df5])
+                            final_df1 = final_df.head(1)
+                            five_df5 = pd.concat([final_df1, five_df5])
                             
-                            order_dff = final_df[(final_df['Exit'] == 'SELL')]
+                            order_dff = final_df1[(final_df1['Exit'] == 'SELL')]
 
                             if order_dff.empty:
                                 print("No Target And Stoploss Hit")
@@ -683,6 +684,7 @@ while True:
                                     #     quant = 15
                                     for ordd in order_dff_Scpt:
                                         order_df = order_dff[(order_dff['ScripCode'] == ordd)]
+                                        print(order_df)
                                         # rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
                                         order = credi_har.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                                         order = credi_muk.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['LotSize']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
