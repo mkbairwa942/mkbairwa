@@ -32,6 +32,7 @@ first_name = "mkbairwa"
 username = "mkbairwa_bot"
 id = ":758543600"
 zealous = "-4048562236"
+navya = "-4183171624"
 
 api_id = 21176219
 api_hash = "a427ae341f1376acb2691ae1101b91b8"
