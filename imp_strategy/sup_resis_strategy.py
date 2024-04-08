@@ -488,7 +488,7 @@ while True:
             #print(ADX(dfg1))
             dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
             dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
-            dfg1112 = dfg111.tail(10)
+            dfg1112 = dfg111.tail(14)
             five_df1 = pd.concat([dfg1112, five_df1]) 
 
 
