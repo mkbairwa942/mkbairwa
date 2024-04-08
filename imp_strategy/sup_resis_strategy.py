@@ -178,7 +178,7 @@ strategy1 = wb.sheets("Strategy1")
 strategy2 = wb.sheets("Strategy2")
 strategy3 = wb.sheets("Strategy3")
 
-exc.range("a:u").value = None
+# exc.range("a:u").value = None
 #flt_exc.range("a:u").value = None
 bhv.range("a:u").value = None
 #bhv_fo.range("a:u").value = None
@@ -220,23 +220,40 @@ script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 #script_code_5paisa1 = script_code_5paisa[(script_code_5paisa["Exch"] == "N") & (script_code_5paisa["Series"] == "XX")]
 #exc.range("a1").options(index=False).value = script_code_5paisa1
 
+segment = "nse_fo"
+'''
+all - scrips across all segments
+bse_eq - BSE Equity
+nse_eq - NSE Equity
+nse_fo - NSE Derivatives
+bse_fo - BSE Derivatives
+ncd_fo - NSE Currecny
+mcx_fo - MCX
+'''
+
+script_code_5paisa_url1 = f"https://Openapi.5paisa.com/VendorsAPI/Service1.svc/ScripMaster/segment/{segment}"
+script_code_5paisa1 = pd.read_csv(script_code_5paisa_url1,low_memory=False)
+
 exchange = None
 while True:    
     if exchange is None: 
-        try:
-            exch = script_code_5paisa[(script_code_5paisa["Exch"] == "N")]
-            exch.sort_values(['Root'], ascending=[True], inplace=True)
-            
-            root_list = np.unique(exch['Root']).tolist()
-            
+        try: 
             root_list = ["BANKNIFTY","NIFTY"]
+            root_list = np.unique(exch['Root']).tolist()  
 
-            exc_new = exch['Root'].isin(root_list)
-            
-            exc_new1 = exch[exc_new]
-            eq_exc = exc_new1[(exc_new1["Exch"] == "N") & (exc_new1["ExchType"] == "C") & (exc_new1["CpType"] == "EQ")]
+            exch1 = script_code_5paisa1[(script_code_5paisa1["Exch"] == "N") & (script_code_5paisa1["ScripType"] != "XX")]            
+            exch1.rename(columns={'ScripType': 'CpType','SymbolRoot': 'Root','BOCOAllowed': 'CO BO Allowed'},inplace=True)
+            exch1.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
+            exc_new = exch1['SymbolRoot'].isin(root_list)            
+            exc_new1 = exch1[exc_new]
+
+            exch = script_code_5paisa[(script_code_5paisa["Exch"] == "N")]
+            exch.sort_values(['Root'], ascending=[True], inplace=True)                       
+            excc = exch['Root'].isin(root_list)            
+            excc1 = exch[excc]
+            eq_exc = excc1[(excc1["Exch"] == "N") & (excc1["ExchType"] == "C") & (excc1["CpType"] == "EQ")]
             #exc.range("a1").options(index=False).value = eq_exc
-            Expiry = exc_new1[(exc_new1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
+            Expiry = excc1[(excc1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
             Expiry.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)   
             exc_new2 = Expiry
             exc_new2.rename(columns={'Scripcode': 'ScripCode' },inplace=True)
@@ -247,8 +264,12 @@ while True:
             print("Exchange Download Error....")
             time.sleep(5)
 
+exc.range("a:az").value = None
+exc.range("a1").options(index=False).value = exc_new2
+
 flt_exc.range("a:az").value = None
-flt_exc.range("a1").options(index=False).value = exc_new2
+flt_exc.range("a1").options(index=False).value = exc_new1
+
 
 #symbol1 = '999920005'
 stk_list = [999920005,999920000]
@@ -434,6 +455,7 @@ while True:
     five_df3 = pd.DataFrame()
     five_df4 = pd.DataFrame()
     five_df5 = pd.DataFrame()
+    five_df6 = pd.DataFrame()
 
     for credi in cred:        
         if posit.empty:
@@ -487,6 +509,7 @@ while True:
             print(stk_name)
             #print(ADX(dfg1))
             dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
+            five_df6 = pd.concat([dfg1, five_df6])
             dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
             dfg1112 = dfg111.tail(14)
             five_df1 = pd.concat([dfg1112, five_df1]) 
@@ -758,6 +781,14 @@ while True:
         else:
             try:
                 st1.range("a1").options(index=False).value = five_df5
+            except Exception as e:
+                print(e)
+        
+        if five_df6.empty:
+            pass
+        else:
+            try:
+                st2.range("a1").options(index=False).value = five_df6
             except Exception as e:
                 print(e)
 
