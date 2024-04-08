@@ -36,34 +36,37 @@ print(intraday)
 
 engine = sqlalchemy.create_engine('mysql+pymysql://mkbairwa942:vaa2829m@5.183.11.143:3306/capitalsscope')
 
-cred = {
-    "APP_NAME": "5P50464800",
-    "APP_SOURCE": "16351",
-    "USER_ID": "6vbYJ6PUjfE",
-    "PASSWORD": "pbdJftZXd6t",
-    "USER_KEY": "PpBMeomZDOiLMA7OJ8XfYqkf50cdRDec",
-    "ENCRYPTION_KEY": "6FDPBQqiEJZjdlmoIJhGmXxfYcFaTest",
-}
+# cred = {
+#     "APP_NAME": "5P50464800",
+#     "APP_SOURCE": "16351",
+#     "USER_ID": "6vbYJ6PUjfE",
+#     "PASSWORD": "pbdJftZXd6t",
+#     "USER_KEY": "PpBMeomZDOiLMA7OJ8XfYqkf50cdRDec",
+#     "ENCRYPTION_KEY": "6FDPBQqiEJZjdlmoIJhGmXxfYcFaTest",
+# }
 
-user = 'bhavnabairwa942@gmail.com'
-pwd = 'vaa6762m'
-dob = '19850602'
+# user = 'bhavnabairwa942@gmail.com'
+# pwd = 'vaa6762m'
+# dob = '19850602'
 
 # client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
 # client.login()
 
-# cred = {
-#     "APP_NAME": "5P57141743",
-#     "APP_SOURCE": "9997",
-#     "USER_ID": "5SP0ws0uCmc",
-#     "PASSWORD": "C0VIQHnMEpI",
-#     "USER_KEY": "BT5DqKIGqnKmHiZnzGXKZ2aBql4oYBRp",
-#     "ENCRYPTION_KEY": "tTEQPwp3Gfh2l3LWqDb2UC1sD0IFvzV5",
-# }
+cred = {
+    "APP_NAME": "5P57141743",
+    "APP_SOURCE": "9997",
+    "USER_ID": "5SP0ws0uCmc",
+    "PASSWORD": "C0VIQHnMEpI",
+    "USER_KEY": "BT5DqKIGqnKmHiZnzGXKZ2aBql4oYBRp",
+    "ENCRYPTION_KEY": "tTEQPwp3Gfh2l3LWqDb2UC1sD0IFvzV5",
+}
 
-# user = 'mukeshbairwa942@gmail.com'
-# pwd = 'navya@1234'
-# dob = '19860518'
+user = 'mukeshbairwa942@gmail.com'
+pwd = 'navya@1234'
+dob = '19860518'
+
+client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
+client.login()
 
 # cred = {
 #     "APP_NAME": "5P50645842",
@@ -108,9 +111,15 @@ dob = '19850602'
 # dob = '19780630'
 
 
+# client = FivePaisaClient(cred=cred)
+# client.get_totp_session('50840495','100389','200200')
 
-client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
-client.login()
+# client = FivePaisaClient(email=user, passwd=pwd, dob=dob, cred=cred)
+# client.login()
+
+
+#Now Can directly call client.place_order()
+
 
 index = 'SBIN'
 # print(index)
@@ -232,6 +241,7 @@ index = 'SBIN'
 # print(fo_bhav)
 
 # # Option Chain
+
 # opt_symbol1 = "SBIN"
 
 # # Returns list of all active expiries
@@ -245,7 +255,7 @@ index = 'SBIN'
 # Historical Data
 
 # historical_data(<Exchange>,<Exchange Type>,<Scrip Code>,<Time Frame>,<From Data>,<To Date>)
-# df = client.historical_data('N', 'C', 3045, '5m', '2023-09-29','2023-10-02')
+# df = client.historical_data('N', 'C', 3045, '5m', '2023-11-22','2023-11-23')
 # print(df)
 
 # Note : TimeFrame Should be from this list ['1m','5m','10m','15m','30m','60m','1d']

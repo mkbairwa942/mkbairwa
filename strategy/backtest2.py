@@ -12,7 +12,7 @@ from datetime import datetime
 import datetime
 import time,json,datetime,sys
 from datetime import timezone
-from kite_trade import *
+from imp_strategy.kite_trade import *
 
 from_d = (date.today() - timedelta(days=36))
 # from_d = date(2022, 12, 29)

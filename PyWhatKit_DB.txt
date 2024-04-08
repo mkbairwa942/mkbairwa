@@ -428,3 +428,88 @@ Time: 15:0
 Phone Number: +919610033622
 Message: HI I Am Mukesh How are you 1
 --------------------
+Date: 14/10/2023
+Time: 18:23
+Phone Number: +919610033622
+Message: Buy Order of {aa} at : Rs {price_of_stock} and Quantity is {quantity_of_stock}
+--------------------
+Date: 14/10/2023
+Time: 18:24
+Phone Number: +919610033622
+Message: Buy Order of {aa} at : Rs {price_of_stock} and Quantity is {quantity_of_stock}
+--------------------
+Date: 14/10/2023
+Time: 18:24
+Phone Number: +919610033622
+Message: Buy Order of {aa} at : Rs {price_of_stock} and Quantity is {quantity_of_stock}
+--------------------
+Date: 14/10/2023
+Time: 18:24
+Phone Number: +919610033622
+Message: Buy Order of {aa} at : Rs {price_of_stock} and Quantity is {quantity_of_stock}
+--------------------
+Date: 14/10/2023
+Time: 18:30
+Phone Number: +919610033622
+Message: Buy Order of CIGNITITEC at : Rs 50.6 and Quantity is 200.0
+--------------------
+Date: 14/10/2023
+Time: 18:30
+Phone Number: +919610033622
+Message: Buy Order of CUBEXTUB at : Rs 120.4 and Quantity is 100.0
+--------------------
+Date: 14/10/2023
+Time: 18:30
+Phone Number: +919610033622
+Message: Buy Order of MMTC at : Rs 251.4 and Quantity is 80.0
+--------------------
+Date: 14/10/2023
+Time: 18:31
+Phone Number: +919610033622
+Message: Buy Order of SELAN at : Rs 351.8 and Quantity is 50.0
+--------------------
+Date: 14/10/2023
+Time: 18:34
+Phone Number: +919610033622
+Message: Buy Order of CIGNITITEC at : Rs 50.6 and Quantity is 200.0
+--------------------
+Date: 14/10/2023
+Time: 18:34
+Phone Number: +8000637245
+Message: Buy Order of CIGNITITEC at : Rs 50.6 and Quantity is 200.0
+--------------------
+Date: 14/10/2023
+Time: 18:34
+Phone Number: +919610033622
+Message: Buy Order of CUBEXTUB at : Rs 120.4 and Quantity is 100.0
+--------------------
+Date: 14/10/2023
+Time: 18:34
+Phone Number: +8000637245
+Message: Buy Order of CUBEXTUB at : Rs 120.4 and Quantity is 100.0
+--------------------
+Date: 14/10/2023
+Time: 18:35
+Phone Number: +919610033622
+Message: Buy Order of MMTC at : Rs 251.4 and Quantity is 80.0
+--------------------
+Date: 14/10/2023
+Time: 18:35
+Phone Number: +8000637245
+Message: Buy Order of MMTC at : Rs 251.4 and Quantity is 80.0
+--------------------
+Date: 14/10/2023
+Time: 18:36
+Phone Number: +919610033622
+Message: Buy Order of SELAN at : Rs 351.8 and Quantity is 50.0
+--------------------
+Date: 14/10/2023
+Time: 18:36
+Phone Number: +8000637245
+Message: Buy Order of SELAN at : Rs 351.8 and Quantity is 50.0
+--------------------
+Date: 14/10/2023
+Time: 18:37
+Phone Number: +919610033622
+Message: Buy Order of CIGNITITEC at : Rs 50.6 and Quantity is 200.0
+--------------------

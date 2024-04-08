@@ -1,5 +1,5 @@
 import os
-from kite_trade import *
+from imp_strategy.kite_trade import *
 # from kiteconnect import KiteConnect
 from five_paisa import *
 import time,json,datetime,sys
