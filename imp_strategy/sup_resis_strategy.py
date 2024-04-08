@@ -33,7 +33,7 @@ telegram_first_name = "mkbairwa"
 telegram_username = "mkbairwa_bot"
 telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4183171624&text="{}"'.format(joke)
-telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4183171624"
+telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
 # operate = input("Do you want to go with TOTP (yes/no): ")
 # #notifi = input("Do you want to send Notification on Desktop (yes/no): ")
@@ -237,28 +237,29 @@ script_code_5paisa1 = pd.read_csv(script_code_5paisa_url1,low_memory=False)
 exchange = None
 while True:    
     if exchange is None: 
-        try: 
+        try:   
+            #root_list = np.unique(exch['Root']).tolist()      
             root_list = ["BANKNIFTY","NIFTY"]
-            root_list = np.unique(exch['Root']).tolist()  
 
             exch1 = script_code_5paisa1[(script_code_5paisa1["Exch"] == "N") & (script_code_5paisa1["ScripType"] != "XX")]            
             exch1.rename(columns={'ScripType': 'CpType','SymbolRoot': 'Root','BOCOAllowed': 'CO BO Allowed'},inplace=True)
             exch1.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
-            exc_new = exch1['SymbolRoot'].isin(root_list)            
+            exc_new = exch1['Root'].isin(root_list)            
             exc_new1 = exch1[exc_new]
 
             exch = script_code_5paisa[(script_code_5paisa["Exch"] == "N")]
-            exch.sort_values(['Root'], ascending=[True], inplace=True)                       
+            exch.sort_values(['Root'], ascending=[True], inplace=True)            
             excc = exch['Root'].isin(root_list)            
             excc1 = exch[excc]
-            eq_exc = excc1[(excc1["Exch"] == "N") & (excc1["ExchType"] == "C") & (excc1["CpType"] == "EQ")]
-            #exc.range("a1").options(index=False).value = eq_exc
+
             Expiry = excc1[(excc1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
             Expiry.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)   
             exc_new2 = Expiry
             exc_new2.rename(columns={'Scripcode': 'ScripCode' },inplace=True)
             exc_new2["Watchlist"] = exc_new2["Exch"] + ":" + exc_new2["ExchType"] + ":" + exc_new2["Name"]
 
+            # eq_exc = excc1[(excc1["Exch"] == "N") & (excc1["ExchType"] == "C") & (excc1["CpType"] == "EQ")]
+            # exc.range("a1").options(index=False).value = eq_exc
             break
         except:
             print("Exchange Download Error....")
@@ -341,7 +342,6 @@ def order_book_func(cred):
 
 def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee,stk_name):
     timees = list_to_append
-
     
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
@@ -405,6 +405,7 @@ def data_download(sc,bk_nft_rng_1,bk_nft_rng_2,bk_nft_rng_3,bk_nft_rng_4,bk_nft_
     df['Range_3'] = (np.where(sc == 999920005,float(bk_nft_rng_3),np.where(sc == 999920000,float(nft_rng_3),""))).astype(float)
     df['Range_4'] = (np.where(sc == 999920005,float(bk_nft_rng_4),np.where(sc == 999920000,float(nft_rng_4),""))).astype(float)
     df['Range_5'] = (np.where(sc == 999920005,float(bk_nft_rng_5),np.where(sc == 999920000,float(nft_rng_5),""))).astype(float)
+    df['Spot'] = round(df['Close']/100,0)*100
     df['CALL'] = np.where(((df['Close'].shift(1) < df['Range_1']) & (df['Close'] > df['Range_1'])) |
                             ((df['Close'].shift(1) < df['Range_2']) & (df['Close'] > df['Range_2'])) |
                             ((df['Close'].shift(1) < df['Range_3']) & (df['Close'] > df['Range_3'])) |
