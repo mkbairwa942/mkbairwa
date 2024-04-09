@@ -284,7 +284,7 @@ Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
 adx_parameter = 0.40
-adx_parameter_opt = 0.1
+adx_parameter_opt = 0.0
 sam_21_slop = 1.5
 dema_21_slope = 2
 slll = -900
@@ -345,7 +345,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        lotsize = 1
+        lotsize = 2
     if stk_name == "NIFTY":
         lotsize = 1
     har_quantity = (qtyy*lotsize)
@@ -533,7 +533,7 @@ while True:
                 Call_by_Closee = (float(Call_by_ord['Close']))
                 Call_by_Spot = round(Call_by_Closee/100,0)*100
                 Call_by_time = str(list(Call_by_ord['Datetime'])[0])
-                Call_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                Call_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                 Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
                 Expiryyy_Call_by = (np.unique(Call_by_ord2['Expiry']).tolist())[0]      
                 Call_by_ord3 = Call_by_ord2[Call_by_ord2['Expiry'] == Expiryyy_Call_by]
@@ -584,7 +584,7 @@ while True:
                 Put_by_Closee = (float(Put_by_ord['Close']))
                 Put_by_Spot = round(Put_by_Closee/100,0)*100
                 Put_by_time = str(list(Put_by_ord['Datetime'])[0])
-                Put_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                Put_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                 Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
                 Expiryyy_Put_by = (np.unique(Put_by_ord2['Expiry']).tolist())[0]  
                 Put_by_ord3 = Put_by_ord2[Put_by_ord2['Expiry'] == Expiryyy_Put_by]
