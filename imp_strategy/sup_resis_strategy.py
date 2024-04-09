@@ -550,14 +550,14 @@ while True:
                 
                 if not Call_by_ord6.empty:                    
                     dfg1_Call_by = credi_bhav.historical_data('N', 'D', Call_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                    ADX = pta.adx(high=dfg1_Call_by['High'],low=dfg1_Call_by['Low'],close=dfg1_Call_by['Close'],length=14)    
-                    dfg1_Call_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
-                    dfg1_Call_by['Adx_diff'] = dfg1_Call_by['ADX_14'] - dfg1_Call_by['ADX_14'].shift(1)
-                    dfg1_Call_by['Adx_ok'] = np.where(dfg1_Call_by['Adx_diff'] > adx_parameter_opt,"ok","")
-                    #print(dfg1_Call_by.tail(5))
-                    dfg1_Call_by1 = dfg1_Call_by.tail(1)
-                    dfg1_Call_by2 = dfg1_Call_by1[(dfg1_Call_by1["Adx_ok"] == "ok")]
-
+                    # ADX = pta.adx(high=dfg1_Call_by['High'],low=dfg1_Call_by['Low'],close=dfg1_Call_by['Close'],length=14)    
+                    # dfg1_Call_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
+                    # dfg1_Call_by['Adx_diff'] = dfg1_Call_by['ADX_14'] - dfg1_Call_by['ADX_14'].shift(1)
+                    # dfg1_Call_by['Adx_ok'] = np.where(dfg1_Call_by['Adx_diff'] > adx_parameter_opt,"ok","")
+                    # #print(dfg1_Call_by.tail(5))
+                    # dfg1_Call_by1 = dfg1_Call_by.tail(1)
+                    # dfg1_Call_by2 = dfg1_Call_by1[(dfg1_Call_by1["Adx_ok"] == "ok")]
+                    dfg1_Call_by2 = dfg1_Call_by
                     if dfg1_Call_by2.empty:
                         print("No Call Buy Position Activate")
                     else:
@@ -601,14 +601,14 @@ while True:
                 
                 if not Put_by_ord6.empty:
                     dfg1_Put_by = credi_bhav.historical_data('N', 'D', Put_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                    ADX = pta.adx(high=dfg1_Put_by['High'],low=dfg1_Put_by['Low'],close=dfg1_Put_by['Close'],length=14)    
-                    dfg1_Put_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
-                    dfg1_Put_by['Adx_diff'] = dfg1_Put_by['ADX_14'] - dfg1_Put_by['ADX_14'].shift(1)
-                    dfg1_Put_by['Adx_ok'] = np.where(dfg1_Put_by['Adx_diff'] > adx_parameter_opt,"ok","")
-                    #print(dfg1_Put_by.tail(5))
-                    dfg1_Put_by1 = dfg1_Put_by.tail(1)
-                    dfg1_Put_by2 = dfg1_Put_by1[(dfg1_Put_by1["Adx_ok"] == "ok")]
-
+                    # ADX = pta.adx(high=dfg1_Put_by['High'],low=dfg1_Put_by['Low'],close=dfg1_Put_by['Close'],length=14)    
+                    # dfg1_Put_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
+                    # dfg1_Put_by['Adx_diff'] = dfg1_Put_by['ADX_14'] - dfg1_Put_by['ADX_14'].shift(1)
+                    # dfg1_Put_by['Adx_ok'] = np.where(dfg1_Put_by['Adx_diff'] > adx_parameter_opt,"ok","")
+                    # #print(dfg1_Put_by.tail(5))
+                    # dfg1_Put_by1 = dfg1_Put_by.tail(1)
+                    # dfg1_Put_by2 = dfg1_Put_by1[(dfg1_Put_by1["Adx_ok"] == "ok")]
+                    dfg1_Put_by2 = dfg1_Put_by
                     if dfg1_Put_by2.empty:
                         print("No Put Buy Position Activate")
                     else:
