@@ -175,7 +175,7 @@ strategy1 = wb.sheets("Strategy1")
 strategy2 = wb.sheets("Strategy2")
 strategy3 = wb.sheets("Strategy3")
 
-exc.range("a:u").value = None
+#exc.range("a:u").value = None
 #flt_exc.range("a:u").value = None
 bhv.range("a:u").value = None
 #bhv_fo.range("a:u").value = None
@@ -205,6 +205,50 @@ sl = wb.sheets("Sale")
 st = wb.sheets("stats")
 exp = wb.sheets("Expiry")
 
+class NseIndia:
+
+    def __init__(self):
+        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple'
+                                      'WebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
+        self.session = requests.Session()
+        self.session.get("https://nseindia.com", headers=self.headers)
+
+    def get_stock_info(self, symbol, trade_info=False):
+        if trade_info:
+            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol + "&section=trade_info"
+        else:
+            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol
+        data = self.session.get(url, headers=self.headers).json()
+        return data
+
+nse = NseIndia()
+
+def datastk(symbol):
+    # datastk_nse = nse.get_stock_info(symbol.replace("&", "%26"))
+    return {symbol.upper(): {
+                            # "open": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['open'],
+                            #  "high": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['intraDayHighLow'][
+                            #      'max'],
+                            #  "low": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['intraDayHighLow'][
+                            #      'min'],
+                            #  "ltp": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['lastPrice'],
+                            #  "prv_close": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['previousClose'],
+                            #  "vwap": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['vwap'],
+                            #  "volume":
+                            #      nse.get_stock_info(symbol.replace("&", "%26"), trade_info=True)['securityWiseDP'][
+                            #          'quantityTraded'],
+                            #  "dlv_qty":
+                            #      nse.get_stock_info(symbol.replace("&", "%26"), trade_info=True)['securityWiseDP'][
+                            #          'deliveryQuantity'],
+                             "dlv_per":
+                                 nse.get_stock_info(symbol.replace("&", "%26"), trade_info=True)['securityWiseDP'][
+                                     'deliveryToTradedQuantity']}}
+                            #  "change": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['vwap'],
+                            #  "pChange": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['pChange'],
+                            #  "upperband": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['upperCP'],
+                            #  "lowerband": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['lowerCP'],
+                            #  "Time": time.strftime("%H:%M:%S", time.localtime())}}
+
 
 exchange = None
 while True:    
@@ -212,54 +256,71 @@ while True:
         try:
             exch = master_contract = pd.DataFrame(credi_muk.instruments())
             exch1 = master_contract = pd.DataFrame(credi_muk.instruments("NFO"))
-             #script_code_5paisa[(script_code_5paisa["Exch"] == "N")]
             exch.sort_values(['name'], ascending=[True], inplace=True)
             
             root_list = np.unique(exch1['name']).tolist()
             # print(root_list)
             # print(len(root_list))
-            
+            unwanted_num = {"BANKNIFTY","FINNIFTY","MIDCPNIFTY","NIFTY"}
+            root_list = [ele for ele in root_list if ele not in unwanted_num]
             #root_list = ["BANKNIFTY","NIFTY"]
 
-            exc_new = exch['tradingsymbol'].isin(root_list)
+            eq_exc = exch['tradingsymbol'].isin(root_list)            
+            eq_exc1 = exch[eq_exc]
+            eq_exc2 = eq_exc1[(eq_exc1["segment"] == "NSE") & (eq_exc1["exchange"] == "NSE")]# & (exc_new1["instrument_type"] == "EQ")]
+
+            fo_exc = exch['name'].isin(root_list)            
+            fo_exc1 = exch[fo_exc]            
+            fo_exc2 = fo_exc1[(fo_exc1["segment"] == "NFO-FUT") & (fo_exc1["exchange"] == "NFO")]# & (exc_new1["instrument_type"] == "EQ")]
+            Expiry_exc = (np.unique(fo_exc2['expiry']).tolist())[0]
+            fo_exc3 = fo_exc2[(fo_exc2["expiry"] == Expiry_exc)]
+            fo_exc3.rename(columns={'tradingsymbol': 'name1','name': 'tradingsymbol'},inplace=True) 
             
-            exc_new1 = exch[exc_new]
-            # exc_new1 = exc_new1[(exc_new1["segment"] == "NFO-OPT") & (exc_new1["exchange"] == "NFO")]# & (exc_new1["instrument_type"] == "EQ")]
- 
-            eq_exc = exc_new1[(exc_new1["segment"] == "NSE") & (exc_new1["exchange"] == "NSE")]# & (exc_new1["instrument_type"] == "EQ")]
-            # exc.range("a1").options(index=False).value = eq_exc
-            # Expiry = exc_new1[(exc_new1['expiry'].apply(pd.to_datetime) > new_current_trading_day)]
-            # Expiry.sort_values(['name','expiry','strike'], ascending=[True,True,True], inplace=True)   
-            # exc_new2 = Expiry
-            #eq_exc["Watchlist"] = eq_exc["exchange"] + ":" + eq_exc["tradingsymbol"]
+            new_excc = pd.merge(eq_exc2, fo_exc3, on=['tradingsymbol'], how='inner')
+
             break
         except:
             print("Exchange Download Error....")
             time.sleep(5)
 
-exc.range("a:az").value = None
-exc.range("a1").options(index=False).value = exch
+new_excc['value'] = new_excc.apply(lambda x: (x.tradingsymbol,x.instrument_token_x, x.instrument_token_y), axis=1)
+flt_exc.range("a:w").value = None
+flt_exc.range("a1").options(index=False).value = new_excc
 
-flt_exc.range("a:az").value = None
-flt_exc.range("a1").options(index=False).value = eq_exc
-eq_exccc = eq_exc[['']]
-insttt = {k : v for k,v in eq_exc.values}
-print(insttt)
+insttt = new_excc.set_index(['tradingsymbol','instrument_token_x','instrument_token_y'])['value'].to_dict()
+#print(insttt)
 
-inst_token = np.unique(eq_exc['instrument_token']).tolist()
+#inst_token = np.unique(eq_exc2['instrument_token']).tolist()
 #print(inst_token)
 
-while True:
-    five_df1 = pd.DataFrame()
-    start_time = time.time()
-    for sc in inst_token:
-        #print(sc)
-        df = pd.DataFrame(credi_muk.historical_data(sc, last_trading_day, to_d, "5minute", continuous=False, oi=True))
-        df['TimeNow'] = datetime.now()
-        five_df1 = pd.concat([df, five_df1]) 
-    st1.range("a1").options(index=False).value = five_df1
-    end = time.time() - start_time
-    print(f"Kite Data Download Time: {end:.2f}s")
+start_time = time.time()
+five_df1 = pd.DataFrame()
+five_df2 = pd.DataFrame()
+five_df3 = pd.DataFrame()
+for inst in insttt:      
+    try:
+        print(inst[0])
+        df = pd.DataFrame(credi_muk.historical_data(inst[1], last_trading_day, to_d, "5minute", continuous=False, oi=True))
+        df1 = pd.DataFrame(credi_muk.historical_data(inst[2], last_trading_day, to_d, "5minute", continuous=False, oi=True))
+        dfgh = pd.merge(df, df1, on=['date'], how='inner')
+        data1 = pd.DataFrame(datastk(inst[0]))        
+        dfgh['Name'] = inst[0]
+        dfgh['Del_Per'] = data1[inst[0]][0]
+        five_df1 = pd.concat([dfgh, five_df1])
+        #data1 = (data1[['Name','Del_Per']]).reset_index(drop=True)
+    except Exception as e:
+        print(e)
+
+five_df1 = five_df1[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','Del_Per']]
+five_df1.rename(columns={'date': 'DateTime','open_x': 'Open','high_x': 'High','low_x': 'Low','close_x': 'Close','volume_x': 'Volume','oi_y': 'OI',},inplace=True)
+five_df1.sort_values(['Name','DateTime'], ascending=[True,True], inplace=True)
+st1.range("a1").options(index=False).value = five_df1
+end = time.time() - start_time
+print(f"Kite Data Download Time: {end:.2f}s")
+
+
+
+
 
 # script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 # script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
