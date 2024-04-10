@@ -68,37 +68,43 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 
 #credi_ash = credentials("ASHWIN")
 
-users = ["HARESH","MUKESH"]#,"ALPESH"]
-credi_har = None
-credi_muk = None
-#credi_alp = None
+users = ["BHAVNA"]#,"HARESH","MUKESH","ALPESH"]
+credi_bhav = None
+# credi_har = None
+# credi_muk = None
+# credi_alp = None
 
 while True:
-    if credi_har is None:# and credi_ash is None# and credi_alp is None:
+    if credi_bhav is None:# and credi_ash is None# and credi_alp is None:
         try:
             for us in users:
                 print("1")
-                if us == "HARESH":
-                    credi_har = credentials("HARESH")
-                    if credi_har.request_token is None:
-                        credi_har = credentials("HARESH")
-                        print(credi_har.request_token)
-                if us == "MUKESH":
-                    credi_muk = credentials("MUKESH")
-                    if credi_muk.request_token is None:
-                        credi_muk = credentials("MUKESH")
-                        print(credi_muk.request_token)
+                # if us == "HARESH":
+                #     credi_har = credentials("HARESH")
+                #     if credi_har.request_token is None:
+                #         credi_har = credentials("HARESH")
+                #         print(credi_har.request_token)
+                # if us == "MUKESH":
+                #     credi_muk = credentials("MUKESH")
+                #     if credi_muk.request_token is None:
+                #         credi_muk = credentials("MUKESH")
+                #         print(credi_muk.request_token)
                 # if us == "ALPESH":
                 #     credi_alp = credentials("ALPESH")
                 #     if credi_alp.request_token is None:
                 #         credi_alp = credentials("ALPESH")
                 #         print(credi_alp.request_token)
+                if us == "BHAVNA":
+                    credi_bhav = credentials("BHAVNA")
+                    if credi_bhav.request_token is None:
+                        credi_bhav = credentials("BHAVNA")
+                        print(credi_bhav.request_token)
             break
         except:
             print("credentials Download Error....")
             time.sleep(5)
 
-cred = [credi_har,credi_muk]#,credi_alp]
+cred = [credi_bhav]#,credi_muk,credi_har,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -232,7 +238,7 @@ def exch_down():
 
     for i in F_O_List:
         print(i)
-        Fo_dfg1 = credi_har.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"C","Symbol":f"{i}"}])['Data'][0]['LastTradedPrice']
+        Fo_dfg1 = credi_bhav.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"C","Symbol":f"{i}"}])['Data'][0]['LastTradedPrice']
         Spot = round(Fo_dfg1/100,0)*100
         dfc2 = exchange_opt[exchange_opt['Root'] == i]
         dfc3 = dfc2[(dfc2['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
@@ -356,7 +362,7 @@ while True:
         scpt_list.append(tt) 
         
     #print(scpt_list)
-    dfg1 = credi_har.fetch_market_depth_by_symbol(scpt_list)
+    dfg1 = credi_bhav.fetch_market_depth_by_symbol(scpt_list)
     dfg2 = dfg1['Data']
     dfg3 = pd.DataFrame(dfg2)
     dfg3['TimeNow'] = datetime.now()
@@ -402,7 +408,7 @@ while True:
         #print(dfgg_CE3)
         dfgg_CE_scpt = (np.unique([int(i) for i in dfgg_CE3['ScripCode']])).tolist()[0]
         scpt_listtt.append(dfgg_CE_scpt)
-        #dfg1 = credi_har.fetch_market_depth_by_symbol(a)
+        #dfg1 = credi_bhav.fetch_market_depth_by_symbol(a)
         # print(dfgg_CE_scpt)
 
         dfgg_PE1 = dfc[(dfc["CpType"] == 'PE')]        
@@ -412,7 +418,7 @@ while True:
         dfgg_PE_scpt = (np.unique([int(i) for i in dfgg_PE3['ScripCode']])).tolist()[0]
         scpt_listtt.append(dfgg_PE_scpt)
 
-    posi = pd.DataFrame(credi_har.positions())
+    posi = pd.DataFrame(credi_bhav.positions())
     #posi1 = pd.DataFrame(credi_ash.positions())
     if posi.empty:
         print("First Position of Haresh Empty")
@@ -442,7 +448,7 @@ while True:
         Data_fr.append(a) 
 
     #print(Data_fr)
-    dfggg = credi_har.fetch_market_depth(Data_fr)
+    dfggg = credi_bhav.fetch_market_depth(Data_fr)
     dfggg1 = dfggg['Data']
     dfggg2 = pd.DataFrame(dfggg1)
     dfggg2['TimeNow'] = datetime.now()
