@@ -2,7 +2,7 @@
 from collections import namedtuple
 import pandas_ta as pta
 #from finta import TA
-# import talib
+from jugaad_data import *
 import pandas as pd
 import copy
 import numpy as np
@@ -242,7 +242,7 @@ while True:
 new_excc['value'] = new_excc.apply(lambda x: (x.tradingsymbol,x.instrument_token_x, x.instrument_token_y), axis=1)
 flt_exc.range("a:w").value = None
 flt_exc.range("a1").options(index=False).value = new_excc
-new_excc = new_excc.head(5)
+#new_excc = new_excc.head(5)
 inst_dict = new_excc.set_index(['tradingsymbol','instrument_token_x','instrument_token_y'])['value'].to_dict()
 #print(insttt)
 
@@ -297,24 +297,31 @@ def bhavcopy_fno(lastTradingDay):
         MMM = datetime.strftime(lastTradingDay, '%b').upper()
         yyyy = datetime.strftime(lastTradingDay, '%Y')
         url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
-        content = requests.get(url1)
-        zf = ZipFile(BytesIO(content.content))
-        match = [s for s in zf.namelist() if ".csv" in s][0]
-        bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
-        bhav_fo.columns = bhav_fo.columns.str.strip()
-        bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-        bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
-        bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
-        bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
+        content = requests.get(url1)      
+        if content.status_code == 200:
+            zf = ZipFile(BytesIO(content.content))
+            match = [s for s in zf.namelist() if ".csv" in s][0]
+            bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
+            bhav_fo.columns = bhav_fo.columns.str.strip()
+            bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+            #bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
+            bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT']).dt.date
+            bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
+            bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
+            #print(bhav_fo.head(1))
+        else:
+            print("No Data Found of Date :- "+str(lastTradingDay))
     except Exception as e:
         print(e)
-        return bhav_fo
+    return bhav_fo
+
+
 
 def bhavcopy_func():
     eq_bhav = pd.DataFrame()
     for i in trading_days:
         try:
-            print(i)
+            print("Equity Stock Bhavcopy Download od Date :- "+str(i))
             bh_df = bhavcopy(i)
             bh_df = pd.DataFrame(bh_df)
             eq_bhav = pd.concat([bh_df, eq_bhav])
@@ -338,20 +345,12 @@ def bhavcopy_fno_func():
     fo_bhav = pd.DataFrame()
     for i in trading_days:
         try:
-            print(i)
+            print("F&O Stock Bhavcopy Download od Date :- "+str(i))
             fo_bh_df = bhavcopy_fno(i)
-            fo_bh_df = pd.DataFrame(fo_bh_df) 
-            print(fo_bh_df.head(1))
-            if fo_bh_df.empty:
-                pass
-            else:
-                fo_bh_df = fo_bh_df[(fo_bh_df["OPTION_TYP"] == "XX")]
-                fo_bh_df = fo_bh_df[(fo_bh_df["EXPIRY_DT"] == Expiry_exc)]
-                # fo_bh_df.sort_values(['EXPIRY_DT'],ascending=[True], inplace=True)
-                # #fo_bh_df = fo_bh_df.iloc[:1]
-                # fo_bh_df = fo_bh_df[fo_bh_df.groupby('SYMBOL')['EXPIRY_DT'].transform(lambda x: x.eq(x.min()))]
-                fo_bhav = pd.concat([fo_bh_df, fo_bhav])
-        except OSError as e:
+            fo_bh_df = pd.DataFrame(fo_bh_df)             
+            fo_bh_df = fo_bh_df[(fo_bh_df["INSTRUMENT"] == "FUTSTK") & (fo_bh_df["EXPIRY_DT"] == Expiry_exc)]
+            fo_bhav = pd.concat([fo_bh_df, fo_bhav])
+        except Exception as e:
             print(e)
             
 
@@ -363,14 +362,36 @@ def bhavcopy_fno_func():
     return fo_bhav
 
 fo_bhav = bhavcopy_fno_func()
+#print(fo_bhav.dtypes)
 strategy2.range("a:i").value = None                          
 strategy2.range("a1").options(index=False).value = fo_bhav
 #print(str(days_count)+" Days F&O Data Download")
 
-delv_data = pd.merge(eq_bhav, fo_bhav, on=['Name','Date'], how='outer')
-delv_data = delv_data[['Name', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume',
-         'Deliv_qty', 'Deliv_per', 'Value', 'OI', 'Chg_OI']]
-strategy3.range("a1").options(index=False).value = delv_data
+delv_data = pd.merge(eq_bhav, fo_bhav, on=['Name','Date'], how='inner')
+#delv_data.sort_values(['Date', 'Name'], ascending=[False, True], inplace=True)
+delv_data = delv_data[['Name', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume','Deliv_qty', 'Deliv_per', 'Value', 'OI', 'Chg_OI']]
+#strategy3.range("a1").options(index=False).value = delv_data
+
+juyjyu = pd.DataFrame()
+for stkks in inst_dict:
+    new_delv_data = delv_data[(delv_data["Name"] == stkks[0])]  
+    new_delv_data['Price_Chg'] = round(((new_delv_data['Close'] * 100) / (new_delv_data['Close'].shift(-1)) - 100), 2).fillna(0)      
+
+    new_delv_data['Vol_Chg'] = round(((new_delv_data['Volume'] * 100) / (new_delv_data['Volume'].shift(-1)) - 100), 2).fillna(0) 
+    new_delv_data['OI_Chg'] = round(((new_delv_data['OI'] * 100) / (new_delv_data['OI'].shift(-1)) - 100), 2).fillna(0)
+    new_delv_data['Price_Break'] = np.where((new_delv_data['Close'] > (new_delv_data.High.rolling(5).max()).shift(-5)),
+                                        'Pri_Up_brk',
+                                        (np.where((new_delv_data['Close'] < (new_delv_data.Low.rolling(5).min()).shift(-5)),
+                                                    'Pri_Dwn_brk', "")))
+    new_delv_data['Vol_Break'] = np.where(new_delv_data['Volume'] > (new_delv_data.Volume.rolling(5).mean() * 1.5).shift(-5),
+                                        "Vol_brk","")  
+    new_delv_data['Delv_Break'] = np.where(new_delv_data['Deliv_per'] > (new_delv_data.Deliv_per.rolling(5).mean() * 1.5).shift(-5),
+                                        "Delv_brk","")  
+    new_delv_data['OI_Break'] = np.where(new_delv_data['OI'] > (new_delv_data.OI.rolling(5).mean() * 1.2).shift(-5),
+                                        "OI_brk","")  
+    juyjyu = pd.concat([new_delv_data, juyjyu])
+juyjyu.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
+strategy3.range("a1").options(index=False).value = juyjyu
 print("EOD DATA &  F&O Data Merged")
 
 def Down_Stock_Data(period,data):    
