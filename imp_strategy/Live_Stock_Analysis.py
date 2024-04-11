@@ -205,50 +205,6 @@ sl = wb.sheets("Sale")
 st = wb.sheets("stats")
 exp = wb.sheets("Expiry")
 
-class NseIndia:
-
-    def __init__(self):
-        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple'
-                                      'WebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
-        self.session = requests.Session()
-        self.session.get("https://nseindia.com", headers=self.headers)
-
-    def get_stock_info(self, symbol, trade_info=False):
-        if trade_info:
-            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol + "&section=trade_info"
-        else:
-            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol
-        data = self.session.get(url, headers=self.headers).json()
-        return data
-
-nse = NseIndia()
-
-def datastk(symbol):
-    # datastk_nse = nse.get_stock_info(symbol.replace("&", "%26"))
-    return {symbol.upper(): {
-                            # "open": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['open'],
-                            #  "high": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['intraDayHighLow'][
-                            #      'max'],
-                            #  "low": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['intraDayHighLow'][
-                            #      'min'],
-                            #  "ltp": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['lastPrice'],
-                            #  "prv_close": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['previousClose'],
-                            #  "vwap": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['vwap'],
-                            #  "volume":
-                            #      nse.get_stock_info(symbol.replace("&", "%26"), trade_info=True)['securityWiseDP'][
-                            #          'quantityTraded'],
-                            #  "dlv_qty":
-                            #      nse.get_stock_info(symbol.replace("&", "%26"), trade_info=True)['securityWiseDP'][
-                            #          'deliveryQuantity'],
-                             "dlv_per":
-                                 nse.get_stock_info(symbol.replace("&", "%26"), trade_info=True)['securityWiseDP'][
-                                     'deliveryToTradedQuantity']}}
-                            #  "change": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['vwap'],
-                            #  "pChange": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['pChange'],
-                            #  "upperband": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['upperCP'],
-                            #  "lowerband": nse.get_stock_info(symbol.replace("&", "%26"))['priceInfo']['lowerCP'],
-                            #  "Time": time.strftime("%H:%M:%S", time.localtime())}}
-
 
 exchange = None
 while True:    
@@ -286,37 +242,186 @@ while True:
 new_excc['value'] = new_excc.apply(lambda x: (x.tradingsymbol,x.instrument_token_x, x.instrument_token_y), axis=1)
 flt_exc.range("a:w").value = None
 flt_exc.range("a1").options(index=False).value = new_excc
-
-insttt = new_excc.set_index(['tradingsymbol','instrument_token_x','instrument_token_y'])['value'].to_dict()
+new_excc = new_excc.head(5)
+inst_dict = new_excc.set_index(['tradingsymbol','instrument_token_x','instrument_token_y'])['value'].to_dict()
 #print(insttt)
 
 #inst_token = np.unique(eq_exc2['instrument_token']).tolist()
 #print(inst_token)
 
-start_time = time.time()
-five_df1 = pd.DataFrame()
-five_df2 = pd.DataFrame()
-five_df3 = pd.DataFrame()
-for inst in insttt:      
+
+class NseIndia:
+
+    def __init__(self):
+        self.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple'
+                                      'WebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'}
+        self.session = requests.Session()
+        self.session.get("https://nseindia.com", headers=self.headers)
+
+    def get_stock_info(self, symbol, trade_info=False):
+        if trade_info:
+            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol + "&section=trade_info"
+        else:
+            url = 'https://www.nseindia.com/api/quote-equity?symbol=' + symbol
+        data = self.session.get(url, headers=self.headers).json()
+        return data
+
+nse = NseIndia()
+
+def datastk(symbol):
+    # datastk_nse = nse.get_stock_info(symbol.replace("&", "%26"))
+    return {symbol.upper(): {"dlv_per":
+                                 nse.get_stock_info(symbol.replace("&", "%26"), trade_info=True)['securityWiseDP'][
+                                     'deliveryToTradedQuantity']}}
+
+
+def bhavcopy(lastTradingDay):
+    dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
+    url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
+    bhav_eq1 = pd.read_csv(url)
+    bhav_eq1 = pd.DataFrame(bhav_eq1)
+    bhav_eq1.columns = bhav_eq1.columns.str.strip()
+    bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+    bhav_eq1['DATE1'] = pd.to_datetime(bhav_eq1['DATE1'])
+    bhav_eq = bhav_eq1[bhav_eq1['SERIES'] == 'EQ']
+    bhav_eq['LAST_PRICE'] = bhav_eq['LAST_PRICE'].replace(' -', 0).astype(float)
+    bhav_eq['DELIV_QTY'] = bhav_eq['DELIV_QTY'].replace(' -', 0).astype(float)
+    bhav_eq['DELIV_PER'] = bhav_eq['DELIV_PER'].replace(' -', 0).astype(float)
+    return bhav_eq
+
+# print(bhavcopy(lastTradingDay))
+
+def bhavcopy_fno(lastTradingDay):
     try:
-        print(inst[0])
-        df = pd.DataFrame(credi_muk.historical_data(inst[1], last_trading_day, to_d, "5minute", continuous=False, oi=True))
-        df1 = pd.DataFrame(credi_muk.historical_data(inst[2], last_trading_day, to_d, "5minute", continuous=False, oi=True))
+        dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
+        MMM = datetime.strftime(lastTradingDay, '%b').upper()
+        yyyy = datetime.strftime(lastTradingDay, '%Y')
+        url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
+        content = requests.get(url1)
+        zf = ZipFile(BytesIO(content.content))
+        match = [s for s in zf.namelist() if ".csv" in s][0]
+        bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
+        bhav_fo.columns = bhav_fo.columns.str.strip()
+        bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+        bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
+        bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
+        bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
+    except Exception as e:
+        print(e)
+        return bhav_fo
+
+def bhavcopy_func():
+    eq_bhav = pd.DataFrame()
+    for i in trading_days:
+        try:
+            print(i)
+            bh_df = bhavcopy(i)
+            bh_df = pd.DataFrame(bh_df)
+            eq_bhav = pd.concat([bh_df, eq_bhav])
+        except Exception as e:
+            print(e)
+
+    eq_bhav.sort_values(['SYMBOL', 'DATE1'], ascending=[True, False], inplace=True)
+    eq_bhav = eq_bhav[
+            ['SYMBOL', 'DATE1', 'OPEN_PRICE', 'HIGH_PRICE', 'LOW_PRICE', 'CLOSE_PRICE', 'TTL_TRD_QNTY',
+            'DELIV_QTY', 'DELIV_PER']]
+    eq_bhav.rename(columns={'SYMBOL': 'Name', 'DATE1': 'Date','OPEN_PRICE': 'Open','HIGH_PRICE': 'High', 'LOW_PRICE': 'Low',
+                                'CLOSE_PRICE': 'Close','TTL_TRD_QNTY': 'Volume','DELIV_QTY': 'Deliv_qty','DELIV_PER': 'Deliv_per', },inplace=True)
+    return eq_bhav
+
+eq_bhav = bhavcopy_func()
+strategy1.range("a:i").value = None                          
+strategy1.range("a1").options(index=False).value = eq_bhav
+#print(str(days_count)+" Days STOCK Data Download")
+
+def bhavcopy_fno_func():
+    fo_bhav = pd.DataFrame()
+    for i in trading_days:
+        try:
+            print(i)
+            fo_bh_df = bhavcopy_fno(i)
+            fo_bh_df = pd.DataFrame(fo_bh_df) 
+            print(fo_bh_df.head(1))
+            if fo_bh_df.empty:
+                pass
+            else:
+                fo_bh_df = fo_bh_df[(fo_bh_df["OPTION_TYP"] == "XX")]
+                fo_bh_df = fo_bh_df[(fo_bh_df["EXPIRY_DT"] == Expiry_exc)]
+                # fo_bh_df.sort_values(['EXPIRY_DT'],ascending=[True], inplace=True)
+                # #fo_bh_df = fo_bh_df.iloc[:1]
+                # fo_bh_df = fo_bh_df[fo_bh_df.groupby('SYMBOL')['EXPIRY_DT'].transform(lambda x: x.eq(x.min()))]
+                fo_bhav = pd.concat([fo_bh_df, fo_bhav])
+        except OSError as e:
+            print(e)
+            
+
+    fo_bhav.sort_values(['SYMBOL', 'TIMESTAMP'], ascending=[True, False], inplace=True)
+    fo_bhav = fo_bhav[
+            ['INSTRUMENT', 'SYMBOL', 'EXPIRY_DT', 'STRIKE_PR', 'OPTION_TYP', 'OPEN', 'HIGH',
+            'LOW', 'CLOSE', 'SETTLE_PR', 'CONTRACTS', 'VAL_INLAKH', 'OPEN_INT', 'CHG_IN_OI','TIMESTAMP']]
+    fo_bhav.rename(columns={'SYMBOL': 'Name','TIMESTAMP': 'Date','OPEN_PRICE': 'FO_Open','HIGH_PRICE': 'FO_High', 'LOW_PRICE': 'FO_Low','CLOSE_PRICE': 'FO_Close','TTL_TRD_QNTY': 'FO_Volume','VAL_INLAKH':'Value','OPEN_INT':'OI','CHG_IN_OI':'Chg_OI' },inplace=True)
+    return fo_bhav
+
+fo_bhav = bhavcopy_fno_func()
+strategy2.range("a:i").value = None                          
+strategy2.range("a1").options(index=False).value = fo_bhav
+#print(str(days_count)+" Days F&O Data Download")
+
+delv_data = pd.merge(eq_bhav, fo_bhav, on=['Name','Date'], how='outer')
+delv_data = delv_data[['Name', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume',
+         'Deliv_qty', 'Deliv_per', 'Value', 'OI', 'Chg_OI']]
+strategy3.range("a1").options(index=False).value = delv_data
+print("EOD DATA &  F&O Data Merged")
+
+def Down_Stock_Data(period,data):    
+    data_fram = pd.DataFrame()
+    #for inst in inst_dict:      
+    try:
+        print(data[0])
+        df = pd.DataFrame(credi_muk.historical_data(data[1], last_trading_day, to_d, period, continuous=False, oi=True))
+        df1 = pd.DataFrame(credi_muk.historical_data(data[2], last_trading_day, to_d, period, continuous=False, oi=True))
         dfgh = pd.merge(df, df1, on=['date'], how='inner')
-        data1 = pd.DataFrame(datastk(inst[0]))        
-        dfgh['Name'] = inst[0]
-        dfgh['Del_Per'] = data1[inst[0]][0]
-        five_df1 = pd.concat([dfgh, five_df1])
+        data1 = pd.DataFrame(datastk(data[0]))   
+        dfgh['TimeNow'] = datetime.now()     
+        dfgh['Name'] = data[0]
+        dfgh['Del_Per'] = data1[data[0]][0]
+        data_fram = pd.concat([dfgh, data_fram])
         #data1 = (data1[['Name','Del_Per']]).reset_index(drop=True)
     except Exception as e:
         print(e)
 
-five_df1 = five_df1[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','Del_Per']]
-five_df1.rename(columns={'date': 'DateTime','open_x': 'Open','high_x': 'High','low_x': 'Low','close_x': 'Close','volume_x': 'Volume','oi_y': 'OI',},inplace=True)
-five_df1.sort_values(['Name','DateTime'], ascending=[True,True], inplace=True)
-st1.range("a1").options(index=False).value = five_df1
-end = time.time() - start_time
-print(f"Kite Data Download Time: {end:.2f}s")
+    data_fram = data_fram[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','Del_Per','TimeNow']]
+    data_fram.rename(columns={'date': 'DateTime','open_x': 'Open','high_x': 'High','low_x': 'Low','close_x': 'Close','volume_x': 'Volume','oi_y': 'OI',},inplace=True)
+    data_fram.sort_values(['Name','DateTime'], ascending=[True,True], inplace=True)
+    return data_fram
+
+while True:
+    start_time = time.time()
+    five_df1 = pd.DataFrame()
+    five_df2 = pd.DataFrame()
+    five_df3 = pd.DataFrame()
+    for inst in inst_dict:      
+        try:
+            df1 = Down_Stock_Data("5minute",inst)
+            five_df1 = pd.concat([df1, five_df1]) 
+        except Exception as e:
+            print(e)
+
+
+    try:
+        if five_df1.empty:
+            pass
+        else:
+            try:
+                st1.range("a:j").value = None
+                st1.range("a1").options(index=False).value = five_df1 
+            except Exception as e:
+                print(e)
+    except Exception as e:
+        print(e)
+    end = time.time() - start_time
+    print(f"Kite Data Download Time: {end:.2f}s")
+
 
 
 
