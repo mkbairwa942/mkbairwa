@@ -478,6 +478,8 @@ while True:
         try:
             df1 = Down_Stock_Data("5minute",inst)
             five_df1 = pd.concat([df1, five_df1]) 
+            df2 = df1[(df1["Vol_Price_break"] != "")]
+            five_df2 = pd.concat([df2, five_df2])
         except Exception as e:
             print(e)
 
@@ -490,6 +492,16 @@ while True:
                 five_df1.sort_values(['Name','DateTime'], ascending=[True,False], inplace=True)
                 st1.range("a:q").value = None
                 st1.range("a1").options(index=False).value = five_df1 
+            except Exception as e:
+                print(e)
+        
+        if five_df2.empty:
+            pass
+        else:
+            try:
+                five_df1.sort_values(['Name','DateTime'], ascending=[True,False], inplace=True)
+                st2.range("a:q").value = None
+                st2.range("a1").options(index=False).value = five_df2 
             except Exception as e:
                 print(e)
     except Exception as e:
