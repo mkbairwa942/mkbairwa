@@ -499,7 +499,7 @@ while True:
             pass
         else:
             try:
-                five_df1.sort_values(['Name','DateTime'], ascending=[True,False], inplace=True)
+                five_df2.sort_values(['DateTime','Name'], ascending=[True,False], inplace=True)
                 st2.range("a:q").value = None
                 st2.range("a1").options(index=False).value = five_df2 
             except Exception as e:
