@@ -7,7 +7,7 @@ import pandas as pd
 import copy
 import numpy as np
 import xlwings as xw
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,timezone
 from numpy import log as nplog
 from numpy import NaN as npNaN
 from pandas import DataFrame, Series
