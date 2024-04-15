@@ -345,7 +345,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
             for credi in cred:
                 #postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
                 #print(f"Ledger Balance is : {postt}") 
-                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='C', ScripCode = scrip_code, Qty=qtyy,Price=price_of_stock, IsIntraday=False)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='C', ScripCode = scrip_code, Qty=qtyy,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
             #order = credi_bhav.place_order(OrderType=order_side,Exchange='N',ExchangeType='C', ScripCode = scrip_code, Qty=muk_quantity,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)    
         else:
             print(f"Real {CALL_PUT} Order are OFF")
@@ -574,28 +574,28 @@ def Down_Stock_Data(period,data):
         dfgh.sort_values(['Name', 'date'], ascending=[False, False], inplace=True)
         data_fram = pd.concat([dfgh, data_fram])
         #data1 = (data1[['Name','Del_Per']]).reset_index(drop=True)
+
+        data_fram = data_fram[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','Deliv_per','TimeNow','Minutes']]
+        data_fram.rename(columns={'date': 'DateTime','open_x': 'Open','high_x': 'High','low_x': 'Low','close_x': 'Close','volume_x': 'Volume','oi_y': 'OI',},inplace=True)
+        data_fram['Price_Chg'] = round(((data_fram['Close'] * 100) / (data_fram['Close'].shift(-1)) - 100), 2).fillna(0)      
+
+        data_fram['Vol_Chg'] = round(((data_fram['Volume'] * 100) / (data_fram['Volume'].shift(-1)) - 100), 2).fillna(0) 
+        data_fram['OI_Chg'] = round(((data_fram['OI'] * 100) / (data_fram['OI'].shift(-1)) - 100), 2).fillna(0)
+        data_fram['Price_break'] = np.where((data_fram['Close'] > (data_fram.High.rolling(5).max()).shift(-5)),
+                                            'Pri_Up_brk',
+                                            (np.where((data_fram['Close'] < (data_fram.Low.rolling(5).min()).shift(-5)),
+                                                        'Pri_Dwn_brk', "")))
+        data_fram['Vol_break'] = np.where(data_fram['Volume'] > (data_fram.Volume.rolling(5).mean() * int_vol_para).shift(-5),
+                                            "Vol_brk","")  
+        data_fram['Delv_break'] = np.where(data_fram['Deliv_per'] > (data_fram.Deliv_per.rolling(5).mean() * int_delv_para).shift(-5),
+                                            "Delv_brk","")  
+        data_fram['OI_break'] = np.where(data_fram['OI'] > (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),
+                                            "OI_brk","") 
+        data_fram['Vol_Price_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
+        #print(data_fram.head(1))
+        #data_fram.sort_values(['Name','DateTime'], ascending=[True,True], inplace=True)
     except Exception as e:
         print(e)
-    #print(data_fram.head(5))
-    data_fram = data_fram[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','Deliv_per','TimeNow','Minutes']]
-    data_fram.rename(columns={'date': 'DateTime','open_x': 'Open','high_x': 'High','low_x': 'Low','close_x': 'Close','volume_x': 'Volume','oi_y': 'OI',},inplace=True)
-    data_fram['Price_Chg'] = round(((data_fram['Close'] * 100) / (data_fram['Close'].shift(-1)) - 100), 2).fillna(0)      
-
-    data_fram['Vol_Chg'] = round(((data_fram['Volume'] * 100) / (data_fram['Volume'].shift(-1)) - 100), 2).fillna(0) 
-    data_fram['OI_Chg'] = round(((data_fram['OI'] * 100) / (data_fram['OI'].shift(-1)) - 100), 2).fillna(0)
-    data_fram['Price_break'] = np.where((data_fram['Close'] > (data_fram.High.rolling(5).max()).shift(-5)),
-                                        'Pri_Up_brk',
-                                        (np.where((data_fram['Close'] < (data_fram.Low.rolling(5).min()).shift(-5)),
-                                                    'Pri_Dwn_brk', "")))
-    data_fram['Vol_break'] = np.where(data_fram['Volume'] > (data_fram.Volume.rolling(5).mean() * int_vol_para).shift(-5),
-                                        "Vol_brk","")  
-    data_fram['Delv_break'] = np.where(data_fram['Deliv_per'] > (data_fram.Deliv_per.rolling(5).mean() * int_delv_para).shift(-5),
-                                        "Delv_brk","")  
-    data_fram['OI_break'] = np.where(data_fram['OI'] > (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),
-                                        "OI_brk","") 
-    data_fram['Vol_Price_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
-    #print(data_fram.head(1))
-    #data_fram.sort_values(['Name','DateTime'], ascending=[True,True], inplace=True)
     return data_fram
 
 while True:
@@ -623,7 +623,7 @@ while True:
                 Call_by_Closee = (float(Call_by_ord['Close']))
                 Call_by_Scripcodee = int(float(Call_by_ord['Scripcode']))
                 Call_by_time = str(Call_by_ord['TimeNow'])
-                Call_by_Qtyy = round((5000/Call_by_Closee),0)
+                Call_by_Qtyy = round((10000/Call_by_Closee),0)
                 Call_by_Name = np.unique([str(i) for i in Call_by_ord['Name']]).tolist()[0]
 
                 #print(Call_by_Closee,Call_by_Scripcodee,Call_by_time,Call_by_Qtyy,Call_by_Name)
