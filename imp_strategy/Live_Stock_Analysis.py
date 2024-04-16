@@ -98,7 +98,7 @@ for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
     print(f"Ledger Balance is : {postt}")
 
-from_d = (date.today() - timedelta(days=15))
+from_d = (date.today() - timedelta(days=20))
 # from_d = date(2022, 12, 29)
 
 to_d = (date.today())
@@ -253,7 +253,7 @@ while True:
 new_excc['value'] = new_excc.apply(lambda x: (x.tradingsymbol,x.instrument_token_x, x.instrument_token_y), axis=1)
 flt_exc.range("a:w").value = None
 flt_exc.range("a1").options(index=False).value = new_excc
-#new_excc = new_excc.head(50)
+#new_excc = new_excc.head(10)
 
 exc.range("a:w").value = None
 exc.range("a1").options(index=False).value = five_paisa_exc2
@@ -300,7 +300,7 @@ def order_book_func(cred):
                 print(e)
     return ordbook1
 
-def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee,stoploss):
+def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,qtyy,namee,stoploss,targett):
     
 
     
@@ -345,17 +345,17 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
             for credi in cred:
                 #postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
                 #print(f"Ledger Balance is : {postt}") 
-                #order = client.place_order(OrderType='B',Exchange='N',ExchangeType='D', ScripCode = Buy_Scriptcodee, Qty=Buy_quantity_of_stock,Price=Buy_price_of_stock, IsIntraday=True, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='C', ScripCode = scrip_code, Qty=qtyy,Price=price_of_stock, IsIntraday=True,IsStopLossOrder=True, StopLossPrice=stoploss)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                order = credi.bo_order(OrderType=order_side,Exchange='N',ExchangeType='C', ScripCode = scrip_code, Qty=qtyy, LimitPrice=price_of_stock,TargetPrice=targett,StopLossPrice=stoploss,LimitPriceForSL=stoploss-1,TrailingSL=0.5)
+                #order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='C', ScripCode = scrip_code, Qty=qtyy,Price=price_of_stock, IsIntraday=True,IsStopLossOrder=True, StopLossPrice=stoploss)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
             #order = credi_bhav.place_order(OrderType=order_side,Exchange='N',ExchangeType='C', ScripCode = scrip_code, Qty=muk_quantity,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)    
         else:
             print(f"Real {CALL_PUT} Order are OFF")
         print(f"1 Minute {CALL_PUT} Data Selected of "+str(namee)+" ("+str(scrip_code)+")")
         print(f"{CALL_PUT} {BUY_EXIT} Order Executed of "+str(namee)+" at : Rs "+str(price_of_stock)+" and Quantity is "+str(qtyy)+" on "+str(timees))
 
-        print("SYMBOL : "+str(namee)+"\n "+str(CALL_PUT)+" "+str(BUY_EXIT)+" AT : "+str(price_of_stock)+"\n QUANTITY : "+str(qtyy)+"\n TIME : "+str(timees))
+        print("SYMBOL : "+str(namee)+"\n "+str(CALL_PUT)+" "+str(BUY_EXIT)+" AT : "+str(price_of_stock)+"\n QUANTITY : "+str(qtyy)+"\n STOP LOSS : "+str(stoploss)+"\n TARGET : "+str(targett)+"\n TIME : "+str(timees))
         if telegram_msg.upper() == "YES" or telegram_msg.upper() == "":
-            parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(namee)+"\n "+str(CALL_PUT)+" "+str(BUY_EXIT)+" AT : "+str(price_of_stock)+"\n QUANTITY : "+str(qtyy)+"\n TIME : "+str(timees)}
+            parameters1 = {"chat_id" : "6143172607","text" : "Symbol : "+str(namee)+"\n "+str(CALL_PUT)+" "+str(BUY_EXIT)+" AT : "+str(price_of_stock)+"\n QUANTITY : "+str(qtyy)+"\n STOP LOSS : "+str(stoploss)+"\n TARGET : "+str(targett)+"\n TIME : "+str(timees)}
             resp = requests.get(telegram_basr_url, data=parameters1)
         else:
             print("Telegram Message are OFF")
@@ -552,8 +552,9 @@ def bhavcopy_fno_func():
 int_vol_para = 2
 int_delv_para = 1.5
 int_oi_para = 1.03
-telegram_msg = "yes"
-orders = "yes"
+telegram_msg = "no"
+orders = "no"
+periodd = "day"#,"5minute"
 
 def Delv_Data(data):
     data1 = pd.DataFrame(datastk(data[0])) 
@@ -573,12 +574,17 @@ def Down_Stock_Data(period,data):
     #for inst in inst_dict:      
     try:
         print(data[0])
-        df = pd.DataFrame(credi_muk.historical_data(data[1], last_trading_day, to_d, period, continuous=False, oi=True))
-        df1 = pd.DataFrame(credi_muk.historical_data(data[2], last_trading_day, to_d, period, continuous=False, oi=True))
+        if period == "5minute":
+            df = pd.DataFrame(credi_muk.historical_data(data[1], last_trading_day, to_d, period, continuous=False, oi=True))
+            df1 = pd.DataFrame(credi_muk.historical_data(data[2], last_trading_day, to_d, period, continuous=False, oi=True))
+        if period == "day":
+            df = pd.DataFrame(credi_muk.historical_data(data[1], trading_days[-1], to_d, period, continuous=False, oi=True))
+            df1 = pd.DataFrame(credi_muk.historical_data(data[2], trading_days[-1], to_d, period, continuous=False, oi=True))
         # print(df.head(1))
         # print(df1.head(1))
         dfgh = pd.merge(df, df1, on=['date'], how='inner')
-         
+        data1 = pd.DataFrame(datastk(data[0]))
+        dfgh['Deliv_per'] = data1[data[0]][0]
         dfgh["Date"] = df["date"].dt.date 
         dfgh['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata'))     
         dfgh['Name'] = data[0]
@@ -588,7 +594,7 @@ def Down_Stock_Data(period,data):
         data_fram = pd.concat([dfgh, data_fram])
         #data1 = (data1[['Name','Del_Per']]).reset_index(drop=True)
         
-        data_fram = data_fram[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','TimeNow','Minutes']]
+        data_fram = data_fram[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','Deliv_per','TimeNow','Minutes']]
         data_fram.rename(columns={'date': 'DateTime','open_x': 'Open','high_x': 'High','low_x': 'Low','close_x': 'Close','volume_x': 'Volume','oi_y': 'OI',},inplace=True)
         data_fram['Price_Chg'] = round((((data_fram['Close'] * 100) / (data_fram['Close'].shift(-1))) - 100), 2).fillna(0)      
 
@@ -600,13 +606,14 @@ def Down_Stock_Data(period,data):
                                                         'Pri_Dwn_brk', "")))
         data_fram['Vol_break'] = np.where(data_fram['Volume'] > (data_fram.Volume.rolling(5).mean() * int_vol_para).shift(-5),
                                             "Vol_brk","")  
-        # data_fram['Delv_break'] = np.where(data_fram['Deliv_per'] > (data_fram.Deliv_per.rolling(5).mean() * int_delv_para).shift(-5),
-        #                                     "Delv_brk","")  
-        data_fram['OI_break'] = np.where(data_fram['OI'] > (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),
-                                            "OI_brk","") 
+        data_fram['Delv_break'] = np.where(data_fram['Deliv_per'] > (data_fram.Deliv_per.rolling(5).mean() * int_delv_para).shift(-5),
+                                            "Delv_brk","")  
+        data_fram['OI_break'] = np.where(data_fram['OI'] > (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),"OI_UP_brk",np.where(data_fram['OI'] < (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),"OI_DN_brk","")) 
+                                            
         data_fram['Vol_Price_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
+        data_fram['Vol_OI_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['OI_break'] == "OI_UP_brk"), "Vol_OI_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['OI_break'] == "OI_DN_brk"), "Vol_OI_Dn_break", ""))
         data_fram['Buy_At'] = round((data_fram['Close']),1)
-        data_fram['Stop_Loss'] = np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Up_break",round((data_fram['Buy_At'] - (data_fram['Buy_At']*1)/100),1),np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Dn_break",round((((data_fram['Buy_At']*2)/100) + data_fram['Buy_At']),1),""))
+        data_fram['Stop_Loss'] = np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Up_break",round((data_fram['Buy_At'] - (data_fram['Buy_At']*1)/100),1),np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Dn_break",round((((data_fram['Buy_At']*1)/100) + data_fram['Buy_At']),1),""))
         data_fram['Add_Till'] = round((data_fram['Buy_At']-((data_fram['Buy_At']*0.5)/100)),1)         
         data_fram['Target'] = np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Up_break",round((((data_fram['Buy_At']*2)/100) + data_fram['Buy_At']),1),np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Dn_break",round((data_fram['Buy_At'] - (data_fram['Buy_At']*2)/100),1),""))
         #print(data_fram.head(1))
@@ -622,47 +629,82 @@ while True:
     five_df3 = pd.DataFrame()
     for inst in inst_dict:      
         try:
-            df1 = Down_Stock_Data("5minute",inst)
+            df1 = Down_Stock_Data(periodd,inst)
             five_df1 = pd.concat([df1, five_df1]) 
-            df2 = df1[(df1["Vol_Price_break"] != "") & (df1["Close"] < 500)]# & (df1["Date"] == current_trading_day.date())]
+            df2 = df1[(df1["Vol_Price_break"] != "") | (df1["Vol_OI_break"] != "") & (df1["Close"] < 500)]# & (df1["Date"] == current_trading_day.date())]
             df3 =  pd.merge(df2, five_paisa_exc2, on=['Name'], how='inner')
-            df3 = df3[['Scripcode','Name','DateTime','Open','High','Low','Close','Volume','OI','Stop_Loss','Target','TimeNow','Minutes','Price_Chg','Vol_Chg','OI_Chg','Price_break','Vol_break','OI_break','Vol_Price_break']]
+            df3 = df3[['Scripcode','Name','DateTime','Open','High','Low','Close','Volume','OI','Deliv_per','Stop_Loss','Target','TimeNow','Minutes','Price_Chg','Vol_Chg','OI_Chg','Price_break','Vol_break','OI_break','Vol_Price_break']]
             dfg1 = df3.head(1)
             five_df2 = pd.concat([df3, five_df2])
 
             # delvv_df = Delv_Data(inst)
             # five_df3 = pd.concat([delvv_df, five_df3])
 
-            Call_by_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Minutes"] < 5 )]
-            if Call_by_df2.empty:
+            Buy_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Minutes"] < 5 )]
+            if Buy_df2.empty:
                 pass
                 #print("Stock Buy DF Empty")
             else:
                 #print(Call_by_df2)
-                Call_by_ord = Call_by_df2.tail(1)
-                Call_by_Closee = (float(Call_by_ord['Close']))
-                Call_by_Scripcodee = int(float(Call_by_ord['Scripcode']))
-                StopLoss = (float(Call_by_ord['Stop_Loss']))
-                Call_by_time = str(Call_by_ord['TimeNow'])
-                Call_by_Qtyy = round((10000/Call_by_Closee),0)
-                Call_by_Name = np.unique([str(i) for i in Call_by_ord['Name']]).tolist()[0]
+                Buy_ord = Buy_df2.tail(1)
+                Buy_Closee = (float(Buy_ord['Close']))
+                Buy_Scripcodee = int(float(Buy_ord['Scripcode']))
+                Buy_StopLoss = (float(Buy_ord['Stop_Loss']))
+                Buy_Targets = (float(Buy_ord['Target']))
+                Buy_time = str(Buy_ord['TimeNow'])
+                Buy_Qtyy = round((10000/Buy_Closee),0)
+                Buy_Name = np.unique([str(i) for i in Buy_ord['Name']]).tolist()[0]
 
-                if Call_by_Closee < 100:
-                    Call_by_Qtyy = 200
-                if Call_by_Closee > 100 and Call_by_Closee < 200:
-                    Call_by_Qtyy = 100                        
-                if Call_by_Closee > 200 and Call_by_Closee < 300:
-                    Call_by_Qtyy = 80
-                if Call_by_Closee > 300:
-                    Call_by_Qtyy = 50
+                if Buy_Closee < 100:
+                    Buy_Qtyy = 200
+                if Buy_Closee > 100 and Buy_Closee < 200:
+                    Buy_Qtyy = 100                        
+                if Buy_Closee > 200 and Buy_Closee < 300:
+                    Buy_Qtyy = 80
+                if Buy_Closee > 300:
+                    Buy_Qtyy = 50
 
                 #print(Call_by_Closee,Call_by_Scripcodee,Call_by_time,Call_by_Qtyy,Call_by_Name)
-                if Call_by_Scripcodee in buy_order_list_dummy: 
-                    print(str(Call_by_Name)+" Stock is Already Buy")
+                if Buy_Scripcodee in buy_order_list_dummy: 
+                    print(str(Buy_Name)+" Stock is Already Buy")
                     print("----------------------------------------")
                 else:
                     print("Stock Buy")                        
-                    rde_exec = order_execution(Call_by_ord,buy_order_list_dummy,Call_by_Scripcodee,telegram_msg,orders,"STOCK","BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,StopLoss)
+                    rde_exec = order_execution(Buy_ord,buy_order_list_dummy,Buy_Scripcodee,telegram_msg,orders,"STOCK","BUY","B",Buy_Scripcodee,Buy_Qtyy,Buy_Name,Buy_StopLoss,Buy_Targets)
+        
+            Sell_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Minutes"] < 5 )]
+            if Sell_df2.empty:
+                pass
+                #print("Stock Buy DF Empty")
+            else:
+                #print(Call_by_df2)
+                Sell_ord = Sell_df2.tail(1)
+                Sell_Closee = (float(Sell_ord['Close']))
+                Sell_Scripcodee = int(float(Sell_ord['Scripcode']))
+                Sell_StopLoss = (float(Sell_ord['Stop_Loss']))
+                Sell_Targets = (float(Sell_ord['Target']))
+                Sell_time = str(Sell_ord['TimeNow'])
+                Sell_Qtyy = round((10000/Sell_Closee),0)
+                Sell_Name = np.unique([str(i) for i in Sell_ord['Name']]).tolist()[0]
+
+                if Sell_Closee < 100:
+                    Sell_Qtyy = 200
+                if Sell_Closee > 100 and Sell_Closee < 200:
+                    Sell_Qtyy = 100                        
+                if Sell_Closee > 200 and Sell_Closee < 300:
+                    Sell_Qtyy = 80
+                if Sell_Closee > 300:
+                    Sell_Qtyy = 50
+
+                #print(Call_by_Closee,Call_by_Scripcodee,Call_by_time,Call_by_Qtyy,Call_by_Name)
+                if Sell_Scripcodee in buy_order_list_dummy: 
+                    print(str(Sell_Name)+" Stock is Already Sell")
+                    print("----------------------------------------")
+                else:
+                    print("Stock Buy")                        
+                    #rde_exec = order_execution(Sell_ord,buy_order_list_dummy,Sell_Scripcodee,telegram_msg,orders,"STOCK","Sell","S",Sell_Scripcodee,Sell_Qtyy,Sell_Name,Sell_StopLoss,Sell_Targets)
+
+
         except Exception as e:
             print(e)
 
@@ -682,7 +724,7 @@ while True:
         else:
             try:
                 five_df2.sort_values(['DateTime','Name'], ascending=[False,True], inplace=True)
-                st2.range("a:v").value = None
+                st2.range("a:u").value = None
                 st2.range("a1").options(index=False).value = five_df2 
             except Exception as e:
                 print(e)
