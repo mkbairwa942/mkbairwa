@@ -462,9 +462,9 @@ def bhavcopy_func():
                                 'CLOSE_PRICE': 'Close','TTL_TRD_QNTY': 'Volume','DELIV_QTY': 'Deliv_qty','DELIV_PER': 'Deliv_per', },inplace=True)
     return eq_bhav
 
-# eq_bhav = bhavcopy_func()
-# strategy1.range("a:i").value = None                          
-# strategy1.range("a1").options(index=False).value = eq_bhav
+eq_bhav = bhavcopy_func()
+strategy1.range("a:i").value = None                          
+strategy1.range("a1").options(index=False).value = eq_bhav
 
 def bhavcopy_fno_func():
     fo_bhav = pd.DataFrame()
@@ -486,68 +486,68 @@ def bhavcopy_fno_func():
     fo_bhav.rename(columns={'SYMBOL': 'Name','TIMESTAMP': 'Date','OPEN_PRICE': 'FO_Open','HIGH_PRICE': 'FO_High', 'LOW_PRICE': 'FO_Low','CLOSE_PRICE': 'FO_Close','TTL_TRD_QNTY': 'FO_Volume','VAL_INLAKH':'Value','OPEN_INT':'OI','CHG_IN_OI':'Chg_OI' },inplace=True)
     return fo_bhav
 
-# fo_bhav = bhavcopy_fno_func()
-# #print(fo_bhav.dtypes)
-# strategy2.range("a:o").value = None                          
-# strategy2.range("a1").options(index=False).value = fo_bhav
+fo_bhav = bhavcopy_fno_func()
+#print(fo_bhav.dtypes)
+strategy2.range("a:o").value = None                          
+strategy2.range("a1").options(index=False).value = fo_bhav
 
 
-# delv_data = pd.merge(eq_bhav, fo_bhav, on=['Name','Date'], how='inner')
-# #delv_data.sort_values(['Date', 'Name'], ascending=[False, True], inplace=True)
-# delv_data = delv_data[['Name', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume','Deliv_qty', 'Deliv_per', 'Value', 'OI', 'Chg_OI']]
-# #strategy3.range("a1").options(index=False).value = delv_data
+delv_data = pd.merge(eq_bhav, fo_bhav, on=['Name','Date'], how='inner')
+#delv_data.sort_values(['Date', 'Name'], ascending=[False, True], inplace=True)
+delv_data = delv_data[['Name', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume','Deliv_qty', 'Deliv_per', 'Value', 'OI', 'Chg_OI']]
+#strategy3.range("a1").options(index=False).value = delv_data
 
-# eod_vol_para = 2
-# eod_delv_para = 1.5
-# eod_oi_para = 1.1
+eod_vol_para = 2
+eod_delv_para = 1.5
+eod_oi_para = 1.1
 
-# juyjyu = pd.DataFrame()
-# for stkks in inst_dict:
-#     new_delv_data = delv_data[(delv_data["Name"] == stkks[0])]  
-#     new_delv_data['Price_Chg'] = round((((new_delv_data['Close'] * 100) / (new_delv_data['Close'].shift(-1))) - 100), 2).fillna(0)      
-#     new_delv_data['OI_Chg'] = round((((new_delv_data['OI'] * 100) / (new_delv_data['OI'].shift(-1))) - 100), 2).fillna(0)
-#     new_delv_data['Vol_Chg'] = round((((new_delv_data['Volume'] * 100) / (new_delv_data['Volume'].shift(-1))) - 100), 2).fillna(0) 
+juyjyu = pd.DataFrame()
+for stkks in inst_dict:
+    new_delv_data = delv_data[(delv_data["Name"] == stkks[0])]  
+    new_delv_data['Price_Chg'] = round((((new_delv_data['Close'] * 100) / (new_delv_data['Close'].shift(-1))) - 100), 2).fillna(0)      
+    new_delv_data['OI_Chg'] = round((((new_delv_data['OI'] * 100) / (new_delv_data['OI'].shift(-1))) - 100), 2).fillna(0)
+    new_delv_data['Vol_Chg'] = round((((new_delv_data['Volume'] * 100) / (new_delv_data['Volume'].shift(-1))) - 100), 2).fillna(0) 
 
-#     new_delv_data['Price_break'] = np.where((new_delv_data['Close'] > (new_delv_data.High.rolling(5).max()).shift(-5)),
-#                                         'Pri_Up_brk',
-#                                         (np.where((new_delv_data['Close'] < (new_delv_data.Low.rolling(5).min()).shift(-5)),
-#                                                     'Pri_Dwn_brk', "")))
-#     new_delv_data['Vol_break'] = np.where(new_delv_data['Volume'] > (new_delv_data.Volume.rolling(5).mean() * eod_vol_para).shift(-5),
-#                                         "Vol_brk","")  
-#     new_delv_data['Delv_break'] = np.where(new_delv_data['Deliv_per'] > (new_delv_data.Deliv_per.rolling(5).mean() * eod_delv_para).shift(-5),
-#                                         "Delv_brk","")  
-#     new_delv_data['OI_break'] = np.where(new_delv_data['OI'] > (new_delv_data.OI.rolling(5).mean() * eod_oi_para).shift(-5),
-#                                         "OI_brk","")  
-#     new_delv_data['Vol_Price_break'] = np.where((new_delv_data['Vol_break'] == "Vol_brk") & (new_delv_data['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((new_delv_data['Vol_break'] == "Vol_brk") & (new_delv_data['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
-#     juyjyu = pd.concat([new_delv_data, juyjyu])
-# juyjyu.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
+    new_delv_data['Price_break'] = np.where((new_delv_data['Close'] > (new_delv_data.High.rolling(5).max()).shift(-5)),
+                                        'Pri_Up_brk',
+                                        (np.where((new_delv_data['Close'] < (new_delv_data.Low.rolling(5).min()).shift(-5)),
+                                                    'Pri_Dwn_brk', "")))
+    new_delv_data['Vol_break'] = np.where(new_delv_data['Volume'] > (new_delv_data.Volume.rolling(5).mean() * eod_vol_para).shift(-5),
+                                        "Vol_brk","")  
+    new_delv_data['Delv_break'] = np.where(new_delv_data['Deliv_per'] > (new_delv_data.Deliv_per.rolling(5).mean() * eod_delv_para).shift(-5),
+                                        "Delv_brk","")  
+    new_delv_data['OI_break'] = np.where(new_delv_data['OI'] > (new_delv_data.OI.rolling(5).mean() * eod_oi_para).shift(-5),
+                                        "OI_brk","")  
+    new_delv_data['Vol_Price_break'] = np.where((new_delv_data['Vol_break'] == "Vol_brk") & (new_delv_data['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((new_delv_data['Vol_break'] == "Vol_brk") & (new_delv_data['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
+    juyjyu = pd.concat([new_delv_data, juyjyu])
+juyjyu.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
 
-# strategy3.range("a:t").value = None
-# strategy3.range("a1").options(index=False).value = juyjyu
-# print("EOD DATA &  F&O Data Merged")
+strategy3.range("a:t").value = None
+strategy3.range("a1").options(index=False).value = juyjyu
+print("EOD DATA &  F&O Data Merged")
 
 
-# print(len(juyjyu))
-# df_lenn = len(juyjyu)
-# strategy3.range(f'm2:o{df_lenn}').color = (255, 255, 255)
-# for a in strategy3.range(f'm2:m{df_lenn}'):
-#     if float(a.value) > 2:
-#         a.color = (0, 153, 255)
-# for b in strategy3.range(f'm2:m{df_lenn}'):
-#     if float(b.value) < -2:
-#         b.color = (204, 51, 0)
-# for e in strategy3.range(f'n2:n{df_lenn}'):
-#     if float(e.value) > 6:
-#         e.color = (0, 255, 255)
-# for f in strategy3.range(f'n2:n{df_lenn}'):
-#     if float(f.value) < -6:
-#         f.color = (204, 0, 0)
-# for c in strategy3.range(f'o2:o{df_lenn}'):
-#     if float(c.value) > 50:
-#         c.color = (204, 153, 0)
-# for c in strategy3.range(f'i2:i{df_lenn}'):
-#     if float(c.value) > 50:
-#         c.color = (204, 140, 0)
+print(len(juyjyu))
+df_lenn = len(juyjyu)
+strategy3.range(f'm2:o{df_lenn}').color = (255, 255, 255)
+for a in strategy3.range(f'm2:m{df_lenn}'):
+    if float(a.value) > 2:
+        a.color = (0, 153, 255)
+for b in strategy3.range(f'm2:m{df_lenn}'):
+    if float(b.value) < -2:
+        b.color = (204, 51, 0)
+for e in strategy3.range(f'n2:n{df_lenn}'):
+    if float(e.value) > 6:
+        e.color = (0, 255, 255)
+for f in strategy3.range(f'n2:n{df_lenn}'):
+    if float(f.value) < -6:
+        f.color = (204, 0, 0)
+for c in strategy3.range(f'o2:o{df_lenn}'):
+    if float(c.value) > 50:
+        c.color = (204, 153, 0)
+for c in strategy3.range(f'i2:i{df_lenn}'):
+    if float(c.value) > 50:
+        c.color = (204, 140, 0)
 
 int_vol_para = 2
 int_delv_para = 1.5
@@ -574,13 +574,8 @@ def Down_Stock_Data(period,data):
     #for inst in inst_dict:      
     try:
         print(data[0])
-        if period == "5minute":
-            df = pd.DataFrame(credi_muk.historical_data(data[1], last_trading_day, to_d, period, continuous=False, oi=True))
-            df1 = pd.DataFrame(credi_muk.historical_data(data[2], last_trading_day, to_d, period, continuous=False, oi=True))
-        if period == "day":
-            df = pd.DataFrame(credi_muk.historical_data(data[1], trading_days[-1], to_d, period, continuous=False, oi=True))
-            df1 = pd.DataFrame(credi_muk.historical_data(data[2], trading_days[-1], to_d, period, continuous=False, oi=True))
-        # print(df.head(1))
+        df = pd.DataFrame(credi_muk.historical_data(data[1], last_trading_day, to_d, period, continuous=False, oi=True))
+        df1 = pd.DataFrame(credi_muk.historical_data(data[2], last_trading_day, to_d, period, continuous=False, oi=True))
         # print(df1.head(1))
         dfgh = pd.merge(df, df1, on=['date'], how='inner')
         data1 = pd.DataFrame(datastk(data[0]))
@@ -622,6 +617,66 @@ def Down_Stock_Data(period,data):
         print(e)
     return data_fram
 
+def Down_Stock_Data_day(period,data):    
+    data_fram = pd.DataFrame()
+    #delv_data_frame = pd.DataFrame()
+    #for inst in inst_dict:      
+    try:
+        print(data[0])
+        dff = pd.DataFrame(credi_muk.historical_data(data[1], trading_days[-1], to_d, period, continuous=False, oi=True))
+        df_day = dff.tail(1)   
+        data1 = pd.DataFrame(datastk(data[0]))
+        df_day['Deliv_per'] = data1[data[0]][0]     
+        df_day['Name'] = data[0]
+        df_day["Date"] = df_day["date"].dt.date     
+        df_day.rename(columns={'open': 'Open','high': 'High','low': 'Low','close': 'Close','volume': 'Volume','oi': 'OI',},inplace=True)
+        df_day = df_day[['Name','Date','Open','High','Low','Close','Volume','Deliv_per']]
+
+        eq_bhav1 = eq_bhav[(eq_bhav["Name"] == data[0])]
+        eq_bhav1 = eq_bhav1[['Name','Date','Open','High','Low','Close','Volume','Deliv_per']]
+        delv_data_frame = pd.concat([df_day, eq_bhav1])
+        delv_data_frame["Date"] = pd.to_datetime(delv_data_frame.Date, format='%Y-%m-%d')
+        
+
+        df1 = pd.DataFrame(credi_muk.historical_data(data[2], trading_days[-1], to_d, period, continuous=False, oi=True))
+        df1["Date"] = df1["date"].dt.date
+        df1["Date"] = pd.to_datetime(df1.Date, format='%Y-%m-%d')
+        dfgh = pd.merge(delv_data_frame, df1, on=['Date'], how='inner')
+        dfgh.rename(columns={'oi': 'OI'},inplace=True)
+        dfgh = dfgh[['Name','Date','Open','High','Low','Close','Volume','Deliv_per','open','high','low','close','volume','OI']]
+
+        dfgh['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata'))     
+        dfgh['Minutes'] = dfgh['TimeNow']-df1["date"]
+        dfgh['Minutes'] = round((dfgh['Minutes']/np.timedelta64(1,'m')),2)        
+        dfgh.sort_values(['Name', 'Date'], ascending=[False, False], inplace=True)
+        data_fram = pd.concat([dfgh, data_fram])
+
+        data_fram['Price_Chg'] = round((((data_fram['Close'] * 100) / (data_fram['Close'].shift(-1))) - 100), 2).fillna(0)     
+
+        data_fram['Vol_Chg'] = round((((data_fram['Volume'] * 100) / (data_fram['Volume'].shift(-1))) - 100), 2).fillna(0) 
+        data_fram['OI_Chg'] = round(((data_fram['OI'] * 100) / (data_fram['OI'].shift(-1)) - 100), 2).fillna(0)
+        data_fram['Price_break'] = np.where((data_fram['Close'] > (data_fram.High.rolling(5).max()).shift(-5)),
+                                            'Pri_Up_brk',
+                                            (np.where((data_fram['Close'] < (data_fram.Low.rolling(5).min()).shift(-5)),
+                                                        'Pri_Dwn_brk', "")))
+        data_fram['Vol_break'] = np.where(data_fram['Volume'] > (data_fram.Volume.rolling(5).mean() * int_vol_para).shift(-5),
+                                            "Vol_brk","")  
+        data_fram['Delv_break'] = np.where(data_fram['Deliv_per'] > (data_fram.Deliv_per.rolling(5).mean() * int_delv_para).shift(-5),
+                                            "Delv_brk","")  
+        data_fram['OI_break'] = np.where(data_fram['OI'] > (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),"OI_UP_brk",np.where(data_fram['OI'] < (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),"OI_DN_brk","")) 
+                                            
+        data_fram['Vol_Price_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
+        data_fram['Vol_OI_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['OI_break'] == "OI_UP_brk"), "Vol_OI_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['OI_break'] == "OI_DN_brk"), "Vol_OI_Dn_break", ""))
+        data_fram['Buy_At'] = round((data_fram['Close']),1)
+        data_fram['Stop_Loss'] = np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Up_break",round((data_fram['Buy_At'] - (data_fram['Buy_At']*1)/100),1),np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Dn_break",round((((data_fram['Buy_At']*1)/100) + data_fram['Buy_At']),1),""))
+        data_fram['Add_Till'] = round((data_fram['Buy_At']-((data_fram['Buy_At']*0.5)/100)),1)         
+        data_fram['Target'] = np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Up_break",round((((data_fram['Buy_At']*2)/100) + data_fram['Buy_At']),1),np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Dn_break",round((data_fram['Buy_At'] - (data_fram['Buy_At']*2)/100),1),""))
+        #print(data_fram.head(1))
+        #data_fram.sort_values(['Name','DateTime'], ascending=[True,True], inplace=True)
+    except Exception as e:
+        print(e)
+    return data_fram
+
 while True:
     start_time = time.time()
     five_df1 = pd.DataFrame()
@@ -629,11 +684,11 @@ while True:
     five_df3 = pd.DataFrame()
     for inst in inst_dict:      
         try:
-            df1 = Down_Stock_Data(periodd,inst)
+            df1 = Down_Stock_Data_day(periodd,inst)
             five_df1 = pd.concat([df1, five_df1]) 
             df2 = df1[(df1["Vol_Price_break"] != "") | (df1["Vol_OI_break"] != "") & (df1["Close"] < 500)]# & (df1["Date"] == current_trading_day.date())]
             df3 =  pd.merge(df2, five_paisa_exc2, on=['Name'], how='inner')
-            df3 = df3[['Scripcode','Name','DateTime','Open','High','Low','Close','Volume','OI','Deliv_per','Stop_Loss','Target','TimeNow','Minutes','Price_Chg','Vol_Chg','OI_Chg','Price_break','Vol_break','OI_break','Vol_Price_break']]
+            df3 = df3[['Scripcode','Name','Date','Open','High','Low','Close','Volume','open','high','low','close','volume','OI','Deliv_per','Stop_Loss','Target','TimeNow','Minutes','Price_Chg','Vol_Chg','OI_Chg','Price_break','Vol_break','OI_break','Vol_Price_break']]
             dfg1 = df3.head(1)
             five_df2 = pd.concat([df3, five_df2])
 
@@ -713,7 +768,7 @@ while True:
             pass
         else:
             try:
-                five_df1.sort_values(['Name','DateTime'], ascending=[True,False], inplace=True)
+                five_df1.sort_values(['Name','Date'], ascending=[True,False], inplace=True)
                 st1.range("a:w").value = None
                 st1.range("a1").options(index=False).value = five_df1 
             except Exception as e:
@@ -723,7 +778,7 @@ while True:
             pass
         else:
             try:
-                five_df2.sort_values(['DateTime','Name'], ascending=[False,True], inplace=True)
+                five_df2.sort_values(['Date','Name'], ascending=[False,True], inplace=True)
                 st2.range("a:u").value = None
                 st2.range("a1").options(index=False).value = five_df2 
             except Exception as e:
