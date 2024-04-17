@@ -552,8 +552,8 @@ for c in strategy3.range(f'i2:i{df_lenn}'):
 int_vol_para = 2
 int_delv_para = 1.5
 int_oi_para = 1.03
-telegram_msg = "no"
-orders = "no"
+telegram_msg = "yes"
+orders = "yes"
 periodd = "day"#,"5minute"
 
 def Delv_Data(data):
@@ -686,7 +686,7 @@ while True:
         try:
             df1 = Down_Stock_Data_day(periodd,inst)
             five_df1 = pd.concat([df1, five_df1]) 
-            df2 = df1[(df1["Vol_Price_break"] != "") | (df1["Vol_OI_break"] != "") & (df1["Close"] < 500)]# & (df1["Date"] == current_trading_day.date())]
+            df2 = df1[(df1["Vol_Price_break"] != "") | (df1["Vol_OI_break"] != "")]# & (df1["Close"] < 500) & (df1["Date"] == current_trading_day.date())]
             df3 =  pd.merge(df2, five_paisa_exc2, on=['Name'], how='inner')
             df3 = df3[['Scripcode','Name','Date','Open','High','Low','Close','Volume','open','high','low','close','volume','OI','Deliv_per','Stop_Loss','Target','TimeNow','Minutes','Price_Chg','Vol_Chg','OI_Chg','Price_break','Vol_break','OI_break','Vol_Price_break']]
             dfg1 = df3.head(1)
