@@ -686,7 +686,7 @@ while True:
         try:
             df1 = Down_Stock_Data_day(periodd,inst)
             five_df1 = pd.concat([df1, five_df1]) 
-            df2 = df1[(df1["Vol_Price_break"] != "") | (df1["Vol_OI_break"] != "")]# & (df1["Close"] < 500) & (df1["Date"] == current_trading_day.date())]
+            df2 = df1[(df1["Vol_Price_break"] != "") | (df1["Vol_OI_break"] != "")]# & (df1["Close"] < 500) & ]
             df3 =  pd.merge(df2, five_paisa_exc2, on=['Name'], how='inner')
             df3 = df3[['Scripcode','Name','Date','Open','High','Low','Close','Volume','open','high','low','close','volume','OI','Deliv_per','Stop_Loss','Target','TimeNow','Minutes','Price_Chg','Vol_Chg','OI_Chg','Price_break','Vol_break','OI_break','Vol_Price_break']]
             dfg1 = df3.head(1)
@@ -695,7 +695,7 @@ while True:
             # delvv_df = Delv_Data(inst)
             # five_df3 = pd.concat([delvv_df, five_df3])
 
-            Buy_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Minutes"] < 5 )]
+            Buy_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]
             if Buy_df2.empty:
                 pass
                 #print("Stock Buy DF Empty")
@@ -727,7 +727,7 @@ while True:
                     print("Stock Buy")                        
                     rde_exec = order_execution(Buy_ord,buy_order_list_dummy,Buy_Scripcodee,telegram_msg,orders,"STOCK","BUY","B",Buy_Scripcodee,Buy_Qtyy,Buy_Name,Buy_StopLoss,Buy_Targets)
         
-            Sell_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Minutes"] < 5 )]
+            Sell_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Dn_break") & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]
             if Sell_df2.empty:
                 pass
                 #print("Stock Buy DF Empty")
@@ -769,7 +769,7 @@ while True:
         else:
             try:
                 five_df1.sort_values(['Name','Date'], ascending=[True,False], inplace=True)
-                st1.range("a:w").value = None
+                st1.range("a:ac").value = None
                 st1.range("a1").options(index=False).value = five_df1 
             except Exception as e:
                 print(e)
@@ -779,7 +779,7 @@ while True:
         else:
             try:
                 five_df2.sort_values(['Date','Name'], ascending=[False,True], inplace=True)
-                st2.range("a:u").value = None
+                st2.range("a:ac").value = None
                 st2.range("a1").options(index=False).value = five_df2 
             except Exception as e:
                 print(e)
