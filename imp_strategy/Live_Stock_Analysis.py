@@ -651,10 +651,9 @@ def Down_Stock_Data_day(period,data):
         dfgh.sort_values(['Name', 'Date'], ascending=[False, False], inplace=True)
         data_fram = pd.concat([dfgh, data_fram])
 
-        data_fram['Price_Chg'] = round((((data_fram['Close'] * 100) / (data_fram['Close'].shift(-1))) - 100), 2).fillna(0)     
-
-        data_fram['Vol_Chg'] = round((((data_fram['Volume'] * 100) / (data_fram['Volume'].shift(-1))) - 100), 2).fillna(0) 
+        data_fram['Price_Chg'] = round((((data_fram['Close'] * 100) / (data_fram['Close'].shift(-1))) - 100), 2).fillna(0)   
         data_fram['OI_Chg'] = round(((data_fram['OI'] * 100) / (data_fram['OI'].shift(-1)) - 100), 2).fillna(0)
+        data_fram['Vol_Chg'] = round((((data_fram['Volume'] * 100) / (data_fram['Volume'].shift(-1))) - 100), 2).fillna(0) 
         data_fram['Price_break'] = np.where((data_fram['Close'] > (data_fram.High.rolling(5).max()).shift(-5)),
                                             'Pri_Up_brk',
                                             (np.where((data_fram['Close'] < (data_fram.Low.rolling(5).min()).shift(-5)),
