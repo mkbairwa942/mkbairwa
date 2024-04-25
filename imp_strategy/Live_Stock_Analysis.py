@@ -521,14 +521,16 @@ for stkks in inst_dict:
     new_delv_data['Vol_Price_break'] = np.where((new_delv_data['Vol_break'] == "Vol_brk") & (new_delv_data['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((new_delv_data['Vol_break'] == "Vol_brk") & (new_delv_data['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
     juyjyu = pd.concat([new_delv_data, juyjyu])
 juyjyu.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
+#juyjyu10 =  juyjyu[(juyjyu["Price_Chg"] != 0) & (juyjyu["OI_Chg"] != 0) & (juyjyu["Vol_Chg"] != 0)]
+juyjyu10 = juyjyu[~juyjyu.duplicated(subset=['Name', 'Date'], keep='last')].copy()
 
 strategy3.range("a:t").value = None
-strategy3.range("a1").options(index=False).value = juyjyu
-print("EOD DATA &  F&O Data Merged")
+strategy3.range("a1").options(index=False).value = juyjyu10
+print("EOD DATA & F&O Data Merged")
 
 
-print(len(juyjyu))
-df_lenn = len(juyjyu)
+print(len(juyjyu10))
+df_lenn = len(juyjyu10)
 strategy3.range(f'm2:o{df_lenn}').color = (255, 255, 255)
 for a in strategy3.range(f'm2:m{df_lenn}'):
     if float(a.value) > 2:
@@ -665,7 +667,7 @@ def Down_Stock_Data_day(period,data):
         data_fram['OI_break'] = np.where(data_fram['OI'] > (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),"OI_UP_brk",np.where(data_fram['OI'] < (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),"OI_DN_brk","")) 
                                             
         data_fram['Vol_Price_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
-        data_fram['Vol_OI_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['OI_break'] == "OI_UP_brk"), "Vol_OI_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['OI_break'] == "OI_DN_brk"), "Vol_OI_Dn_break", ""))
+        data_fram['Vol_OI_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['OI_break'] == "OI_UP_brk"),"Vol_OI_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['OI_break'] == "OI_DN_brk"), "Vol_OI_Dn_break", ""))
         data_fram['Buy_At'] = round((data_fram['Close']),1)
         data_fram['Stop_Loss'] = np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Up_break",round((data_fram['Buy_At'] - (data_fram['Buy_At']*1)/100),1),np.where(data_fram['Vol_Price_break'] == "Vol_Pri_Dn_break",round((((data_fram['Buy_At']*1)/100) + data_fram['Buy_At']),1),""))
         data_fram['Add_Till'] = round((data_fram['Buy_At']-((data_fram['Buy_At']*0.5)/100)),1)         
@@ -684,7 +686,8 @@ while True:
     for inst in inst_dict:      
         try:
             df1 = Down_Stock_Data_day(periodd,inst)
-            five_df1 = pd.concat([df1, five_df1]) 
+            df11 = df1[~df1.duplicated(subset=['Name', 'Date'], keep='last')].copy()
+            five_df1 = pd.concat([df11, five_df1]) 
             df2 = df1[(df1["Vol_Price_break"] != "") | (df1["Vol_OI_break"] != "")]# & (df1["Close"] < 500) & ]
             df3 =  pd.merge(df2, five_paisa_exc2, on=['Name'], how='inner')
             df3 = df3[['Scripcode','Name','Date','Open','High','Low','Close','Volume','open','high','low','close','volume','OI','Deliv_per','Stop_Loss','Target','TimeNow','Minutes','Price_Chg','Vol_Chg','OI_Chg','Price_break','Vol_break','OI_break','Vol_Price_break']]

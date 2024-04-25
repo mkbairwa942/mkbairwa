@@ -802,4 +802,4 @@ while True:
         print(e)
     end = time.time() - start_time
     print(f"Kite Data Download Time: {end:.2f}s")
-Live_Stock_Analysis
+
