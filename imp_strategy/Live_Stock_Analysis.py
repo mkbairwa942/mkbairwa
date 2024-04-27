@@ -556,7 +556,8 @@ int_delv_para = 1.5
 int_oi_para = 1.03
 telegram_msg = "yes"
 orders = "yes"
-periodd = "day"#,"5minute"
+periodd_day = "day"#,"5minute"
+periodd_minute = "5minute"
 
 def Delv_Data(data):
     data1 = pd.DataFrame(datastk(data[0])) 
@@ -571,7 +572,7 @@ def Delv_Data(data):
     return data1
 
 
-def Down_Stock_Data(period,data):    
+def Down_Stock_Data_minute(period,data):    
     data_fram = pd.DataFrame()
     #for inst in inst_dict:      
     try:
@@ -580,8 +581,8 @@ def Down_Stock_Data(period,data):
         df1 = pd.DataFrame(credi_muk.historical_data(data[2], last_trading_day, to_d, period, continuous=False, oi=True))
         # print(df1.head(1))
         dfgh = pd.merge(df, df1, on=['date'], how='inner')
-        data1 = pd.DataFrame(datastk(data[0]))
-        dfgh['Deliv_per'] = data1[data[0]][0]
+        # data1 = pd.DataFrame(datastk(data[0]))
+        # dfgh['Deliv_per'] = data1[data[0]][0]
         dfgh["Date"] = df["date"].dt.date 
         dfgh['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata'))     
         dfgh['Name'] = data[0]
@@ -591,7 +592,7 @@ def Down_Stock_Data(period,data):
         data_fram = pd.concat([dfgh, data_fram])
         #data1 = (data1[['Name','Del_Per']]).reset_index(drop=True)
         
-        data_fram = data_fram[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','Deliv_per','TimeNow','Minutes']]
+        data_fram = data_fram[['Name','date','open_x','high_x','low_x','close_x','volume_x','oi_y','TimeNow','Minutes']]
         data_fram.rename(columns={'date': 'DateTime','open_x': 'Open','high_x': 'High','low_x': 'Low','close_x': 'Close','volume_x': 'Volume','oi_y': 'OI',},inplace=True)
         data_fram['Price_Chg'] = round((((data_fram['Close'] * 100) / (data_fram['Close'].shift(-1))) - 100), 2).fillna(0)      
 
@@ -603,8 +604,8 @@ def Down_Stock_Data(period,data):
                                                         'Pri_Dwn_brk', "")))
         data_fram['Vol_break'] = np.where(data_fram['Volume'] > (data_fram.Volume.rolling(5).mean() * int_vol_para).shift(-5),
                                             "Vol_brk","")  
-        data_fram['Delv_break'] = np.where(data_fram['Deliv_per'] > (data_fram.Deliv_per.rolling(5).mean() * int_delv_para).shift(-5),
-                                            "Delv_brk","")  
+        # data_fram['Delv_break'] = np.where(data_fram['Deliv_per'] > (data_fram.Deliv_per.rolling(5).mean() * int_delv_para).shift(-5),
+        #                                     "Delv_brk","")  
         data_fram['OI_break'] = np.where(data_fram['OI'] > (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),"OI_UP_brk",np.where(data_fram['OI'] < (data_fram.OI.rolling(5).mean() * int_oi_para).shift(-5),"OI_DN_brk","")) 
                                             
         data_fram['Vol_Price_break'] = np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Up_brk"), "Vol_Pri_Up_break",np.where((data_fram['Vol_break'] == "Vol_brk") & (data_fram['Price_break'] == "Pri_Dwn_brk"), "Vol_Pri_Dn_break", ""))
@@ -683,9 +684,10 @@ while True:
     five_df1 = pd.DataFrame()
     five_df2 = pd.DataFrame()
     five_df3 = pd.DataFrame()
+    five_df4 = pd.DataFrame()
     for inst in inst_dict:      
         try:
-            df1 = Down_Stock_Data_day(periodd,inst)
+            df1 = Down_Stock_Data_day(periodd_day,inst)
             df11 = df1[~df1.duplicated(subset=['Name', 'Date'], keep='last')].copy()
             five_df1 = pd.concat([df11, five_df1]) 
             df2 = df1[(df1["Vol_Price_break"] != "") | (df1["Vol_OI_break"] != "")]# & (df1["Close"] < 500) & ]
@@ -693,9 +695,10 @@ while True:
             df3 = df3[['Scripcode','Name','Date','Open','High','Low','Close','Volume','open','high','low','close','volume','OI','Deliv_per','Stop_Loss','Target','TimeNow','Minutes','Price_Chg','Vol_Chg','OI_Chg','Price_break','Vol_break','OI_break','Vol_Price_break']]
             dfg1 = df3.head(1)
             five_df2 = pd.concat([df3, five_df2])
-
-            # delvv_df = Delv_Data(inst)
-            # five_df3 = pd.concat([delvv_df, five_df3])
+            dff1 = Down_Stock_Data_minute(periodd_minute,inst)
+            five_df3 = pd.concat([dff1, five_df3])
+            dff2 = dff1[(dff1["Vol_Price_break"] != "") | (dff1["Vol_OI_break"] != "")]# & (df1["Close"] < 500) & ]
+            five_df4 = pd.concat([dff2, five_df4])
 
             Buy_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]
             if Buy_df2.empty:
@@ -790,11 +793,22 @@ while True:
             pass
         else:
             try:
-                five_df3.sort_values(['Name'], ascending=[True], inplace=True)
-                st3.range("a:v").value = None
+                five_df3.sort_values(['DateTime','Name'], ascending=[False,True], inplace=True)
+                st3.range("a:X").value = None
                 st3.range("a1").options(index=False).value = five_df3
             except Exception as e:
                 print(e)
+
+        if five_df4.empty:
+            pass
+        else:
+            try:
+                five_df4.sort_values(['DateTime','Name'], ascending=[False,True], inplace=True)
+                st4.range("a:X").value = None
+                st4.range("a1").options(index=False).value = five_df4
+            except Exception as e:
+                print(e)  
+                     
     except Exception as e:
         print(e)
     end = time.time() - start_time
