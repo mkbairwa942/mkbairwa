@@ -697,8 +697,9 @@ while True:
             five_df2 = pd.concat([df3, five_df2])
             dff1 = Down_Stock_Data_minute(periodd_minute,inst)
             five_df3 = pd.concat([dff1, five_df3])
-            dff2 = dff1[(dff1["Vol_Price_break"] != "") | (dff1["Vol_OI_break"] != "")]# & (df1["Close"] < 500) & ]
-            five_df4 = pd.concat([dff2, five_df4])
+            dff2 = dff1[((dff1["Vol_Price_break"] != "") | (dff1["Vol_OI_break"] != "")) & (dff1["Minutes"] < 10 )]# & (df1["Close"] < 500) & ]
+            dff3 = dff2.head(2)
+            five_df4 = pd.concat([dff3, five_df4])
 
             Buy_df2 = dfg1[(dfg1["Vol_Price_break"] == "Vol_Pri_Up_break") & (dfg1["Date"] == current_trading_day.date())]# & (dfg1["Minutes"] < 5 )]
             if Buy_df2.empty:

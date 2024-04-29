@@ -271,7 +271,7 @@ flt_exc.range("a:az").value = None
 flt_exc.range("a1").options(index=False).value = exc_new1
 
 #symbol1 = '999920005'
-stk_list = [999920005,999920000]
+stk_list = [999920005]#,999920000]
 
 telegram_msg = "yes"
 orders = "yes"
@@ -283,6 +283,7 @@ UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
 adx_parameter = 0.40
 adx_parameter_opt = 0.1
+sam_2_slop = 1
 sam_21_slop = 1.5
 dema_21_slope = 2
 slll = -900
@@ -344,7 +345,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        lotsize = 2
+        lotsize = 1
     if stk_name == "NIFTY":
         lotsize = 1
     har_quantity = (qtyy*lotsize)
@@ -408,6 +409,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
                                                     'Pri_Dwn_brk', "")))
     df['Vol_break'] = np.where(df['Volume'] > (df.Volume.rolling(5).mean() * vol_pr).shift(5),
                                         "Vol_brk","") 
+    df['SMA_2'] = np.round((pta.sma(df['Close'],length=2)),2)
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)
     ADX = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)    
@@ -417,8 +419,10 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     #print(df.tail(5))
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)   
     df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
+    df['SMA_2_diff'] = df['SMA_2'] - df['SMA_2'].shift(1)
     df['SMA_21_diff'] = df['SMA_21'] - df['SMA_21'].shift(1)
     df['DEMA_21_diff'] = df['DEMA_21'] - df['DEMA_21'].shift(1)     
+    df['SMA_2_ok'] = np.where((df['SMA_2_diff'] > sam_2_slop) & (df['SMA_2_diff'] > df['SMA_2_diff'].shift(1)),"up_ok",np.where((df['SMA_2_diff'] < -sam_2_slop) & (df['SMA_2_diff'] < df['SMA_2_diff'].shift(1)),"dn_ok",""))
     df['SMA_21_ok'] = np.where((df['SMA_21_diff'] > sam_21_slop) & (df['SMA_21_diff'] > df['SMA_21_diff'].shift(1)),"up_ok",np.where((df['SMA_21_diff'] < -sam_21_slop) & (df['SMA_21_diff'] < df['SMA_21_diff'].shift(1)),"dn_ok",""))
     df['DEMA_21_ok'] = np.where((df['DEMA_21_diff'] > dema_21_slope) & (df['DEMA_21_diff'] > df['DEMA_21_diff'].shift(1)),"up_ok",np.where((df['DEMA_21_diff'] < -dema_21_slope) & (df['DEMA_21_diff'] < df['DEMA_21_diff'].shift(1)),"dn_ok",""))
     # df['SMA_21_ok'] = np.where(df['SMA_21_diff'] > sam_21_slop,"up_ok",np.where(df['SMA_21_diff'] < -sam_21_slop,"dn_ok",""))
@@ -426,8 +430,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))
     # df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
     # df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
-    df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok"),"Call_Buy","Call_Exit")
-    df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok"),"Put_Buy","Put_Exit")
+    df['Signal'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['SMA_2_ok'] == "up_ok"),"Call_Buy","Call_Exit")
+    df['Signal1'] = np.where((df['Adx_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['SMA_2_ok'] == "dn_ok"),"Put_Buy","Put_Exit")
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") ) 
     df['TimeNow'] = datetime.now()
     df = df.astype({"Datetime": "datetime64[ns]"})    
@@ -530,14 +534,14 @@ while True:
                 
                 if not Call_by_ord6.empty:                    
                     dfg1_Call_by = credi_bhav.historical_data('N', 'D', Call_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                    # ADX = pta.adx(high=dfg1_Call_by['High'],low=dfg1_Call_by['Low'],close=dfg1_Call_by['Close'],length=14)    
-                    # dfg1_Call_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
-                    # dfg1_Call_by['Adx_diff'] = dfg1_Call_by['ADX_14'] - dfg1_Call_by['ADX_14'].shift(1)
-                    # dfg1_Call_by['Adx_ok'] = np.where(dfg1_Call_by['Adx_diff'] > adx_parameter_opt,"ok","")
-                    # #print(dfg1_Call_by.tail(5))
-                    # dfg1_Call_by1 = dfg1_Call_by.tail(1)
-                    # dfg1_Call_by2 = dfg1_Call_by1[(dfg1_Call_by1["Adx_ok"] == "ok")]
-                    dfg1_Call_by2 = dfg1_Call_by
+                    ADX = pta.adx(high=dfg1_Call_by['High'],low=dfg1_Call_by['Low'],close=dfg1_Call_by['Close'],length=14)    
+                    dfg1_Call_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
+                    dfg1_Call_by['Adx_diff'] = dfg1_Call_by['ADX_14'] - dfg1_Call_by['ADX_14'].shift(1)
+                    dfg1_Call_by['Adx_ok'] = np.where(dfg1_Call_by['Adx_diff'] > adx_parameter_opt,"ok","")
+                    #print(dfg1_Call_by.tail(5))
+                    dfg1_Call_by1 = dfg1_Call_by.tail(1)
+                    dfg1_Call_by2 = dfg1_Call_by1[(dfg1_Call_by1["Adx_ok"] == "ok")]
+                    # dfg1_Call_by2 = dfg1_Call_by
                     if dfg1_Call_by2.empty:
                         print("No Call Buy Position Activate")
                     else:
@@ -581,14 +585,14 @@ while True:
                 
                 if not Put_by_ord6.empty:
                     dfg1_Put_by = credi_bhav.historical_data('N', 'D', Put_by_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                    # ADX = pta.adx(high=dfg1_Put_by['High'],low=dfg1_Put_by['Low'],close=dfg1_Put_by['Close'],length=14)    
-                    # dfg1_Put_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
-                    # dfg1_Put_by['Adx_diff'] = dfg1_Put_by['ADX_14'] - dfg1_Put_by['ADX_14'].shift(1)
-                    # dfg1_Put_by['Adx_ok'] = np.where(dfg1_Put_by['Adx_diff'] > adx_parameter_opt,"ok","")
-                    # #print(dfg1_Put_by.tail(5))
-                    # dfg1_Put_by1 = dfg1_Put_by.tail(1)
-                    # dfg1_Put_by2 = dfg1_Put_by1[(dfg1_Put_by1["Adx_ok"] == "ok")]
-                    dfg1_Put_by2 = dfg1_Put_by
+                    ADX = pta.adx(high=dfg1_Put_by['High'],low=dfg1_Put_by['Low'],close=dfg1_Put_by['Close'],length=14)    
+                    dfg1_Put_by['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)     
+                    dfg1_Put_by['Adx_diff'] = dfg1_Put_by['ADX_14'] - dfg1_Put_by['ADX_14'].shift(1)
+                    dfg1_Put_by['Adx_ok'] = np.where(dfg1_Put_by['Adx_diff'] > adx_parameter_opt,"ok","")
+                    #print(dfg1_Put_by.tail(5))
+                    dfg1_Put_by1 = dfg1_Put_by.tail(1)
+                    dfg1_Put_by2 = dfg1_Put_by1[(dfg1_Put_by1["Adx_ok"] == "ok")]
+                    # dfg1_Put_by2 = dfg1_Put_by
                     if dfg1_Put_by2.empty:
                         print("No Put Buy Position Activate")
                     else:
