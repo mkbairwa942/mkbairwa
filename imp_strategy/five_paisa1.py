@@ -102,7 +102,7 @@ def credentials (name):
         print(user)
         print(TOTP)
         client_code='50645842'
-        Pin='701520'
+        Pin='701570'
         RequestToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjUwODQwNDk1Iiwicm9sZSI6IkRrZldGQTFuUktoa0pMNG9MZnlubmwzYU50dzFBZzVmIiwiU3RhdGUiOiIiLCJuYmYiOjE2OTcwOTkyMzAsImV4cCI6MTY5NzA5OTI5MCwiaWF0IjoxNjk3MDk5MjMwfQ.ZePYRN6mi7F_FRrgyujAQjQ4WKANUoQuiJJboLIgVDU'
         client = FivePaisaClient(cred=cred)
         client.get_totp_session(client_code,TOTP,Pin)
