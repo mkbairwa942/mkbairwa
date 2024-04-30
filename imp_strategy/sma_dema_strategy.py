@@ -54,13 +54,13 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 # username1 = str(username)
 # client = credentials(username1)
 users = ["HARESH"]#,"MUKESH","ALPESH","BHAVNA"
-credi_bhav = None
-# credi_har = None
+#credi_bhav = None
+credi_har = None
 # credi_ash = None
 # credi_alp = None
 
 while True:
-    if credi_bhav is None:# and credi_ash is None and credi_alp is None:
+    if credi_har is None:# and credi_ash is None and credi_alp is None:
         try:
             for us in users:
                 print("1")
@@ -105,7 +105,6 @@ to_days = (date.today()-timedelta(days=1))
 # to_d = date(2023, 1, 20)
 
 days_365 = (date.today() - timedelta(days=365))
-print(days_365)
 
 holida = pd.read_excel('D:\STOCK\Capital_vercel_new\strategy\holida.xlsx')
 holida["Date"] = holida["Date1"].dt.date
@@ -121,8 +120,11 @@ current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[2]
 time_change = timedelta(minutes=870) 
+upto_df = timedelta(minutes=930) 
 new_current_trading_day = current_trading_day + time_change
+df_upto_datetime = current_trading_day + upto_df
 print(new_current_trading_day)
+print(df_upto_datetime)
 
 # current_trading_day = trading_dayss[0]
 # last_trading_day = trading_dayss[2]
@@ -440,8 +442,10 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
     #print(df.head(5))
     df.sort_values(['Datetime'], ascending=[True], inplace=True)
-    #print(df.head(5))
-    return df
+    df1 = df[(df['Datetime'] <= df_upto_datetime)]
+    # print(df1.head(5))
+    # print(df1.tail(5))
+    return df1
 
 posit = pd.DataFrame(credi_har.positions()) 
 if posit.empty:
