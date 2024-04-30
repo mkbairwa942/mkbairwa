@@ -272,7 +272,7 @@ flt_exc.range("a:az").value = None
 flt_exc.range("a1").options(index=False).value = exc_new1
 
 #symbol1 = '999920005'
-stk_list = [999920005,999920000]
+stk_list = [999920005]#,999920000]
 
 telegram_msg = "no"
 orders = "yes"
