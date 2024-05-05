@@ -709,10 +709,10 @@ while True:
                     print(Qtty)
                     if Qtty == 50:
                         slll = -1000
-                        tgtt = 4000
+                        tgtt = 3000
                     if Qtty == 15:
                         slll = -1000
-                        tgtt = 4000
+                        tgtt = 3000
                     print(slll,tgtt)
                     if pl < slll or pl > tgtt:
                         # rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
