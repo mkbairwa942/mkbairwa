@@ -114,6 +114,7 @@ trading_days = trading_dayss[1:]
 current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
 second_last_trading_day = trading_days[2]
+fifth_last_trading_day = trading_days[5]
 time_change = timedelta(minutes=870) 
 upto_df = timedelta(minutes=930) 
 new_current_trading_day = current_trading_day + time_change
@@ -381,32 +382,37 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         print("----------------------------------------")
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
-    df = pd.DataFrame(credi_muk.historical_data(260105, second_last_trading_day, to_d, "5minute", continuous=False, oi=True))
+    df = pd.DataFrame(credi_muk.historical_data(260105, fifth_last_trading_day, to_d, "5minute", continuous=False, oi=True))
     df.rename(columns={'date': 'Datetime','open': 'Open','high': 'High','low': 'Low','close': 'Close','volume': 'Volume','oi': 'OI',},inplace=True)
     #df = credi_har.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
-    ADX = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)
-    df['ADX_14'] = np.round((ADX[ADX.columns[0]]),2)
+    ADX_4 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=4)
+    ADX_14 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)
+    df['ADX_4'] = np.round((ADX_4[ADX_4.columns[0]]),2)
+    df['ADX_14'] = np.round((ADX_14[ADX_14.columns[0]]),2)
+    df['Adx_diff_4'] = df['ADX_4'] - df['ADX_4'].shift(1)
+    df['Adx_diff_14'] = df['ADX_14'] - df['ADX_14'].shift(1)
     df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))
-    df['Cand_Col_prev'] = np.where(df['Close'].shift(1) > df['Open'].shift(1),"Green",np.where(df['Close'].shift(1) < df['Open'].shift(1),"Red","") )
-    df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") )    
-    df['prev_can_poi'] = np.round((np.where(df['Close'].shift(1) > df['Open'].shift(1),df['Close'].shift(1) - df['Open'].shift(1),np.where(df['Close'].shift(1) < df['Open'].shift(1),df['Open'].shift(1) - df['Close'].shift(1),0))),2)
-    df['prev_can_fourth_part'] = np.round((df['prev_can_poi']/4),2)   
-    df['prev_can_half_part'] = np.round((df['prev_can_poi']/2),2) 
-    # df['Exit'] = df['Close'].shift(1)-df['prev_can_half_part'] 
-    # df['Exit1'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Close'] < df['Exit']),"Call_Exit",np.where((df['Cand_Col_prev'] == "Red") & (df['Close'] > df['Exit']),"Put_Exit",""))
-    df['range_1'] = np.round((np.where(df['Cand_Col_prev'] == "Green",df['Close'].shift(1)-df['prev_can_fourth_part'],np.where(df['Cand_Col_prev'] == "Red",df['Close'].shift(1)+df['prev_can_fourth_part'],0))),2)
-    df['range_2'] = np.round((df['Close'].shift(1)),2)
-    df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
-                         np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
-    df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
-    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40),"Put_Buy",""))
-
+    df['Cand_Col_2'] = np.where(df['Close'].shift(2) > df['Open'].shift(2),"Green",np.where(df['Close'].shift(2) < df['Open'].shift(2),"Red","") )
+    df['Cand_Col_1'] = np.where(df['Close'].shift(1) > df['Open'].shift(1),"Green",np.where(df['Close'].shift(1) < df['Open'].shift(1),"Red","") )
+    df['Cand_Col_0'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") )    
+    df['can_point_2'] = np.round((np.where(df['Close'].shift(2) > df['Open'].shift(2),df['Close'].shift(2) - df['Open'].shift(2),np.where(df['Close'].shift(2) < df['Open'].shift(2),df['Open'].shift(2) - df['Close'].shift(2),0))),2)
+    df['can_fourth_part_2'] = np.round((df['can_point_2']/4),2)   
+    df['can_half_part_2'] = np.round((df['can_point_2']/2),2) 
+    # df['Exit'] = df['Close'].shift(1)-df['can_half_part_2'] 
+    # df['Exit1'] = np.where((df['Cand_Col_1'] == "Green") & (df['Close'] < df['Exit']),"Call_Exit",np.where((df['Cand_Col_1'] == "Red") & (df['Close'] > df['Exit']),"Put_Exit",""))
+    df['range_1'] = np.round((np.where(df['Cand_Col_2'] == "Green",df['Close'].shift(2)-df['can_fourth_part_2'],np.where(df['Cand_Col_2'] == "Red",df['Close'].shift(2)+df['can_fourth_part_2'],0))),2)
+    df['range_2'] = np.round((df['Close'].shift(2)),2)
+    df['Buy'] = np.where((df['Cand_Col_2'] == "Green") & (df['Open'] > df['range_1']),"Call",
+                         np.where((df['Cand_Col_2'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
+    df['Buy1'] = np.where((df['Cand_Col_0'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col_0'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
+    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['can_point_2'] > 40) & (df['Cand_Col_1'] == "Green"),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['can_point_2'] > 40) & (df['Cand_Col_1'] == "Red"),"Put_Buy",""))
+    #df['Signal'] = np.where((df['Buy'] == "Call") & (df['can_point_2'] > 40) & (df['Cand_Col_1'] == "Green"),"Call_Buy",np.where((df['Buy'] == "Put") & (df['can_point_2'] > 40) & (df['Cand_Col_1'] == "Red"),"Put_Buy",""))
     df['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata')) 
     df["Date"] = df["Datetime"].dt.date
     df['Minutes'] = df['TimeNow']-df["Datetime"]
     df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
-    df = df[['Datetime','Open','High','Low','Close','Volume','ADX_14','Name','Cand_Col_prev','Cand_Col','Signal','TimeNow','Date','Minutes']]						
+    #df = df[['Datetime','Open','High','Low','Close','Volume','ADX_14','Adx_diff_14','Name','Cand_Col_2','Cand_Col_1','Cand_Col_0','Signal','TimeNow','Date','Minutes']]						
 
     return df
 
