@@ -263,7 +263,7 @@ flt_exc.range("a1").options(index=False).value = exc_new1
 stk_list = [999920005]#,999920000]
 
 
-telegram_msg = "no"
+telegram_msg = "yes"
 orders = "yes"
 Capital = 20000
 StockPriceLessThan = 1000
@@ -281,14 +281,14 @@ tgtt = 3000
 lotsize = 2
 
 SLL = 5
-TSL = 5
+TSL = 10
 tsl1 = 1-(TSL/100)
 print(tsl1)
 
 st.range("ae1").value = "Orders"
 st.range("af1").value = "YES"
 st.range("ag1").value = "Tele_Msg"
-st.range("ah1").value = "no"
+st.range("ah1").value = "yes"
 
 def order_book_func(cred):
     try:
@@ -432,7 +432,7 @@ while True:
     if orders is None:
         orders = "yes"
     if telegram_msg is None:
-        telegram_msg = "no"
+        telegram_msg = "yes"
     print(orders,telegram_msg)
     # print(buy_order_list_dummy)
     # print(sell_order_list_dummy)
