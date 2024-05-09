@@ -396,6 +396,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['Cand_Col_prev'] = np.where(df['Close'].shift(1) > df['Open'].shift(1),"Green",np.where(df['Close'].shift(1) < df['Open'].shift(1),"Red","") )
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") )    
     df['prev_can_poi'] = np.round((np.where(df['Close'].shift(1) > df['Open'].shift(1),df['Close'].shift(1) - df['Open'].shift(1),np.where(df['Close'].shift(1) < df['Open'].shift(1),df['Open'].shift(1) - df['Close'].shift(1),0))),2)
+    df['curr_can_poi'] = np.round((np.where(df['Close'] > df['Open'],df['Close'] - df['Open'],np.where(df['Close'] < df['Open'],df['Open'] - df['Close'],0))),2)
     df['prev_can_fourth_part'] = np.round((df['prev_can_poi']/4),2)   
     df['prev_can_half_part'] = np.round((df['prev_can_poi']/2),2) 
     # df['Exit'] = df['Close'].shift(1)-df['prev_can_half_part'] 
@@ -405,8 +406,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
                          np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
     df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
-    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40),"Put_Buy",""))
-    df['Signal1'] = np.where((df['Adx_diff_14'] < 0.4),"Exit","")
+    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['curr_can_poi'] > 20) & (df['Adx_diff_4'] > 3),"Put_Buy",""))
+    df['Signal1'] = np.where((df['Adx_diff_4'] < 3),"Exit","")
     df['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata')) 
     df["Date"] = df["Datetime"].dt.date
     df['Minutes'] = df['TimeNow']-df["Datetime"]
@@ -500,7 +501,7 @@ while True:
                 Call_by_Closee = (float(Call_by_ord['Close']))
                 Call_by_Spot = round(Call_by_Closee/100,0)*100
                 Call_by_time = str(list(Call_by_ord['Datetime'])[0])
-                Call_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                Call_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                 Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
                 Expiryyy_Call_by = (np.unique(Call_by_ord2['Expiry']).tolist())[0]      
                 Call_by_ord3 = Call_by_ord2[Call_by_ord2['Expiry'] == Expiryyy_Call_by]
@@ -552,7 +553,7 @@ while True:
                 Put_by_Closee = (float(Put_by_ord['Close']))
                 Put_by_Spot = round(Put_by_Closee/100,0)*100
                 Put_by_time = str(list(Put_by_ord['Datetime'])[0])
-                Put_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                Put_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                 Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
                 Expiryyy_Put_by = (np.unique(Put_by_ord2['Expiry']).tolist())[0]  
                 Put_by_ord3 = Put_by_ord2[Put_by_ord2['Expiry'] == Expiryyy_Put_by]
@@ -593,7 +594,6 @@ while True:
             if posi.empty:            
                 print("No First Running Position")
             else:
-
                 Call_sl_df = dfg1[(dfg1["Signal1"] == "Exit")]
                 Call_sl_df['Date_Dif'] = abs((Call_sl_df["Datetime"] - Call_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
                 Call_sl_df['Entry'] = np.where(Call_sl_df['Date_Dif'] > 5, "Call_Exit","")
@@ -605,13 +605,13 @@ while True:
     
                 if Call_sl_df2.empty:
                     pass
-                    #print("Call DF Empty")
+                    print("Call Sl DF Empty")
                 else:                  
                     Call_sl_ord = Call_sl_df2.tail(1)
                     Call_sl_Closee = (float(Call_sl_ord['Close']))
                     Call_sl_Spot = round(Call_sl_Closee/100,0)*100
                     Call_sl_time = str(list(Call_sl_ord['Datetime'])[0])
-                    Call_sl_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                    Call_sl_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                     Call_sl_ord2 = Call_sl_ord1[(Call_sl_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
                     Expiryyy_Call_sl = (np.unique(Call_sl_ord2['Expiry']).tolist())[0]      
                     Call_sl_ord3 = Call_sl_ord2[Call_sl_ord2['Expiry'] == Expiryyy_Call_sl]
@@ -654,13 +654,13 @@ while True:
     
                 if Put_sl_df2.empty:
                     pass
-                    #print("Put DF Empty")
+                    print("Put Sl DF Empty")
                 else:                  
                     Put_sl_ord = Put_sl_df2.tail(1)
                     Put_sl_Closee = (float(Put_sl_ord['Close']))
                     Put_sl_Spot = round(Put_sl_Closee/100,0)*100
                     Put_sl_time = str(list(Put_sl_ord['Datetime'])[0])
-                    Put_sl_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                    Put_sl_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                     Put_sl_ord2 = Put_sl_ord1[(Put_sl_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
                     Expiryyy_Put_sl = (np.unique(Put_sl_ord2['Expiry']).tolist())[0]      
                     Put_sl_ord3 = Put_sl_ord2[Put_sl_ord2['Expiry'] == Expiryyy_Put_sl]
