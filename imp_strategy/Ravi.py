@@ -694,7 +694,7 @@ while True:
             if posi.empty:            
                 print("No First Running Position 1")
             else:
-                posit = posi[(posi['MTOM'] != 0)]        
+                posit = posi#[(posi['MTOM'] != 0)]        
                 if posit.empty:
                     print("No Current Running Position")
                 else:
@@ -703,25 +703,26 @@ while True:
                     new_df = pd.merge(buy_order_li, posi, on=['ScripCode'], how='inner')
                     new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
                     new_df1 = new_df.head(1)
+                    print(new_df1)
                     Ratee = (np.unique([float(i) for i in new_df1['Rate']])).tolist()[0]
                     LTPP = (np.unique([float(i) for i in new_df1['LTP']])).tolist()[0]
                     Qtty1 = (np.unique([float(i) for i in new_df1['Qty']])).tolist()[0]
                     
 
-                    # print(new_df)
+                    print(Ratee,LTPP,Qtty1)
                     print("Last Buy Rate is : "+str(Ratee))
                     print("Last LTP Rate is : "+str(LTPP))
                     
 
                     # pl = (np.unique([int(i) for i in posit['MTOM']])).tolist()[0]
-                    Qtty=int(posit['LotSize'])
+                    #Qtty=posit['LotSize'].astype(int)# int(posit['LotSize'][0])
                     pl = round(((LTPP-Ratee)*Qtty1),2)
                     print("Last PL Rate is : "+str(pl))
-                    print(Qtty)
-                    if Qtty == 50:
+                    print(Qtty1,pl)
+                    if Qtty1 == 50:
                         slll = -700
                         tgtt = 800
-                    if Qtty == 15:
+                    if Qtty1 == 15:
                         slll = -700
                         tgtt = 800
                     print(slll,tgtt)
