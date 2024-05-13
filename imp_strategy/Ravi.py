@@ -694,7 +694,7 @@ while True:
             if posi.empty:            
                 print("No First Running Position 1")
             else:
-                posit = posi#[(posi['MTOM'] != 0)]        
+                posit = posi[(posi['MTOM'] != 0)]        
                 if posit.empty:
                     print("No Current Running Position")
                 else:
@@ -725,7 +725,7 @@ while True:
                     if Qtty1 == 15:
                         slll = -700
                         tgtt = 800
-                    print(slll,tgtt)
+                    #print(slll,tgtt)
                     if pl < slll or pl > tgtt:
                         # rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
                         order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
