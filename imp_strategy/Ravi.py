@@ -297,7 +297,7 @@ def order_book_func(cred):
         ordbook['Root'] = [x.split(' ')[-0] for x in ordbook['ScripName']]
         #ordbook[['Root']] = ordbook['ScripName'].str.split(' ',expand=True)
         #ordbook['Root'] = ordbook['ScripName'].tolist()#.str.split(" ")[0]
-        pos.range("r1").options(index=False).value = ordbook
+        #pos.range("r1").options(index=False).value = ordbook
         
     except Exception as e:
                 print(e)
@@ -320,7 +320,7 @@ def order_book_func(cred):
             ordbook1['Datetimeee'] = Datetimeee
             ordbook1 = ordbook1[['Datetimeee', 'BuySell', 'DelvIntra','PendingQty','Qty','Rate','SLTriggerRate','WithSL','ScripCode','Reason', 'ExchType', 'MarketLot','ExchOrderID','OrderStatus', 'OrderValidUpto','ScripName','Root','AtMarket']]
             ordbook1.sort_values(['Datetimeee'], ascending=[False], inplace=True)
-            pos.range("a1").options(index=False).value = ordbook1
+            #pos.range("a20").options(index=False).value = ordbook1
         else:
             print("Order Book Empty")
     except Exception as e:
@@ -406,7 +406,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
                          np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
     df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
-    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['curr_can_poi'] > 20) & (df['Adx_diff_4'] > 3),"Put_Buy",""))
+    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Call_Buy",
+                            np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Put_Buy",""))
     df['Signal1'] = np.where((df['Adx_diff_4'] < 3),"Exit","")
     df['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata')) 
     df["Date"] = df["Datetime"].dt.date
@@ -460,7 +461,11 @@ while True:
         if posit.empty:
             pass
         else:
-            buy_order = order_book_func(credi)
+            pos.range("a1").options(index=False).value = posit
+            buy_order = order_book_func(credi)            
+            buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
+            buy_order_li.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+            pos.range("a20").options(index=False).value = buy_order_li
             buy_order_li1 = buy_order[(buy_order['OrderStatus'] == 'Pending')]# & (buy_order['BuySell'] == 'B')]
             if buy_order_li1.empty:
                 pass
@@ -699,11 +704,12 @@ while True:
                     print("No Current Running Position")
                 else:
                     buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
-                    #print(buy_order_li)
-                    new_df = pd.merge(buy_order_li, posi, on=['ScripCode'], how='inner')
-                    new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+                    buy_order_liii = buy_order_li.head(1)
+                    new_df = pd.merge(buy_order_liii,posit, on=['ScripCode'], how='inner')
+                    #new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
+                    print(new_df)
                     new_df1 = new_df.head(1)
-                    print(new_df1)
+                    
                     Ratee = (np.unique([float(i) for i in new_df1['Rate']])).tolist()[0]
                     LTPP = (np.unique([float(i) for i in new_df1['LTP']])).tolist()[0]
                     Qtty1 = (np.unique([float(i) for i in new_df1['Qty']])).tolist()[0]
