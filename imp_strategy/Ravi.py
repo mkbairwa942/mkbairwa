@@ -331,7 +331,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     timees = list_to_append
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        lotsize = 1
+        lotsize = 2
     if stk_name == "NIFTY":
         lotsize = 1
     quantity = (qtyy*lotsize)
