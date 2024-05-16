@@ -17,14 +17,14 @@ print(user_id, password, TOTP)
 
 
 mukesh = get_enctoken(user_id, password, TOTP)
-credi_muk = KiteApp(mukesh)
+credi_mukesh = KiteApp(mukesh)
 
 enctoken = "JpWFQuzNYNiE0cQweFyxUjT7NZ8TKsjR7I3IyxQQUgrF7tPA52WTgyGgjSpObyR9Tnv9Ym409AqIKtZn8VciDIwB6kDkpanP0eqFUUmFS5m3gICiua8Reg=="
 kite = KiteApp(enctoken=enctoken)
 
-# print(credi_muk.margins())
-# print(credi_muk.orders())
-# print(credi_muk.positions())
+# print(credi_mukesh.margins())
+# print(credi_mukesh.orders())
+# print(credi_mukesh.positions())
 
 # print(pd.DataFrame(kite.instruments()).tail(5))
 # print(kite.instruments("NSE"))
@@ -41,7 +41,7 @@ kite = KiteApp(enctoken=enctoken)
 # from_datetime = datetime.datetime.now() - datetime.timedelta(days=3)     # From last & days
 # to_datetime = datetime.datetime.now()
 # interval = "5minute"
-# print(pd.DataFrame(credi_muk.historical_data(256265, from_datetime, to_datetime, interval, continuous=False, oi=True)))
+# print(pd.DataFrame(credi_mukesh.historical_data(256265, from_datetime, to_datetime, interval, continuous=False, oi=True)))
 
 
 # # Place Order
@@ -81,7 +81,7 @@ kite = KiteApp(enctoken=enctoken)
 
 # instruments = 'NFO:BANKNIFTY2432047100PE'
 # while True:
-#     inst  = credi_muk.quote(instruments)
+#     inst  = credi_mukesh.quote(instruments)
 #     data = pd.DataFrame.from_dict(inst)
 #     #print(data)
 #     print(inst)

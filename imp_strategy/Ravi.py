@@ -54,13 +54,15 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 # username = "HARESH"
 # username1 = str(username)
 # client = credentials(username1)
-users = ["HARESH"]#,"ASHWIN","ALPESH"]
+users = ["HARESH","MUKESH"]#,"ASHWIN","ALPESH"]
 credi_har = None
+credi_muk = None
+
 # credi_ash = None
 # credi_alp = None
 
 while True:
-    if credi_har is None:# and credi_ash is None and credi_alp is None:
+    if credi_har is None and credi_muk is None:# and credi_alp is None:
         try:
             for us in users:
                 print("1")
@@ -69,6 +71,11 @@ while True:
                     if credi_har.request_token is None:
                         credi_har = credentials("HARESH")
                         print(credi_har.request_token)
+                if us == "MUKESH":
+                    credi_muk = credentials("MUKESH")
+                    if credi_muk.request_token is None:
+                        credi_muk = credentials("MUKESH")
+                        print(credi_muk.request_token)
                 # if us == "ASHWIN":
                 #     credi_ash = credentials("ASHWIN")
                 #     if credi_ash.request_token is None:
@@ -84,7 +91,7 @@ while True:
             print("credentials Download Error....")
             time.sleep(5)
 
-cred = [credi_har]#,credi_ash,credi_alp]
+cred = [credi_har,credi_muk]#,credi_ash,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -331,7 +338,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     timees = list_to_append
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        lotsize = 2
+        lotsize = 1
     if stk_name == "NIFTY":
         lotsize = 1
     quantity = (qtyy*lotsize)
@@ -382,7 +389,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         print("----------------------------------------")
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
-    df = pd.DataFrame(credi_muk.historical_data(260105, fifth_last_trading_day, to_d, "5minute", continuous=False, oi=True))
+    df = pd.DataFrame(credi_mukesh.historical_data(260105, fifth_last_trading_day, to_d, "5minute", continuous=False, oi=True))
     df.rename(columns={'date': 'Datetime','open': 'Open','high': 'High','low': 'Low','close': 'Close','volume': 'Volume','oi': 'OI',},inplace=True)
     #df = credi_har.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
@@ -406,8 +413,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
                          np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
     df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
-    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Call_Buy",
-                            np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Put_Buy",""))
+    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 60) & (df['Adx_diff_4'] > 3),"Call_Buy",
+                            np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 60) & (df['Adx_diff_4'] > 3),"Put_Buy",""))
     df['Signal1'] = np.where((df['Adx_diff_4'] < 3),"Exit","")
     df['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata')) 
     df["Date"] = df["Datetime"].dt.date
@@ -729,12 +736,13 @@ while True:
                         slll = -700
                         tgtt = 800
                     if Qtty1 == 15:
-                        slll = -1400
-                        tgtt = 2000
+                        slll = -700
+                        tgtt = 800
                     #print(slll,tgtt)
                     if pl < slll or pl > tgtt:
                         # rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
                         order = credi_har.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        order = credi_muk.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['BuyQty'])-int(posit['SellQty']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         #order = credi_muk.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['LotSize']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         print("StopLoss is Greater than -900")
                         print("Sell stoplOSS order Executed")
@@ -812,7 +820,8 @@ while True:
                         #                 print(order_df)
                         #                 # rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)
                         #                 order = credi_har.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                        #                 #order = credi_muk.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['LotSize']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        #                 order = credi_muk.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['BuyQty']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                        #                 # order = credi_muk.place_order(OrderType='S',Exchange=list(order_df['Exch'])[0],ExchangeType=list(order_df['ExchType'])[0], ScripCode = int(order_df['ScripCode']), Qty=int(order_df['LotSize']),Price=float(order_df['LTP']),IsIntraday=True if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                         #                 print("Sell order Executed") 
                         #         except Exception as e:
                         #             print(e)
