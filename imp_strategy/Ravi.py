@@ -389,7 +389,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         print("----------------------------------------")
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
-    df = pd.DataFrame(credi_mukesh.historical_data(260105, fifth_last_trading_day, to_d, "5minute", continuous=False, oi=True))
+    df = pd.DataFrame(credi_mukesh.historical_data(260105, second_last_trading_day, to_d, "5minute", continuous=False, oi=True))
     df.rename(columns={'date': 'Datetime','open': 'Open','high': 'High','low': 'Low','close': 'Close','volume': 'Volume','oi': 'OI',},inplace=True)
     #df = credi_har.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
@@ -413,8 +413,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
                          np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
     df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
-    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 60) & (df['Adx_diff_4'] > 3),"Call_Buy",
-                            np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 60) & (df['Adx_diff_4'] > 3),"Put_Buy",""))
+    df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Call_Buy",
+                            np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Put_Buy",""))
     df['Signal1'] = np.where((df['Adx_diff_4'] < 3),"Exit","")
     df['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata')) 
     df["Date"] = df["Datetime"].dt.date
