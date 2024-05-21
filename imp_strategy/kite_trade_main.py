@@ -38,10 +38,10 @@ kite = KiteApp(enctoken=enctoken)
 # # Get Historical Data
 # import datetime
 # instrument_token = 256265
-# from_datetime = datetime.datetime.now() - datetime.timedelta(days=3)     # From last & days
+# from_datetime = datetime.datetime.now() - datetime.timedelta(days=6)     # From last & days
 # to_datetime = datetime.datetime.now()
 # interval = "5minute"
-# print(pd.DataFrame(credi_mukesh.historical_data(256265, from_datetime, to_datetime, interval, continuous=False, oi=True)))
+# print(pd.DataFrame(credi_mukesh.historical_data(260105, from_datetime, to_datetime, interval, continuous=False, oi=True)))
 
 
 # # Place Order

@@ -577,8 +577,8 @@ def Down_Stock_Data_minute(period,data):
     #for inst in inst_dict:      
     try:
         print(data[0])
-        df = pd.DataFrame(credi_muk.historical_data(data[1], last_trading_day, to_d, period, continuous=False, oi=True))
-        df1 = pd.DataFrame(credi_muk.historical_data(data[2], last_trading_day, to_d, period, continuous=False, oi=True))
+        df = pd.DataFrame(credi_mukesh.historical_data(data[1], last_trading_day, to_d, period, continuous=False, oi=True))
+        df1 = pd.DataFrame(credi_mukesh.historical_data(data[2], last_trading_day, to_d, period, continuous=False, oi=True))
         # print(df1.head(1))
         dfgh = pd.merge(df, df1, on=['date'], how='inner')
         # data1 = pd.DataFrame(datastk(data[0]))
@@ -626,7 +626,7 @@ def Down_Stock_Data_day(period,data):
     #for inst in inst_dict:      
     try:
         print(data[0])
-        dff = pd.DataFrame(credi_muk.historical_data(data[1], trading_days[-1], to_d, period, continuous=False, oi=True))
+        dff = pd.DataFrame(credi_mukesh.historical_data(data[1], trading_days[-1], to_d, period, continuous=False, oi=True))
         df_day = dff.tail(1)   
         data1 = pd.DataFrame(datastk(data[0]))
         df_day['Deliv_per'] = data1[data[0]][0]     
@@ -641,7 +641,7 @@ def Down_Stock_Data_day(period,data):
         delv_data_frame["Date"] = pd.to_datetime(delv_data_frame.Date, format='%Y-%m-%d')
         
 
-        df1 = pd.DataFrame(credi_muk.historical_data(data[2], trading_days[-1], to_d, period, continuous=False, oi=True))
+        df1 = pd.DataFrame(credi_mukesh.historical_data(data[2], trading_days[-1], to_d, period, continuous=False, oi=True))
         df1["Date"] = df1["date"].dt.date
         df1["Date"] = pd.to_datetime(df1.Date, format='%Y-%m-%d')
         dfgh = pd.merge(delv_data_frame, df1, on=['Date'], how='inner')
