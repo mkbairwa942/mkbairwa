@@ -351,10 +351,10 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
         har_qty = 1
-        muk_qty = 3
+        muk_qty = 4
     if stk_name == "NIFTY":
         har_qty = 1
-        muk_qty = 1
+        muk_qty = 2
     # quantity = (qtyy*lotsize)
     # print(stk_name)
     # print(quantity)
@@ -482,7 +482,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Call_Buy",
                             np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Put_Buy",
                   np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 3),"Call_Buy",
-                            np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 3),"Put_Buy",""))))
+                            np.where((df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
     df['Signal1'] = np.where((df['Adx_diff_4'] < 3),"Exit","")
 
     #df = df[['Datetime','Open','High','Low','Close','Volume','ADX_14','Adx_diff_14','Name','Cand_Col_prev','Cand_Col','Signal','TimeNow','Date','Minutes']]						
@@ -812,7 +812,7 @@ while True:
                         pl = round(((LTPP-Ratee)*Qtty1),2)
                         print("Last PL Rate is : "+str(pl))
                         print(Qtty1,pl)
-                        if Qtty1 == 50:
+                        if Qtty1 == 25:
                             slll = -700
                             tgtt = 800
                         if Qtty1 == 15:
