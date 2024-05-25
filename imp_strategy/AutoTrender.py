@@ -54,44 +54,28 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 # username = "HARESH"
 # username1 = str(username)
 # client = credentials(username1)
-users = ["HARESH","MUKESH"]#,"ASHWIN","ALPESH"]
-credi_har = None
+users = ["MUKESH"]#,"ASHWIN","ALPESH"]
 credi_muk = None
 
 # credi_ash = None
 # credi_alp = None
 
 while True:
-    if credi_har is None and credi_muk is None:# and credi_alp is None:
+    if credi_muk is None:
         try:
             for us in users:
                 print("1")
-                if us == "HARESH":
-                    credi_har = credentials("HARESH")
-                    if credi_har.request_token is None:
-                        credi_har = credentials("HARESH")
-                        print(credi_har.request_token)
                 if us == "MUKESH":
                     credi_muk = credentials("MUKESH")
                     if credi_muk.request_token is None:
                         credi_muk = credentials("MUKESH")
                         print(credi_muk.request_token)
-                # if us == "ASHWIN":
-                #     credi_ash = credentials("ASHWIN")
-                #     if credi_ash.request_token is None:
-                #         credi_ash = credentials("ASHWIN")
-                #         print(credi_ash.request_token)
-                # if us == "ALPESH":
-                #     credi_alp = credentials("ALPESH")
-                #     if credi_alp.request_token is None:
-                #         credi_alp = credentials("ALPESH")
-                #         print(credi_alp.request_token)
             break
         except:
             print("credentials Download Error....")
             time.sleep(5)
 
-cred = [credi_har,credi_muk]#,credi_ash,credi_alp]
+cred = [credi_muk]#,credi_ash,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -157,7 +141,7 @@ print("Excel Starting....")
 if not os.path.exists("AutoTrender.xlsx"):
     try:
         wb = xw.Book()
-        wb.sheets.add("optionchain")
+        wb.sheets.add("Option Chain")
         wb.save("AutoTrender.xlsx")
         wb.close()
     except Exception as e:
@@ -177,6 +161,7 @@ for i in ["Dashboard","Exchange","Fil Exch","World Market","Nifty 50 Rnaking","F
 dash = wb.sheets("Dashboard")
 exc = wb.sheets("Exchange")
 flt_exc = wb.sheets("Fil Exch")
+oc = wb.sheets("Option Chain")
 
 wor_mar = wb.sheets("World Market")
 nif_50_rank = wb.sheets("Nifty 50 Rnaking")
@@ -231,8 +216,11 @@ telecom.range("a:u").value = None
 
 buy_senti.range("a:u").value = None
 sell_senti.range("a:u").value = None
+oc.range("a:b").value = oc.range("d8:e30").value = oc.range("g1:v4000").value = None
 
-
+#symbol1 = '999920005'
+stk_list_5paisa = [999920005,999920000]
+stk_list_zerodha = [260105,256265]
 
 script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
 script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
@@ -248,72 +236,188 @@ ncd_fo - NSE Currecny
 mcx_fo - MCX
 '''
 
-script_code_5paisa_url1 = f"https://Openapi.5paisa.com/VendorsAPI/Service1.svc/ScripMaster/segment/{segment}"
-script_code_5paisa1 = pd.read_csv(script_code_5paisa_url1,low_memory=False)
+script_code_5paisa_url = "https://images.5paisa.com/website/scripmaster-csv-format.csv"
+script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
+
+exc.range("a1").value = script_code_5paisa
+# exc.range("a1").value = exchange
 
 exchange = None
-while True:    
+while True:
     if exchange is None: 
-        try:   
-            #root_list = np.unique(exch['Root']).tolist()      
-            root_list = ["BANKNIFTY","NIFTY"]
-
-            exch1 = script_code_5paisa1[(script_code_5paisa1["Exch"] == "N") & (script_code_5paisa1["ScripType"] != "XX")]            
-            exch1.rename(columns={'ScripType': 'CpType','SymbolRoot': 'Root','BOCOAllowed': 'CO BO Allowed'},inplace=True)
-            exch1.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
-            exc_new = exch1['Root'].isin(root_list)            
-            exc_new1 = exch1[exc_new]
-
-            exch = script_code_5paisa[(script_code_5paisa["Exch"] == "N")]
-            exch.sort_values(['Root'], ascending=[True], inplace=True)            
-            excc = exch['Root'].isin(root_list)            
-            excc1 = exch[excc]
-
-            Expiry = excc1[(excc1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
-            print(Expiry.head(1))
-            print(Expiry.tail(1))
-            Expiry.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)   
-            exc_new2 = Expiry
-            exc_new2.rename(columns={'Scripcode': 'ScripCode' },inplace=True)
-            exc_new2["Watchlist"] = exc_new2["Exch"] + ":" + exc_new2["ExchType"] + ":" + exc_new2["Name"]
-
-            # eq_exc = excc1[(excc1["Exch"] == "N") & (excc1["ExchType"] == "C") & (excc1["CpType"] == "EQ")]
-            # exc.range("a1").options(index=False).value = eq_exc
+        try:
+            exchange = pd.DataFrame(script_code_5paisa)
+            #exchange = exchange[exchange["Exch"] == "N"]
+            #exchange = exchange[exchange["ExchType"] == "D"]
+            exchange['Expiry1'] = pd.to_datetime(exchange['Expiry']).dt.date
+            exchange1 = exchange[(exchange["Exch"] == "N") & (exchange['ExchType'].isin(['D'])) & (exchange['CpType'].isin(['EQ', 'XX']))]
+            # exchange1 = exchange[(exchange['ExchType'].isin(['C', 'D']))]
+            # exchange1 = exchange1[(exchange1['Series'].isin(['EQ', 'XX']))]
+            # exchange2 = exchange[exchange["Series"] == "EQ"]
+            #exchange = exchange[exchange['CpType'].isin(['CE', 'PE'])]
+            
+            # print(exchange.tail(20))
             break
         except:
             print("Exchange Download Error....")
-            time.sleep(5)
+            time.sleep(10)
+            
+exc.range("a1").value = exchange1
+#exc.range("ar1").value = exchange2
+df = pd.DataFrame({"FNO Symbol": list(exchange1["Root"].unique())})
+df = df.set_index("FNO Symbol",drop=True)
+oc.range("a1").value = df
 
-exc.range("a:az").value = None
-exc.range("a1").options(index=False).value = exc_new2
-
-flt_exc.range("a:az").value = None
-flt_exc.range("a1").options(index=False).value = exc_new1
-
-#symbol1 = '999920005'
-stk_list_5paisa = [999920005,999920000]
-stk_list_zerodha = [260105,256265]
+oc.range("d2").value, oc.range("d3").value, oc.range("d4").value, oc.range("d5").value, oc.range("d6").value = "Symbol==>>", "Expiry==>>", "LotSize==>>", "Total CE Value==>>", "Total PE Value==>>",
 
 
-telegram_msg = "yes"
-orders = "yes"
-Capital = 20000
-StockPriceLessThan = 1000
-Buy_price_buffer = 2
-Vol_per = 15
-UP_Rsi_lvl = 60
-DN_Rsi_lvl = 40
-adx_parameter = 0.40
-adx_parameter_opt = 0.1
-sam_2_slop = 1
-sam_21_slop = 1.5
-dema_21_slope = 2
-slll = -900
-tgtt = 3000
-lotsize = 2
-data_from = "5paisa"#,"Zerodha_kite"
 
-SLL = 10
-TSL = 15
-tsl1 = 1-(TSL/100)
-print(tsl1)
+
+df = pd.DataFrame({"FNO Symbol": list(exchange1["Root"].unique())})
+df = df.set_index("FNO Symbol",drop=True)
+oc.range("a1").value = df
+
+pre_oc_symbol = pre_oc_expiry = ""
+expiries_list = []
+instrument_dict = {}
+prev_day_oi = {}
+stop_thread = False
+
+while True:
+#def optionchain():
+
+    try:
+        oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
+    except Exception as e:
+        print(e)
+    
+    if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:
+        oc.range("g:v").value = None
+        instrument_dict = {}
+        stop_thread = True
+        time.sleep(2)
+        if pre_oc_symbol != oc_symbol:
+            oc.range("b:b").value = oc.range("d8:e30").value = None
+            expiries_list = []
+        pre_oc_symbol = oc_symbol
+        pre_oc_expiry = oc_expiry
+    if oc_symbol is not None:
+        
+        try:
+            if not expiries_list:
+                df = copy.deepcopy(exchange)
+                df = df[df['Root'] == oc_symbol]
+                #df = df[(df['Expiry1'].apply(pd.to_datetime) >= current_trading_day)]
+                expiries_list = sorted(list(df["Expiry1"].unique()))
+                df = pd.DataFrame({"Expiry Date": expiries_list})
+                df = df.set_index("Expiry Date",drop=True)
+                oc.range("b1").value = df
+        
+            if not instrument_dict and oc_expiry is not None:
+                df = copy.deepcopy(exchange)
+                df = df[df["Root"] == oc_symbol]
+                df = df[df["Expiry1"] == oc_expiry.date()]
+                lot_size= list(df["LotSize"])[0]
+                oc.range("e4").value = lot_size
+                print("1")
+                for i in df.index:
+                    instrument_dict[f'NFO:{df["FullName"][i]}'] = {"strikePrice":float(df["StrikeRate"][i]),
+                                                                        "instrumentType":df["CpType"][i],
+                                                                        "token":df["Scripcode"][i]}
+            option_data = {}
+            instrument_for_ltp = "NIFTY" if oc_symbol == "NIFTY" else (
+                "BANKNIFTY" if oc_symbol == "BANKNIFTY" else oc_symbol)
+            underlying_price = (credi_muk.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"C","Symbol":instrument_for_ltp}])['Data'][0]['LastTradedPrice'])
+            print("2")
+            ep = []
+            for ei in pd.DataFrame((credi_muk.get_expiry("N", oc_symbol))['Expiry'])['ExpiryDate']:
+                #print(ei)
+                left = ei[6:19]
+                timestamp = pd.to_datetime(left, unit='ms')
+                ExpDate = datetime.strftime(timestamp, '%d-%m-%Y')
+                ep.append([ExpDate, left])
+
+            ep1 = pd.DataFrame(ep)
+            ep1.columns = ['ExpDate', 'DayFormat']
+            expiry = (ep1['DayFormat'][0])
+
+            opt = pd.DataFrame(credi_muk.get_option_chain("N", oc_symbol, expiry)['Options'])
+
+            CE = []
+            PE = []
+            for i in opt:
+                ce_data = opt[opt['CPType'] == 'CE']
+                ce_data = ce_data.sort_values(['StrikeRate'])
+                CE.append(ce_data)
+
+                pe_data = opt[opt['CPType'] == 'PE']
+                pe_data = pe_data.sort_values(['StrikeRate'])
+                PE.append(pe_data)
+            print(oc_symbol,expiry)
+            option = pd.DataFrame(credi_muk.get_option_chain("N", oc_symbol, expiry)['Options'])
+
+            ce_values1 = option[option['CPType'] == 'CE']
+            pe_values1 = option[option['CPType'] == 'PE']
+            ce_data = ce_values1.sort_values(['StrikeRate'])
+            pe_data = pe_values1.sort_values(['StrikeRate'])
+            df1 = pd.merge(ce_data, pe_data, on='StrikeRate')
+
+            df1.rename(
+                {'ChangeInOI_x': 'CE_Chg_OI', 'ChangeInOI_y': 'PE_Chg_OI', 'LastRate_x': 'CE_Ltp', 'LastRate_y': 'PE_Ltp',
+                'OpenInterest_x': 'CE_OI', 'OpenInterest_y': 'PE_OI', 'Prev_OI_x': 'CE_Prev_OI', 'Prev_OI_y': 'PE_Prev_OI',
+                'PreviousClose_x': 'CE_Prev_Ltp', 'PreviousClose_y': 'PE_Prev_Ltp', 'ScripCode_x': 'CE_Script',
+                'ScripCode_y': 'PE_Script', 'Volume_x': 'CE_Volume', 'Volume_y': 'PE_Volume'}, axis=1, inplace=True)
+
+            df1=(df1[(df1['CE_Ltp'] != 0) & (df1['PE_Ltp'] != 0)])
+            df1.index = df1["StrikeRate"]
+            df1 = df1.replace(np.nan,0)
+            df1["Strike"] = df1.index
+            df1.index = [np.nan] * len(df1)
+
+            input_list = list(df1['CE_OI'])
+            input_list1 = list(df1['StrikeRate'])
+            max_value = max(input_list)
+            index = input_list.index(max_value)
+            diff = input_list1[index+1]-input_list1[index]
+
+            CE_Chg_OII = sum(df1["CE_Chg_OI"])
+            PE_Chg_OII = sum(df1["PE_Chg_OI"])
+            pcr = round((PE_Chg_OII/CE_Chg_OII),2)
+
+            oc.range("d8").value = [["PCR TODAY",pcr],
+                                    ["Spot LTP",underlying_price],
+                                    ["Spot LTP Round",round(underlying_price/diff,0)*diff],
+                                    ["Strike Difference",diff],
+                                    ["",""],
+                                    ["Total Call OI",sum(list(df1["CE_OI"]))],
+                                    ["Total Put OI",sum(list(df1["PE_OI"]))],
+                                    ["Total Call Change in OI",sum(list(df1["CE_Chg_OI"]))],
+                                    ["Total Put Change in OI",sum(list(df1["PE_Chg_OI"]))],
+                                    ["",""],            
+                                    ["Max Call OI Strike",list(df1[df1["CE_OI"] == max(list(df1["CE_OI"]))]["Strike"])[0]],
+                                    ["Max Put OI Strike",list(df1[df1["PE_OI"] == max(list(df1["PE_OI"]))]["Strike"])[0]],
+                                    ["Max Call Change in OI Strike",list(df1[df1["CE_Chg_OI"] == max(list(df1["CE_Chg_OI"]))]["Strike"])[0]],
+                                    ["Max Put Change in OI Strike",list(df1[df1["PE_Chg_OI"] == max(list(df1["PE_Chg_OI"]))]["Strike"])[0]],
+                                    ["Max Call Volume Strike",list(df1[df1["CE_Volume"] == max(list(df1["CE_Volume"]))]["Strike"])[0]],
+                                    ["Max Put Volume Strike",list(df1[df1["PE_Volume"] == max(list(df1["PE_Volume"]))]["Strike"])[0]],
+                                    ["",""], 
+                                    ["Max Call OI",max(list(df1["CE_OI"]))],
+                                    ["Max Put OI",max(list(df1["PE_OI"]))],          
+                                    ["Max Call Change in OI",max(list(df1["CE_Chg_OI"]))],
+                                    ["Max Put Change in OI",max(list(df1["PE_Chg_OI"]))],   
+                                    ["Max Call Volume",max(list(df1["CE_Volume"]))],
+                                    ["Max Put Volume",max(list(df1["PE_Volume"]))],  
+                                    ]
+
+            df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp', 'StrikeRate',
+                    'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
+            oc.range("g1").value = df1
+            
+        
+        except Exception as e:
+            pass   
+
+#     return df1
+
+# while True:
+#     fdg = optionchain()
