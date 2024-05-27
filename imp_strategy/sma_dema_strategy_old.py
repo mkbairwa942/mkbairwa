@@ -261,7 +261,7 @@ flt_exc.range("a1").options(index=False).value = exc_new1
 stk_list = [999920005]#,999920000]
 
 
-telegram_msg = "no"
+telegram_msg = "yes"
 orders = "yes"
 Capital = 20000
 StockPriceLessThan = 1000
@@ -269,7 +269,7 @@ Buy_price_buffer = 2
 Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
-adx_parameter_7 = 1
+adx_parameter_7 = 3
 adx_parameter_14 = 0.40
 adx_parameter_opt = 0.1
 sam_2_slop = 1
@@ -287,7 +287,7 @@ print(tsl1)
 st.range("ae1").value = "Orders"
 st.range("af1").value = "YES"
 st.range("ag1").value = "Tele_Msg"
-st.range("ah1").value = "no"
+st.range("ah1").value = "yes"
 
 def order_book_func(cred):
     try:
@@ -406,15 +406,15 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['SMA_2'] = np.round((pta.sma(df['Close'],length=2)),2)
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)    
-    ADX_7 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=7)
+    ADX_4 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=7)
     ADX_14 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)
     # df['Call_SLL_Diff'] = df['Close'] - df['SLL_NEW_low']
     # df['Put_SLL_Diff'] =  df['SLL_NEW_Hi'] - df['Close']
-    df['ADX_7'] = np.round((ADX_7[ADX_7.columns[0]]),2)
+    df['ADX_4'] = np.round((ADX_4[ADX_4.columns[0]]),2)
     df['ADX_14'] = np.round((ADX_14[ADX_14.columns[0]]),2)
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
     df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
-    df['Adx_diff_7'] = df['ADX_7'] - df['ADX_7'].shift(1)
+    df['Adx_diff_7'] = df['ADX_4'] - df['ADX_4'].shift(1)
     df['Adx_diff_14'] = df['ADX_14'] - df['ADX_14'].shift(1)  
     df['Adx_ok_7'] = np.where(df['Adx_diff_7'] > adx_parameter_7,"ok","")
     df['Adx_ok_14'] = np.where(df['Adx_diff_14'] > adx_parameter_14,"ok","")      
@@ -465,7 +465,7 @@ while True:
     if orders is None:
         orders = "yes"
     if telegram_msg is None:
-        telegram_msg = "no"
+        telegram_msg = "yes"
     print(orders,telegram_msg)
     # print(buy_order_list_dummy)
     # print(sell_order_list_dummy)
