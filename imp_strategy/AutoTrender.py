@@ -283,9 +283,9 @@ instrument_dict = {}
 prev_day_oi = {}
 stop_thread = False
 
-#while True:
-def optionchain():
-    global pre_oc_symbol,pre_oc_expiry
+while True:
+#def optionchain(pre_oc_symbol,pre_oc_expiry):
+    #global pre_oc_symbol,pre_oc_expiry
     try:
         oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
     except Exception as e:
@@ -307,17 +307,19 @@ def optionchain():
         if not expiries_list:
             df = copy.deepcopy(exchange)
             df = df[df['Root'] == oc_symbol]
+            #print(df)
             #df = df[(df['Expiry1'].apply(pd.to_datetime) >= current_trading_day)]
             expiries_list = sorted(list(df["Expiry1"].unique()))
+            #print(expiries_list)
             df = pd.DataFrame({"Expiry Date": expiries_list})
             df = df.set_index("Expiry Date",drop=True)
-            print(df)
             oc.range("b1").value = df
     
         if not instrument_dict and oc_expiry is not None:
             print(instrument_dict,oc_expiry)
             df = copy.deepcopy(exchange)
             df = df[df["Root"] == oc_symbol]
+            #print(df)
             df = df[df["Expiry1"] == oc_expiry.date()]
             print(df)
             lot_size= list(df["LotSize"])[0]
@@ -420,7 +422,7 @@ def optionchain():
         # except Exception as e:
         #     pass   
 
-        return df1
+#         return df1
 
-while True:
-    fdg = optionchain()
+# while True:
+#     fdg = optionchain()
