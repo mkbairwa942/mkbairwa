@@ -294,6 +294,20 @@ script_code_5paisa = pd.read_csv(script_code_5paisa_url,low_memory=False)
 exc.range("a1").value = script_code_5paisa
 # exc.range("a1").value = exchange
 
+segment = "nse_fo"
+'''
+all - scrips across all segments
+bse_eq - BSE Equity
+nse_eq - NSE Equity
+nse_fo - NSE Derivatives
+bse_fo - BSE Derivatives
+ncd_fo - NSE Currecny
+mcx_fo - MCX
+'''
+
+script_code_5paisa_url1 = f"https://Openapi.5paisa.com/VendorsAPI/Service1.svc/ScripMaster/segment/{segment}"
+script_code_5paisa1 = pd.read_csv(script_code_5paisa_url1,low_memory=False)
+
 exchange = None
 while True:
     if exchange is None: 
@@ -307,6 +321,11 @@ while True:
             # exchange1 = exchange1[(exchange1['Series'].isin(['EQ', 'XX']))]
             # exchange2 = exchange[exchange["Series"] == "EQ"]
             #exchange = exchange[exchange['CpType'].isin(['CE', 'PE'])]
+
+                     
+            script_code_5paisa1.rename(columns={'ScripType': 'CpType','SymbolRoot': 'Root','BOCOAllowed': 'CO BO Allowed'},inplace=True)
+            exchange2 = script_code_5paisa1[(script_code_5paisa1["Exch"] == "N") & (script_code_5paisa1['ExchType'].isin(['D'])) & (script_code_5paisa1['CpType'].isin(['EQ', 'XX']))]
+            exchange2.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
             
             # print(exchange.tail(20))
             break
