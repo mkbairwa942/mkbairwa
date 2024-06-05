@@ -69,8 +69,8 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 #credi_ash = credentials("ASHWIN")
 
 credi_har = credentials("HARESH")
-credi_ash = credentials("ASHWIN")
-cred = [credi_har,credi_ash]
+#credi_ash = credentials("ASHWIN")
+cred = [credi_har]#,credi_ash]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]

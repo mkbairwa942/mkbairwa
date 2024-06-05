@@ -306,14 +306,16 @@ def get_oi(data):
                     time.sleep(0.5)
 print("Excel : Started")
 
-while True:
-#def optionchain(pre_oc_symbol,pre_oc_expiry):
+#while True:
+def optionchain():
     #global pre_oc_symbol,pre_oc_expiry
     try:
         oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
     except Exception as e:
         print(e)
-    
+    # if oc_symbol is None:
+    #     pre_oc_symbol = pre_oc_expiry = ""
+
     if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:
         oc.range("g:v").value = None
         instrument_dict = {}
@@ -403,8 +405,9 @@ while True:
             df1 = df1.replace(np.nan,0)
             df1["Strike"] = df1.index
             df1.index = [np.nan] * len(df1)
+            dash.range("g1").value = df1
 
-            input_list = list(df1['CE_OI'])
+            input_list = list(df1['CE_Volume'])
             input_list1 = list(df1['StrikeRate'])
             max_value = max(input_list)
             index = input_list.index(max_value)
@@ -442,12 +445,12 @@ while True:
             df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp', 'StrikeRate',
                     'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
             oc.range("g1").value = df1
+            return df1
             
     
         except Exception as e:
             pass   
+        
 
-#         return df1
-
-# while True:
-#     fdg = optionchain()
+while True:
+    fdg = optionchain()
