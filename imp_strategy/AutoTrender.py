@@ -302,7 +302,9 @@ print("Excel : Started")
 
 while True:
 #def optionchain():
-    if Option_Chain == "yes":
+    xlbooks = xw.sheets.activate.name
+    print("Current Active Sheet is : "+str(xlbooks))
+    if xlbooks == "Option Chain":
     #global pre_oc_symbol,pre_oc_expiry
         try:
             oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
@@ -448,7 +450,7 @@ while True:
     else:
         print("Option Chain is OFF")
     
-    if Bid_Ask =="yes":
+    if xlbooks =="Dashboard":
         try:
             oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
         except Exception as e:
