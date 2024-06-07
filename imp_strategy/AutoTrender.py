@@ -302,7 +302,7 @@ print("Excel : Started")
 
 while True:
 #def optionchain():
-    xlbooks = xw.sheets.activate.name
+    xlbooks =xw.sheets.active.name
     print("Current Active Sheet is : "+str(xlbooks))
     if xlbooks == "Option Chain":
     #global pre_oc_symbol,pre_oc_expiry
