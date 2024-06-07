@@ -26,7 +26,7 @@ from telethon.sync import TelegramClient
 import inspect
 import time
 from five_paisa1 import *
-from kite_trade_main import *
+#from kite_trade_main import *
 import threading
 from zoneinfo import ZoneInfo
 
