@@ -218,8 +218,8 @@ exchange = None
 while True:    
     if exchange is None: 
         try:
-            exch = master_contract = pd.DataFrame(credi_muk.instruments())
-            exch1 = master_contract = pd.DataFrame(credi_muk.instruments("NFO"))
+            exch = master_contract = pd.DataFrame(credi_mukesh.instruments())
+            exch1 = master_contract = pd.DataFrame(credi_mukesh.instruments("NFO"))
             exch.sort_values(['name'], ascending=[True], inplace=True)
             
             root_list = np.unique(exch1['name']).tolist()
@@ -447,7 +447,7 @@ def bhavcopy_func():
     eq_bhav = pd.DataFrame()
     for i in trading_days:
         try:
-            print("Equity Stock Bhavcopy Download od Date :- "+str(i))
+            print("Equity Stock Bhavcopy Download of Date :- "+str(i))
             bh_df = bhavcopy(i)
             bh_df = pd.DataFrame(bh_df)
             eq_bhav = pd.concat([bh_df, eq_bhav])
@@ -470,7 +470,7 @@ def bhavcopy_fno_func():
     fo_bhav = pd.DataFrame()
     for i in trading_days:
         try:
-            print("F&O Stock Bhavcopy Download od Date :- "+str(i))
+            print("F&O Stock Bhavcopy Download of Date :- "+str(i))
             fo_bh_df = bhavcopy_fno(i)
             fo_bh_df = pd.DataFrame(fo_bh_df)             
             fo_bh_df = fo_bh_df[(fo_bh_df["INSTRUMENT"] == "FUTSTK") & (fo_bh_df["EXPIRY_DT"] == Expiry_exc)]
@@ -531,25 +531,25 @@ print("EOD DATA & F&O Data Merged")
 
 print(len(juyjyu10))
 df_lenn = len(juyjyu10)
-strategy3.range(f'm2:o{df_lenn}').color = (255, 255, 255)
-for a in strategy3.range(f'm2:m{df_lenn}'):
-    if float(a.value) > 2:
-        a.color = (0, 153, 255)
-for b in strategy3.range(f'm2:m{df_lenn}'):
-    if float(b.value) < -2:
-        b.color = (204, 51, 0)
-for e in strategy3.range(f'n2:n{df_lenn}'):
-    if float(e.value) > 6:
-        e.color = (0, 255, 255)
-for f in strategy3.range(f'n2:n{df_lenn}'):
-    if float(f.value) < -6:
-        f.color = (204, 0, 0)
-for c in strategy3.range(f'o2:o{df_lenn}'):
-    if float(c.value) > 50:
-        c.color = (204, 153, 0)
-for c in strategy3.range(f'i2:i{df_lenn}'):
-    if float(c.value) > 50:
-        c.color = (204, 140, 0)
+#strategy3.range(f'm2:o{df_lenn}').color = (255, 255, 255)
+# for a in strategy3.range(f'm2:m{df_lenn}'):
+#     if float(a.value) > 2:
+#         a.color = (0, 153, 255)
+# for b in strategy3.range(f'm2:m{df_lenn}'):
+#     if float(b.value) < -2:
+#         b.color = (204, 51, 0)
+# for e in strategy3.range(f'n2:n{df_lenn}'):
+#     if float(e.value) > 6:
+#         e.color = (0, 255, 255)
+# for f in strategy3.range(f'n2:n{df_lenn}'):
+#     if float(f.value) < -6:
+#         f.color = (204, 0, 0)
+# for c in strategy3.range(f'o2:o{df_lenn}'):
+#     if float(c.value) > 50:
+#         c.color = (204, 153, 0)
+# for c in strategy3.range(f'i2:i{df_lenn}'):
+#     if float(c.value) > 50:
+#         c.color = (204, 140, 0)
 
 int_vol_para = 2
 int_delv_para = 1.5
@@ -627,7 +627,8 @@ def Down_Stock_Data_day(period,data):
     try:
         print(data[0])
         dff = pd.DataFrame(credi_mukesh.historical_data(data[1], trading_days[-1], to_d, period, continuous=False, oi=True))
-        df_day = dff.tail(1)   
+        df_day = dff.tail(1)  
+
         data1 = pd.DataFrame(datastk(data[0]))
         df_day['Deliv_per'] = data1[data[0]][0]     
         df_day['Name'] = data[0]
