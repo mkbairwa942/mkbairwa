@@ -341,8 +341,6 @@ def bhavcopy_func():
                                 'CLOSE_PRICE': 'Close','TTL_TRD_QNTY': 'Volume','DELIV_QTY': 'Deliv_qty','DELIV_PER': 'Deliv_per', },inplace=True)
     return eq_bhav
 
-
-
 def bhavcopy_fno_func():
     fo_bhav = pd.DataFrame()
     for i in trading_days:
@@ -877,12 +875,12 @@ while True:
         fo_bhav = bhavcopy_fno_func()
 
         delv_data = pd.merge(eq_bhav, fo_bhav, on=['Name','Date'], how='outer')
-        delv_data = delv_data[['Name', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume','Deliv_qty', 'Deliv_per', 'Value', 'OI', 'Chg_OI']]
+        delv_data = delv_data[['Name', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume','Deliv_qty', 'Value', 'OI', 'Chg_OI','Deliv_per']]
         delv_data.sort_values(['Name', 'Date'], ascending=[True, False], inplace=True)
         eod_data.range("a1").options(index=False).value = delv_data
 
         symb_list = (np.unique(delv_data['Name']).tolist())
-        print(symb_list)
+        #print(symb_list)
 
         eod_vol_para = 2
         eod_delv_para = 1.5

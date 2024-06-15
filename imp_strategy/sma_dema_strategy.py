@@ -636,7 +636,7 @@ while True:
                     pl = round(((LTPP-Ratee)*Qtty1),2)
                     print("Last PL Rate is : "+str(pl))
                     print(Qtty)
-                    if Qtty == 50:
+                    if Qtty == 25:
                         slll = -400
                         tgtt = 1000
                     if Qtty == 15:
