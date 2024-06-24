@@ -272,6 +272,7 @@ while True:
             time.sleep(10)
             
 exc.range("a1").value = exchange_fo1
+#exc.range("aa1").value = exchange_fo
 flt_exc.range("a1").value = exchange_cash
 #exc.range("ar1").value = exchange2
 df = pd.DataFrame({"FNO Symbol": list(exchange_fo1["Root"].unique())})
@@ -524,8 +525,17 @@ while True:
                         'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
                 oc.range("g1").value = df1
 
+                stk_code1 = exchange_cash[exchange_cash["Root"] == oc_symbol]
+                stk_code = int(float(stk_code1['ScripCode']))
+                
+                print(stk_code)
+                dff = credi_muk.historical_data('N', 'C', stk_code, '5m', second_last_trading_day,current_trading_day)
+                print(dff.tail(5))
+                print(dff.tail(1))
+                #stk_code = exchange_fo[exchange_fo['']]
+
             
-    
+     
             except Exception as e:
                 pass   
     else:
