@@ -641,10 +641,13 @@ while True:
                 # expiry_new = (ep1['ExpDate'][0])
                 #oc_expiry1 = datetime.strptime(oc_expiry, '%d-%m-%Y')
                 print(ep1)
+                print(ep1.dtypes)
                 print(oc_expiry.date())
-                oc_expiry1 = datetime.strptime(oc_expiry.date(), '%d-%m-%Y')
-                print(oc_expiry1)
-                expiryy = ep1[ep1["ExpDate"] == oc_expiry1]
+                # oc_expiry1 = datetime.strptime(oc_expiry.date(), '%d-%m-%Y')
+                # print(oc_expiry1)
+                # print(type(oc_expiry1))
+                expiryy = ep1[ep1["ExpDate"].apply(pd.to_datetime) == oc_expiry.date()]
+                print("1")
                 print(expiryy)
                 expiry = (expiryy['DayFormat'])
                 expiry_new = (expiryy['ExpDate'])

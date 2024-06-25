@@ -285,10 +285,10 @@ stop_thread = False
 
 oc_symbol = "BANKNIFTY"
 #expiry = 1719392400000
-
+#oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
 ep = []
 for ei in pd.DataFrame((credi_muk.get_expiry("N", oc_symbol))['Expiry'])['ExpiryDate']:
-    #print(ei)
+    print(ei)
     left = ei[6:19]
     timestamp = pd.to_datetime(left, unit='ms')
     ExpDate = datetime.strftime(timestamp, '%d-%m-%Y')
@@ -296,13 +296,26 @@ for ei in pd.DataFrame((credi_muk.get_expiry("N", oc_symbol))['Expiry'])['Expiry
 
 ep1 = pd.DataFrame(ep)
 ep1.columns = ['ExpDate', 'DayFormat']
-expiry = (ep1['DayFormat'][0])
-print(ep1)
-expiry_new = (ep1['ExpDate'][0])
+# expiry = (ep1['DayFormat'][0])
+# print(ep1)
+# expiry_new = (ep1['ExpDate'][0])
 #print("2")
-print(expiry)
-print("2")
-print(expiry_new)
+# print(expiry)
+# print("2")
+# print(expiry_new)
+# print(ep1)
+# print(ep1.dtypes)
+# print(type(oc_expiry))
+# print(oc_expiry.date())
+# # oc_expiry1 = datetime.strptime(oc_expiry.date(), '%d-%m-%Y')
+# # print(oc_expiry1)
+# # print(type(oc_expiry1))
+expiryy = ep1[pd.to_datetime(ep1["ExpDate"],infer_datetime_format=True) == oc_expiry]
+# print("1")
+# print(expiryy)
+expiry = (int(expiryy['DayFormat']))
+# print(expiry)
+expiry_new = (str(expiryy['ExpDate']))
 
 opt = pd.DataFrame(credi_muk.get_option_chain("N",oc_symbol , expiry)['Options'])
 underlying_price = (credi_muk.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"C","Symbol":"BANKNIFTY"}])['Data'][0]['LastTradedPrice'])
@@ -348,6 +361,7 @@ df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Pre
 Strik_list = np.unique(df1['StrikeRate'])
 #print(Strik_list)
 opt_data_frame = pd.DataFrame()
+print(expiry_new)
 #timees = timeess.strftime("%d-%m-%Y %H:%M:%S")
 expiry_new1 = datetime.strptime(expiry_new, '%d-%m-%Y')
 print(expiry_new)
