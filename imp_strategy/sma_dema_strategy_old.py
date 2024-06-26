@@ -269,9 +269,11 @@ Buy_price_buffer = 2
 Vol_per = 15
 UP_Rsi_lvl = 60
 DN_Rsi_lvl = 40
-adx_parameter_7 = 1
-adx_parameter_14 = 0.2
+adx_parameter_4 = 4
+adx_parameter_14 = 0.4
 adx_parameter_opt = 0.1
+DX_parameter_4 = 20
+BBW_parameter = 0.02
 sam_2_slop = 1
 sam_21_slop = 1.5
 dema_21_slope = 2
@@ -406,22 +408,32 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['SMA_2'] = np.round((pta.sma(df['Close'],length=2)),2)
     df['SMA_21'] = np.round((pta.sma(df['Close'],length=21)),2)
     df['DEMA_21'] = np.round((pta.dema(df['Close'],length=21)),2)    
-    ADX_7 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=7)
+    ADX_4 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=4)
     ADX_14 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)
-    #print(ADX_14.head(15))
+    BBW = pta.bbands(close=df['Close'],length=20)
+    # print(BBW.head(25))
+    # print(ADX_14.head(15))
     # df['Call_SLL_Diff'] = df['Close'] - df['SLL_NEW_low']
     # df['Put_SLL_Diff'] =  df['SLL_NEW_Hi'] - df['Close']
-    df['ADX_7'] = np.round((ADX_7[ADX_7.columns[0]]),2)
-    df['ADX_14'] = np.round((ADX_14[ADX_14.columns[0]]),2)
-    df['DMN_14'] = np.round((ADX_14[ADX_14.columns[1]]),2)
-    df['Dmp_14'] = np.round((ADX_14[ADX_14.columns[2]]),2)
+    df['BB_L'] = np.round((BBW[BBW.columns[0]]),2)
+    df['BB_M'] = np.round((BBW[BBW.columns[1]]),2)
+    df['BB_U'] = np.round((BBW[BBW.columns[2]]),2)
+    df['BBW'] = np.round((((df['BB_U']-df['BB_L'])/df['BB_M'])*10),3)
+    df['ADX_4'] = np.round((ADX_4[ADX_4.columns[0]]),2)
+    df['ADX_14'] = np.round((ADX_4[ADX_4.columns[0]]),2)
+    df['DMP_14'] = np.round((ADX_4[ADX_4.columns[2]]),2)
+    df['DMN_14'] = np.round((ADX_4[ADX_4.columns[1]]),2)
+    df['DX'] = abs(np.round((((df['DMP_14']-df['DMN_14'])/(df['DMP_14']+df['DMN_14']))*100),2))
+    
 
     df["RSI_14"] = np.round((pta.rsi(df["Close"], length=14)),2)
     df['Rsi_OK'] = np.where((df["RSI_14"].shift(-1)) > rsi_up_lvll,"Rsi_Up_OK",np.where((df["RSI_14"].shift(-1)) < rsi_dn_lvll,"Rsi_Dn_OK",""))
-    df['Adx_diff_7'] = df['ADX_7'] - df['ADX_7'].shift(1)
+    df['Adx_diff_4'] = df['ADX_4'] - df['ADX_4'].shift(1)
     df['Adx_diff_14'] = df['ADX_14'] - df['ADX_14'].shift(1)  
-    df['Adx_ok_7'] = np.where(df['Adx_diff_7'] > adx_parameter_7,"ok","")
-    df['Adx_ok_14'] = np.where(df['Adx_diff_14'] > adx_parameter_14,"ok","")      
+    df['Adx_ok_4'] = np.where(df['Adx_diff_4'] > adx_parameter_4,"ok","")
+    df['Adx_ok_14'] = np.where(df['Adx_diff_14'] > adx_parameter_14,"ok","")   
+    df['DX_ok_4'] = np.where(df['DX'] > DX_parameter_4,"ok","")  
+    df['BBW_ok'] = np.where(df['BBW'] > BBW_parameter,"ok","")   
     df['SMA_2_diff'] = df['SMA_2'] - df['SMA_2'].shift(1)
     df['SMA_21_diff'] = df['SMA_21'] - df['SMA_21'].shift(1)
     df['DEMA_21_diff'] = df['DEMA_21'] - df['DEMA_21'].shift(1)     
@@ -433,8 +445,8 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     #df['SMA_21_ok1'] = np.where((df['SMA_21']) > (df['SMA_21'].shift(1)),"up_ok",np.where((df['SMA_21']) < (df['SMA_21'].shift(1)),"dn_ok",""))
     #df['DEMA_21_ok1'] = np.where((df['DEMA_21']) > (df['DEMA_21'].shift(1)),"up_ok",np.where((df['DEMA_21']) < (df['DEMA_21'].shift(1)),"dn_ok",""))
     df['CROSS'] = np.where(df['DEMA_21'] > df['SMA_21'],"up_ok",np.where(df['DEMA_21'] < df['SMA_21'],"dn_ok",""))
-    df['Signal'] = np.where((df['Adx_ok_7'] == "ok") & (df['Adx_ok_14'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
-    df['Signal1'] = np.where((df['Adx_ok_7'] == "ok") & (df['Adx_ok_14'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
+    df['Signal'] = np.where((df['Adx_ok_4'] == "ok") & (df['Adx_ok_14'] == "ok") & (df['DX_ok_4'] == "ok") & (df['BBW_ok'] == "ok") & (df['SMA_21_ok'] == "up_ok") & (df['DEMA_21_ok'] == "up_ok") & (df['CROSS'] == "up_ok"),"Call_Buy","Call_Exit")
+    df['Signal1'] = np.where((df['Adx_ok_4'] == "ok") & (df['Adx_ok_14'] == "ok") & (df['DX_ok_4'] == "ok") & (df['BBW_ok'] == "ok") & (df['SMA_21_ok'] == "dn_ok") & (df['DEMA_21_ok'] == "dn_ok") & (df['CROSS'] == "dn_ok"),"Put_Buy","Put_Exit")
     #df['Call_Statuss'] = np.where((df['CROSS'] == 'up_ok') & (((df['Call_SLL_Diff']) < 0) | ((df['Call_SLL_Diff']) < 0)),"Call_SL","")
     #df['Put_Statuss'] = np.where((df['CROSS'] == 'dn_ok') & (((df['Put_SLL_Diff']) > 0) | ((df['Put_SLL_Diff']) > 0)),"Put_SL","")
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") ) 
