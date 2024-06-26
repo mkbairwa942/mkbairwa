@@ -315,7 +315,7 @@ expiryy = ep1[pd.to_datetime(ep1["ExpDate"],infer_datetime_format=True) == oc_ex
 # print(expiryy)
 expiry = (int(expiryy['DayFormat']))
 # print(expiry)
-expiry_new = (str(expiryy['ExpDate']))
+expiry_new = (expiryy['ExpDate'])
 
 opt = pd.DataFrame(credi_muk.get_option_chain("N",oc_symbol , expiry)['Options'])
 underlying_price = (credi_muk.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"C","Symbol":"BANKNIFTY"}])['Data'][0]['LastTradedPrice'])
@@ -361,16 +361,27 @@ df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Pre
 Strik_list = np.unique(df1['StrikeRate'])
 #print(Strik_list)
 opt_data_frame = pd.DataFrame()
-print(expiry_new)
+print(str(expiry_new))
 #timees = timeess.strftime("%d-%m-%Y %H:%M:%S")
-expiry_new1 = datetime.strptime(expiry_new, '%d-%m-%Y')
+#expiry_new1 = datetime.strptime(expiry_new, '%d-%m-%Y')
+#expiry_new1 = datetime.strptime(expiry_new,'%d-%m-%Y')
+#expiry_new = pd.to_datetime(expiryy['ExpDate'], format='%d-%m-%Y')
+expiry_new = pd.to_datetime((list(map(lambda x: datetime.strptime(x,'%d-%m-%Y').strftime('%d-%m-%Y'), expiryy['ExpDate']))[0]),format='%d-%m-%Y')
+#expiry_new = pd.to_datetime(expiryy['ExpDate'], format='%d-%m-%Y')
 print(expiry_new)
-print(expiry_new1)
-dt = (expiry_new1-datetime.now())/timedelta(days=1)/365
+upto = timedelta(minutes=930) 
+new_current = expiry_new + upto
+print(new_current)
+
+#print(expiry_new1)
+#dt = (datetime(2024,7,3,0,0,0)-datetime.now())/timedelta(days=1)/365
+dt = (new_current-datetime.now())/timedelta(days=1)/365
+print(dt)
 for stk in Strik_list:
     #print(stk)
     
     scpt = df1[df1['StrikeRate'] == stk]
+    #print(scpt)
     CE_price = float(scpt['CE_Ltp'])
     PE_price = float(scpt['PE_Ltp'])
     S = float(underlying_price)
@@ -384,7 +395,7 @@ for stk in Strik_list:
     # print(PE_price)
     # print(S)
     # print(stk)
-    #print(scpt)
+    # print(scpt)
     try:
         ce_iv = implied_volatility(CE_price,S,stk,dt,r,'c')        
         ce_deltaa = delta('c',S,stk,dt,r,ce_iv)
@@ -409,7 +420,7 @@ for stk in Strik_list:
         scpt['PE_Theta'] = round((pe_thetaa),3)
         scpt['PE_Gamma'] = round((pe_gamaa),3)
         scpt['PE_Rho'] = round((pe_rhoo),3)
-        
+        #print(scpt)
         opt_data_frame = pd.concat([scpt, opt_data_frame])
         #print(opt_data_frame)
         #print(ce_iv)

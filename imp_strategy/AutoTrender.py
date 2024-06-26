@@ -637,24 +637,14 @@ while True:
 
                 ep1 = pd.DataFrame(ep)
                 ep1.columns = ['ExpDate', 'DayFormat']
-                # expiry = (ep1['DayFormat'][0])
-                # expiry_new = (ep1['ExpDate'][0])
-                #oc_expiry1 = datetime.strptime(oc_expiry, '%d-%m-%Y')
-                print(ep1)
-                print(ep1.dtypes)
-                print(oc_expiry.date())
-                # oc_expiry1 = datetime.strptime(oc_expiry.date(), '%d-%m-%Y')
-                # print(oc_expiry1)
-                # print(type(oc_expiry1))
-                expiryy = ep1[ep1["ExpDate"].apply(pd.to_datetime) == oc_expiry.date()]
-                print("1")
-                print(expiryy)
-                expiry = (expiryy['DayFormat'])
+                expiryy = ep1[pd.to_datetime(ep1["ExpDate"],infer_datetime_format=True) == oc_expiry]
+                expiry = (int(expiryy['DayFormat']))
                 expiry_new = (expiryy['ExpDate'])
 
                 print(expiry,expiry_new)
                 opt = pd.DataFrame(credi_muk.get_option_chain("N", oc_symbol, expiry)['Options'])
-
+                underlying_price = (credi_muk.fetch_market_depth_by_symbol([{"Exchange":"N","ExchangeType":"C","Symbol":"BANKNIFTY"}])['Data'][0]['LastTradedPrice'])
+                print(underlying_price)
                 CE = []
                 PE = []
                 for i in opt:
@@ -719,7 +709,7 @@ while True:
                 rangee = round((maxe1-mine1),2)
                 print(rangee)
 
-                ocg.range("d8").value = [["PCR TODAY",pcr],
+                ocg.range("d20").value = [["PCR TODAY",pcr],
                                         ["Spot LTP",underlying_price],
                                         ["Spot LTP Round",round(underlying_price/diff,0)*diff],
                                         ["Strike Difference",diff],
@@ -748,14 +738,16 @@ while True:
                 df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp', 'StrikeRate',
                         'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
                 Strik_list = np.unique(df1['StrikeRate'])
-                #print(Strik_list)
                 opt_data_frame = pd.DataFrame()
-                r = 0.10
-                #dte = (datetime(2024,6,26,15,30,0)-datetime.now())/timedelta(days=1)/365
-                expiry_new1 = datetime.strptime(expiry_new, '%d-%m-%Y')
+                r = 0.10                
+
+                expiry_new = pd.to_datetime((list(map(lambda x: datetime.strptime(x,'%d-%m-%Y').strftime('%d-%m-%Y'), expiryy['ExpDate']))[0]),format='%d-%m-%Y')
                 print(expiry_new)
-                print(expiry_new1)
-                dte = (expiry_new1-datetime.now())/timedelta(days=1)/365
+                print(expiry_new)
+                upto = timedelta(minutes=930) 
+                new_current = expiry_new + upto
+                print(new_current)
+                dte = (new_current-datetime.now())/timedelta(days=1)/365
                 
                 for stk in Strik_list:
                     #print(stk)                    
