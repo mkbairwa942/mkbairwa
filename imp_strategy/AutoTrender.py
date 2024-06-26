@@ -786,10 +786,11 @@ while True:
                     except Exception as e:
                         print(e) 
                         
-                opt_data_frame = opt_data_frame[['CE_Rho','CE_Gamma','CE_Theta','CE_Delta','CE_IV','CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp', 'StrikeRate',
-                        'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script','PE_IV','PE_Delta','PE_Theta','PE_Gamma','PE_Rho']]
                 opt_data_frame.sort_values(['StrikeRate'], ascending=[True], inplace=True)
-                ocg.range("g1").value = opt_data_frame
+                opt_data_frame1 = pd.merge(df1, opt_data_frame, on='StrikeRate',how="outer")
+                opt_data_frame1 = opt_data_frame1[['CE_Rho','CE_Gamma','CE_Theta','CE_Delta','CE_IV','CE_Script_x', 'CE_Volume_x', 'CE_Prev_OI_x', 'CE_Chg_OI_x', 'CE_OI_x', 'CE_Prev_Ltp_x', 'CE_Ltp_x', 'StrikeRate',
+                        'PE_Ltp_x', 'PE_Prev_Ltp_x', 'PE_OI_x', 'PE_Chg_OI_x', 'PE_Prev_OI_x', 'PE_Volume_x', 'PE_Script_x','PE_IV','PE_Delta','PE_Theta','PE_Gamma','PE_Rho']]
+                ocg.range("g1").value = opt_data_frame1
                                 
             except Exception as e:
                 pass   
