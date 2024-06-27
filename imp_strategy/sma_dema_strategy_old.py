@@ -382,7 +382,7 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         print("----------------------------------------")
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
-    df = credi_har.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
+    df = credi_har.historical_data('N', 'C', stk_nm, '1m', second_last_trading_day,current_trading_day)
     #print(df.head(1))
     df = df[['Datetime','Open','High', 'Low', 'Close', 'Volume']]
     df = df.astype({"Datetime": "datetime64"})
@@ -420,7 +420,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll):
     df['BB_U'] = np.round((BBW[BBW.columns[2]]),2)
     df['BBW'] = np.round((((df['BB_U']-df['BB_L'])/df['BB_M'])*10),3)
     df['ADX_4'] = np.round((ADX_4[ADX_4.columns[0]]),2)
-    df['ADX_14'] = np.round((ADX_4[ADX_4.columns[0]]),2)
+    df['ADX_14'] = np.round((ADX_14[ADX_14.columns[0]]),2)
     df['DMP_14'] = np.round((ADX_4[ADX_4.columns[2]]),2)
     df['DMN_14'] = np.round((ADX_4[ADX_4.columns[1]]),2)
     df['DX'] = abs(np.round((((df['DMP_14']-df['DMN_14'])/(df['DMP_14']+df['DMN_14']))*100),2))
@@ -477,12 +477,12 @@ else:
 
 
 while True:
-    orders,telegram_msg = st.range("af1").value,st.range("ah1").value
-    if orders is None:
-        orders = "yes"
-    if telegram_msg is None:
-        telegram_msg = "yes"
-    print(orders,telegram_msg)
+    # orders,telegram_msg = st.range("af1").value,st.range("ah1").value
+    # if orders is None:
+    #     orders = "yes"
+    # if telegram_msg is None:
+    #     telegram_msg = "yes"
+    # print(orders,telegram_msg)
     # print(buy_order_list_dummy)
     # print(sell_order_list_dummy)
     start_time = time.time()
@@ -549,10 +549,11 @@ while True:
 
             Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
             Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-            Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 5, "Call_Buy","")
+            Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 2, "Call_Buy","")
             Call_by_df1 = Call_by_df[(Call_by_df['Entry'] == "Call_Buy")]
-            Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
-            five_df2 = pd.concat([Call_by_df1, five_df2])
+            Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
+            Call_by_df2 = Call_by_df1.tail(25)           
+            five_df2 = pd.concat([Call_by_df2, five_df2])
             
             Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
  
@@ -602,10 +603,11 @@ while True:
                        
             Put_by_df = dfg1[(dfg1["Signal1"] == "Put_Buy")]
             Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-            Put_by_df['Entry'] = np.where(Put_by_df['Date_Dif'] > 5, "Put_Buy","")
+            Put_by_df['Entry'] = np.where(Put_by_df['Date_Dif'] > 2, "Put_Buy","")
             Put_by_df1 = Put_by_df[Put_by_df['Entry'] == "Put_Buy"]
             Put_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
-            five_df3 = pd.concat([Put_by_df1, five_df3]) 
+            Put_by_df2 = Put_by_df1.tail(25)   
+            five_df3 = pd.concat([Put_by_df2, five_df3]) 
 
             Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
 
@@ -655,10 +657,11 @@ while True:
 
             Call_sl_df = dfg1[(dfg1["Signal"] == "Call_Exit")]
             Call_sl_df['Date_Dif'] = abs((Call_sl_df["Datetime"] - Call_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-            Call_sl_df['Entry'] = np.where(Call_sl_df['Date_Dif'] > 5, "Call_Exit","")
+            Call_sl_df['Entry'] = np.where(Call_sl_df['Date_Dif'] > 2, "Call_Exit","")
             Call_sl_df1 = Call_sl_df[Call_sl_df['Entry'] == "Call_Exit"]
             Call_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
-            five_df4 = pd.concat([Call_sl_df1, five_df4]) 
+            Call_sl_df2 = Call_sl_df1.tail(25)
+            five_df4 = pd.concat([Call_sl_df2, five_df4]) 
 
             Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date()) & (Call_sl_df1["Minutes"] < 5 )]          
  
@@ -704,10 +707,11 @@ while True:
                        
             Put_sl_df = dfg1[(dfg1["Signal1"] == "Put_Exit")]
             Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-            Put_sl_df['Entry'] = np.where(Put_sl_df['Date_Dif'] > 5, "Put_Exit","")
+            Put_sl_df['Entry'] = np.where(Put_sl_df['Date_Dif'] > 2, "Put_Exit","")
             Put_sl_df1 = Put_sl_df[Put_sl_df['Entry'] == "Put_Exit"]
             Put_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
-            five_df5 = pd.concat([Put_sl_df1, five_df5]) 
+            Put_sl_df2 = Put_sl_df1.tail(25)
+            five_df5 = pd.concat([Put_sl_df2, five_df5]) 
 
             Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 5 )]          
  
@@ -781,8 +785,8 @@ while True:
                         slll = -400
                         tgtt = 1000
                     if Qtty == 15:
-                        slll = -400
-                        tgtt = 1000
+                        slll = -500
+                        tgtt = 300
                     print(slll,tgtt)
                     if pl < slll or pl > tgtt:
                         # rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name)

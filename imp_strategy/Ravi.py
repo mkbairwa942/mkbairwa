@@ -351,10 +351,10 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
         har_qty = 1
-        muk_qty = 4
+        muk_qty = 1
     if stk_name == "NIFTY":
         har_qty = 1
-        muk_qty = 2
+        muk_qty = 1
     # quantity = (qtyy*lotsize)
     # print(stk_name)
     # print(quantity)
