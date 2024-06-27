@@ -476,7 +476,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     # df['Exit1'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Close'] < df['Exit']),"Call_Exit",np.where((df['Cand_Col_prev'] == "Red") & (df['Close'] > df['Exit']),"Put_Exit",""))
     df['range_1'] = np.round((np.where(df['Cand_Col_prev'] == "Green",df['Close'].shift(1)-df['prev_can_fourth_part'],np.where(df['Cand_Col_prev'] == "Red",df['Close'].shift(1)+df['prev_can_fourth_part'],0))),2)
     df['range_2'] = np.round((df['Close'].shift(1)),2)
-    df['Bald_Cand'] = np.where((df['Cand_Col'] == "Green") & (df['Open'] == df['Low']),"Gr_Bld",np.where((df['Cand_Col'] == "Red") & (df['Open'] == df['High']),"Red_Bld",""))
+    df['Bald_Cand'] = np.where((df['Cand_Col'] == "Green") & (df['Open'] == df['Low']),"Gre_Bld",np.where((df['Cand_Col'] == "Red") & (df['Open'] == df['High']),"Red_Bld",""))
     df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
                          np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
     df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
