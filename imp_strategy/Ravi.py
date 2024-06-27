@@ -476,6 +476,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     # df['Exit1'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Close'] < df['Exit']),"Call_Exit",np.where((df['Cand_Col_prev'] == "Red") & (df['Close'] > df['Exit']),"Put_Exit",""))
     df['range_1'] = np.round((np.where(df['Cand_Col_prev'] == "Green",df['Close'].shift(1)-df['prev_can_fourth_part'],np.where(df['Cand_Col_prev'] == "Red",df['Close'].shift(1)+df['prev_can_fourth_part'],0))),2)
     df['range_2'] = np.round((df['Close'].shift(1)),2)
+    df['Bald_Cand'] = np.where((df['Cand_Col'] == "Green") & (df['Open'] == df['Low']),"Gr_Bld",np.where((df['Cand_Col'] == "Red") & (df['Open'] == df['High']),"Red_Bld",""))
     df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
                          np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
     df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
@@ -571,7 +572,7 @@ while True:
                 dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
                 dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
                 #dfg1112 = dfg111.tail(10)
-                five_df1 = pd.concat([dfg111, five_df1]) 
+                five_df1 = pd.concat([dfg1, five_df1]) 
 
                 Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
                 Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -813,11 +814,11 @@ while True:
                         print("Last PL Rate is : "+str(pl))
                         print(Qtty1,pl)
                         if Qtty1 == 25:
-                            slll = -700
-                            tgtt = 800
+                            slll = -300
+                            tgtt = 1000
                         if Qtty1 == 15:
-                            slll = -700
-                            tgtt = 800
+                            slll = -300
+                            tgtt = 1000
                         #print(slll,tgtt)
                         if pl < slll or pl > tgtt:
                             #order = credi_har.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
