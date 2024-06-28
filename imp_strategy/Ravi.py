@@ -476,6 +476,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     # df['Exit1'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Close'] < df['Exit']),"Call_Exit",np.where((df['Cand_Col_prev'] == "Red") & (df['Close'] > df['Exit']),"Put_Exit",""))
     df['range_1'] = np.round((np.where(df['Cand_Col_prev'] == "Green",df['Close'].shift(1)-df['prev_can_fourth_part'],np.where(df['Cand_Col_prev'] == "Red",df['Close'].shift(1)+df['prev_can_fourth_part'],0))),2)
     df['range_2'] = np.round((df['Close'].shift(1)),2)
+    df['Bald_poi'] = np.where((df['Cand_Col'] == "Green"),df['Open'] - df['Low'],np.where((df['Cand_Col'] == "Red"),df['High'] - df['Open'],0))
     df['Bald_Cand'] = np.where((df['Cand_Col'] == "Green") & (df['Open'] == df['Low']),"Gre_Bld",np.where((df['Cand_Col'] == "Red") & (df['Open'] == df['High']),"Red_Bld",""))
     df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
                          np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
@@ -484,7 +485,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
                             np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Put_Buy",
                   np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 1.5),"Call_Buy",
                             np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
-    df['Signal1'] = np.where((df['Adx_diff_4'] < 3),"Exit","")
+    df['Signal1'] = np.where((df['Adx_diff_4'] < 5),"Exit","")
 
     #df = df[['Datetime','Open','High','Low','Close','Volume','ADX_14','Adx_diff_14','Name','Cand_Col_prev','Cand_Col','Signal','TimeNow','Date','Minutes']]						
 
@@ -571,8 +572,8 @@ while True:
                 print(stk_name)
                 dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
                 dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
-                #dfg1112 = dfg111.tail(10)
-                five_df1 = pd.concat([dfg1, five_df1]) 
+                dfg1112 = dfg111.tail(10)
+                five_df1 = pd.concat([dfg1112, five_df1]) 
 
                 Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
                 Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -1018,6 +1019,6 @@ while True:
             #final_df_Put.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
             final_df_Put['P&L'] = np.where(final_df_Put['Entry'] == 'Put_Exit',final_df_Put['Close'].shift(1)-final_df_Put['Close'],0)
             exp.range("a50").options(index=False).value = final_df_Put
-
+        print("Ravi")
     except Exception as e:
         print(e) 

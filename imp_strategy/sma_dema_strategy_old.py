@@ -785,7 +785,7 @@ while True:
                         slll = -400
                         tgtt = 1000
                     if Qtty == 15:
-                        slll = -500
+                        slll = -400
                         tgtt = 300
                     print(slll,tgtt)
                     if pl < slll or pl > tgtt:
@@ -985,6 +985,7 @@ while True:
             final_df_Put.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
             final_df_Put['P&L'] = np.where(final_df_Put['Entry'] == 'Put_Exit',final_df_Put['Close'].shift(1)-final_df_Put['Close'],0)
             exp.range("a50").options(index=False).value = final_df_Put
+        print("SMA")
 
     except Exception as e:
         print(e) 
