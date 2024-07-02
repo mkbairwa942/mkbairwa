@@ -481,10 +481,10 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
                          np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
     df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
-    df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Call_Buy",
-                            np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Put_Buy",
-                  np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 1.5),"Call_Buy",
-                            np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
+    df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Call_Buy",
+                            np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Put_Buy",
+                  np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 20) & (df['Adx_diff_4'] > 1.5),"Call_Buy",
+                            np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 20) & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
     df['Signal1'] = np.where((df['Adx_diff_4'] < 5),"Exit","")
 
     #df = df[['Datetime','Open','High','Low','Close','Volume','ADX_14','Adx_diff_14','Name','Cand_Col_prev','Cand_Col','Signal','TimeNow','Date','Minutes']]						
