@@ -565,7 +565,7 @@ while True:
                 Call_by_Closee = (float(Call_by_ord['Close']))
                 Call_by_Spot = round(Call_by_Closee/100,0)*100
                 Call_by_time = str(list(Call_by_ord['Datetime'])[0])
-                Call_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                Call_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                 Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
                 Expiryyy_Call_by = (np.unique(Call_by_ord2['Expiry']).tolist())[0]      
                 Call_by_ord3 = Call_by_ord2[Call_by_ord2['Expiry'] == Expiryyy_Call_by]
@@ -619,7 +619,7 @@ while True:
                 Put_by_Closee = (float(Put_by_ord['Close']))
                 Put_by_Spot = round(Put_by_Closee/100,0)*100
                 Put_by_time = str(list(Put_by_ord['Datetime'])[0])
-                Put_by_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                Put_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                 Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
                 Expiryyy_Put_by = (np.unique(Put_by_ord2['Expiry']).tolist())[0]  
                 Put_by_ord3 = Put_by_ord2[Put_by_ord2['Expiry'] == Expiryyy_Put_by]
@@ -673,7 +673,7 @@ while True:
                 Call_sl_Closee = (float(Call_sl_ord['Close']))
                 Call_sl_Spot = round(Call_sl_Closee/100,0)*100
                 Call_sl_time = str(list(Call_sl_ord['Datetime'])[0])
-                Call_sl_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                Call_sl_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                 Call_sl_ord2 = Call_sl_ord1[(Call_sl_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
                 Expiryyy_Call_sl = (np.unique(Call_sl_ord2['Expiry']).tolist())[0]      
                 Call_sl_ord3 = Call_sl_ord2[Call_sl_ord2['Expiry'] == Expiryyy_Call_sl]
@@ -723,7 +723,7 @@ while True:
                 Put_sl_Closee = (float(Put_sl_ord['Close']))
                 Put_sl_Spot = round(Put_sl_Closee/100,0)*100
                 Put_sl_time = str(list(Put_sl_ord['Datetime'])[0])
-                Put_sl_ord1 = exc_new2[exc_new2['Root'] == stk_name]
+                Put_sl_ord1 = exc_new1[exc_new1['Root'] == stk_name]
                 Put_sl_ord2 = Put_sl_ord1[(Put_sl_ord1['Expiry'].apply(pd.to_datetime) > new_current_trading_day)]
                 Expiryyy_Put_sl = (np.unique(Put_sl_ord2['Expiry']).tolist())[0]      
                 Put_sl_ord3 = Put_sl_ord2[Put_sl_ord2['Expiry'] == Expiryyy_Put_sl]
