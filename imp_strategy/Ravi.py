@@ -541,8 +541,8 @@ while True:
     for credi in cred:  
         if credi == credi_muk: 
             posit = pd.DataFrame(credi_muk.positions())   
-        # if credi == credi_har: 
-        #     posit = pd.DataFrame(credi_har.positions())  
+        if credi == credi_bhav: 
+            posit = pd.DataFrame(credi_bhav.positions())  
         if posit.empty:
             pass
         else:
