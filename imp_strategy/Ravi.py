@@ -54,15 +54,16 @@ telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHP
 # username = "HARESH"
 # username1 = str(username)
 # client = credentials(username1)
-users = ["MUKESH"]#,"ASHWIN","ALPESH"]
+users = ["MUKESH","BHAVNA"]#,"ASHWIN","ALPESH"]
 #credi_har = None
 credi_muk = None
+credi_bhav = None
 
 # credi_ash = None
 # credi_alp = None
 
 while True:
-    if credi_muk is None:# and credi_har is None:# and credi_alp is None:
+    if credi_muk is None and credi_bhav is None:# and credi_alp is None:
         try:
             for us in users:
                 print("1")
@@ -71,6 +72,11 @@ while True:
                 #     if credi_har.request_token is None:
                 #         credi_har = credentials("HARESH")
                 #         print(credi_har.request_token)
+                if us == "BHAVNA":
+                    credi_bhav = credentials("BHAVNA")
+                    if credi_bhav.request_token is None:
+                        credi_bhav = credentials("BHAVNA")
+                        print(credi_bhav.request_token)
                 if us == "MUKESH":
                     credi_muk = credentials("MUKESH")
                     if credi_muk.request_token is None:
@@ -91,7 +97,7 @@ while True:
             print("credentials Download Error....")
             time.sleep(5)
 
-cred = [credi_muk]#,credi_ash,credi_alp]
+cred = [credi_muk,credi_bhav]#,credi_ash,credi_alp]
 print(cred)
 for credi in cred:
     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
@@ -346,14 +352,14 @@ def order_book_func(cred):
     return ordbook1
 
 def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,lotsize,namee,stk_name,
-                    ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har):
+                    ord_muk,ord_bhav,nifty_muk,nifty_bhav,bknifty_muk,bknifty_bhav):
     timees = list_to_append
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        har_qty = 1
+        bhav_qty = 1
         muk_qty = 1
     if stk_name == "NIFTY":
-        har_qty = 1
+        bhav_qty = 1
         muk_qty = 1
     # quantity = (qtyy*lotsize)
     # print(stk_name)
@@ -387,23 +393,23 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
         if orders.upper() == "YES" or orders.upper() == "": 
             print(f"Real {CALL_PUT} Order are ON") 
             for credi in cred:
-                # if credi == credi_har:
-                #     if ord_har.upper() == "YES" or ord_har.upper() == "": 
-                #         print("Haresh Orders is ON") 
-                #         if stk_name == "BANKNIFTY":
-                #             if bknifty_har.upper() == "YES" or bknifty_har.upper() == "": 
-                #                 print("Haresh Bank Nifty Orders is ON")
-                #                 order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=lotsize*har_qty,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                #             else:
-                #                 print("Haresh Bank Nifty Orders is OFF")
-                #         if stk_name == "NIFTY":
-                #             if nifty_har.upper() == "YES" or nifty_har.upper() == "": 
-                #                 print("Haresh Nifty Orders is ON")
-                #                 order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=lotsize*har_qty,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                #             else:
-                #                 print("Haresh Nifty Orders is OFF")                    
-                #     else:
-                #         print("Haresh Orders is OFF")
+                if credi == credi_bhav:
+                    if ord_bhav.upper() == "YES" or ord_bhav.upper() == "": 
+                        print("Bhavna Orders is ON") 
+                        if stk_name == "BANKNIFTY":
+                            if bknifty_bhav.upper() == "YES" or bknifty_bhav.upper() == "": 
+                                print("Bhavna Bank Nifty Orders is ON")
+                                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=lotsize*bhav_qty,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                            else:
+                                print("Bhavna Bank Nifty Orders is OFF")
+                        if stk_name == "NIFTY":
+                            if nifty_bhav.upper() == "YES" or nifty_bhav.upper() == "": 
+                                print("Bhavna Nifty Orders is ON")
+                                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=lotsize*bhav_qty,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                            else:
+                                print("Bhavna Nifty Orders is OFF")                    
+                    else:
+                        print("Bhavna Orders is OFF")
 
                 if credi == credi_muk:
                     if ord_muk.upper() == "YES" or ord_muk.upper() == "": 
@@ -510,7 +516,7 @@ else:
 
 while True:
     orders,telegram_msg = st.range("af1").value,st.range("ah1").value
-    ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har = st.range("af4").value,st.range("ag4").value,st.range("af5").value,st.range("ag5").value,st.range("af6").value,st.range("ag6").value
+    ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har = st.range("af4").value,st.range("ag4").value,st.range("af5").value,st.range("ag5").value,st.range("af6").value,st.range("ag6").value
     if orders is None:
         orders = "yes"
     if telegram_msg is None:
@@ -626,7 +632,7 @@ while True:
                             else:
                                 print("Call Buy")                        
                                 rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
-                                                           ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                                           ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                         
                 Put_by_df = dfg1[(dfg1["Signal"] == "Put_Buy")]
                 Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -678,7 +684,7 @@ while True:
                             else:
                                 print("Put Buy")                        
                                 rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
-                                                           ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                                           ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
 
                 posi = pd.DataFrame(credi_muk.positions()) 
                 if posi.empty:            
@@ -735,7 +741,7 @@ while True:
                                     else:
                                         print("Call Exit")                        
                                         rde_exec = order_execution(dfg1_Call_sl,sell_order_list_dummy,Call_sl_time,telegram_msg,orders,"IDX OPT","CALL EXIT","S",Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_Name,stk_name,
-                                                                   ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                                                   ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                 
                         Put_sl_df = dfg1[(dfg1["Signal1"] == "Exit")]
                         Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -781,7 +787,7 @@ while True:
                                     else:
                                         print("Put Exit")                        
                                         rde_exec = order_execution(dfg1_Put_sl,sell_order_list_dummy,Put_sl_time,telegram_msg,orders,"IDX OPT","PUT EXIT","S",Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_Name,stk_name,
-                                                                   ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                                                   ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
 
                         #posi = pd.DataFrame(credi_har.positions()) 
                         #print(posi)
