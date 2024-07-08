@@ -871,42 +871,42 @@ while True:
                                         print("Sell order Executed") 
                                 except Exception as e:
                                     print(e)
-            try:
-                final_call = pd.concat([Call_by_df1, Call_sl_df1])
-                final_call.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
-                five_df6 = pd.concat([final_call, five_df6]) 
+            # try:
+            #     final_call = pd.concat([Call_by_df1, Call_sl_df1])
+            #     final_call.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
+            #     five_df6 = pd.concat([final_call, five_df6]) 
 
-                final_Put = pd.concat([Put_by_df1, Put_sl_df1])
-                final_Put.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
-                five_df7 = pd.concat([final_Put, five_df7]) 
+            #     final_Put = pd.concat([Put_by_df1, Put_sl_df1])
+            #     final_Put.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
+            #     five_df7 = pd.concat([final_Put, five_df7]) 
 
-                listo_call = np.unique(final_call['Datetime'])
-                listo_Put = np.unique(final_Put['Datetime'])
+            #     listo_call = np.unique(final_call['Datetime'])
+            #     listo_Put = np.unique(final_Put['Datetime'])
 
-                position_Call = 0
-                position_Put = 0
+            #     position_Call = 0
+            #     position_Put = 0
 
-                for i in listo_call:
-                    f_df_call = final_call[final_call['Datetime'] == i]
-                    if list(f_df_call['Entry'])[0] == 'Call_Buy' and position_Call == 0:
-                        final_df_call = pd.concat([f_df_call, final_df_call])
-                        position_Call = 1
+            #     for i in listo_call:
+            #         f_df_call = final_call[final_call['Datetime'] == i]
+            #         if list(f_df_call['Entry'])[0] == 'Call_Buy' and position_Call == 0:
+            #             final_df_call = pd.concat([f_df_call, final_df_call])
+            #             position_Call = 1
 
-                    if list(f_df_call['Entry'])[0] == 'Call_Exit' and position_Call == 1:
-                        final_df_call = pd.concat([f_df_call, final_df_call])
-                        position_Call = 0
+            #         if list(f_df_call['Entry'])[0] == 'Call_Exit' and position_Call == 1:
+            #             final_df_call = pd.concat([f_df_call, final_df_call])
+            #             position_Call = 0
 
-                for i in listo_Put:
-                    f_df_put = final_Put[final_Put['Datetime'] == i]
-                    if list(f_df_put['Entry'])[0] == 'Put_Buy' and position_Put == 0:
-                        final_df_Put = pd.concat([f_df_put, final_df_Put])
-                        position_Put = 1
+            #     for i in listo_Put:
+            #         f_df_put = final_Put[final_Put['Datetime'] == i]
+            #         if list(f_df_put['Entry'])[0] == 'Put_Buy' and position_Put == 0:
+            #             final_df_Put = pd.concat([f_df_put, final_df_Put])
+            #             position_Put = 1
 
-                    if list(f_df_put['Entry'])[0] == 'Put_Exit' and position_Put == 1:
-                        final_df_Put = pd.concat([f_df_put, final_df_Put])
-                        position_Put = 0  
-            except Exception as e:
-                print(e)   
+            #         if list(f_df_put['Entry'])[0] == 'Put_Exit' and position_Put == 1:
+            #             final_df_Put = pd.concat([f_df_put, final_df_Put])
+            #             position_Put = 0  
+            # except Exception as e:
+            #     print(e)   
         
     except Exception as e:
         print(e) 
