@@ -484,13 +484,18 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     df['range_2'] = np.round((df['Close'].shift(1)),2)
     df['Bald_poi'] = np.where((df['Cand_Col'] == "Green"),df['Open'] - df['Low'],np.where((df['Cand_Col'] == "Red"),df['High'] - df['Open'],0))
     df['Bald_Cand'] = np.where((df['Cand_Col'] == "Green") & (df['Open'] == df['Low']),"Gre_Bld",np.where((df['Cand_Col'] == "Red") & (df['Open'] == df['High']),"Red_Bld",""))
-    df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
-                         np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
-    df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
-    df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Call_Buy",
-                            np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['Adx_diff_4'] > 3),"Put_Buy",
-                  np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 20) & (df['Adx_diff_4'] > 1.5),"Call_Buy",
-                            np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 20) & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
+    df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Cand_Col'] == "Green") & (df['Open'] > df['range_1']),"Call",
+                         np.where((df['Cand_Col_prev'] == "Red") & (df['Cand_Col'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
+    #df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
+    
+    df['Buy1'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 40),"Call_Buy",
+                            np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 40),"Put_Buy",
+                  np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 20),"Call_Buy",
+                            np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 20),"Put_Buy",""))))
+    
+    df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Adx_diff_4'] > 3),"Call_Buy",np.where((df['Name'] == "BANKNIFTY") & (df['Adx_diff_4'] > 3),"Put_Buy",
+                   np.where((df['Name'] == "NIFTY") & (df['Adx_diff_4'] > 1.5),"Call_Buy",np.where((df['Name'] == "NIFTY") & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
+    
     df['Signal1'] = np.where((df['Adx_diff_4'] < 5),"Exit","")
 
     #df = df[['Datetime','Open','High','Low','Close','Volume','ADX_14','Adx_diff_14','Name','Cand_Col_prev','Cand_Col','Signal','TimeNow','Date','Minutes']]						
@@ -802,8 +807,9 @@ while True:
                         buy_order_liii = buy_order_li.head(1)
                         new_df = pd.merge(buy_order_liii,posit, on=['ScripCode'], how='inner')
                         #new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
-                        #print(new_df)
+                        #
                         new_df1 = new_df.head(1)
+                        print(new_df1)
                         
                         Ratee = (np.unique([float(i) for i in new_df1['Rate']])).tolist()[0]
                         LTPP = (np.unique([float(i) for i in new_df1['LTP']])).tolist()[0]
@@ -828,8 +834,8 @@ while True:
                             tgtt = 1500
                         #print(slll,tgtt)
                         if pl < slll or pl > tgtt:
-                            #order = credi_har.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                            order = credi_muk.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                            order = credi_bhav.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType_y'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                            order = credi_muk.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType_y'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                             #order = credi_muk.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['LotSize']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                             print("StopLoss is Greater than -900")
                             print("Sell stoplOSS order Executed")
