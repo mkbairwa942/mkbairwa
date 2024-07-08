@@ -809,7 +809,7 @@ while True:
                         #new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
                         #
                         new_df1 = new_df.head(1)
-                        print(new_df1)
+                        #print(new_df1)
                         
                         Ratee = (np.unique([float(i) for i in new_df1['Rate']])).tolist()[0]
                         LTPP = (np.unique([float(i) for i in new_df1['LTP']])).tolist()[0]
