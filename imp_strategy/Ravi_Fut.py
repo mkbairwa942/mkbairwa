@@ -468,7 +468,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
         fut1 = fut_exc1[fut_exc1['Expiry'] == fut_expiry]
         fut_Scripcodee = int(float(fut1['ScripCode']))
         fut_dff = credi_muk.historical_data('N', 'D', fut_Scripcodee, '5m', second_last_trading_day,current_trading_day)
-        dfff = credi_muk.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
+        dfff = credi_muk.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)       
         dff = pd.merge(dfff,fut_dff, on=['Datetime'], how='inner')
         dff.rename(columns={'Open_x': 'Open','High_x': 'High','Low_x': 'Low','Close_x': 'Close','Volume_y': 'Volume' },inplace=True)
         dff = dff[['Datetime','Open','High','Low','Close','Volume']]
@@ -620,6 +620,25 @@ while True:
                 dfg1112 = dfg111.tail(10)
                 five_df1 = pd.concat([dfg1112, five_df1]) 
 
+                dff1 = dfg1112.tail(5)
+                print(dff1)
+                maxe = []
+                mine = []
+                open = list(dff1['Open'])
+                close = list(dff1['Close'])
+                max_value = max(open)
+                maxe.append(max_value)
+                min_value = min(open)
+                mine.append(min_value)
+                max_value1 = max(close)
+                maxe.append(max_value1)
+                min_value1 = min(close)
+                mine.append(min_value1)
+                maxe1 = max(maxe)
+                mine1 = min(mine)             
+                rangee = round((maxe1-mine1),2)
+                print("Last Five Candle range is :"+str(rangee))
+
                 Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
                 Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
                 Call_by_df['Entry'] = np.where(Call_by_df['Date_Dif'] > 5, "Call_Buy","")
@@ -669,9 +688,24 @@ while True:
                                 print(str(stk_name)+" Call is Already Buy")
                                 print("----------------------------------------")
                             else:
-                                print("Call Buy")                        
-                                rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
-                                                           ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                print("Call Buy")   
+                                if Call_by_Name == "BANKNIFTY":
+                                    if rangee < 150:
+                                        print("BANKNIFTY is Sideways")                  
+                                        rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,10,Call_by_Name,stk_name,
+                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                    else:
+                                        rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
+                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                
+                                if Call_by_Name == "NIFTY":
+                                    if rangee < 80:
+                                        print("NIFTY is Sideways")                  
+                                        rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,10,Call_by_Name,stk_name,
+                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                    else:
+                                        rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
+                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                         
                 Put_by_df = dfg1[(dfg1["Signal"] == "Put_Buy")]
                 Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -721,10 +755,24 @@ while True:
                                 print(str(stk_name)+" Put is Already Buy")
                                 print("----------------------------------------")
                             else:
-                                print("Put Buy")                        
-                                rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
-                                                           ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-
+                                print("Put Buy")       
+                                if Put_by_Name == "BANKNIFTY":
+                                    if rangee < 150:
+                                        print("BANKNIFTY is Sideways")
+                                        rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,10,Put_by_Name,stk_name,
+                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                    else:    
+                                        rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
+                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                if Put_by_Name == "NIFTY":
+                                    if rangee < 80:
+                                        print("NIFTY is Sideways")
+                                        rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,10,Put_by_Name,stk_name,
+                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                    else:    
+                                        rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
+                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                
                 posi = pd.DataFrame(credi_muk.positions()) 
                 if posi.empty:            
                     print("No First Running Position")
@@ -840,6 +888,7 @@ while True:
                         buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
                         buy_order_liii = buy_order_li.head(1)
                         new_df = pd.merge(buy_order_liii,posit, on=['ScripCode'], how='inner')
+                        
                         #new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
                         #
                         new_df1 = new_df.head(1)
@@ -848,7 +897,7 @@ while True:
                         Ratee = (np.unique([float(i) for i in new_df1['Rate']])).tolist()[0]
                         LTPP = (np.unique([float(i) for i in new_df1['LTP']])).tolist()[0]
                         Qtty1 = (np.unique([float(i) for i in new_df1['Qty']])).tolist()[0]
-                        
+                        new_df_name = np.unique([str(i) for i in new_df['Root']]).tolist()[0]                        
 
                         print(Ratee,LTPP,Qtty1)
                         print("Last Buy Rate is : "+str(Ratee))
@@ -867,6 +916,7 @@ while True:
                             slll = -300
                             tgtt = 1500
                         #print(slll,tgtt)
+
                         if pl < slll or pl > tgtt:
                             order = credi_bhav.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType_y'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                             order = credi_muk.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType_y'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
