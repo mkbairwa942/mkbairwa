@@ -690,7 +690,7 @@ while True:
                             else:
                                 print("Call Buy")  
                                 print("Call_Call") 
-                                if Call_by_Name == "BANKNIFTY":
+                                if stk_name == "BANKNIFTY":
                                     print("Call_AAA")
                                     if rangee < 150:
                                         print("Call_BBB")
@@ -702,7 +702,7 @@ while True:
                                         rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                 
-                                if Call_by_Name == "NIFTY":
+                                if stk_name == "NIFTY":
                                     if rangee < 80:
                                         print("Call_DDD")
                                         print("NIFTY is Sideways")                  
@@ -763,7 +763,8 @@ while True:
                             else:
                                 print("Put Buy")
                                 print("Put_Put")       
-                                if Put_by_Name == "BANKNIFTY":
+                                if stk_name == "BANKNIFTY":
+                                    print("ooo")
                                     if rangee < 150:
                                         print("Put_AAA")
                                         print("BANKNIFTY is Sideways")
@@ -773,7 +774,8 @@ while True:
                                         print("Put_BBB")
                                         rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                if Put_by_Name == "NIFTY":
+                                if stk_name == "NIFTY":
+                                    print("vvvv")
                                     if rangee < 80:
                                         print("Put_CCC")
                                         print("NIFTY is Sideways")
