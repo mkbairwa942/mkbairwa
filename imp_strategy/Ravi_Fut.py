@@ -621,7 +621,7 @@ while True:
                 five_df1 = pd.concat([dfg1112, five_df1]) 
 
                 dff1 = dfg1112.tail(5)
-                print(dff1)
+                #print(dff1)
                 maxe = []
                 mine = []
                 open = list(dff1['Open'])
@@ -637,7 +637,7 @@ while True:
                 maxe1 = max(maxe)
                 mine1 = min(mine)             
                 rangee = round((maxe1-mine1),2)
-                print("Last Five Candle range is :"+str(rangee))
+                print(str(stk_name)+" Last Five Candle range is :"+str(rangee))
 
                 Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
                 Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -688,22 +688,28 @@ while True:
                                 print(str(stk_name)+" Call is Already Buy")
                                 print("----------------------------------------")
                             else:
-                                print("Call Buy")   
+                                print("Call Buy")  
+                                print("Call_Call") 
                                 if Call_by_Name == "BANKNIFTY":
+                                    print("Call_AAA")
                                     if rangee < 150:
+                                        print("Call_BBB")
                                         print("BANKNIFTY is Sideways")                  
                                         rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,10,Call_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                     else:
+                                        print("Call_CCC")
                                         rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                 
                                 if Call_by_Name == "NIFTY":
                                     if rangee < 80:
+                                        print("Call_DDD")
                                         print("NIFTY is Sideways")                  
                                         rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,10,Call_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                     else:
+                                        print("Call_EEE")
                                         rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                         
@@ -755,21 +761,26 @@ while True:
                                 print(str(stk_name)+" Put is Already Buy")
                                 print("----------------------------------------")
                             else:
-                                print("Put Buy")       
+                                print("Put Buy")
+                                print("Put_Put")       
                                 if Put_by_Name == "BANKNIFTY":
                                     if rangee < 150:
+                                        print("Put_AAA")
                                         print("BANKNIFTY is Sideways")
                                         rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,10,Put_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                    else:    
+                                    else: 
+                                        print("Put_BBB")
                                         rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                 if Put_by_Name == "NIFTY":
                                     if rangee < 80:
+                                        print("Put_CCC")
                                         print("NIFTY is Sideways")
                                         rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,10,Put_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                    else:    
+                                    else:
+                                        print("Put_DDD")
                                         rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                 
