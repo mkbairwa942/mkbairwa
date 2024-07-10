@@ -481,6 +481,24 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
         df = dff[(dff['Datetime'] <= df_upto_datetime)]
         df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))  
 
+    # #dff1 = df.tail(5)
+    # maxe = []
+    # mine = []
+    # #open = list(dff1['Open'])
+    # #close = list(dff1['Close'])
+    # max_value = (df.Open.rolling(5).max()).shift(-5)
+    # maxe.append(max_value)
+    # min_value = (df.Open.rolling(5).min()).shift(-5)
+    # mine.append(min_value)
+    # max_value1 = (df.Close.rolling(5).max()).shift(-5)
+    # maxe.append(max_value1)
+    # min_value1 = (df.Close.rolling(5).min()).shift(-5)
+    # mine.append(min_value1)
+    # maxe1 = max(maxe)
+    # mine1 = min(mine)             
+    # rangee = round((maxe1-mine1),2)
+    # print(str(stk_name)+" Last Five Candle range is :"+str(rangee))    
+
     df["Date"] = df["Datetime"].dt.date
     df['Minutes'] = df['TimeNow']-df["Datetime"]
     df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
@@ -510,6 +528,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") )    
     df['prev_can_poi'] = np.round((np.where(df['Close'].shift(1) > df['Open'].shift(1),df['Close'].shift(1) - df['Open'].shift(1),np.where(df['Close'].shift(1) < df['Open'].shift(1),df['Open'].shift(1) - df['Close'].shift(1),0))),2)
     df['curr_can_poi'] = np.round((np.where(df['Close'] > df['Open'],df['Close'] - df['Open'],np.where(df['Close'] < df['Open'],df['Open'] - df['Close'],0))),2)
+    #df['Today Range'] = rangee
     df['prev_can_fourth_part'] = np.round((df['prev_can_poi']/4),2)   
     df['prev_can_half_part'] = np.round((df['prev_can_poi']/2),2) 
     # df['Exit'] = df['Close'].shift(1)-df['prev_can_half_part'] 
@@ -618,7 +637,7 @@ while True:
                 dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
                 dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
                 dfg1112 = dfg111.tail(10)
-                five_df1 = pd.concat([dfg1112, five_df1]) 
+                five_df1 = pd.concat([dfg1, five_df1]) 
 
                 dff1 = dfg1112.tail(5)
                 #print(dff1)
