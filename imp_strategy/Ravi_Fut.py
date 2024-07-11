@@ -481,25 +481,14 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
         df = dff[(dff['Datetime'] <= df_upto_datetime)]
         df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))  
 
-    # #dff1 = df.tail(5)
-    # maxe = []
-    # mine = []
-    # #open = list(dff1['Open'])
-    # #close = list(dff1['Close'])
-    # max_value = (df.Open.rolling(5).max()).shift(-5)
-    # maxe.append(max_value)
-    # min_value = (df.Open.rolling(5).min()).shift(-5)
-    # mine.append(min_value)
-    # max_value1 = (df.Close.rolling(5).max()).shift(-5)
-    # maxe.append(max_value1)
-    # min_value1 = (df.Close.rolling(5).min()).shift(-5)
-    # mine.append(min_value1)
-    # maxe1 = max(maxe)
-    # mine1 = min(mine)             
-    # rangee = round((maxe1-mine1),2)
-    # print(str(stk_name)+" Last Five Candle range is :"+str(rangee))    
-
-    df["Date"] = df["Datetime"].dt.date
+    df['max_value'] = (df.Open.rolling(5).max())#.shift(-5)
+    df['min_value'] = (df.Open.rolling(5).min())#.shift(-5)
+    df['max_value1'] = (df.Close.rolling(5).max())#.shift(-5)
+    df['min_value1'] = (df.Close.rolling(5).min())#.shift(-5)
+    df['maxe1'] = df[["max_value", "max_value1"]].max(axis=1)
+    df['mine1'] = df[["min_value", "min_value1"]].min(axis=1)
+    df['Rangee'] = df["maxe1"]-df["mine1"]
+    df['Date'] = df["Datetime"].dt.date
     df['Minutes'] = df['TimeNow']-df["Datetime"]
     df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
     df.sort_values(['Datetime'], ascending=[False], inplace=True)
@@ -528,7 +517,6 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") )    
     df['prev_can_poi'] = np.round((np.where(df['Close'].shift(1) > df['Open'].shift(1),df['Close'].shift(1) - df['Open'].shift(1),np.where(df['Close'].shift(1) < df['Open'].shift(1),df['Open'].shift(1) - df['Close'].shift(1),0))),2)
     df['curr_can_poi'] = np.round((np.where(df['Close'] > df['Open'],df['Close'] - df['Open'],np.where(df['Close'] < df['Open'],df['Open'] - df['Close'],0))),2)
-    #df['Today Range'] = rangee
     df['prev_can_fourth_part'] = np.round((df['prev_can_poi']/4),2)   
     df['prev_can_half_part'] = np.round((df['prev_can_poi']/2),2) 
     # df['Exit'] = df['Close'].shift(1)-df['prev_can_half_part'] 
@@ -552,7 +540,9 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     df['Signal1'] = np.where((df['Adx_diff_4'] < 5),"Exit","")
 
     #df = df[['Datetime','Open','High','Low','Close','Volume','ADX_14','Adx_diff_14','Name','Cand_Col_prev','Cand_Col','Signal','TimeNow','Date','Minutes']]						
-
+    df = df.drop(columns=['max_value', 'min_value','max_value1', 'min_value1','maxe1', 'mine1',
+                          'prev_can_fourth_part','prev_can_half_part','range_1','range_2'])
+                          
     return df
 
 
@@ -637,7 +627,7 @@ while True:
                 dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
                 dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
                 dfg1112 = dfg111.tail(10)
-                five_df1 = pd.concat([dfg1, five_df1]) 
+                five_df1 = pd.concat([dfg1112, five_df1]) 
 
                 dff1 = dfg1112.tail(5)
                 #print(dff1)
@@ -722,7 +712,7 @@ while True:
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                 
                                 if stk_name == "NIFTY":
-                                    if rangee < 80:
+                                    if rangee < 60:
                                         print("Call_DDD")
                                         print("NIFTY is Sideways")                  
                                         rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,10,Call_by_Name,stk_name,
@@ -795,7 +785,7 @@ while True:
                                             ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                 if stk_name == "NIFTY":
                                     print("vvvv")
-                                    if rangee < 80:
+                                    if rangee < 60:
                                         print("Put_CCC")
                                         print("NIFTY is Sideways")
                                         rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,10,Put_by_Name,stk_name,
