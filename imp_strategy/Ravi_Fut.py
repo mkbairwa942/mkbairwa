@@ -660,7 +660,7 @@ while True:
                 Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
                 five_df2 = pd.concat([Call_by_df1, five_df2])
                 
-                Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
+                Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date())]# & (Call_by_df1["Minutes"] < 5 )]          
     
                 if Call_by_df2.empty:
                     print("Call Buy DF Empty")
@@ -734,7 +734,7 @@ while True:
                 Put_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                 five_df3 = pd.concat([Put_by_df1, five_df3]) 
 
-                Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
+                Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date())]# & (Put_by_df1["Minutes"] < 5 )]          
 
                 if Put_by_df2.empty:
                     print("Put Buy DF Empty")
@@ -815,7 +815,7 @@ while True:
                         # Call_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                         # five_df4 = pd.concat([Call_sl_df1, five_df4]) 
 
-                        # Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date()) & (Call_sl_df1["Minutes"] < 5 )]          
+                        # Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date())]# & (Call_sl_df1["Minutes"] < 5 )]          
             
                         # if Call_sl_df2.empty:
                         #     pass
@@ -864,7 +864,7 @@ while True:
                         # Put_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                         # five_df5 = pd.concat([Put_sl_df1, five_df5]) 
 
-                        # Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 5 )]          
+                        # Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date())]# & (Put_sl_df1["Minutes"] < 5 )]          
             
                         # if Put_sl_df2.empty:
                         #     pass
