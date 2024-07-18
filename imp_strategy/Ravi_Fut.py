@@ -660,7 +660,7 @@ while True:
                 Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
                 five_df2 = pd.concat([Call_by_df1, five_df2])
                 
-                Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date())]# & (Call_by_df1["Minutes"] < 5 )]          
+                Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 2 )]          
     
                 if Call_by_df2.empty:
                     print("Call Buy DF Empty")
@@ -670,10 +670,10 @@ while True:
                     Call_by_Spot = round(Call_by_Closee/100,0)*100
                     Call_by_time = str(list(Call_by_ord['Datetime'])[0])
                     Call_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
-                    Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
-                    Expiryyy_Call_by = (np.unique(Call_by_ord2['Expiry']).tolist())[0]    
+                    #Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
+                    Expiryyy_Call_by = (np.unique(Call_by_ord1['Expiry']).tolist())[0]    
                     print(Expiryyy_Call_by)  
-                    Call_by_ord3 = Call_by_ord2[Call_by_ord2['Expiry'] == Expiryyy_Call_by]
+                    Call_by_ord3 = Call_by_ord1[Call_by_ord1['Expiry'] == Expiryyy_Call_by]
                     Call_by_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
                     Call_by_ord4 = Call_by_ord3[(Call_by_ord3["CpType"] == 'CE')] 
                     Call_by_ord5 = Call_by_ord4[(Call_by_ord4['StrikeRate'] < Call_by_Spot)] 
@@ -734,7 +734,7 @@ while True:
                 Put_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                 five_df3 = pd.concat([Put_by_df1, five_df3]) 
 
-                Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date())]# & (Put_by_df1["Minutes"] < 5 )]          
+                Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 2 )]          
 
                 if Put_by_df2.empty:
                     print("Put Buy DF Empty")
@@ -744,9 +744,9 @@ while True:
                     Put_by_Spot = round(Put_by_Closee/100,0)*100
                     Put_by_time = str(list(Put_by_ord['Datetime'])[0])
                     Put_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
-                    Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
-                    Expiryyy_Put_by = (np.unique(Put_by_ord2['Expiry']).tolist())[0]  
-                    Put_by_ord3 = Put_by_ord2[Put_by_ord2['Expiry'] == Expiryyy_Put_by]
+                    #Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
+                    Expiryyy_Put_by = (np.unique(Put_by_ord1['Expiry']).tolist())[0]  
+                    Put_by_ord3 = Put_by_ord1[Put_by_ord1['Expiry'] == Expiryyy_Put_by]
                     Put_by_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
                     Put_by_ord4 = Put_by_ord3[(Put_by_ord3["CpType"] == 'PE')] 
                     Put_by_ord5 = Put_by_ord4[(Put_by_ord4['StrikeRate'] > Put_by_Spot)] 
@@ -815,7 +815,7 @@ while True:
                         # Call_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                         # five_df4 = pd.concat([Call_sl_df1, five_df4]) 
 
-                        # Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date())]# & (Call_sl_df1["Minutes"] < 5 )]          
+                        # Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date()) & (Call_sl_df1["Minutes"] < 2 )]          
             
                         # if Call_sl_df2.empty:
                         #     pass
@@ -864,7 +864,7 @@ while True:
                         # Put_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                         # five_df5 = pd.concat([Put_sl_df1, five_df5]) 
 
-                        # Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date())]# & (Put_sl_df1["Minutes"] < 5 )]          
+                        # Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 2 )]          
             
                         # if Put_sl_df2.empty:
                         #     pass
