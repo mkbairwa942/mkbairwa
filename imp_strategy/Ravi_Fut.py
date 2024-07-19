@@ -362,11 +362,11 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
     timees = list_to_append
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        bhav_qty = 2
-        muk_qty = 2
+        bhav_qty = 1
+        muk_qty = 1
     if stk_name == "NIFTY":
-        bhav_qty = 2
-        muk_qty = 2
+        bhav_qty = 1
+        muk_qty = 1
     # quantity = (qtyy*lotsize)
     # print(stk_name)
     # print(quantity)
@@ -937,10 +937,10 @@ while True:
                         print("Last PL Rate is : "+str(pl))
                         print(Qtty1,pl)
                         if Qtty1 == 25:
-                            slll = -500
+                            slll = -300
                             tgtt = 1500
                         if Qtty1 == 15:
-                            slll = -500
+                            slll = -300
                             tgtt = 1500
                         #print(slll,tgtt)
 
