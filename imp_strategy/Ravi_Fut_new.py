@@ -37,6 +37,8 @@ telegram_id = ":758543600"
 #telegram_basr_url = 'https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236&text="{}"'.format(joke)
 telegram_basr_url = "https://api.telegram.org/bot6432816471:AAG08nWywTnf_Lg5aDHPbW7zjk3LevFuajU/sendMessage?chat_id=-4048562236"
 
+
+#print(pd.DataFrame(credi_mukesh.historical_data(260105, from_datetime, to_datetime, interval, continuous=False, oi=True)))
 # operate = input("Do you want to go with TOTP (yes/no): ")
 # #notifi = input("Do you want to send Notification on Desktop (yes/no): ")
 # telegram_msg = input("Do you want to send TELEGRAM Message (yes/no): ")
@@ -448,6 +450,8 @@ st.range("ak4:al6").value = "YES"
 #         else:
 #             print("Telegram Message are OFF")
 #         print("----------------------------------------")
+# df = pd.DataFrame(credi_mukesh.historical_data(256265, second_last_trading_day, to_d, "5minute", continuous=False, oi=True))
+# print(df.head(10))
 
 def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     if data_fromm == "Zerodha_kite":
@@ -456,7 +460,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
         if stk_nm == 256265:
             stk_name = "NIFTY"
         df = pd.DataFrame(credi_mukesh.historical_data(stk_nm, second_last_trading_day, to_d, "5minute", continuous=False, oi=True))
-        print(df)
+        #print(df)
         df.rename(columns={'date': 'Datetime','open': 'Open','high': 'High','low': 'Low','close': 'Close','volume': 'Volume','oi': 'OI',},inplace=True)
         df['TimeNow'] = datetime.now(tz=ZoneInfo('Asia/Kolkata')) 
         df['Name'] = np.where(stk_nm == 260105,"BANKNIFTY",np.where(stk_nm == 256265,"NIFTY",""))
@@ -522,11 +526,12 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     
     df['Cand_Col_prev'] = np.where(df['Close'].shift(1) > df['Open'].shift(1),"Green",np.where(df['Close'].shift(1) < df['Open'].shift(1),"Red","") )
     df['Cand_Col'] = np.where(df['Close'] > df['Open'],"Green",np.where(df['Close'] < df['Open'],"Red","") )    
+   
+    df['prev_can_poi'] = np.round((np.where(df['Close'].shift(1) > df['Open'].shift(1),df['Close'].shift(1) - df['Open'].shift(1),np.where(df['Close'].shift(1) < df['Open'].shift(1),df['Open'].shift(1) - df['Close'].shift(1),0))),2)
+    df['curr_can_poi'] = np.round((np.where(df['Close'] > df['Open'],df['Close'] - df['Open'],np.where(df['Close'] < df['Open'],df['Open'] - df['Close'],0))),2)
     df['check'] = np.where(((df['Cand_Col'] == "Green") & (df['Cand_Col'].shift(1) == "Green") & (df['Cand_Col'].shift(2) == "Green")),"Gre_ok",
                            np.where(((df['Cand_Col'] == "Red") & (df['Cand_Col'].shift(1) == "Red") & (df['Cand_Col'].shift(2) == "Red")),"Red_ok",""))
     df['Chk_ok'] = np.where(((df['check'] != "") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 40)),"ok","" )
-    df['prev_can_poi'] = np.round((np.where(df['Close'].shift(1) > df['Open'].shift(1),df['Close'].shift(1) - df['Open'].shift(1),np.where(df['Close'].shift(1) < df['Open'].shift(1),df['Open'].shift(1) - df['Close'].shift(1),0))),2)
-    df['curr_can_poi'] = np.round((np.where(df['Close'] > df['Open'],df['Close'] - df['Open'],np.where(df['Close'] < df['Open'],df['Open'] - df['Close'],0))),2)
     df['prev_can_fourth_part'] = np.round((df['prev_can_poi']/4),2)   
     df['prev_can_half_part'] = np.round((df['prev_can_poi']/2),2) 
     # df['Exit'] = df['Close'].shift(1)-df['prev_can_half_part'] 
@@ -630,11 +635,11 @@ while True:
             stk_list = stk_list_zerodha
         if data_from == "5paisa":
             stk_list = stk_list_5paisa
-            print(stk_list)
+            #print(stk_list)
             for sc in stk_list:
-                print(sc)
+                #print(sc)
                 dfg111 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl,data_from) 
-                print(dfg111.head(1))
+                #print(dfg111.head(1))
                 # print(dfg111.tail(1))
                 #dfg1 = ADX(dfg111,14)
                 dfg1 = dfg111
