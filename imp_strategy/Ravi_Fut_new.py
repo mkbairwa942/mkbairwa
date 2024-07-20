@@ -531,7 +531,10 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     df['curr_can_poi'] = np.round((np.where(df['Close'] > df['Open'],df['Close'] - df['Open'],np.where(df['Close'] < df['Open'],df['Open'] - df['Close'],0))),2)
     df['check'] = np.where(((df['Cand_Col'] == "Green") & (df['Cand_Col'].shift(1) == "Green") & (df['Cand_Col'].shift(2) == "Green")),"Gre_ok",
                            np.where(((df['Cand_Col'] == "Red") & (df['Cand_Col'].shift(1) == "Red") & (df['Cand_Col'].shift(2) == "Red")),"Red_ok",""))
-    df['Chk_ok'] = np.where(((df['check'] != "") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 40)),"ok","" )
+    df['Chk_ok'] = np.where(((df['Name'] == "NIFTY") & (df['check'] == "Gre_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 50)),"Call_Buy",
+                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Gre_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 150)),"Call_Buy",
+                    np.where(((df['Name'] == "NIFTY") & (df['check'] == "Red_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 50)),"Put_Buy",
+                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Red_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 150)),"Put_Buy","" ) )) )
     df['prev_can_fourth_part'] = np.round((df['prev_can_poi']/4),2)   
     df['prev_can_half_part'] = np.round((df['prev_can_poi']/2),2) 
     # df['Exit'] = df['Close'].shift(1)-df['prev_can_half_part'] 
@@ -648,26 +651,26 @@ while True:
                 dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
                 dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
                 dfg1112 = dfg111.tail(10)
-                five_df1 = pd.concat([dfg1, five_df1]) 
+                five_df1 = pd.concat([dfg1112, five_df1]) 
 
                 dff1 = dfg1112.tail(5)
-                #print(dff1)
-                # maxe = []
-                # mine = []
-                # open = list(dff1['Open'])
-                # close = list(dff1['Close'])
-                # max_value = max(open)
-                # maxe.append(max_value)
-                # min_value = min(open)
-                # mine.append(min_value)
-                # max_value1 = max(close)
-                # maxe.append(max_value1)
-                # min_value1 = min(close)
-                # mine.append(min_value1)
-                # maxe1 = max(maxe)
-                # mine1 = min(mine)             
-                # rangee = round((maxe1-mine1),2)
-                # print(str(stk_name)+" Last Five Candle range is :"+str(rangee))
+                print(dff1)
+                maxe = []
+                mine = []
+                open = list(dff1['Open'])
+                close = list(dff1['Close'])
+                max_value = max(open)
+                maxe.append(max_value)
+                min_value = min(open)
+                mine.append(min_value)
+                max_value1 = max(close)
+                maxe.append(max_value1)
+                min_value1 = min(close)
+                mine.append(min_value1)
+                maxe1 = max(maxe)
+                mine1 = min(mine)             
+                rangee = round((maxe1-mine1),2)
+                print(str(stk_name)+" Last Five Candle range is :"+str(rangee))
 
                 # Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
                 # Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))

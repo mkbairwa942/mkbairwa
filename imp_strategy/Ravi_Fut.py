@@ -536,11 +536,16 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     
     # df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['Name'] == "BANKNIFTY") & (df['Adx_diff_4'] > 3),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['Name'] == "BANKNIFTY") & (df['Adx_diff_4'] > 3),"Put_Buy",
     #                np.where((df['Buy1'] == "Call_1") & (df['Name'] == "NIFTY") & (df['Adx_diff_4'] > 1.5),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['Name'] == "NIFTY") & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
-    
-    df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 40),"Call_Buy",
-                            np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 40),"Put_Buy",
-                  np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 20),"Call_Buy",
-                            np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 20),"Put_Buy",""))))
+    df['check'] = np.where(((df['Cand_Col'] == "Green") & (df['Cand_Col'].shift(1) == "Green") & (df['Cand_Col'].shift(2) == "Green")),"Gre_ok",
+                           np.where(((df['Cand_Col'] == "Red") & (df['Cand_Col'].shift(1) == "Red") & (df['Cand_Col'].shift(2) == "Red")),"Red_ok",""))
+    df['Signal'] = np.where(((df['Name'] == "NIFTY") & (df['check'] == "Gre_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 50)),"Call_Buy",
+                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Gre_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 150)),"Call_Buy",
+                    np.where(((df['Name'] == "NIFTY") & (df['check'] == "Red_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 50)),"Put_Buy",
+                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Red_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 150)),"Put_Buy","" ) )) )
+    # df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 40),"Call_Buy",
+    #                         np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 40),"Put_Buy",
+    #               np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 20),"Call_Buy",
+    #                         np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 20),"Put_Buy",""))))
 
     df['Signal1'] = np.where((df['Adx_diff_4'] < 5),"Exit","")
 
@@ -632,6 +637,7 @@ while True:
                 dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
                 dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
                 dfg1112 = dfg111.tail(10)
+                #print(dfg1112)
                 five_df1 = pd.concat([dfg1112, five_df1]) 
 
                 dff1 = dfg1112.tail(5)
