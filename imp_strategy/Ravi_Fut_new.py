@@ -107,7 +107,7 @@ credi_muk = None
 #     postt = pd.DataFrame(credi.margin())['Ledgerbalance'][0]
 #     print(f"Ledger Balance is : {postt}")
 
-from_d = (date.today() - timedelta(days=15))
+from_d = (date.today() - timedelta(days=50))
 # from_d = date(2022, 12, 29)
 
 to_d = (date.today())
@@ -130,7 +130,7 @@ trading_dayss = trading_days_reverse[::-1]
 trading_days = trading_dayss[1:]
 current_trading_day = trading_dayss[0]
 last_trading_day = trading_days[0]
-second_last_trading_day = trading_days[8]
+second_last_trading_day = trading_days[30]
 fifth_last_trading_day = trading_days[5]
 time_change = timedelta(minutes=870) 
 upto_df = timedelta(minutes=930) 
@@ -652,22 +652,22 @@ while True:
 
                 dff1 = dfg1112.tail(5)
                 #print(dff1)
-                maxe = []
-                mine = []
-                open = list(dff1['Open'])
-                close = list(dff1['Close'])
-                max_value = max(open)
-                maxe.append(max_value)
-                min_value = min(open)
-                mine.append(min_value)
-                max_value1 = max(close)
-                maxe.append(max_value1)
-                min_value1 = min(close)
-                mine.append(min_value1)
-                maxe1 = max(maxe)
-                mine1 = min(mine)             
-                rangee = round((maxe1-mine1),2)
-                print(str(stk_name)+" Last Five Candle range is :"+str(rangee))
+                # maxe = []
+                # mine = []
+                # open = list(dff1['Open'])
+                # close = list(dff1['Close'])
+                # max_value = max(open)
+                # maxe.append(max_value)
+                # min_value = min(open)
+                # mine.append(min_value)
+                # max_value1 = max(close)
+                # maxe.append(max_value1)
+                # min_value1 = min(close)
+                # mine.append(min_value1)
+                # maxe1 = max(maxe)
+                # mine1 = min(mine)             
+                # rangee = round((maxe1-mine1),2)
+                # print(str(stk_name)+" Last Five Candle range is :"+str(rangee))
 
                 # Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
                 # Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
