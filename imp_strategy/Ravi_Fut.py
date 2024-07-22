@@ -523,29 +523,27 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     # df['Exit1'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Close'] < df['Exit']),"Call_Exit",np.where((df['Cand_Col_prev'] == "Red") & (df['Close'] > df['Exit']),"Put_Exit",""))
     df['range_1'] = np.round((np.where(df['Cand_Col_prev'] == "Green",df['Close'].shift(1)-df['prev_can_fourth_part'],np.where(df['Cand_Col_prev'] == "Red",df['Close'].shift(1)+df['prev_can_fourth_part'],0))),2)
     df['range_2'] = np.round((df['Close'].shift(1)),2)
+    
     df['Bald_poi'] = np.where((df['Cand_Col'] == "Green"),df['Open'] - df['Low'],np.where((df['Cand_Col'] == "Red"),df['High'] - df['Open'],0))
     df['Bald_Cand'] = np.where((df['Cand_Col'] == "Green") & (df['Open'] == df['Low']),"Gre_Bld",np.where((df['Cand_Col'] == "Red") & (df['Open'] == df['High']),"Red_Bld",""))
-    df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Cand_Col'] == "Green") & (df['Open'] > df['range_1']),"Call",
-                         np.where((df['Cand_Col_prev'] == "Red") & (df['Cand_Col'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
-    #df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
-    
-    # df['Buy1'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 40),"Call_1",
-    #                         np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 40),"Put_1",
-    #               np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 20),"Call_1",
-    #                         np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 20),"Put_1",""))))
-    
-    # df['Signal'] = np.where((df['Buy1'] == "Call_1") & (df['Name'] == "BANKNIFTY") & (df['Adx_diff_4'] > 3),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['Name'] == "BANKNIFTY") & (df['Adx_diff_4'] > 3),"Put_Buy",
-    #                np.where((df['Buy1'] == "Call_1") & (df['Name'] == "NIFTY") & (df['Adx_diff_4'] > 1.5),"Call_Buy",np.where((df['Buy1'] == "Put_1") & (df['Name'] == "NIFTY") & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
-    df['check'] = np.where(((df['Cand_Col'] == "Green") & (df['Cand_Col'].shift(1) == "Green") & (df['Cand_Col'].shift(2) == "Green")),"Gre_ok",
-                           np.where(((df['Cand_Col'] == "Red") & (df['Cand_Col'].shift(1) == "Red") & (df['Cand_Col'].shift(2) == "Red")),"Red_ok",""))
-    df['Signal'] = np.where(((df['Name'] == "NIFTY") & (df['check'] == "Gre_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 50)),"Call_Buy",
-                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Gre_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 150)),"Call_Buy",
-                    np.where(((df['Name'] == "NIFTY") & (df['check'] == "Red_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 50)),"Put_Buy",
-                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Red_ok") & ((df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)) > 150)),"Put_Buy","" ) )) )
+    # df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Cand_Col'] == "Green") & (df['Open'] > df['range_1']),"Call",
+    #                      np.where((df['Cand_Col_prev'] == "Red") & (df['Cand_Col'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
     # df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 40),"Call_Buy",
     #                         np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 40),"Put_Buy",
     #               np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 20),"Call_Buy",
     #                         np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 20),"Put_Buy",""))))
+    
+    df['Tre_poi'] = df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)
+    df['check'] = np.where(((df['Cand_Col'] == "Green") & (df['Cand_Col'].shift(1) == "Green") & (df['Cand_Col'].shift(2) == "Green")),"Gre_ok",
+                           np.where(((df['Cand_Col'] == "Red") & (df['Cand_Col'].shift(1) == "Red") & (df['Cand_Col'].shift(2) == "Red")),"Red_ok",""))
+    # df['Check_ok'] = np.where(((df['Name'] == "NIFTY") & (df['check'] == "Gre_ok")),"Chk_ok",
+    #                           np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Gre_ok")),"Chk_ok",""))
+                            
+    df['Signal'] = np.where(((df['Name'] == "NIFTY") & (df['check'] == "Gre_ok") & (df['Tre_poi'] > 50)),"Call_Buy",
+                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Gre_ok") & (df['Tre_poi'] > 150)),"Call_Buy",
+                    np.where(((df['Name'] == "NIFTY") & (df['check'] == "Red_ok") & (df['Tre_poi'] > 50)),"Put_Buy",
+                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Red_ok") & (df['Tre_poi'] > 150)),"Put_Buy","" ))))
+    
 
     df['Signal1'] = np.where((df['Adx_diff_4'] < 5),"Exit","")
 
