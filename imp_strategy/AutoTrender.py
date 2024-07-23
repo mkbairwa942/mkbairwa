@@ -411,7 +411,7 @@ while True:
             stop_thread = True
             time.sleep(2)
             if pre_oc_symbol != oc_symbol:
-                oc.range("b:b").value = oc.range("d8:e30").value = None
+                oc.range("b:b").value = oc.range("d8:e31").value = None
                 expiries_list = []
             pre_oc_symbol = oc_symbol
             pre_oc_expiry = oc_expiry
@@ -498,6 +498,7 @@ while True:
                 df1.index = df1["StrikeRate"]
                 df1 = df1.replace(np.nan,0)
                 df1["Strike"] = df1.index
+
                 df1.index = [np.nan] * len(df1)
                 #dash.range("g1").value = df1
 
@@ -559,8 +560,15 @@ while True:
                                         ["Max Put Volume",max(list(df1["PE_Volume"]))],  
                                         ]
 
-                df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp', 'StrikeRate',
-                        'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
+                #df1['Call_Senti'] = np.where()
+                #print(df1.head(1))
+                df1['Call_CHG'] = 100-((df1['CE_Prev_Ltp']*100)/df1['CE_Ltp'])
+                df1['Put_CHG'] = 100-((df1['PE_Prev_Ltp']*100)/df1['PE_Ltp'])
+                #print(df1.head(1))
+                # df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp', 'StrikeRate',
+                #         'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
+                df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp','Call_CHG', 'StrikeRate',
+                        'Put_CHG','PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
                 oc.range("g1").value = df1
 
 

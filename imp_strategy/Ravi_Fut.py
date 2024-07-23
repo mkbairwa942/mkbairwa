@@ -63,7 +63,7 @@ credi_bhav = None
 # credi_alp = None
 
 while True:
-    if credi_muk is None and credi_bhav is None:# and credi_alp is None:
+    if credi_muk is None and credi_bhav is None: #credi_har is None:# and credi_alp is None:
         try:
             for us in users:
                 print("1")
@@ -72,16 +72,16 @@ while True:
                 #     if credi_har.request_token is None:
                 #         credi_har = credentials("HARESH")
                 #         print(credi_har.request_token)
-                if us == "BHAVNA":
-                    credi_bhav = credentials("BHAVNA")
-                    if credi_bhav.request_token is None:
-                        credi_bhav = credentials("BHAVNA")
-                        print(credi_bhav.request_token)
                 if us == "MUKESH":
                     credi_muk = credentials("MUKESH")
                     if credi_muk.request_token is None:
                         credi_muk = credentials("MUKESH")
                         print(credi_muk.request_token)
+                if us == "BHAVNA":
+                    credi_bhav = credentials("BHAVNA")
+                    if credi_bhav.request_token is None:
+                        credi_bhav = credentials("BHAVNA")
+                        print(credi_bhav.request_token)
                 # if us == "ASHWIN":
                 #     credi_ash = credentials("ASHWIN")
                 #     if credi_ash.request_token is None:
@@ -160,16 +160,16 @@ pd.options.mode.copy_on_write = True
 
 print("Excel Starting....")
 
-if not os.path.exists("Ravi_Fut.xlsx"):
+if not os.path.exists("Ravi.xlsx"):
     try:
         wb = xw.Book()
         wb.sheets.add("optionchain")
-        wb.save("Ravi_Fut.xlsx")
+        wb.save("Ravi.xlsx")
         wb.close()
     except Exception as e:
         print(f"Error : {e}")
         sys.exit()
-wb = xw.Book('Ravi_Fut.xlsx')
+wb = xw.Book('Ravi.xlsx')
 for i in ["Exchange","Filt_Exc","Bhavcopy","FO_Bhavcopy","Five_data","Delv_data","Five_Delv","Final_Data","Position","Strategy1","Strategy2","Strategy3","Buy","Sale",
            "Expiry","stats","Stat","Stat1","Stat2","Stat3","Stat4"]:
     try:
@@ -243,17 +243,11 @@ while True:
             #root_list = np.unique(exch['Root']).tolist()      
             root_list = ["BANKNIFTY","NIFTY"]
 
-            exch1 = script_code_5paisa1[(script_code_5paisa1["Exch"] == "N")]# & (script_code_5paisa1["ScripType"] != "XX")]            
+            exch1 = script_code_5paisa1[(script_code_5paisa1["Exch"] == "N") & (script_code_5paisa1["ScripType"] != "XX")]            
             exch1.rename(columns={'ScripType': 'CpType','SymbolRoot': 'Root','BOCOAllowed': 'CO BO Allowed'},inplace=True)
             exch1.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
             exc_new = exch1['Root'].isin(root_list)            
             exc_new1 = exch1[exc_new]
-
-            exch1 = script_code_5paisa1[(script_code_5paisa1["Exch"] == "N") & (script_code_5paisa1["ScripType"] == "XX")]            
-            exch1.rename(columns={'ScripType': 'CpType','SymbolRoot': 'Root','BOCOAllowed': 'CO BO Allowed'},inplace=True)
-            exch1.sort_values(['Root','Expiry','StrikeRate'], ascending=[True,True,True], inplace=True)
-            exc_new = exch1['Root'].isin(root_list)            
-            exc_new_fo = exch1[exc_new]
 
             exch = script_code_5paisa[(script_code_5paisa["Exch"] == "N")]
             exch.sort_values(['Root'], ascending=[True], inplace=True)            
@@ -309,17 +303,17 @@ TSL = 15
 tsl1 = 1-(TSL/100)
 print(tsl1)
 
-st.range("aj1").value = "Orders"
-st.range("ak1").value = "YES"
-st.range("al1").value = "Tele_Msg"
-st.range("am1").value = "yes"
+st.range("ae1").value = "Orders"
+st.range("af1").value = "YES"
+st.range("ag1").value = "Tele_Msg"
+st.range("ah1").value = "yes"
 
-st.range("ak3").value = "Mukesh"
-st.range("al3").value = "Bhavna"
-st.range("aj4").value = "Orders"
-st.range("aj5").value = "Nifty"
-st.range("aj6").value = "BankNifty"
-st.range("ak4:al6").value = "YES"
+st.range("af3").value = "Mukesh"
+st.range("ag3").value = "Bhavna"
+st.range("ae4").value = "Orders"
+st.range("ae5").value = "Nifty"
+st.range("ae6").value = "BankNifty"
+st.range("af4:ag6").value = "YES"
 
 def order_book_func(cred):
     try:
@@ -358,14 +352,14 @@ def order_book_func(cred):
     return ordbook1
 
 def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PUT,BUY_EXIT,order_side,scrip_code,lotsize,namee,stk_name,
-                    ord_muk,ord_bhav,nifty_muk,nifty_bhav,bknifty_muk,bknifty_bhav):
+                    ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har):
     timees = list_to_append
     dfg4 = df.tail(1)
     if stk_name == "BANKNIFTY":
-        bhav_qty = 1
+        har_qty = 1
         muk_qty = 1
     if stk_name == "NIFTY":
-        bhav_qty = 1
+        har_qty = 1
         muk_qty = 1
     # quantity = (qtyy*lotsize)
     # print(stk_name)
@@ -400,18 +394,18 @@ def order_execution(df,list_append_on,list_to_append,telegram_msg,orders,CALL_PU
             print(f"Real {CALL_PUT} Order are ON") 
             for credi in cred:
                 if credi == credi_bhav:
-                    if ord_bhav.upper() == "YES" or ord_bhav.upper() == "": 
+                    if ord_har.upper() == "YES" or ord_har.upper() == "": 
                         print("Bhavna Orders is ON") 
                         if stk_name == "BANKNIFTY":
-                            if bknifty_bhav.upper() == "YES" or bknifty_bhav.upper() == "": 
+                            if bknifty_har.upper() == "YES" or bknifty_har.upper() == "": 
                                 print("Bhavna Bank Nifty Orders is ON")
-                                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=lotsize*bhav_qty,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=lotsize*har_qty,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                             else:
                                 print("Bhavna Bank Nifty Orders is OFF")
                         if stk_name == "NIFTY":
-                            if nifty_bhav.upper() == "YES" or nifty_bhav.upper() == "": 
+                            if nifty_har.upper() == "YES" or nifty_har.upper() == "": 
                                 print("Bhavna Nifty Orders is ON")
-                                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=lotsize*bhav_qty,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                order = credi.place_order(OrderType=order_side,Exchange='N',ExchangeType='D', ScripCode = scrip_code, Qty=lotsize*har_qty,Price=price_of_stock, IsIntraday=True)# IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                             else:
                                 print("Bhavna Nifty Orders is OFF")                    
                     else:
@@ -458,20 +452,7 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
         # df['Minutes'] = df['TimeNow']-df["Datetime"]
         # df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
     if data_fromm == "5paisa":
-        if stk_nm == 999920005:
-            stk_name = "BANKNIFTY"
-        if stk_nm == 999920000:
-            stk_name = "NIFTY"
-        fut_exc = exc_new_fo[exc_new_fo['Root'] == stk_name]
-        fut_exc1 = fut_exc[(fut_exc['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
-        fut_expiry = (np.unique(fut_exc1['Expiry']).tolist())[0] 
-        fut1 = fut_exc1[fut_exc1['Expiry'] == fut_expiry]
-        fut_Scripcodee = int(float(fut1['ScripCode']))
-        fut_dff = credi_muk.historical_data('N', 'D', fut_Scripcodee, '5m', second_last_trading_day,current_trading_day)
-        dfff = credi_muk.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)       
-        dff = pd.merge(dfff,fut_dff, on=['Datetime'], how='inner')
-        dff.rename(columns={'Open_x': 'Open','High_x': 'High','Low_x': 'Low','Close_x': 'Close','Volume_y': 'Volume' },inplace=True)
-        dff = dff[['Datetime','Open','High','Low','Close','Volume']]
+        dff = credi_muk.historical_data('N', 'C', stk_nm, '5m', second_last_trading_day,current_trading_day)
         dff['TimeNow'] = datetime.now()
         dff = dff.astype({"Datetime": "datetime64[ns]"})    
         #df["Date"] = df["Datetime"].dt.date
@@ -481,31 +462,9 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
         df = dff[(dff['Datetime'] <= df_upto_datetime)]
         df['Name'] = np.where(stk_nm == 999920005,"BANKNIFTY",np.where(stk_nm == 999920000,"NIFTY",""))  
 
-    df['max_value'] = (df.Open.rolling(5).max())#.shift(-5)
-    df['min_value'] = (df.Open.rolling(5).min())#.shift(-5)
-    df['max_value1'] = (df.Close.rolling(5).max())#.shift(-5)
-    df['min_value1'] = (df.Close.rolling(5).min())#.shift(-5)
-    df['maxe1'] = df[["max_value", "max_value1"]].max(axis=1)
-    df['mine1'] = df[["min_value", "min_value1"]].min(axis=1)
-    df['Rangee'] = df["maxe1"]-df["mine1"]
-    df['Date'] = df["Datetime"].dt.date
+    df["Date"] = df["Datetime"].dt.date
     df['Minutes'] = df['TimeNow']-df["Datetime"]
-    df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2) 
-    df.sort_values(['Datetime'], ascending=[False], inplace=True)
-    df['Price_Chg'] = round(((df['Close'] * 100) / (df['Close'].shift(-1)) - 100), 2).fillna(0)      
-
-    df['Vol_Chg'] = round(((df['Volume'] * 100) / (df['Volume'].shift(-1)) - 100), 2).fillna(0)
-
-    df['Price_break'] = np.where((df['Close'] > (df.High.rolling(5).max()).shift(-5)),
-                                        'Pri_Up_brk',
-                                        (np.where((df['Close'] < (df.Low.rolling(5).min()).shift(-5)),
-                                                    'Pri_Dwn_brk', "")))
-    df['Vol_break'] = np.where(df['Volume'] > (df.Volume.rolling(5).mean() * 2.5).shift(-5),
-                                        "Vol_brk","")       
-                                                                                                        
-    df['Vol_Price_break'] = np.where((df['Vol_break'] == "Vol_brk") &
-                                                (df['Price_break'] != ""), "Vol_Pri_break", "")  
-    df.sort_values(['Datetime'], ascending=[True], inplace=True)  
+    df['Minutes'] = round((df['Minutes']/np.timedelta64(1,'m')),2)     
     ADX_4 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=4)
     ADX_14 = pta.adx(high=df['High'],low=df['Low'],close=df['Close'],length=14)
     df['ADX_4'] = np.round((ADX_4[ADX_4.columns[0]]),2)
@@ -523,34 +482,19 @@ def data_download(stk_nm,vol_pr,rsi_up_lvll,rsi_dn_lvll,data_fromm):
     # df['Exit1'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Close'] < df['Exit']),"Call_Exit",np.where((df['Cand_Col_prev'] == "Red") & (df['Close'] > df['Exit']),"Put_Exit",""))
     df['range_1'] = np.round((np.where(df['Cand_Col_prev'] == "Green",df['Close'].shift(1)-df['prev_can_fourth_part'],np.where(df['Cand_Col_prev'] == "Red",df['Close'].shift(1)+df['prev_can_fourth_part'],0))),2)
     df['range_2'] = np.round((df['Close'].shift(1)),2)
-    
     df['Bald_poi'] = np.where((df['Cand_Col'] == "Green"),df['Open'] - df['Low'],np.where((df['Cand_Col'] == "Red"),df['High'] - df['Open'],0))
     df['Bald_Cand'] = np.where((df['Cand_Col'] == "Green") & (df['Open'] == df['Low']),"Gre_Bld",np.where((df['Cand_Col'] == "Red") & (df['Open'] == df['High']),"Red_Bld",""))
-    # df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Cand_Col'] == "Green") & (df['Open'] > df['range_1']),"Call",
-    #                      np.where((df['Cand_Col_prev'] == "Red") & (df['Cand_Col'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
-    # df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 40),"Call_Buy",
-    #                         np.where((df['Name'] == "BANKNIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 40),"Put_Buy",
-    #               np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Call") & (df['prev_can_poi'] > 20),"Call_Buy",
-    #                         np.where((df['Name'] == "NIFTY") & (df['Buy'] == "Put") & (df['prev_can_poi'] > 20),"Put_Buy",""))))
-    
-    df['Tre_poi'] = df['curr_can_poi']+df['curr_can_poi'].shift(1)+df['curr_can_poi'].shift(2)
-    df['check'] = np.where(((df['Cand_Col'] == "Green") & (df['Cand_Col'].shift(1) == "Green") & (df['Cand_Col'].shift(2) == "Green")),"Gre_ok",
-                           np.where(((df['Cand_Col'] == "Red") & (df['Cand_Col'].shift(1) == "Red") & (df['Cand_Col'].shift(2) == "Red")),"Red_ok",""))
-    # df['Check_ok'] = np.where(((df['Name'] == "NIFTY") & (df['check'] == "Gre_ok")),"Chk_ok",
-    #                           np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Gre_ok")),"Chk_ok",""))
-                            
-    df['Signal'] = np.where(((df['Name'] == "NIFTY") & (df['check'] == "Gre_ok") & (df['Tre_poi'] > 50)),"Call_Buy",
-                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Gre_ok") & (df['Tre_poi'] > 150)),"Call_Buy",
-                    np.where(((df['Name'] == "NIFTY") & (df['check'] == "Red_ok") & (df['Tre_poi'] > 50)),"Put_Buy",
-                    np.where(((df['Name'] == "BANKNIFTY") & (df['check'] == "Red_ok") & (df['Tre_poi'] > 150)),"Put_Buy","" ))))
-    
-
+    df['Buy'] = np.where((df['Cand_Col_prev'] == "Green") & (df['Open'] > df['range_1']),"Call",
+                         np.where((df['Cand_Col_prev'] == "Red") & (df['Open'] < df['range_1']),"Put",""))
+    df['Buy1'] = np.where((df['Cand_Col'] == "Green") & (df['Buy'] == "Call"),"Call_1",np.where((df['Cand_Col'] == "Red") & (df['Buy'] == "Put"),"Put_1",""))
+    df['Signal'] = np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Call_Buy",
+                            np.where((df['Name'] == "BANKNIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 40) & (df['prev_can_poi'] < 80) & (df['Adx_diff_4'] > 3),"Put_Buy",
+                  np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Call_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 1.5),"Call_Buy",
+                            np.where((df['Name'] == "NIFTY") & (df['Buy1'] == "Put_1") & (df['prev_can_poi'] > 20) & (df['prev_can_poi'] < 50) & (df['Adx_diff_4'] > 1.5),"Put_Buy",""))))
     df['Signal1'] = np.where((df['Adx_diff_4'] < 5),"Exit","")
 
     #df = df[['Datetime','Open','High','Low','Close','Volume','ADX_14','Adx_diff_14','Name','Cand_Col_prev','Cand_Col','Signal','TimeNow','Date','Minutes']]						
-    df = df.drop(columns=['max_value', 'min_value','max_value1', 'min_value1','maxe1', 'mine1',
-                          'prev_can_fourth_part','prev_can_half_part','range_1','range_2'])
-                          
+
     return df
 
 
@@ -571,8 +515,8 @@ else:
 
 
 while True:
-    orders,telegram_msg = st.range("ak1").value,st.range("am1").value
-    ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har = st.range("ak4").value,st.range("al4").value,st.range("ak5").value,st.range("al5").value,st.range("ak6").value,st.range("al6").value
+    orders,telegram_msg = st.range("af1").value,st.range("ah1").value
+    ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har = st.range("af4").value,st.range("ag4").value,st.range("af5").value,st.range("ag5").value,st.range("af6").value,st.range("ag6").value
     if orders is None:
         orders = "yes"
     if telegram_msg is None:
@@ -597,8 +541,8 @@ while True:
     for credi in cred:  
         if credi == credi_muk: 
             posit = pd.DataFrame(credi_muk.positions())   
-        if credi == credi_bhav: 
-            posit = pd.DataFrame(credi_bhav.positions())  
+        # if credi == credi_har: 
+        #     posit = pd.DataFrame(credi_har.positions())  
         if posit.empty:
             pass
         else:
@@ -625,37 +569,17 @@ while True:
             stk_list = stk_list_5paisa
             for sc in stk_list:
                 #print(sc)
-                dfg111 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl,data_from) 
+                dfg1112 = data_download(sc,Vol_per,UP_Rsi_lvl,DN_Rsi_lvl,data_from) 
                 # print(dfg111.head(1))
                 # print(dfg111.tail(1))
                 #dfg1 = ADX(dfg111,14)
-                dfg1 = dfg111
+                dfg1 = dfg1112
                 stk_name = (np.unique([str(i) for i in dfg1['Name']])).tolist()[0] 
                 print(stk_name)
                 dfg1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)
                 dfg111 = dfg1[(dfg1["Date"] == current_trading_day.date())]
                 dfg1112 = dfg111.tail(10)
-                #print(dfg1112)
                 five_df1 = pd.concat([dfg1112, five_df1]) 
-
-                dff1 = dfg1112.tail(5)
-                #print(dff1)
-                maxe = []
-                mine = []
-                open = list(dff1['Open'])
-                close = list(dff1['Close'])
-                max_value = max(open)
-                maxe.append(max_value)
-                min_value = min(open)
-                mine.append(min_value)
-                max_value1 = max(close)
-                maxe.append(max_value1)
-                min_value1 = min(close)
-                mine.append(min_value1)
-                maxe1 = max(maxe)
-                mine1 = min(mine)             
-                rangee = round((maxe1-mine1),2)
-                print(str(stk_name)+" Last Five Candle range is :"+str(rangee))
 
                 Call_by_df = dfg1[(dfg1["Signal"] == "Call_Buy")]
                 Call_by_df['Date_Dif'] = abs((Call_by_df["Datetime"] - Call_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -664,7 +588,7 @@ while True:
                 Call_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True)           
                 five_df2 = pd.concat([Call_by_df1, five_df2])
                 
-                Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 2 )]          
+                Call_by_df2 = Call_by_df1[(Call_by_df1["Date"] == current_trading_day.date()) & (Call_by_df1["Minutes"] < 5 )]          
     
                 if Call_by_df2.empty:
                     print("Call Buy DF Empty")
@@ -674,10 +598,10 @@ while True:
                     Call_by_Spot = round(Call_by_Closee/100,0)*100
                     Call_by_time = str(list(Call_by_ord['Datetime'])[0])
                     Call_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
-                    #Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
-                    Expiryyy_Call_by = (np.unique(Call_by_ord1['Expiry']).tolist())[0]    
+                    Call_by_ord2 = Call_by_ord1[(Call_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
+                    Expiryyy_Call_by = (np.unique(Call_by_ord2['Expiry']).tolist())[0]    
                     print(Expiryyy_Call_by)  
-                    Call_by_ord3 = Call_by_ord1[Call_by_ord1['Expiry'] == Expiryyy_Call_by]
+                    Call_by_ord3 = Call_by_ord2[Call_by_ord2['Expiry'] == Expiryyy_Call_by]
                     Call_by_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
                     Call_by_ord4 = Call_by_ord3[(Call_by_ord3["CpType"] == 'CE')] 
                     Call_by_ord5 = Call_by_ord4[(Call_by_ord4['StrikeRate'] < Call_by_Spot)] 
@@ -706,30 +630,9 @@ while True:
                                 print(str(stk_name)+" Call is Already Buy")
                                 print("----------------------------------------")
                             else:
-                                print("Call Buy")  
-                                print("Call_Call") 
-                                if stk_name == "BANKNIFTY":
-                                    print("Call_AAA")
-                                    if rangee < 150:
-                                        print("Call_BBB")
-                                        print("BANKNIFTY is Sideways")                  
-                                        rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,10,Call_by_Name,stk_name,
-                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                    else:
-                                        print("Call_CCC")
-                                        rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
-                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                
-                                if stk_name == "NIFTY":
-                                    if rangee < 60:
-                                        print("Call_DDD")
-                                        print("NIFTY is Sideways")                  
-                                        rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,10,Call_by_Name,stk_name,
-                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                    else:
-                                        print("Call_EEE")
-                                        rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
-                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                                print("Call Buy")                        
+                                rde_exec = order_execution(dfg1_Call_by2,buy_order_list_dummy,Call_by_time,telegram_msg,orders,"IDX OPT","CALL BUY","B",Call_by_Scripcodee,Call_by_Qtyy,Call_by_Name,stk_name,
+                                                           ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                         
                 Put_by_df = dfg1[(dfg1["Signal"] == "Put_Buy")]
                 Put_by_df['Date_Dif'] = abs((Put_by_df["Datetime"] - Put_by_df["Datetime"].shift(1)).astype('timedelta64[m]'))
@@ -738,7 +641,7 @@ while True:
                 Put_by_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
                 five_df3 = pd.concat([Put_by_df1, five_df3]) 
 
-                Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 2 )]          
+                Put_by_df2 = Put_by_df1[(Put_by_df1["Date"] == current_trading_day.date()) & (Put_by_df1["Minutes"] < 5 )]          
 
                 if Put_by_df2.empty:
                     print("Put Buy DF Empty")
@@ -748,9 +651,9 @@ while True:
                     Put_by_Spot = round(Put_by_Closee/100,0)*100
                     Put_by_time = str(list(Put_by_ord['Datetime'])[0])
                     Put_by_ord1 = exc_new1[exc_new1['Root'] == stk_name]
-                    #Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
-                    Expiryyy_Put_by = (np.unique(Put_by_ord1['Expiry']).tolist())[0]  
-                    Put_by_ord3 = Put_by_ord1[Put_by_ord1['Expiry'] == Expiryyy_Put_by]
+                    Put_by_ord2 = Put_by_ord1[(Put_by_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
+                    Expiryyy_Put_by = (np.unique(Put_by_ord2['Expiry']).tolist())[0]  
+                    Put_by_ord3 = Put_by_ord2[Put_by_ord2['Expiry'] == Expiryyy_Put_by]
                     Put_by_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
                     Put_by_ord4 = Put_by_ord3[(Put_by_ord3["CpType"] == 'PE')] 
                     Put_by_ord5 = Put_by_ord4[(Put_by_ord4['StrikeRate'] > Put_by_Spot)] 
@@ -779,31 +682,10 @@ while True:
                                 print(str(stk_name)+" Put is Already Buy")
                                 print("----------------------------------------")
                             else:
-                                print("Put Buy")
-                                print("Put_Put")       
-                                if stk_name == "BANKNIFTY":
-                                    print("ooo")
-                                    if rangee < 150:
-                                        print("Put_AAA")
-                                        print("BANKNIFTY is Sideways")
-                                        rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,10,Put_by_Name,stk_name,
-                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                    else: 
-                                        print("Put_BBB")
-                                        rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
-                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                if stk_name == "NIFTY":
-                                    print("vvvv")
-                                    if rangee < 60:
-                                        print("Put_CCC")
-                                        print("NIFTY is Sideways")
-                                        rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,10,Put_by_Name,stk_name,
-                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                                    else:
-                                        print("Put_DDD")
-                                        rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
-                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
-                
+                                print("Put Buy")                        
+                                rde_exec = order_execution(dfg1_Put_by2,buy_order_list_dummy,Put_by_time,telegram_msg,orders,"IDX OPT","PUT BUY","B",Put_by_Scripcodee,Put_by_Qtyy,Put_by_Name,stk_name,
+                                                           ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+
                 posi = pd.DataFrame(credi_muk.positions()) 
                 if posi.empty:            
                     print("No First Running Position")
@@ -812,100 +694,100 @@ while True:
                     if posit.empty:            
                         print("No Current Running Position")
                     else:
-                        # Call_sl_df = dfg1[(dfg1["Signal1"] == "Exit")]
-                        # Call_sl_df['Date_Dif'] = abs((Call_sl_df["Datetime"] - Call_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-                        # Call_sl_df['Entry'] = np.where(Call_sl_df['Date_Dif'] > 5, "Call_Exit","")
-                        # Call_sl_df1 = Call_sl_df[Call_sl_df['Entry'] == "Call_Exit"]
-                        # Call_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
-                        # five_df4 = pd.concat([Call_sl_df1, five_df4]) 
+                #         Call_sl_df = dfg1[(dfg1["Signal1"] == "Exit")]
+                #         Call_sl_df['Date_Dif'] = abs((Call_sl_df["Datetime"] - Call_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
+                #         Call_sl_df['Entry'] = np.where(Call_sl_df['Date_Dif'] > 5, "Call_Exit","")
+                #         Call_sl_df1 = Call_sl_df[Call_sl_df['Entry'] == "Call_Exit"]
+                #         Call_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
+                #         five_df4 = pd.concat([Call_sl_df1, five_df4]) 
 
-                        # Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date()) & (Call_sl_df1["Minutes"] < 2 )]          
+                #         Call_sl_df2 = Call_sl_df1[(Call_sl_df1["Date"] == current_trading_day.date()) & (Call_sl_df1["Minutes"] < 5 )]          
             
-                        # if Call_sl_df2.empty:
-                        #     pass
-                        #     print("Call Sl DF Empty")
-                        # else:                  
-                        #     Call_sl_ord = Call_sl_df2.tail(1)
-                        #     Call_sl_Closee = (float(Call_sl_ord['Close']))
-                        #     Call_sl_Spot = round(Call_sl_Closee/100,0)*100
-                        #     Call_sl_time = str(list(Call_sl_ord['Datetime'])[0])
-                        #     Call_sl_ord1 = exc_new1[exc_new1['Root'] == stk_name]
-                        #     Call_sl_ord2 = Call_sl_ord1[(Call_sl_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
-                        #     Expiryyy_Call_sl = (np.unique(Call_sl_ord2['Expiry']).tolist())[0]      
-                        #     Call_sl_ord3 = Call_sl_ord2[Call_sl_ord2['Expiry'] == Expiryyy_Call_sl]
-                        #     Call_sl_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-                        #     Call_sl_ord4 = Call_sl_ord3[(Call_sl_ord3["CpType"] == 'CE')] 
-                        #     Call_sl_ord5 = Call_sl_ord4[(Call_sl_ord4['StrikeRate'] < Call_sl_Spot)] 
-                        #     Call_sl_ord6 = Call_sl_ord5.tail(1)
+                #         if Call_sl_df2.empty:
+                #             pass
+                #             print("Call Sl DF Empty")
+                #         else:                  
+                #             Call_sl_ord = Call_sl_df2.tail(1)
+                #             Call_sl_Closee = (float(Call_sl_ord['Close']))
+                #             Call_sl_Spot = round(Call_sl_Closee/100,0)*100
+                #             Call_sl_time = str(list(Call_sl_ord['Datetime'])[0])
+                #             Call_sl_ord1 = exc_new1[exc_new1['Root'] == stk_name]
+                #             Call_sl_ord2 = Call_sl_ord1[(Call_sl_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
+                #             Expiryyy_Call_sl = (np.unique(Call_sl_ord2['Expiry']).tolist())[0]      
+                #             Call_sl_ord3 = Call_sl_ord2[Call_sl_ord2['Expiry'] == Expiryyy_Call_sl]
+                #             Call_sl_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+                #             Call_sl_ord4 = Call_sl_ord3[(Call_sl_ord3["CpType"] == 'CE')] 
+                #             Call_sl_ord5 = Call_sl_ord4[(Call_sl_ord4['StrikeRate'] < Call_sl_Spot)] 
+                #             Call_sl_ord6 = Call_sl_ord5.tail(1)
                             
-                        #     #Call_sl_Scripcodee = int(float(Call_sl_ord6['Scripcode']))
-                        #     if posit.empty:
-                        #         pass
-                        #     else:
-                        #         positt = posit
-                        #         Call_sl_Name = np.unique([str(i) for i in positt['ScripName']]).tolist()[0] 
-                        #         Call_sl_Scripcodee = int(float(positt['ScripCode']))
-                        #         Call_sl_Qtyy = int(np.unique(Call_sl_ord6['LotSize']))
+                #             #Call_sl_Scripcodee = int(float(Call_sl_ord6['Scripcode']))
+                #             if posit.empty:
+                #                 pass
+                #             else:
+                #                 positt = posit
+                #                 Call_sl_Name = np.unique([str(i) for i in positt['ScripName']]).tolist()[0] 
+                #                 Call_sl_Scripcodee = int(float(positt['ScripCode']))
+                #                 Call_sl_Qtyy = int(np.unique(Call_sl_ord6['LotSize']))
                                 
                                 
 
-                        #         print(Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_time)
+                #                 print(Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_time)
                                 
-                        #         if not Call_sl_ord6.empty:                    
-                        #             dfg1_Call_sl = credi_muk.historical_data('N', 'D', Call_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                        #             if Call_sl_time in sell_order_list_dummy: 
-                        #                 print(str(stk_name)+" Call is Already Exit")
-                        #                 print("----------------------------------------")
-                        #             else:
-                        #                 print("Call Exit")                        
-                        #                 rde_exec = order_execution(dfg1_Call_sl,sell_order_list_dummy,Call_sl_time,telegram_msg,orders,"IDX OPT","CALL EXIT","S",Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_Name,stk_name,
-                        #                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                #                 if not Call_sl_ord6.empty:                    
+                #                     dfg1_Call_sl = credi_muk.historical_data('N', 'D', Call_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+                #                     if Call_sl_time in sell_order_list_dummy: 
+                #                         print(str(stk_name)+" Call is Already Exit")
+                #                         print("----------------------------------------")
+                #                     else:
+                #                         print("Call Exit")                        
+                #                         rde_exec = order_execution(dfg1_Call_sl,sell_order_list_dummy,Call_sl_time,telegram_msg,orders,"IDX OPT","CALL EXIT","S",Call_sl_Scripcodee,Call_sl_Qtyy,Call_sl_Name,stk_name,
+                #                                                    ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
                                 
-                        # Put_sl_df = dfg1[(dfg1["Signal1"] == "Exit")]
-                        # Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
-                        # Put_sl_df['Entry'] = np.where(Put_sl_df['Date_Dif'] > 5, "Put_Exit","")
-                        # Put_sl_df1 = Put_sl_df[Put_sl_df['Entry'] == "Put_Exit"]
-                        # Put_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
-                        # five_df5 = pd.concat([Put_sl_df1, five_df5]) 
+                #         Put_sl_df = dfg1[(dfg1["Signal1"] == "Exit")]
+                #         Put_sl_df['Date_Dif'] = abs((Put_sl_df["Datetime"] - Put_sl_df["Datetime"].shift(1)).astype('timedelta64[m]'))
+                #         Put_sl_df['Entry'] = np.where(Put_sl_df['Date_Dif'] > 5, "Put_Exit","")
+                #         Put_sl_df1 = Put_sl_df[Put_sl_df['Entry'] == "Put_Exit"]
+                #         Put_sl_df1.sort_values(['Name','Datetime'], ascending=[True,True], inplace=True) 
+                #         five_df5 = pd.concat([Put_sl_df1, five_df5]) 
 
-                        # Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 2 )]          
+                #         Put_sl_df2 = Put_sl_df1[(Put_sl_df1["Date"] == current_trading_day.date()) & (Put_sl_df1["Minutes"] < 5 )]          
             
-                        # if Put_sl_df2.empty:
-                        #     pass
-                        #     print("Put Sl DF Empty")
-                        # else:                  
-                        #     Put_sl_ord = Put_sl_df2.tail(1)
-                        #     Put_sl_Closee = (float(Put_sl_ord['Close']))
-                        #     Put_sl_Spot = round(Put_sl_Closee/100,0)*100
-                        #     Put_sl_time = str(list(Put_sl_ord['Datetime'])[0])
-                        #     Put_sl_ord1 = exc_new1[exc_new1['Root'] == stk_name]
-                        #     Put_sl_ord2 = Put_sl_ord1[(Put_sl_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
-                        #     Expiryyy_Put_sl = (np.unique(Put_sl_ord2['Expiry']).tolist())[0]      
-                        #     Put_sl_ord3 = Put_sl_ord2[Put_sl_ord2['Expiry'] == Expiryyy_Put_sl]
-                        #     Put_sl_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-                        #     Put_sl_ord4 = Put_sl_ord3[(Put_sl_ord3["CpType"] == 'PE')] 
-                        #     Put_sl_ord5 = Put_sl_ord4[(Put_sl_ord4['StrikeRate'] > Put_sl_Spot)] 
-                        #     Put_sl_ord6 = Put_sl_ord5.head(1)
-                        #     #Put_sl_Scripcodee = int(float(Put_sl_ord6['Scripcode']))
-                        #     if posit.empty:
-                        #         pass
-                        #     else:
-                        #         positt = posit
-                        #         Put_sl_Name = np.unique([str(i) for i in positt['ScripName']]).tolist()[0]
-                        #         Put_sl_Scripcodee = int(float(positt['ScripCode']))
-                        #         Put_sl_Qtyy = int(np.unique(Put_sl_ord6['LotSize']))
+                #         if Put_sl_df2.empty:
+                #             pass
+                #             print("Put Sl DF Empty")
+                #         else:                  
+                #             Put_sl_ord = Put_sl_df2.tail(1)
+                #             Put_sl_Closee = (float(Put_sl_ord['Close']))
+                #             Put_sl_Spot = round(Put_sl_Closee/100,0)*100
+                #             Put_sl_time = str(list(Put_sl_ord['Datetime'])[0])
+                #             Put_sl_ord1 = exc_new1[exc_new1['Root'] == stk_name]
+                #             Put_sl_ord2 = Put_sl_ord1[(Put_sl_ord1['Expiry'].apply(pd.to_datetime) >= new_current_trading_day)]
+                #             Expiryyy_Put_sl = (np.unique(Put_sl_ord2['Expiry']).tolist())[0]      
+                #             Put_sl_ord3 = Put_sl_ord2[Put_sl_ord2['Expiry'] == Expiryyy_Put_sl]
+                #             Put_sl_ord3.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
+                #             Put_sl_ord4 = Put_sl_ord3[(Put_sl_ord3["CpType"] == 'PE')] 
+                #             Put_sl_ord5 = Put_sl_ord4[(Put_sl_ord4['StrikeRate'] > Put_sl_Spot)] 
+                #             Put_sl_ord6 = Put_sl_ord5.head(1)
+                #             #Put_sl_Scripcodee = int(float(Put_sl_ord6['Scripcode']))
+                #             if posit.empty:
+                #                 pass
+                #             else:
+                #                 positt = posit
+                #                 Put_sl_Name = np.unique([str(i) for i in positt['ScripName']]).tolist()[0]
+                #                 Put_sl_Scripcodee = int(float(positt['ScripCode']))
+                #                 Put_sl_Qtyy = int(np.unique(Put_sl_ord6['LotSize']))
 
-                        #         print(Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_time)
+                #                 print(Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_time)
                                 
-                        #         if not Put_sl_ord6.empty:
-                        #             dfg1_Put_sl = credi_muk.historical_data('N', 'D', Put_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
-                        #             if Put_sl_time in sell_order_list_dummy: 
-                        #                 print(str(stk_name)+" Put is Already Exit")
-                        #                 print("----------------------------------------")
-                        #             else:
-                        #                 print("Put Exit")                        
-                        #                 rde_exec = order_execution(dfg1_Put_sl,sell_order_list_dummy,Put_sl_time,telegram_msg,orders,"IDX OPT","PUT EXIT","S",Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_Name,stk_name,
-                        #                                            ord_muk,ord_bhav,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
+                #                 if not Put_sl_ord6.empty:
+                #                     dfg1_Put_sl = credi_muk.historical_data('N', 'D', Put_sl_Scripcodee, '1m', second_last_trading_day,current_trading_day)
+                #                     if Put_sl_time in sell_order_list_dummy: 
+                #                         print(str(stk_name)+" Put is Already Exit")
+                #                         print("----------------------------------------")
+                #                     else:
+                #                         print("Put Exit")                        
+                #                         rde_exec = order_execution(dfg1_Put_sl,sell_order_list_dummy,Put_sl_time,telegram_msg,orders,"IDX OPT","PUT EXIT","S",Put_sl_Scripcodee,Put_sl_Qtyy,Put_sl_Name,stk_name,
+                #                                                    ord_muk,ord_har,nifty_muk,nifty_har,bknifty_muk,bknifty_har)
 
                         #posi = pd.DataFrame(credi_har.positions()) 
                         #print(posi)
@@ -919,16 +801,15 @@ while True:
                         buy_order_li = buy_order[(buy_order['BuySell'] == 'B') & (buy_order['OrderStatus'] == 'Fully Executed')]
                         buy_order_liii = buy_order_li.head(1)
                         new_df = pd.merge(buy_order_liii,posit, on=['ScripCode'], how='inner')
-                        
                         #new_df.sort_values(['Datetimeee'], ascending=[False], inplace=True)
-                        #
+                        #print(new_df)
                         new_df1 = new_df.head(1)
-                        #print(new_df1)
+                        print(new_df1)
                         
                         Ratee = (np.unique([float(i) for i in new_df1['Rate']])).tolist()[0]
                         LTPP = (np.unique([float(i) for i in new_df1['LTP']])).tolist()[0]
                         Qtty1 = (np.unique([float(i) for i in new_df1['Qty']])).tolist()[0]
-                        new_df_name = np.unique([str(i) for i in new_df['Root']]).tolist()[0]                        
+                        
 
                         print(Ratee,LTPP,Qtty1)
                         print("Last Buy Rate is : "+str(Ratee))
@@ -942,17 +823,16 @@ while True:
                         print(Qtty1,pl)
                         if Qtty1 == 25:
                             slll = -300
-                            tgtt = 1500
+                            tgtt = 1000
                         if Qtty1 == 15:
                             slll = -300
-                            tgtt = 1500
+                            tgtt = 1000
                         #print(slll,tgtt)
-
                         if pl < slll or pl > tgtt:
-                            order = credi_bhav.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType_y'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                            order = credi_muk.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType_y'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                            order = credi_bhav.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                            order = credi_muk.place_order(OrderType='S',Exchange=list(new_df1['Exch'])[0],ExchangeType=list(new_df1['ExchType'])[0], ScripCode = int(new_df1['ScripCode']), Qty=int(new_df1['BuyQty'])-int(new_df1['SellQty']),Price=float(new_df1['LTP']),IsIntraday=True if list(new_df1['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
                             #order = credi_muk.place_order(OrderType='S',Exchange=list(posit['Exch'])[0],ExchangeType=list(posit['ExchType'])[0], ScripCode = int(posit['ScripCode']), Qty=int(posit['LotSize']),Price=float(posit['LTP']),IsIntraday=True if list(posit['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
-                            print("StopLoss is Greater than -900")
+                            print("StopLoss is Greater than -300")
                             print("Sell stoplOSS order Executed")
                         else:
                             pass
