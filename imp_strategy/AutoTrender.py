@@ -564,11 +564,19 @@ while True:
                 #print(df1.head(1))
                 df1['Call_CHG'] = 100-((df1['CE_Prev_Ltp']*100)/df1['CE_Ltp'])
                 df1['Put_CHG'] = 100-((df1['PE_Prev_Ltp']*100)/df1['PE_Ltp'])
+                df1['Call_Senti'] = np.where((df1['CE_Chg_OI'] > 0) & (df1['Call_CHG'] > 0) ,"LONG BUILD",
+                                             np.where((df1['CE_Chg_OI'] < 0) & (df1['Call_CHG'] < 0),"LONG UNWIND",
+                                                      np.where((df1['CE_Chg_OI'] > 0) & (df1['Call_CHG'] < 0),"SHORT BUILD",
+                                                               np.where((df1['CE_Chg_OI'] < 0) & (df1['Call_CHG'] > 0),"SHORT UNWIND",""))))
+                df1['Put_Senti'] = np.where((df1['PE_Chg_OI'] > 0) & (df1['Put_CHG'] > 0),"LONG BUILD",
+                                np.where((df1['PE_Chg_OI'] < 0) & (df1['Put_CHG'] < 0),"LONG UNWIND",
+                                        np.where((df1['PE_Chg_OI'] > 0) & (df1['Put_CHG'] < 0),"SHORT BUILD",
+                                                np.where((df1['PE_Chg_OI'] < 0) & (df1['Put_CHG'] > 0),"SHORT UNWIND",""))))
                 #print(df1.head(1))
                 # df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp', 'StrikeRate',
                 #         'PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
-                df1 = df1[['CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp','Call_CHG', 'StrikeRate',
-                        'Put_CHG','PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script']]
+                df1 = df1[['Call_Senti','CE_Script', 'CE_Volume', 'CE_Prev_OI', 'CE_Chg_OI', 'CE_OI', 'CE_Prev_Ltp', 'CE_Ltp','Call_CHG', 'StrikeRate',
+                        'Put_CHG','PE_Ltp', 'PE_Prev_Ltp', 'PE_OI', 'PE_Chg_OI', 'PE_Prev_OI', 'PE_Volume', 'PE_Script','Put_Senti']]
                 oc.range("g1").value = df1
 
 
