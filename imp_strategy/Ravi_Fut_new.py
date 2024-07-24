@@ -406,7 +406,7 @@ while True:
         #     pre_oc_symbol = pre_oc_expiry = ""
 
         if pre_oc_symbol != oc_symbol or pre_oc_expiry != oc_expiry:
-            oc.range("g:v").value = None
+            oc.range("g:z").value = None
             instrument_dict = {}
             stop_thread = True
             time.sleep(2)
@@ -461,11 +461,11 @@ while True:
 
                 ep1 = pd.DataFrame(ep)
                 ep1.columns = ['ExpDate', 'DayFormat']
-                #print(ep1)
-                expiry = (ep1['DayFormat'][0])
-                #expiry_new = (ep1['ExpDate'][0])
-                #print("2")
-                print(expiry)
+                expiryy = ep1[pd.to_datetime(ep1["ExpDate"],infer_datetime_format=True) == oc_expiry]
+                expiry = (int(expiryy['DayFormat']))
+                expiry_new = (expiryy['ExpDate'])
+
+                print(expiry,expiry_new)
 
                 opt = pd.DataFrame(credi_muk.get_option_chain("N", oc_symbol, expiry)['Options'])
 
@@ -825,7 +825,7 @@ while True:
             oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
         except Exception as e:
             print(e)
-        scpt = symbb.range(f"c{2}:c{15}").value
+        scptt = symbb.range(f"c{2}:c{15}").value
         scpt1 = symbb.range(f"a{2}:d{15}").value
         symbols = dash.range(f"a{2}:a{15}").value
         trading_info = dash.range(f"a{2}:x{15}").value
@@ -835,10 +835,10 @@ while True:
         scpt_list = []
 
         idxex = 0
-        for ii in scpt:
+        for ii in scptt:
             if ii:
                 trade1 = scpt1[idxex]
-                namew = trade1[0]+":"+trade1[1]+":"+trade1[2]
+                #namew = trade1[0]+":"+trade1[1]+":"+trade1[2]
                 aaa={"Exchange": f"{trade1[0]}", "ExchangeType":f"{trade1[1]}", "Symbol": f"{trade1[2]}"}
                 scpt_list.append(aaa) 
             idxex += 1
@@ -849,9 +849,26 @@ while True:
 
         for tt in gg:
             scpt_list.append(tt) 
+
+        scpt_code_list = []
+
+        idxexx = 0
+        for iii in scptt:
+            if iii:
+                trade11 = scpt1[idxexx]
+                #nameww = trade11[0]+":"+trade11[1]+":"+str(trade11[3])
+                aaaa={"Exchange": f"{trade11[0]}", "ExchangeType":f"{trade11[1]}", "Symbol": f"{trade11[3]}"}
+                scpt_code_list.append(aaaa) 
+            idxexx += 1      
+
+        print(scpt_list)
+        print(scpt_code_list)
             
-        #print(scpt_list)
         dfg1 = credi_muk.fetch_market_depth_by_symbol(scpt_list)
+        dfg11 = credi_muk.fetch_market_depth(scpt_code_list)
+        print(dfg1)
+        print("lkjzdfvjnf")
+        print(dfg11)
         dfg2 = dfg1['Data']
         dfg3 = pd.DataFrame(dfg2)
         dfg3['TimeNow'] = datetime.now()
