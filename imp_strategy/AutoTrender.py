@@ -589,6 +589,13 @@ while True:
     else:
         print("Option Chain is OFF")
     
+    # if xlbooks == "Option Chain":
+
+
+    # else:
+    #     print("Option Chain is OFF")
+  
+
     if xlbooks == "Option Greeks":
     #global pre_oc_symbol,pre_oc_expiry
         try:
