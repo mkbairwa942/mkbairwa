@@ -890,9 +890,11 @@ while True:
             posi.rename(columns={'ScripName': 'Name','LTP': 'LastTradedPrice'}, inplace=True)
                                  #,'CpType_x':'Type','LotSize_x':'Lot','Open_x': 'Open_OPT','High_x': 'High_OPT','Low_x': 'Low_OPT','Close_x': 'Close_OPT','LastTradedPrice_x': 'LTP_OPT',
                              #'ScripCode_y': 'ScpCode_SPOT','Open_y': 'Open_SPOT','High_y': 'High_SPOT','Low_y': 'Low_SPOT','Close_y': 'Close_SPOT','LastTradedPrice_y': 'LTP_SPOT',}, inplace=True)
-            print(dfg4)
-            print(posi)
+            # print(dfg4)
+            # print(posi)
             dfg6 = pd.merge(dfg4, posi, on=['ScripCode'], how='outer')
+            dfg6 = dfg6[['Name_x','Exch_x','ExchType_x','CpType','ScripCode','Root','TimeNow','Spot','LastTradedPrice_x','LotSize_x','BuyAvgRate','SellAvgRate','BuyQty','SellQty','BookedPL','MTOM','BuyValue','OrderFor']]
+            dfg6.sort_values(['MTOM','ScripCode'], ascending=[True,False], inplace=True)
             dash.range("a2").options(index=False).value = dfg6
             try:
                 symbb.range("f1").options(index=False).value = posi
@@ -903,132 +905,6 @@ while True:
             except Exception as e:
                 print(f"Error : {e}")
 
-
-        #print(dfg4)
-        # listo = (np.unique(dfg5['Root']).tolist())
-    
-        # scpt_listtt = []
-
-        # for i in listo: 
-        #     #print(i)
-        #     dfg6 = dfg5[dfg5['Root'] == i]
-        #     stk_name = i
-        #     print(dfg6.head(1))
-        #     Spot = int(dfg6['Spot'])   
-        #     print(stk_name)
-        #     print("Spot Price is : "+str(Spot)) 
-            
-        #     dfc2 = exchange_fo[exchange_fo['Root'] == stk_name]
-        #     #print(np.unique(dfc2['Root']).tolist())
-        #     dfc3 = dfc2[(dfc2['Expiry'].apply(pd.to_datetime) >= current_trading_day)]
-        #     Expiryyy = (np.unique(dfc3['Expiry']).tolist())[0]      
-        #     #print(Expiryyy)
-        #     dfc = dfc3[dfc3['Expiry'] == Expiryyy]
-        #     dfc.sort_values(['StrikeRate','Expiry'], ascending=[True,True], inplace=True)
-
-        #     dfgg_CE1 = dfc[(dfc["CpType"] == 'CE')] 
-        #     dfgg_CE2 = dfgg_CE1[(dfgg_CE1['StrikeRate'] < Spot)] 
-        #     dfgg_CE3 = dfgg_CE2.tail(1)
-        #     #print(dfgg_CE3)
-        #     dfgg_CE_scpt = (np.unique([int(i) for i in dfgg_CE3['ScripCode']])).tolist()[0]
-        #     scpt_listtt.append(dfgg_CE_scpt)
-            
-        #     dfgg_CE01 = dfc[(dfc["CpType"] == 'CE')] 
-        #     dfgg_CE02 = dfgg_CE01[(dfgg_CE01['StrikeRate'] == Spot)] 
-        #     dfgg_CE03 = dfgg_CE02.tail(1)
-        #     #print(dfgg_CE3)
-        #     dfgg_CE_scpt0 = (np.unique([int(i) for i in dfgg_CE03['ScripCode']])).tolist()[0]
-        #     scpt_listtt.append(dfgg_CE_scpt0)
-            
-        #     dfgg_PE01 = dfc[(dfc["CpType"] == 'PE')]        
-        #     dfgg_PE02 = dfgg_PE01[(dfgg_PE01['StrikeRate'] == Spot)]                        
-        #     dfgg_PE03 = dfgg_PE02.head(1)
-        #     #print(dfgg_PE3)
-        #     dfgg_PE_scpt0 = (np.unique([int(i) for i in dfgg_PE03['ScripCode']])).tolist()[0]
-        #     scpt_listtt.append(dfgg_PE_scpt0)
-
-        #     dfgg_PE1 = dfc[(dfc["CpType"] == 'PE')]        
-        #     dfgg_PE2 = dfgg_PE1[(dfgg_PE1['StrikeRate'] > Spot)]                        
-        #     dfgg_PE3 = dfgg_PE2.head(1)
-        #     #print(dfgg_PE3)
-        #     dfgg_PE_scpt = (np.unique([int(i) for i in dfgg_PE3['ScripCode']])).tolist()[0]
-        #     scpt_listtt.append(dfgg_PE_scpt)
-
-        # posi = pd.DataFrame(credi_muk.positions())
-        # #posi1 = pd.DataFrame(credi_ash.positions())
-        # if posi.empty:
-        #     print("First Position of Haresh Empty")
-        # else:
-        #     try:
-        #         symbb.range("f1").options(index=False).value = posi
-        #         if posi.empty:
-        #             print("First Position of Mukesh Empty")
-        #         else:
-        #             symbb.range("f10").options(index=False).value = posi
-        #         #dt.range("a10").options(index=False).value = posi1
-        #         posit3 = (np.unique([int(i) for i in posi['ScripCode']])).tolist()#[0] 
-        #         #print(posit3)
-        #         for t in posit3:
-        #             scpt_listtt.append(t) 
-        #     except Exception as e:
-        #         print(f"Error : {e}")
-
-        
-        # scpt_listtt1 = np.unique(scpt_listtt)
-        # #print(scpt_listtt1)
-        # Data_fr = []
-
-        # for dtt in scpt_listtt1:
-        #     #print(dtt)
-        #     a={"Exchange": "N", "ExchangeType": "D", "ScripCode": f"{dtt}"}
-        #     Data_fr.append(a) 
-
-        # #print(Data_fr)
-        # dfggg = credi_muk.fetch_market_depth(Data_fr)
-        # dfggg1 = dfggg['Data']
-        # dfggg2 = pd.DataFrame(dfggg1)
-        # dfggg2['TimeNow'] = datetime.now()
-        # dfggg2['Spot'] = round(dfggg2['LastTradedPrice']/100,0)*100
-        # dfggg2 = dfggg2[['ScripCode','Open','High','Low','Close','LastTradedPrice','Spot','TimeNow','TotalBuyQuantity','TotalSellQuantity']]
-        # #sl.range("a20").options(index=False).value = dfggg2
-
-        # #print(dfgg2)
-        
-        # # print(exchange_opt.head(2))
-        # # print(dfggg2.head(2))
-        # #exchange_opt = exchange_opt[['ScripCode','Root','Name','Exch','ExchType','CpType','LotSize']]
-        # dfgg3 = pd.merge(dfggg2, exchange_fo, on=['ScripCode'], how='inner')
-        # dfgg3 = dfgg3[['Root','Name','ScripCode','Exch','ExchType','CpType','Open','High','Low','Close','LastTradedPrice','LotSize','TotalBuyQuantity','TotalSellQuantity']]
-        # #sl.range("a30").options(index=False).value = dfgg3
-
-        # dfgg4 = pd.merge(dfgg3, dfg5, on=['Root'], how='inner')
-        # dfgg4.rename(columns={'Name_x': 'Name','Exch_x': 'Exch','ExchType_x': 'ExchType','ScripCode_x': 'ScripCode','CpType_x':'Type','LotSize_x':'Lot','Open_x': 'Open_OPT','High_x': 'High_OPT','Low_x': 'Low_OPT','Close_x': 'Close_OPT','LastTradedPrice_x': 'LTP_OPT',
-        #                     'ScripCode_y': 'ScpCode_SPOT','Open_y': 'Open_SPOT','High_y': 'High_SPOT','Low_y': 'Low_SPOT','Close_y': 'Close_SPOT','LastTradedPrice_y': 'LTP_SPOT',}, inplace=True)
-        # dfgg4['Diff_QTY'] = dfgg4['TotalSellQuantity'] - dfgg4['TotalBuyQuantity']
-        
-        # #sl.range("a40").options(index=False).value = dfgg4
-        
-        # dfgg5 = dfgg4[['Name','Root','Exch','ExchType','Type','ScripCode','TimeNow','LTP_SPOT','Spot','LTP_OPT','Diff_QTY','Lot']]
-        # try:
-        #     if posi.empty:
-        #         print("First Position is Empty")
-        #         dfgg5 =dfgg5[['Name','Root','Exch','ExchType','Type','ScripCode','TimeNow','LTP_SPOT','Spot','LTP_OPT','Diff_QTY','Lot']]
-        #         dash.range(f"m1:x1").value = ['LTP','BuyAvgRate','SellAvgRate','BuyQty','SellQty','BookedPL','MTOM','Buy_lvl','TGT','SLL','BUY','SELL','Status']
-        #         #dash.range("a1").options(index=False).value = dfgg5
-        #     else:
-        #         posit = posi #posit[(posit['MTOM'] != 0)]
-        #         #posit3 = (np.unique([int(i) for i in posit['ScripCode']])).tolist()     
-        #         dfgg6 = pd.merge(dfgg5, posi, on=['ScripCode'], how='outer')
-        #         dfgg6 =dfgg6[['Name','Root','Exch_x','ExchType_x','Type','ScripCode','TimeNow','LTP_SPOT','Spot','LTP_OPT','Diff_QTY','Lot',
-        #                     'LTP','BuyAvgRate','SellAvgRate','BuyQty','SellQty','BookedPL','MTOM']]
-        #         dfgg6.sort_values(['Spot','Type'], ascending=[False, True], inplace=True)
-        #         dash.range(f"t1:x1").value = ["Buy_lvl","TGT","SLL","BUY","SELL","Status"]   
-        #         #dt.range("a2:s15").value = None     
-        #         dfgg6.sort_values(['BookedPL'], ascending=[True], inplace=True)    
-        #         dash.range("a1").options(index=False).value = dfgg6
-
-        # except Exception as e:
-        #     print(f"Error : {e}")
 
         # idx = 0
         # for i in symbols:
@@ -1042,11 +918,11 @@ while True:
         #             Exc_typ = trade_info[3]
         #             typee = trade_info[4]
         #             scpt_code = int(trade_info[5])
-        #             lt_spt = trade_info[7]
+        #             lt_spt = trade_info[8]
         #             pricee = trade_info[9]
-        #             lotee = trade_info[11]
-        #             mtomm = trade_info[18]
-        #             tgtt = trade_info[20]
+        #             lotee = trade_info[10]
+        #             mtomm = trade_info[16]
+        #             tgtt = trade_info[19]
         #             slll = trade_info[21]                
         #             buyy = trade_info[22]
         #             selll = trade_info[23]
@@ -1187,9 +1063,9 @@ while True:
         #             #                         sell_lst.append(scpt_code)
         #             #                         #print("36")
 
-        #             #print("3")    
-        #         except Exception as e:
-        #             print(e)            
+                    #print("3")    
+                # except Exception as e:
+                #     print(e)            
         #     idx += 1
         # # dt.range(f"w2:w15").value = ''
         # # dt.range(f"x2:x15").value = ''
