@@ -265,7 +265,7 @@ index = 'SBIN'
 # a=[{"Exchange": "N", "ExchangeType": "C", "ScripCode": "3045"},
 #    {"Exchange": "N", "ExchangeType": "C", "ScripCode": "1660"},
 #    ]
-# print(client.fetch_market_depth(a))
+# print(credi_muk.fetch_market_depth(a))
 
 # Full Market Snapshot(By Symbol)
 

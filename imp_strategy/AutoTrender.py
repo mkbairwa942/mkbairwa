@@ -854,6 +854,7 @@ while True:
         dfg1 = credi_muk.fetch_market_depth_by_symbol(scpt_list)
         dfg2 = dfg1['Data']
         dfg3 = pd.DataFrame(dfg2)
+        #print(dfg3)
         dfg3['TimeNow'] = datetime.now()
         dfg3['Spot'] = round(dfg3['LastTradedPrice']/100,0)*100
         #dfg3['Root'] = np.where(dfg3['ScripCode'] == 999920000,"NIFTY",np.where(dfg3['ScripCode'] == 999920005,"BANKNIFTY",""))
@@ -872,7 +873,7 @@ while True:
             stk_name = i
             #print(dfg6.head(1))
             Spot = int(dfg6['Spot'])   
-            print(stk_name)
+            #print(stk_name)
             print("Spot Price is : "+str(Spot)) 
             
             dfc2 = exchange_fo[exchange_fo['Root'] == stk_name]

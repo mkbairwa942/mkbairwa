@@ -12,7 +12,7 @@ from datetime import datetime,timedelta
 import pandas_ta as pta
 import math 
 from pandas import DataFrame, Series
-from pandas_ta.overlap import ema, hl2
+#from pandas_ta.overlap import ema, hl2a
 from pandas_ta.utils import get_offset, high_low_range, verify_series, zero
 from numpy import log as nplog
 from numpy import NaN as npNaN
