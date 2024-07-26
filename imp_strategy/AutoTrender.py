@@ -153,7 +153,7 @@ if not os.path.exists("AutoTrender.xlsx"):
         sys.exit()
 wb = xw.Book('AutoTrender.xlsx')
 
-for i in ["Symbol","Dashboard","Option Greeks","EOD Data","Exchange","Fil Exch","World Market","Nifty 50 Rnaking","F&O Ranking","Stocks Positional",
+for i in ["Symbol","Dashboard","Terminal","Option Greeks","EOD Data","Exchange","Fil Exch","World Market","Nifty 50 Rnaking","F&O Ranking","Stocks Positional",
           "Auto","Auto Ancillaries","Capital Goods","Cements","FMCG","IT","Insurance","Metals","NBFC","Chemicals","Consumer Durables",
           "Oil & Gas","MidCap","Pharma","Power","Private Banks","PSU Banks","Reality","Telecom",
           "Buy Senti > 60","Sell Senti > 60"]:
@@ -165,6 +165,7 @@ for i in ["Symbol","Dashboard","Option Greeks","EOD Data","Exchange","Fil Exch",
 eod_data = wb.sheets("EOD Data")
 symbb = wb.sheets("Symbol")
 dash = wb.sheets("Dashboard")
+termi = wb.sheets("Terminal")
 exc = wb.sheets("Exchange")
 flt_exc = wb.sheets("Fil Exch")
 oc = wb.sheets("Option Chain")
@@ -271,6 +272,7 @@ while True:
 
             exchange_eq = pd.DataFrame(exc_eq1)
             exchange_cash = exchange_eq[(exchange_eq["Exch"] == "N") & (exchange_eq['ExchType'].isin(['C'])) & (exchange_eq["Series"] == "EQ")]
+            exchange_all = pd.concat([exchange_fo1, exchange_cash])
             # print(exchange.tail(20))
             break
         except:
@@ -820,6 +822,157 @@ while True:
     else:
         print("Option Greeks is OFF")
     
+    if xlbooks =="Terminal":
+        scptt = symbb.range(f"c{2}:c{15}").value
+        scpt1 = symbb.range(f"a{2}:d{15}").value
+        symbols = dash.range(f"a{2}:a{15}").value
+        trading_info = dash.range(f"a{2}:x{15}").value
+
+        symbb.range(f"a1:d1").value = ["Exch","ExchType","Name","ScripCode"]
+
+        scpt_list = []
+        scpt_code_list = []
+
+        idxex = 0
+        for ii in scptt:
+            if ii:
+                trade1 = scpt1[idxex]
+                aaa={"Exchange": f"{trade1[0]}", "ExchangeType":f"{trade1[1]}", "Symbol": f"{trade1[2]}"}
+                aaaa={"Exchange": f"{trade1[0]}", "ExchangeType":f"{trade1[1]}", "ScripCode": f"{trade1[3]}"}
+                scpt_list.append(aaa) 
+                scpt_code_list.append(aaaa)
+            idxex += 1
+        gg=[
+            {"Exchange":"N","ExchangeType":"C","Symbol":"NIFTY"},
+            {"Exchange":"N","ExchangeType":"C","Symbol":"BANKNIFTY"}]  
+
+        for tt in gg:
+            scpt_list.append(tt) 
+
+        posi = pd.DataFrame(credi_muk.positions())
+        if posi.empty:
+            print("First Position of Mukesh Empty")
+        else:
+            posit_list = (np.unique([int(i) for i in posi['ScripCode']])).tolist()
+            for dtt in posit_list:
+                a={"Exchange": "N", "ExchangeType": "D", "ScripCode": f"{dtt}"}
+                scpt_code_list.append(a)
+            
+
+        # print(posit_list)
+        # print(scpt_list)
+        # print(scpt_code_list)
+        # scpt_list1 = {k:v for k,v in scpt_list.items() if list(scpt_list.values()).count(v)==1}
+        # scpt_code_list1 = {k:v for k,v in scpt_code_list.items() if list(scpt_code_list.values()).count(v)==1}
+
+        dfg1 = credi_muk.fetch_market_depth_by_symbol(scpt_list)
+
+        dfg2 = dfg1['Data']
+        dfg3 = pd.DataFrame(dfg2)  
+      
+        dfg11 = credi_muk.fetch_market_depth(scpt_code_list)
+        dfg22 = dfg11['Data']
+        dfg33 = pd.DataFrame(dfg22)
+        dash_frame = pd.concat([dfg3, dfg33])
+        dash_frame['TimeNow'] = datetime.now()
+        dash_frame['Spot'] = round(dash_frame['LastTradedPrice']/100,0)*100
+        #print(dash_frame)
+        dash_frame['Diff_QTY'] = dash_frame['TotalSellQuantity'] - dash_frame['TotalBuyQuantity']
+        dash_frame = dash_frame[['ScripCode','Open','High','Low','Close','LastTradedPrice','Spot','TimeNow','Diff_QTY']]
+        
+        dfg4 = pd.merge(dash_frame, exchange_all, on=['ScripCode'], how='inner')
+        dfg5 = dfg4[~dfg4.duplicated(subset=['ScripCode'], keep='last')].copy()
+
+        posi = pd.DataFrame(credi_muk.positions())
+        if posi.empty:
+            print("First Position of Mukesh Empty")
+            dash.range("a1").options(index=False).value = dfg5
+        else:
+
+            posi.rename(columns={'ScripName': 'Name','LTP': 'LastTradedPrice'}, inplace=True)
+                                 #,'CpType_x':'Type','LotSize_x':'Lot','Open_x': 'Open_OPT','High_x': 'High_OPT','Low_x': 'Low_OPT','Close_x': 'Close_OPT','LastTradedPrice_x': 'LTP_OPT',
+                             #'ScripCode_y': 'ScpCode_SPOT','Open_y': 'Open_SPOT','High_y': 'High_SPOT','Low_y': 'Low_SPOT','Close_y': 'Close_SPOT','LastTradedPrice_y': 'LTP_SPOT',}, inplace=True)
+            # print(dfg4)
+            # print(posi)
+            dfg6 = pd.merge(dfg5, posi, on=['ScripCode'], how='outer')
+            dfg6 = dfg6[['Name_x','Exch_x','ExchType_x','CpType','ScripCode','Root','TimeNow','Diff_QTY','Spot','LastTradedPrice_x','LotSize_x','BuyAvgRate','SellAvgRate','BuyQty','SellQty','BookedPL','MTOM','BuyValue','OrderFor']]
+            dfg6.sort_values(['ExchType_x','Name_x','OrderFor'], ascending=[True,True,True], inplace=True)
+            #dfg6.drop_duplicates()
+            dash.range("a1").options(index=False).value = dfg6
+            try:
+                symbb.range("f1").options(index=False).value = posi
+                if posi.empty:
+                    print("First Position of Mukesh Empty")
+                else:
+                    symbb.range("f10").options(index=False).value = posi
+            except Exception as e:
+                print(f"Error : {e}")
+
+        #symbols = list(filter(lambda item: item is not None, sym))
+        idx = 0
+        for i in symbols:
+            if i:
+                try:
+                    
+                    #print("1")
+                    trade_info = trading_info[idx]
+                    #print(trade_info)
+                    Exch = trade_info[1]
+                    Exc_typ = trade_info[2]
+                    typee = trade_info[3]
+                    scpt_code = trade_info[4]
+                    lt_spt = trade_info[8]
+                    pricee = trade_info[9]
+                    lotee = trade_info[10]
+                    mtomm = trade_info[16]
+                    buy_lvl = trade_info[19]
+                    tgtt = trade_info[20]
+                    slll = trade_info[21]                
+                    buyy = trade_info[22]
+                    selll = trade_info[23]
+                    # by_qty = trade_info[22]
+                    # sl_qty = trade_info[23]
+                    
+                    print(buy_lst)
+                    print(sell_lst)
+
+                    if buyy is None:
+                        if scpt_code in buy_lst:
+                            buy_lst.remove(scpt_code)
+                    if selll is None:
+                        if scpt_code in sell_lst:
+                            sell_lst.remove(scpt_code)
+                    if scpt_code in buy_lst: 
+                        print(str(scpt_code)+" Call is Already Buy")
+                    else:
+                        print("1")
+                        if buyy is not None:
+                            print("2")
+                            if orders.upper() == "YES" or orders.upper() == "":  
+                                for credi in cred:                            
+                                    order = credi.place_order(OrderType='B',Exchange=str(Exch),ExchangeType=str(Exc_typ), ScripCode = int(scpt_code), Qty=int(buyy)*int(lotee),Price=float(pricee),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                    print("Buy Call Order Executed")
+                                    buy_lst.append(scpt_code)
+
+                    if scpt_code in sell_lst: 
+                        print(str(scpt_code)+" Sell Already Exited")
+                    else:   
+                        print("3")             
+                        if selll is not None:
+                            print("4")
+                            if orders.upper() == "YES" or orders.upper() == "":  
+                                for credi in cred:                            
+                                    order = credi.place_order(OrderType='S',Exchange=str(Exch),ExchangeType=str(Exc_typ), ScripCode = int(scpt_code), Qty=int(selll)*int(lotee),Price=float(pricee),IsIntraday=True)# if list(order_df['OrderFor'])[0] == "I" else False)#, IsStopLossOrder=True, StopLossPrice=Buy_Stop_Loss)
+                                    print("Sell Call Order Executed")
+                                    sell_lst.append(scpt_code)
+
+  
+                except Exception as e:
+                    print(e)            
+            idx += 1
+    else:
+        print("Bid Ask Diff is OFF")
+
     if xlbooks =="Dashboard":
         try:
             oc_symbol,oc_expiry = oc.range("e2").value,oc.range("e3").value
