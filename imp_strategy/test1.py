@@ -833,9 +833,6 @@ while True:
             print(e)
         scptt = symbb.range(f"c{2}:c{15}").value
         scpt1 = symbb.range(f"a{2}:d{15}").value
-        symbols = dash.range(f"a{2}:a{15}").value
-        trading_info = dash.range(f"a{2}:x{15}").value
-
         symbb.range(f"a1:d1").value = ["Exch","ExchType","Name","ScripCode"]
 
         scpt_list = []
@@ -917,6 +914,8 @@ while True:
                 print(f"Error : {e}")
 
         #symbols = list(filter(lambda item: item is not None, sym))
+        symbols = dash.range(f"a{2}:a{15}").value
+        trading_info = dash.range(f"a{2}:x{15}").value
         idx = 0
         for i in symbols:
             if i:
