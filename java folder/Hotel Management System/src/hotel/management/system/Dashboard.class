@@ -1,0 +1,57 @@
+// Source code is decompiled from a .class file using FernFlower decompiler.
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.LayoutManager;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+public class Dashboard extends JFrame {
+   public static void main(String[] var0) {
+      (new Dashboard()).setVisible(true);
+   }
+
+   public Dashboard() {
+      super("HOTEL MANAGEMENT SYSTEM");
+      this.setForeground(Color.CYAN);
+      this.setLayout((LayoutManager)null);
+      ImageIcon var1 = new ImageIcon(ClassLoader.getSystemResource("icons/third.jpg"));
+      Image var2 = var1.getImage().getScaledInstance(1900, 1000, 1);
+      ImageIcon var3 = new ImageIcon(var2);
+      JLabel var4 = new JLabel(var3);
+      var4.setBounds(0, 0, 1900, 1000);
+      this.add(var4);
+      JLabel var5 = new JLabel("THE TAJ GROUP WELCOMES YOU");
+      var5.setForeground(Color.MAGENTA);
+      var5.setFont(new Font("Tahoma", 0, 46));
+      var5.setBounds(450, 50, 1000, 85);
+      var4.add(var5);
+      JMenuBar var6 = new JMenuBar();
+      this.setJMenuBar(var6);
+      JMenu var7 = new JMenu("HOTEL MANAGEMENT");
+      var7.setForeground(Color.BLUE);
+      var6.add(var7);
+      JMenuItem var8 = new JMenuItem("RECEPTION");
+      var7.add(var8);
+      var8.addActionListener(new Dashboard$1(this));
+      JMenu var9 = new JMenu("ADMIN");
+      var9.setForeground(Color.RED);
+      var6.add(var9);
+      JMenuItem var10 = new JMenuItem("ADD EMPLOYEE");
+      var9.add(var10);
+      var10.addActionListener(new Dashboard$2(this));
+      JMenuItem var11 = new JMenuItem("ADD ROOMS");
+      var9.add(var11);
+      var11.addActionListener(new Dashboard$3(this));
+      JMenuItem var12 = new JMenuItem("ADD DRIVERS");
+      var9.add(var12);
+      var12.addActionListener(new Dashboard$4(this));
+      this.setSize(1900, 1090);
+      this.setVisible(true);
+      this.getContentPane().setBackground(Color.WHITE);
+   }
+}

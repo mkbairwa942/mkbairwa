@@ -303,7 +303,11 @@ ocg.range("a1").value = df
 
 def bhavcopy(lastTradingDay):
     dmyformat = datetime.strftime(lastTradingDay, '%d%m%Y')
-    url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
+    ddd = datetime.strftime(lastTradingDay, '%d')
+    MMM = datetime.strftime(lastTradingDay, '%b')#.upper()
+    yyyy = datetime.strftime(lastTradingDay, '%Y')
+    #url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
+    url = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22Full%20Bhavcopy%20and%20Security%20Deliverable%20data%22%2C%22type%22%3A%22daily-reports%22%2C%22category%22%3A%22capital-market%22%2C%22section%22%3A%22equities%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equities&mode=single'
     bhav_eq1 = pd.read_csv(url)
     bhav_eq1 = pd.DataFrame(bhav_eq1)
     bhav_eq1.columns = bhav_eq1.columns.str.strip()
@@ -318,10 +322,12 @@ def bhavcopy(lastTradingDay):
 def bhavcopy_fno(lastTradingDay):
     try:
         dmyformat = datetime.strftime(lastTradingDay, '%d%b%Y').upper()
-        MMM = datetime.strftime(lastTradingDay, '%b').upper()
+        ddd = datetime.strftime(lastTradingDay, '%d')
+        MMM = datetime.strftime(lastTradingDay, '%b')#.upper()
         yyyy = datetime.strftime(lastTradingDay, '%Y')
-        url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
-        content = requests.get(url1)      
+        #url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
+        url1 = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22F%26O%20-%20Bhavcopy%20(fo.zip)%22%2C%22type%22%3A%22archives%22%2C%22category%22%3A%22derivatives%22%2C%22section%22%3A%22equity%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equity&mode=single'
+        content = requests.get(url1)     
         if content.status_code == 200:
             zf = ZipFile(BytesIO(content.content))
             match = [s for s in zf.namelist() if ".csv" in s][0]
@@ -569,8 +575,8 @@ while True:
 
                 #df1['Call_Senti'] = np.where()
                 #print(df1.head(1))
-                df1['Call_CHG'] = 100-((df1['CE_Prev_Ltp']*100)/df1['CE_Ltp'])
-                df1['Put_CHG'] = 100-((df1['PE_Prev_Ltp']*100)/df1['PE_Ltp'])
+                df1['Call_CHG'] = np.round((100-((df1['CE_Prev_Ltp']*100)/df1['CE_Ltp'])),2)
+                df1['Put_CHG'] = np.round((100-((df1['PE_Prev_Ltp']*100)/df1['PE_Ltp'])),2)
                 df1['Call_Senti'] = np.where((df1['CE_Chg_OI'] > 0) & (df1['Call_CHG'] > 0) ,"LONG BUILD",
                                              np.where((df1['CE_Chg_OI'] < 0) & (df1['Call_CHG'] < 0),"LONG UNWIND",
                                                       np.where((df1['CE_Chg_OI'] > 0) & (df1['Call_CHG'] < 0),"SHORT BUILD",

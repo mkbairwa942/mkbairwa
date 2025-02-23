@@ -79,7 +79,11 @@ def fnolist():
 
 def bhavcopy(date):
     dmyformat = datetime.strftime(date, '%d%m%Y')
-    url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
+    ddd = datetime.strftime(date, '%d')
+    MMM = datetime.strftime(date, '%b')#.upper()
+    yyyy = datetime.strftime(date, '%Y')
+    #url = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_' + dmyformat + '.csv'
+    url = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22Full%20Bhavcopy%20and%20Security%20Deliverable%20data%22%2C%22type%22%3A%22daily-reports%22%2C%22category%22%3A%22capital-market%22%2C%22section%22%3A%22equities%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equities&mode=single'
     bhav_eq1 = pd.read_csv(url)
     bhav_eq1.columns = bhav_eq1.columns.str.strip()
     bhav_eq1 = bhav_eq1.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
@@ -91,23 +95,34 @@ def bhavcopy(date):
     df1 = bhav_eq.set_index(['SYMBOL', 'SERIES'])
     return df1
 
-
+#nifty_list = pd.unique(bhavcopy(lastTradingDay)['SYMBOL'])
 
 def bhavcopy_fno(date):
-    dmyformat = datetime.strftime(date, '%d%b%Y').upper()
-    MMM = datetime.strftime(date, '%b').upper()
-    yyyy = datetime.strftime(date, '%Y')
-    url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
-    content = requests.get(url1)
-    zf = ZipFile(BytesIO(content.content))
-    match = [s for s in zf.namelist() if ".csv" in s][0]
-    bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
-    bhav_fo.columns = bhav_fo.columns.str.strip()
-    bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
-    bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
-    bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
-    # bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
+    try:
+        dmyformat = datetime.strftime(date, '%d%b%Y').upper()
+        ddd = datetime.strftime(date, '%d')
+        MMM = datetime.strftime(date, '%b')#.upper()
+        yyyy = datetime.strftime(date, '%Y')
+        #url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
+        url1 = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22F%26O%20-%20Bhavcopy%20(fo.zip)%22%2C%22type%22%3A%22archives%22%2C%22category%22%3A%22derivatives%22%2C%22section%22%3A%22equity%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equity&mode=single'
+        content = requests.get(url1)      
+        if content.status_code == 200:
+            zf = ZipFile(BytesIO(content.content))
+            match = [s for s in zf.namelist() if ".csv" in s][0]
+            bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
+            bhav_fo.columns = bhav_fo.columns.str.strip()
+            bhav_fo = bhav_fo.apply(lambda x: x.str.strip() if x.dtype == 'object' else x)
+            #bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT'])
+            bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT']).dt.date
+            bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
+            bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
+            #print(bhav_fo.head(1))
+        else:
+            print("No Data Found of Date :- "+str(date))
+    except Exception as e:
+        print(e)
     return bhav_fo
+
 
 nifty_list = pd.unique(bhavcopy_fno(lastTradingDay)['SYMBOL'])
 

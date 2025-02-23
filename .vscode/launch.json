@@ -1,0 +1,102 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "SearchRoom",
+            "request": "launch",
+            "mainClass": "hotel.management.system.SearchRoom",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "ManagerInfo",
+            "request": "launch",
+            "mainClass": "hotel.management.system.ManagerInfo",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "CustomerInfo",
+            "request": "launch",
+            "mainClass": "hotel.management.system.CustomerInfo",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "Employee",
+            "request": "launch",
+            "mainClass": "hotel.management.system.Employee",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "Department",
+            "request": "launch",
+            "mainClass": "hotel.management.system.Department",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "Room",
+            "request": "launch",
+            "mainClass": "hotel.management.system.Room",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "Login",
+            "request": "launch",
+            "mainClass": "hotel.management.system.Login",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "NewCustomer",
+            "request": "launch",
+            "mainClass": "hotel.management.system.NewCustomer",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "Reception",
+            "request": "launch",
+            "mainClass": "hotel.management.system.Reception",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "AddDrivers",
+            "request": "launch",
+            "mainClass": "hotel.management.system.AddDrivers",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "AddRoom",
+            "request": "launch",
+            "mainClass": "hotel.management.system.AddRoom",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "AddEmployee",
+            "request": "launch",
+            "mainClass": "hotel.management.system.AddEmployee",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "Dashboard",
+            "request": "launch",
+            "mainClass": "hotel.management.system.Dashboard",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "HotelManagementSystem",
+            "request": "launch",
+            "mainClass": "hotel.management.system.HotelManagementSystem",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        }
+    ]
+}

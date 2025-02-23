@@ -6,5 +6,11 @@
     "python.analysis.typeCheckingMode": "off",
     "terminal.integrated.env.windows": {
 
-    }
+    },
+    "docker.commands.runInteractive": "${containerCommand} run --rm -it ${exposedPorts} ${tag}",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "d:\\software\\mysql-connector-java-8.0.28.jar",
+        "d:\\software\\rs2xml.jar"
+    ]
 }
