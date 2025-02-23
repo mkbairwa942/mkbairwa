@@ -151,19 +151,19 @@ public class Reception extends JFrame {
 		btnCheckOut.setBackground(Color.BLACK);
 		btnCheckOut.setForeground(Color.WHITE);
 		contentPane.add(btnCheckOut);
-// 		btnCheckOut.addActionListener(new ActionListener() {
-// 			public void actionPerformed(ActionEvent e) {
-// 				CheckOut check;
-// 				try {
-// 					check = new CheckOut();
-// 					check.setVisible(true);
-//                                         setVisible(false);
-// 				} catch (SQLException e1) {
-// 					// TODO Auto-generated catch block
-// 					e1.printStackTrace();
-// 				}
-// 			}
-// 		});
+		btnCheckOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CheckOut check;
+				try {
+					check = new CheckOut();
+					check.setVisible(true);
+                    setVisible(false);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 
 		
 		JButton btnUpdateCheckStatus = new JButton("Update Check Status");
@@ -174,8 +174,8 @@ public class Reception extends JFrame {
 		btnUpdateCheckStatus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try{
-				// UpdateCheck update = new UpdateCheck();
-				// update.setVisible(true);
+				UpdateCheck update = new UpdateCheck();
+				update.setVisible(true);
                 setVisible(false);
 				}
 				catch(Exception e1){
@@ -193,8 +193,8 @@ public class Reception extends JFrame {
 		btnUpdateRoomStatus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try{
-					// UpdateRoom room = new UpdateRoom();
-					// room.setVisible(true);
+					UpdateRoom room = new UpdateRoom();
+					room.setVisible(true);
                 setVisible(false);
 				}catch(Exception s)
 				{
@@ -212,8 +212,8 @@ public class Reception extends JFrame {
 		btnPickUpSerice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try{
-				// PickUp pick = new PickUp();
-				// pick.setVisible(true);
+				PickUp pick = new PickUp();
+				pick.setVisible(true);
                 setVisible(false);
 				}
 				catch(Exception e){

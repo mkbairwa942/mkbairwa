@@ -2,6 +2,34 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CheckOut",
+            "request": "launch",
+            "mainClass": "hotel.management.system.CheckOut",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "PickUp",
+            "request": "launch",
+            "mainClass": "hotel.management.system.PickUp",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "UpdateRoom",
+            "request": "launch",
+            "mainClass": "hotel.management.system.UpdateRoom",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
+            "name": "UpdateCheck",
+            "request": "launch",
+            "mainClass": "hotel.management.system.UpdateCheck",
+            "projectName": "Capital_vercel_new_ac5a8db1"
+        },
+        {
+            "type": "java",
             "name": "SearchRoom",
             "request": "launch",
             "mainClass": "hotel.management.system.SearchRoom",
