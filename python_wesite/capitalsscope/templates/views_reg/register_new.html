@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/ajax.js"></script>
+
+    <title>Registration Form</title>
+</head>
+
+<body>
+
+    <div class="container ">
+        <div class="forms1">
+            <!-- Registration Form -->
+            <div class="form sighup">
+                {% if messages %}
+                {% for mess in messages %}
+                <div class="alert alert-{{mess.tags}}" role="alert">
+                {{mess}}
+                </div>
+                {% endfor %}  
+                {% endif %}
+                <span class="title">Registration Form</span>
+
+                <!-- <form action="#"> -->
+                {% if otp %}
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+                        <h3 class="float-left">Verify Your Email</h3>
+                        <input type="hidden" name="usr" value="{{usr.username}}">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text" id="basic-addon1">OTP</span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Enter Your OTP" aria-label="OTP" 
+                            aria-describedby="basic-addon1" name="otp">
+                        </div>
+
+
+                        
+                        <div class="checkbox-text">
+
+                            <small class="float-right text-muted"><i><a href="#" class="text" 
+                                onclick="ReSendOTP('{{usr.username}}','resendOTPmess')"
+                                ><i id="resendOTPmess">Resend </i>OTP</a></small>
+                            
+                        </div>
+
+                        <div class="input-field button">
+                            <input type="Submit" value="Verify">   
+                                                    
+                        </div>
+                        <!-- <div class="input-field button1">                        
+                            <button class="btn btn-primary" type="Submit">Login Now1</button>                    
+                        </div> -->
+                    </form>
+                {% else %}
+                <form method="POST" action="#">
+                    {% csrf_token %}
+                    <div class="input-field">
+                        {{form.name}}
+                        <i class="uil uil-user"></i>
+                    </div>
+                    <div class="input-field">
+                        {{form.username}}
+                        <i class="uil uil-envelope icon"></i>
+                    </div>
+                    <div class="input-field">
+                        {{form.password1}}
+                        <i class="uil uil-lock icon"></i>
+                        <i class="uil uil-eye-slash showHidePw"></i>
+                    </div>
+                    <div class="input-field">
+                        {{form.password2}}
+                        <!-- <input type="password" class="password" id="password" name="password" placeholder="Confirm a password" required> -->
+                        <i class="uil uil-lock icon"></i>
+                        <i class="uil uil-eye-slash showHidePw"></i>
+                    </div>
+                    <div class="checkbox-text">
+                        <div class="checkbox-content">
+                            <input type="checkbox" id="sigCheck">
+                            <label for="sigCheck" class="text"> Remember me</label>
+                        </div>
+
+                        <a href="{% url 'password_reset' %}" class="text">Forgot Password?</a>
+                    </div>
+
+                    <div class="input-field button">
+                        <input type="Submit" value="Login Now">   
+                                                 
+                    </div>
+                    <!-- <div class="input-field button1">                        
+                        <button class="btn btn-primary" type="Submit">Login Now1</button>                    
+                    </div> -->
+                </form>
+                {% endif %}
+
+                {{form.errors}}
+
+                <div class="login-signup">
+                    <span class="text">Already a member?
+                        <a href="/login_view" class="text login-link">Login Now</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/static/js/script.js"></script>
+    
+</body>
+
+
+</html>
+
+<!-- 
+<h3>Register New</h3>
+
+<form method="POST" action="">
+    {% csrf_token %}
+    {{form.as_p}}
+    {{form.username.label}}
+    {{form.username}}
+
+    {{form.email.label}}
+    {{form.email}}
+
+    {{form.password1.label}}
+    {{form.password1}}
+
+    {{form.password2.label}}
+    {{form.password2}}
+
+
+    <input type="submit" name="Create User"> 
+</form> -->

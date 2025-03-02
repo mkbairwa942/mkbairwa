@@ -1,0 +1,149 @@
+{% extends 'views_reg/base_new2.html' %}
+
+{% block title%}Eod Indices Chart{% endblock title %}
+
+{% block body %}
+
+<main id="main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <div class="breadcrumbs d-flex align-items-center" style="background-image: url('static/img/contact-header.jpg');">
+        <div class="container position-relative d-flex flex-column align-items-center">
+
+            <h2>Eod Stock Chart</h2>
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li>Eod Stock Chart</li>
+            </ol>
+
+        </div>
+    </div><!-- End Breadcrumbs -->
+    <div class="row mt-5 ml-5 pt-3">
+        <div class="col-md-3">
+            <div class="selectBox shadow">
+                <form method="POST" action="/Eod_Indices_Chart">
+                    {% csrf_token %}
+                    <h5 class="text">Select Stock</h4>
+                        <hr>
+
+                        <select id="year" name="stock" class="field" required onchange="changeFinancials()">
+                            {% for i in idx_list %}
+                            <option value="{{i}}">{{i}}</option>
+                            {% endfor %}
+                        </select>
+                        <hr>
+                        <h5 class="text">Select Field</h4>
+                            <hr>
+                            <select id="financial" name="field" class="field" required onchange="changeFinancials()">
+                                {% for j in column %}
+                                <option value="{{j}}">{{j}}</option>
+                                {% endfor %}
+                            </select>
+                            <hr>
+                            <h5 class="text">Select Start Date</h4>
+                                <hr>
+                                <input class="field" type="date" id="from_date" name="from_date" required>
+                                <hr>
+                                <h5 class="text">Select End Date</h4>
+                                    <hr>
+                                    <input class="field" type="date" id="to_date" name="to_date" required>
+                                    <hr>
+                                    <button class="btn btn-primary" type="Submit"
+                                        style="margin-bottom: 20px;">Submit</button>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="chartbox shadow">
+                <canvas class="canvas" id="myChart"></canvas>
+            </div>
+
+            <script>
+                const ctx = document.getElementById('myChart').getContext('2d');
+                const myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [{% for j in context1 %}'{{j.Date}}',{% endfor %}],
+                // labels: [{% for i in context1 %} '{{i.Date}}', {% endfor %}],
+                datasets: [{
+                    label: '{{field}} of {{stock}}',
+                    data: [{% for i in data1 %}{{ i }}, {% endfor %}],
+                    // data: [{% for j in context1 %} {{j.field}}, {% endfor %}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                            borderWidth: 1,
+                                datalabels: {
+                    color: 'blue',
+                        anchor: 'end',
+                            align: 'top',
+                        }
+                    }]
+                },
+                plugins: [ChartDataLabels],
+                    options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            </script>
+            <script src="/static/js/chart.min.js"></script>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/chart.js"></script>
+    <!-- <script type="text/javascript" src="/static/js/popper.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+    <!-- <script type="text/javascript" src="/static/js/bootstrap-table.min.js"></script> -->
+    <!-- <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script> -->
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Setup - add a text input to each footer cell
+            $('#example thead th').each(function () {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            });
+
+            // DataTable
+            var table = $('#example').DataTable({
+                initComplete: function () {
+                    // Apply the search
+                    this.api()
+                        .columns()
+                        .every(function () {
+                            var that = this;
+
+                            $('input', this.header()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+                },
+            });
+        });
+    </script>
+</main><!-- End #main -->
+
+{% endblock body %}

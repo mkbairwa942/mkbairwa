@@ -1,0 +1,212 @@
+{% extends 'views_reg/base_new1.html' %}
+
+{% block title%}Live Indices Market{% endblock title %}
+
+{% block body %} </br> <strong> List of ALL Indices{{colidx}}</strong></br></br>
+
+<main id="main">
+  <!-- ======= Breadcrumbs ======= -->
+  <div class="breadcrumbs d-flex align-items-center" style="background-image: url('static/img/contact-header.jpg');">
+    <div class="container position-relative d-flex flex-column align-items-center">
+
+      <h2>Eod Market Stock</h2>
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li>Live Market Indices</li>
+      </ol>
+
+    </div>
+  </div><!-- End Breadcrumbs -->
+
+
+  <div class="container">
+    <div id="toolbar" class="select">
+      <select class="form-control">
+        <option value="">Export Basic</option>
+        <option value="all">Export ALL</option>
+        <option value="selected">Export Selected</option>
+      </select>
+    </div>
+
+
+    <table id="table" data-toggle="table" data-multiple-select-row="true" data-click-to-select="true" data-height="600"
+      data-pagination="true" data-search-align="left" data-show-columns="true" data-show-toggle="true"
+      data-show-refresh="true" data-show-fullscreen="true" data-show-pagination-switch="true"
+      data-pagination-pre-text="Previous" data-pagination-next-text="Next" data-pagination-h-align='left'
+      data-pagination-detail-h-align='right' data-page-list="[10,20,30,40,50,100,ALL]" data-detail-view="true"
+      data-detail-formatter="detailFormatter" data-show-footer="true" data-toolbar="#toolbar"
+      data-advanced-search="true" data-id-table="advancedTable" data-filter-control="true" data-filter-show-clear="true"
+      data-show-print="true" data-show-export="true" data-click-to-select="true" data-search="true">
+
+      <thead>
+
+        <tr>
+          <!-- {% for i in column %}
+        <th style data-field="{{i}}">
+          <div class="th-inner sortable both">
+            {{i}}</div>
+          <div class="fht-cell">
+            <div class="filter-control"><select class="form-select bootstrap-table-filter-control-{{i}} "
+                style="width: 100%;" dir="ltr"></select></div>
+          </div>
+        </th>
+        {% endfor %} -->
+          <!-- {% for i in column %}
+        <th data-field="{{i}}" data-sortable="true" data-filter-control="select">{{i}}</th>
+        {% endfor %} -->
+          <!-- <th data-field="state" data-checkbox="true"></th>         -->
+          <th data-field="Symbol" data-sortable="true" data-filter-control="select"
+          data-footer-formatter="totalFormatter">Symbol</th>
+          <th data-field="Date" data-sortable="true" data-filter-control="select"
+          data-footer-formatter="amountFormatter">Date</th>
+          <th data-field="Prev" data-sortable="true" data-filter-control="select">Prev</th>
+          <th data-field="Open" data-sortable="true" data-filter-control="select">Open</th>
+          <th data-field="High" data-sortable="true" data-filter-control="select">High</th>
+          <th data-field="Low" data-sortable="true" data-filter-control="select">Low</th>
+          <th data-field="Closing" data-sortable="true" data-filter-control="select">Closing</th>
+          <th data-field="Volume" data-sortable="true" data-filter-control="select" data-formatter="colourFormatter"
+          data-footer-formatter="VolumeFormatter">Volume</th>
+          <th data-field="Deliv_qty" data-sortable="true" data-filter-control="select">Deliv_qty</th>
+          <th data-field="Open_int" data-sortable="true" data-filter-control="select">Open_int</th>
+          <th data-field="Deliv_per" data-sortable="true" data-filter-control="select">Deliv_per</th>
+          <th data-field="Price_Chg" data-sortable="true" data-filter-control="select">Price_Chg</th>
+          <th data-field="OI_Chg" data-sortable="true" data-filter-control="select">OI_Chg</th>
+          <th data-field="Vol_Chg" data-sortable="true" data-filter-control="select">Vol_Chg</th>
+          <th data-field="Deliv_break" data-sortable="true" data-filter-control="select">Deliv_break</th>
+          <th data-field="Price_break" data-sortable="true" data-filter-control="select">Price_break</th>
+          <th data-field="Open_int_break" data-sortable="true" data-filter-control="select">Open_int_break</th>
+          <th data-field="Vol_break" data-sortable="true" data-filter-control="select">Vol_break</th>
+          <th data-field="Deliv_Price_break" data-sortable="true" data-filter-control="select">Deliv_Price_break</th>
+          <th data-field="Deliv_Open_int_break" data-sortable="true" data-filter-control="select">Deliv_Open_int_break</th>
+          <th data-field="Deliv_Vol_break" data-sortable="true" data-filter-control="select">Deliv_Vol_break</th>
+          <th data-field="O_H_L" data-sortable="true" data-filter-control="select">O_H_L</th>
+          <th data-field="Pattern" data-sortable="true" data-filter-control="select">Pattern</th>
+          <th data-field="R3" data-sortable="true" data-filter-control="select">R3</th>
+          <th data-field="R2" data-sortable="true" data-filter-control="select">R2</th>
+          <th data-field="R1" data-sortable="true" data-filter-control="select">R1</th>
+          <th data-field="Pivot" data-sortable="true" data-filter-control="select">Pivot</th>
+          <th data-field="S1" data-sortable="true" data-filter-control="select">S1</th>
+          <th data-field="S2" data-sortable="true" data-filter-control="select">S2</th>
+          <th data-field="S3" data-sortable="true" data-filter-control="select">S3</th>
+          <th data-field="Mid_point" data-sortable="true" data-filter-control="select">Mid_point</th>
+          <th data-field="CPR" data-sortable="true" data-filter-control="select">CPR</th>
+          <th data-field="CPR_SCAN" data-sortable="true" data-filter-control="select">CPR_SCAN</th>
+          <th data-field="Candle" data-sortable="true" data-filter-control="select">Candle</th>
+
+        </tr>
+      </thead>
+
+      <tr>
+
+        {% for i in context1 %}
+        <td><a href="/Chart">{{i.Symbol}}</a></td>
+        <td>{{i.Date}}</td>
+        <td class="bg-info">{{i.Prev}}</td>
+        <td class="bg-info">{{i.Open}}</td>
+        <td class="bg-info">{{i.High}}</td>
+        <td class="bg-info">{{i.Low}}</td>
+        <td class="bg-info">{{i.Closing}}</td>
+        <td class="bg-info">{{i.Volume}}</td>
+        <td class="bg-info">{{i.Deliv_qty}}</td>
+        <td class="bg-info">{{i.Open_int}}</td>
+        <td class="bg-info">{{i.Deliv_per}}</td>
+        <td class="bg-info">{{i.Price_Chg}}</td>
+        <td class="bg-info">{{i.OI_Chg}}</td>
+        <td class="bg-info">{{i.Vol_Chg}}</td>
+        <td class="bg-info">{{i.Deliv_break}}</td>
+        <td class="bg-info">{{i.Price_break}}</td>
+        <td class="bg-info">{{i.Open_int_break}}</td>
+        <td class="bg-info">{{i.Vol_break}}</td>
+        <td class="bg-info">{{i.Deliv_Price_break}}</td>
+        <td class="bg-info">{{i.Deliv_Open_int_break}}</td>
+        <td class="bg-info">{{i.Deliv_Vol_break}}</td>
+        <td class="bg-info">{{i.O_H_L}}</td>
+        <td class="bg-info">{{i.Pattern}}</td>
+        <td class="bg-info">{{i.R3}}</td>
+        <td class="bg-info">{{i.R2}}</td>
+        <td class="bg-info">{{i.R1}}</td>
+        <td class="bg-info">{{i.Pivot}}</td>
+        <td class="bg-info">{{i.S1}}</td>
+        <td class="bg-info">{{i.S2}}</td>
+        <td class="bg-info">{{i.S3}}</td>
+        <td class="bg-info">{{i.Mid_point}}</td>
+        <td class="bg-info">{{i.CPR}}</td>
+        <td class="bg-info">{{i.CPR_SCAN}}</td>
+        <td class="bg-info">{{i.Candle}}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</main>
+<script src="static/js/chart.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/static/js/popper.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-table-filter-control.min.js"></script>
+<script type="text/javascript" src="/static/js/tableExport.min.js"></script>
+<script type="text/javascript" src="/static/js/jspdf.umd.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-table-print.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-table-export.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-jspdf-autotable.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"
+  integrity="sha512-Tfw6etYMUhL4RTki37niav99C6OHwMDB2iBT5S5piyHO+ltK2YX8Hjy9TXxhE1Gm/TmAV0uaykSpnHKFIAif/A=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+
+
+
+
+  function detailFormatter(index, row,) {
+    var html = []
+    $.each(row, function (key, value) {
+      html.push('<p class="row" style="width:100%"><b class="col-md-2">' + key + '</b><span class="col-md-10">' + value + '</span></p>')
+    })
+
+
+    return html.join(' ')
+  }
+
+  function totalFormatter() {
+    return 'Total'
+  }
+
+  function amountFormatter(data) {
+    return data.length
+  }
+
+  function VolumeFormatter(data) {
+    var field = this.field
+    return '₹ ' + data.map(function (row) {
+      return +row[field].substring(1)
+    }).reduce(function (sum, i) {
+      return sum + i
+    }, 0)
+  }
+
+  function colourFormatter(value) {
+    var color = '#' + Math.floor(Math.random() * 1000).toString(16)
+    return '<div style="color: ' + color + '">' +
+      '<i class="fa fa-rupee-sign "></i>' +
+      value.substring(1) +
+      '</div>'
+  }
+
+  function actionFormatter(index, row) {
+    var html = []
+    $.each(row, function (key, value) {
+      if (key == 'Index') {
+        html.push('<a class="edit" href="?edit=' + value + '" tittle="Edit"><i class="fa fa-edit"></i></a>')
+        html.push('<a class="remove" href="?remove=' + value + '" tittle="Remove"><i class="fa fa-trash"></i></a>')
+
+      }
+    })
+    return html.join('')
+  }
+
+</script>
+
+
+{% endblock body %}

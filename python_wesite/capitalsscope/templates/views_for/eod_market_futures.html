@@ -1,0 +1,129 @@
+{% extends 'views_reg/base.html' %}
+
+{% block title%}Live Market{% endblock title %}
+
+{% block body %}
+
+
+<div class="container-fluid" style="margin-top: 180px;">
+	<div class="row">
+
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<h3 class="text-center">
+				Select Any One Stock You Want To Analysis
+			</h3>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="dropdown">
+
+				<button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+					data-toggle="dropdown">
+
+					Select Stock
+
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					{% for i in idx_list %}
+
+					<a class="dropdown-item" href="{% url 'Chart' %}">{{i}}</a>
+
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<img alt="Bootstrap Image Preview" src="https://www.layoutit.com/img/sports-q-c-140-140-3.jpg">
+		</div>
+		<div class="col-md-4">
+			<img alt="Bootstrap Image Preview" src="https://www.layoutit.com/img/sports-q-c-140-140-3.jpg"
+				class="rounded-circle">
+		</div>
+		<div class="col-md-4">
+			<img alt="Bootstrap Image Preview" src="https://www.layoutit.com/img/sports-q-c-140-140-3.jpg"
+				class="rounded">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="table-responsive">
+				<table id="example" class="table table-bordered table-striped" style="width: 100%;">
+					<thead>
+						<tr>
+							{% for i in column %}
+							<th>{{i}}</th>
+							{% endfor %}
+
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							{% for i in context1 %}
+
+							<td>{{i.Index}}</td>
+							<td>{{i.Date}}</td>
+							<td>{{i.Open}}</td>
+							<td>{{i.High}}</td>
+							<td>{{i.Low}}</td>
+							<td>{{i.Closing}}</td>
+							<td>{{i.PChange}}</td>
+							<td>{{i.Change_per}}</td>
+							<td>{{i.Volume}}</td>
+							<td>{{i.Turnover}}</td>
+							<td>{{i.Vol_break}}</td>
+							<td>{{i.Deliv_break}}</td>
+							<td>{{i.Vol_Deliv_break}}</td>
+							<td>{{i.Open_int_break}}</td>
+							<td>{{i.Price_break}}</td>
+							<td>{{i.O_H_L}}</td>
+							<td>{{i.Pattern}}</td>
+							<td>{{i.R3}}</td>
+							<td>{{i.R2}}</td>
+							<td>{{i.R1}}</td>
+							<td>{{i.Pivot}}</td>
+							<td>{{i.S1}}</td>
+							<td>{{i.S2}}</td>
+							<td>{{i.S3}}</td>
+							<td>{{i.Mid_point}}</td>
+							<td>{{i.CPR}}</td>
+							<td>{{i.CPR_SCAN}}</td>
+							<td>{{i.Candle}}</td>
+						</tr>
+						{% endfor %}
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="jumbotron card card-block">
+				<h2>
+					Hello, world!
+				</h2>
+				<p>
+					This is a template for a simple marketing or informational website. It includes a large callout
+					called the hero unit and three supporting pieces of content. Use it as a starting point to
+					create something more unique.
+				</p>
+				<p>
+					<a class="btn btn-primary btn-large" href="#">Learn more</a>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="/static/js/jquery.min1.js"></script>
+<script src="/static/js/bootstrap.min1.js"></script>
+<script src="/static/js/scripts1.js"></script>
+<script type="text/javascript" src="/static/js/popper.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+{% endblock body %}

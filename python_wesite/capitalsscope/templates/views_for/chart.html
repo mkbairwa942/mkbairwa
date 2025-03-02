@@ -1,0 +1,311 @@
+{% extends 'views_reg/base_new2.html' %}
+
+{% block title%}Eod Stock Chart{% endblock title %}
+
+{% block body %}
+
+<main id="main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <div class="breadcrumbs d-flex align-items-center" style="background-image: url('static/img/contact-header.jpg');">
+        <div class="container position-relative d-flex flex-column align-items-center">
+
+            <h2>Eod Stock Chart</h2>
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li>Eod Stock Chart</li>
+            </ol>
+
+        </div>
+    </div><!-- End Breadcrumbs -->
+
+    <div class="chart_heading">
+        <h5 class="text">Select Field for Analysis from Side Menu Button</h5>
+    </div>
+
+    <div class="row mt-0 ml-5 pt-0">
+
+        <div class="col-md-3">
+            <div class="sidebar">
+                <div class="selectbox shadow">
+                    <form method="POST" action="/Chart">
+                        {% csrf_token %}
+                        <h5 class="text">Select Start Date</h5>
+                        <hr>
+                        <input class="field" type="date" id="from_date" name="from_date" required>
+                        <hr>
+                        <h5 class="text">Select End Date</h5>
+                        <hr>
+                        <input class="field" type="date" id="to_date" name="to_date" required>
+                        <hr>
+                        <h5 class="text">Select Stock</h5>
+                        <hr>
+                        <select id="year" name="stock" class="field" required>
+                            {% for i in idx_list %}
+                            <option value="SBIN" selected hidden>SBIN</option>
+                            <option value="{{i}}">{{i}}</option>
+                            {% endfor %}
+                        </select>
+                        <hr>
+                        <h5 class="text">Select Field for Chart 1</h5>
+                        <hr>
+                        <select  id="financial" name="field1" class="field"  required>
+                            {% for j in column %}
+                            <option value="Deliv_qty" selected hidden>Deliv_qty</option>
+                            <option value="{{j}}">{{j}}</option>
+                            {% endfor %}
+                        </select>
+                        <hr>
+                        <h5 class="text">Select Field for Chart 2</h5>
+                        <hr>
+                        <select id="financial" name="field2" class="field" required>
+                            {% for j in column %}
+                            <option value="Volume" selected hidden>Volume</option>
+                            <option value="{{j}}">{{j}}</option>
+                            {% endfor %}
+                        </select>
+                        <hr>
+                        <h5 class="text">Select Field for Chart 3</h5>
+                        <hr>
+                        <select id="financial" name="field3" class="field" required>
+                            {% for j in column %}
+                            <option value="Open_int" selected hidden>Open_int</option>
+                            <option value="{{j}}">{{j}}</option>
+                            {% endfor %}
+                        </select>
+                        <hr>
+                        <h5 class="text">Select Field for Chart 4</h5>
+                        <hr>
+                        <select id="financial" name="field4" class="field" required>
+                            {% for j in column %}
+                            <option value="Closing" selected hidden>Closing</option>
+                            <option value="{{j}}">{{j}}</option>
+                            {% endfor %}
+                        </select>
+                        <hr>
+
+                        <button class="btn btn-primary" type="Submit" style="margin-bottom: 20px;">Submit</button>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- <div class="sidebar-toggle-btn shadow">
+                <img class="menu_logo" src="/static/img/menu_logo.png" alt="">
+            </div> -->
+        </div>
+
+        <div class="col-md-9">
+
+            <div class="chartbox shadow">
+                <canvas class="canvas" id="Chart1"></canvas>
+            </div>
+            <div class="chartbox shadow">
+                <canvas class="canvas" id="Chart2"></canvas>
+            </div>
+            <div class="chartbox shadow">
+                <canvas class="canvas" id="Chart3"></canvas>
+            </div>
+            <div class="chartbox shadow">
+                <canvas class="canvas" id="Chart4"></canvas>
+
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            <script>
+
+                // setup
+                const data1 = {
+                    labels: [{% for j in context1 %}'{{j.Date}}', {% endfor %}],
+                datasets: [{
+                    label: '{{field1}} of {{stock}}',
+                    data: [{% for i in data1 %}{{ i }}, {% endfor %}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                            borderWidth: 1
+                    }]
+                };
+
+                // config
+                const config1 = {
+                    type: 'bar',
+                    data: data1,
+                    options: { scales: { y: { beginAtZero: true } } }
+                };
+                //render init block
+                const Chart1 = new Chart(
+                    document.getElementById('Chart1'),
+                    config1
+                );
+
+                const data2 = {
+                    labels: [{% for j in context1 %}'{{j.Date}}', {% endfor %}],
+                datasets: [{
+                    label: '{{field2}} of {{stock}}',
+                    data: [{% for i in data2 %}{{ i }}, {% endfor %}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                            borderWidth: 1
+                    }]
+                };
+
+                // config
+                const config2 = {
+                    type: 'bar',
+                    data: data2,
+                    options: { scales: { y: { beginAtZero: true } } }
+                };
+                //render init block
+                const Chart2 = new Chart(
+                    document.getElementById('Chart2'),
+                    config2
+                );
+
+                const data3 = {
+                    labels: [{% for j in context1 %}'{{j.Date}}', {% endfor %}],
+                datasets: [{
+                    label: '{{field3}} of {{stock}}',
+                    data: [{% for i in data3 %}{{ i }}, {% endfor %}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                            borderWidth: 1
+                    }]
+                };
+
+                // config
+                const config3 = {
+                    type: 'bar',
+                    data: data3,
+                    options: { scales: { y: { beginAtZero: true } } }
+                };
+                //render init block
+                const Chart3 = new Chart(
+                    document.getElementById('Chart3'),
+                    config3
+                );
+
+                const data4 = {
+                    labels: [{% for j in context1 %}'{{j.Date}}', {% endfor %}],
+                datasets: [{
+                    label: '{{field4}} of {{stock}}',
+                    data: [{% for i in data4 %}{{ i }}, {% endfor %}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                            borderWidth: 1
+                    }]
+                };
+
+                // config
+                const config4 = {
+                    type: 'bar',
+                    data: data4,
+                    options: { scales: { y: { beginAtZero: true } } }
+                };
+                //render init block
+                const Chart4 = new Chart(
+                    document.getElementById('Chart4'),
+                    config4
+                );
+
+            </script>
+
+
+            <script src="/static/js/chart.min.js"></script>
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/chart.js"></script>
+    <!-- <script type="text/javascript" src="/static/js/popper.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+    <!-- <script type="text/javascript" src="/static/js/bootstrap-table.min.js"></script> -->
+    <!-- <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script> -->
+
+    <!-- <script type="text/javascript">
+        $(document).ready(function () {
+            // Setup - add a text input to each footer cell
+            $('#example thead th').each(function () {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            });
+
+            // DataTable
+            var table = $('#example').DataTable({
+                initComplete: function () {
+                    // Apply the search
+                    this.api()
+                        .columns()
+                        .every(function () {
+                            var that = this;
+
+                            $('input', this.header()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+                },
+            });
+        });
+    </script> -->
+</main><!-- End #main -->
+
+{% endblock body %}

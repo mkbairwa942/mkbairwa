@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title%}{% endblock title %} | Stock Market</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous"> -->
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/nvabar-style.css">
+  
+  </head>
+  <body>
+  <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #ba22ce71;">
+  <div class="container-fluid">
+    <img  class="logo" src="/static/img/global solution.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
+    <a class="navbar-brand" href="#">Stock Analysis</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/home_new">Home</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/Eod_Market" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Eod Market
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/Eod_Market_Stock">Stock</a></li>
+            <li><a class="dropdown-item" href="/Eod_Market_Indices">Indices</a></li>
+<!--            <li><hr class="dropdown-divider"></li>-->
+            <li><a class="dropdown-item" href="/Eod_Market_Futures">Futures</a></li>
+            <li><a class="dropdown-item" href="/Eod_Market_Options">Options</a></li>
+            <li><a class="dropdown-item" href="/Eod_Market_FII_DII">FII DII</a></li>
+          </ul>
+        </li> 
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/Live_Market" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Live Market
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/Live_Market_Stock">Stock</a></li>
+            <li><a class="dropdown-item" href="/Live_Market_Indices">Indices</a></li>
+<!--            <li><hr class="dropdown-divider"></li>-->
+            <li><a class="dropdown-item" href="/Live_Market_Futures">Futures</a></li>
+            <li><a class="dropdown-item" href="/Live_Market_Options">Options</a></li>
+            <li><a class="dropdown-item" href="/Live_Market_FII_DII">FII DII</a></li>
+          </ul>
+        </li>
+                <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/Backtest" id="navbarDropdown3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Backtest
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/Backtest_Stock">Stock</a></li>
+            <li><a class="dropdown-item" href="/Backtest_Indices">Indices</a></li>
+<!--            <li><hr class="dropdown-divider"></li>-->
+            <li><a class="dropdown-item" href="/Backtest_Futures">Futures</a></li>
+            <li><a class="dropdown-item" href="/Backtest_Options">Options</a></li>
+            <li><a class="dropdown-item" href="/Backtest_FII_DII">FII DII</a></li>
+          </ul>
+        </li>
+
+                <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/News" id="navbarDropdown4" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            News
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/News_India">India</a></li>
+            <li><a class="dropdown-item" href="/News_World">World</a></li>
+<!--            <li><hr class="dropdown-divider"></li>-->
+            <li><a class="dropdown-item" href="/News_Top">Top</a></li>
+            <li><a class="dropdown-item" href="/News_Latest">Latest</a></li>
+            <li><a class="dropdown-item" href="/News_Most_Readed">Most Readed</a></li>
+          </ul>
+        </li>
+                <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/Dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/Chart">Chart</a>
+        </li>
+                <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/About">About Us</a>
+        </li>
+                <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/ContactUs">Contact Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/exxit">Logout</a>
+
+        </li>
+
+      </ul>
+      <form class="d-flex" role="search">
+        <input class="form-control " type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+<!--        <button class="btn btn-outline-success" type="submit">Sign In</button>-->
+        <button class="btn btn-light ms-3">Login</button>
+<!--        <button type="submit">Sign Up</button>-->
+
+
+      </form>
+    </div>
+  </div>
+</nav>
+
+  {% block body %}{% endblock body %}
+  {% include 'views_reg/footer.html' %}
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script> -->
+    <script type="text/javascript" src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/chart.min.js"></script>
+
+  </body>
+</html>
+
