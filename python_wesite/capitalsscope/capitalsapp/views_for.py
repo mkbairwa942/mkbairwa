@@ -104,9 +104,14 @@ def bhavcopy_fno(date):
         MMM = datetime.strftime(date, '%b')#.upper()
         yyyy = datetime.strftime(date, '%Y')
         #url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
-        url1 = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22F%26O%20-%20Bhavcopy%20(fo.zip)%22%2C%22type%22%3A%22archives%22%2C%22category%22%3A%22derivatives%22%2C%22section%22%3A%22equity%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equity&mode=single'
-        content = requests.get(url1)      
+        # url1 = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22F%26O%20-%20Bhavcopy%20(fo.zip)%22%2C%22type%22%3A%22archives%22%2C%22category%22%3A%22derivatives%22%2C%22section%22%3A%22equity%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equity&mode=single'
+        url1 = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22F%26O%20-%20UDiFF%20Common%20Bhavcopy%20Final%20(zip)%22%2C%22type%22%3A%22archives%22%2C%22category%22%3A%22derivatives%22%2C%22section%22%3A%22equity%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equity&mode=single'
+        print(url1)
+        content = requests.get(url1)  
+        print(content.status_code)
+        print(content)    
         if content.status_code == 200:
+            print("Data Found of Date :- "+str(date))
             zf = ZipFile(BytesIO(content.content))
             match = [s for s in zf.namelist() if ".csv" in s][0]
             bhav_fo = pd.read_csv(zf.open(match), low_memory=False)
@@ -116,7 +121,7 @@ def bhavcopy_fno(date):
             bhav_fo['EXPIRY_DT'] = pd.to_datetime(bhav_fo['EXPIRY_DT']).dt.date
             bhav_fo['TIMESTAMP'] = pd.to_datetime(bhav_fo['TIMESTAMP'])
             bhav_fo = bhav_fo.drop(["Unnamed: 15"], axis=1)
-            #print(bhav_fo.head(1))
+            print(bhav_fo.head(1))
         else:
             print("No Data Found of Date :- "+str(date))
     except Exception as e:
@@ -134,7 +139,8 @@ def Eod_Market(request):
 def Eod_Market_Stock(request):
     global data_fo
 
-    engine = sqlalchemy.create_engine('mysql+pymysql://mkbairwa942:vaa2829m@5.183.11.143:3306/capitalsscope')
+    # engine = sqlalchemy.create_engine('mysql+pymysql://mkbairwa942:vaa2829m@5.183.11.143:3306/capitalsscope')
+    engine = sqlalchemy.create_engine('mysql+pymysql://root:@localhost/hotelmanagementsystem')
 
     eq_bhav = (f"SELECT distinct * FROM capitalsscope.full_bhavcopy where DATE1 between '{from_d}' and '{to_d}';")
     data_eq = pd.read_sql(sql=eq_bhav, con=engine)
@@ -848,7 +854,9 @@ def welcome1(request):
 
 def live_option_chart(request):
     lot = 'NotMultiply'
-    engine = sqlalchemy.create_engine('mysql+pymysql://mkbairwa942:vaa2829m@5.183.11.143:3306/capitalsscope')
+
+    # engine = sqlalchemy.create_engine('mysql+pymysql://mkbairwa942:vaa2829m@5.183.11.143:3306/capitalsscope')
+    engine = sqlalchemy.create_engine('mysql+pymysql://root:@localhost/hotelmanagementsystem')
 
     eq_bhav = (f"SELECT distinct * FROM capitalsscope.live_option_chain_nifty;")
     data_eq = pd.read_sql(sql=eq_bhav, con=engine)
