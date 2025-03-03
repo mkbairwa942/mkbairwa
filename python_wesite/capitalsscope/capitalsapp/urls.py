@@ -10,11 +10,11 @@ from django.urls import path, include
 from . import views_reg
 from . import views_for
 from django.contrib.auth import views as auth_views
-from .Dash_app import stock_dashboard
-from .Dash_app import simpleexample
-from .Dash_app import Eod_Market_Stock_New
-from .Dash_app import Intraday_Option_Chart
-from .Dash_app import Eod_Option_Chart
+# from .Dash_app import stock_dashboard
+# from .Dash_app import simpleexample
+# from .Dash_app import Eod_Market_Stock_New
+# from .Dash_app import Intraday_Option_Chart
+# from .Dash_app import Eod_Option_Chart
 # from . import simpleexample
 # from . import stock_dashboard
 # from . import live_option_chart_ne

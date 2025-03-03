@@ -327,6 +327,7 @@ def bhavcopy_fno(lastTradingDay):
         yyyy = datetime.strftime(lastTradingDay, '%Y')
         #url1 = 'https://archives.nseindia.com/content/historical/DERIVATIVES/' + yyyy + '/' + MMM + '/fo' + dmyformat + 'bhav.csv.zip'
         # url1 = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22F%26O%20-%20Bhavcopy%20(fo.zip)%22%2C%22type%22%3A%22archives%22%2C%22category%22%3A%22derivatives%22%2C%22section%22%3A%22equity%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equity&mode=single'
+        # url1 = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22F%26O%20-%20UDiFF%20Common%20Bhavcopy%20Final%20(zip)%22%2C%22type%22%3A%22archives%22%2C%22category%22%3A%22derivatives%22%2C%22section%22%3A%22equity%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equity&mode=single'
         url1 = 'https://www.nseindia.com/api/reports?archives=%5B%7B%22name%22%3A%22F%26O%20-%20UDiFF%20Common%20Bhavcopy%20Final%20(zip)%22%2C%22type%22%3A%22archives%22%2C%22category%22%3A%22derivatives%22%2C%22section%22%3A%22equity%22%7D%5D&date='+ddd+'-'+MMM+'-'+yyyy+'&type=equity&mode=single'
         content = requests.get(url1)  
         print(content.status_code)   
